@@ -70,10 +70,10 @@ public class WeatherControllerV1HistoryTest extends AbstractRestWebTest {
                 RoadStationType.WEATHER_STATION,
                 publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
 
-        sensorNaturalIds.add(publishable.get(0).getNaturalId());
+        sensorNaturalIds.add(publishable.getFirst().getNaturalId());
         sensorNaturalIds.add(publishable.get(1).getNaturalId());
         final SensorValueHistory svh1 =
-                new SensorValueHistory(weatherStationId, publishable.get(0).getId(), sensorValues[0], measuredTime,
+                new SensorValueHistory(weatherStationId, publishable.getFirst().getId(), sensorValues[0], measuredTime,
                         SensorValueReliability.OK);
         final SensorValueHistory svh2 =
                 new SensorValueHistory(weatherStationId, publishable.get(1).getId(), sensorValues[1], measuredTime,
@@ -103,7 +103,7 @@ public class WeatherControllerV1HistoryTest extends AbstractRestWebTest {
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$.values", Matchers.hasSize(2)))
                 .andExpect(jsonPath("$.values[0].stationId", Matchers.equalTo((int) weatherStationNaturalId)))
-                .andExpect(jsonPath("$.values[0].id", Matchers.equalTo(sensorNaturalIds.get(0).intValue())))
+                .andExpect(jsonPath("$.values[0].id", Matchers.equalTo(sensorNaturalIds.getFirst().intValue())))
                 .andExpect(jsonPath("$.values[0].value", Matchers.equalTo(sensorValues[0])))
                 .andExpect(jsonPath("$.values[0].measuredTime", Matchers.equalTo(measuredTime.toString())))
                 .andExpect(jsonPath("$.values[0].reliability", Matchers.equalTo(SensorValueReliability.OK.name())))

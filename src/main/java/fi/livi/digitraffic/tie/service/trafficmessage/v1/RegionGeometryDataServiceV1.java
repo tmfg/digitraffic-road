@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -89,13 +88,13 @@ public class RegionGeometryDataServiceV1 {
             regionStatus = new RegionStatus(locationCodeToRegion,
                 latestCommitId,
                 dataStatusService.findDataUpdatedInstant(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA),
-                dataStatusService.findDataUpdatedTime(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK));
+                dataStatusService.findDataUpdatedInstant(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK));
 
         } catch (final Exception e) {
             log.error("method=refreshAreaLocationRegionCache failed", e);
         }
         dataPopulationLatch.countDown();
-        log.info("method=refreshAreaLocationRegionCache done tookMs={}", start.getTime());
+        log.info("method=refreshAreaLocationRegionCache done tookMs={}", start.getDuration().toMillis());
     }
 
     @Transactional
@@ -267,7 +266,7 @@ public class RegionGeometryDataServiceV1 {
         private final List<RegionGeometryFeature> allRegionsDtosInDescOrderWithoutGeometry;
         public final String currentCommitId;
         public final Instant updated;
-        public final ZonedDateTime checked;
+        public final Instant checked;
 
         public RegionStatus() {
             regionsInDescOrderMappedByLocationCode = new HashMap<>();
@@ -281,7 +280,7 @@ public class RegionGeometryDataServiceV1 {
         public RegionStatus(
             final Map<Integer, List<RegionGeometry>> regionsInDescOrderMappedByLocationCode,
             final String currentCommitId, final Instant updated,
-            final ZonedDateTime checked) {
+            final Instant checked) {
             this.regionsInDescOrderMappedByLocationCode = regionsInDescOrderMappedByLocationCode;
             this.currentCommitId = currentCommitId;
             this.updated = updated;

@@ -21,7 +21,7 @@ import jakarta.transaction.Transactional;
  - locations (from @ContextConfiguration)
  - classes (part of @ContextConfiguration)
  - contextInitializerClasses (from @ContextConfiguration)
- - contextCustomizers (from ContextCustomizerFactory) – e.g. @DynamicPropertySource, @MockBean and @SpyBean.
+ - contextCustomizers (from ContextCustomizerFactory) – e.g. @DynamicPropertySource, @MockitoBean and @MockitoSpyBean.
  - contextLoader (part of @ContextConfiguration)
  - parent (from @ContextHierarchy)
  - activeProfiles (coming from @ActiveProfiles)

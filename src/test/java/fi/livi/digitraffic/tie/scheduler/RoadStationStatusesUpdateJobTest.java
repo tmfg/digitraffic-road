@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
@@ -55,7 +55,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 
-    @SpyBean
+    @MockitoSpyBean
     private CameraImageUpdateHandler cameraImageUpdateHandler;
 
     @Autowired

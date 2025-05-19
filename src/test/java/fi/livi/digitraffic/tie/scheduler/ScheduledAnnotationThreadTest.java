@@ -34,7 +34,7 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTest {
         final StopWatch start = StopWatch.createStarted();
         while ( ( (count1 <= (job1StartErrorsAfter + poolSize + 1)) ||
                   (count2 <= (job2StartErrorsAfter + poolSize + 1)) )  &&
-                start.getTime() < 500) {
+                start.getDuration().toMillis() < 500) {
             ThreadUtil.delayMs(10);
         }
 
@@ -43,7 +43,7 @@ public class ScheduledAnnotationThreadTest extends AbstractDaemonTest {
         Assertions.assertEquals(5, scheduledJob2ErrorCount);
         Assertions.assertTrue(count1 > job1StartErrorsAfter + poolSize);
         Assertions.assertTrue(count2 > job2StartErrorsAfter + poolSize);
-        log.info("Test took {} ms", start.getTime());
+        log.info("Test took {} ms", start.getDuration().toMillis());
     }
 
     @Scheduled(fixedRate = 10)

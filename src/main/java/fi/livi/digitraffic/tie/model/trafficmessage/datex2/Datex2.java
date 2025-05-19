@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.model.trafficmessage.datex2;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
 
     @Column(name = "IMPORT_DATE")
     @NotNull
-    private ZonedDateTime importTime;
+    private Instant importTime;
 
     @NotNull
     private String message;
@@ -46,7 +46,7 @@ public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
     @Enumerated(EnumType.STRING)
     private TrafficAnnouncementType trafficAnnouncementType;
 
-    private ZonedDateTime publicationTime;
+    private Instant publicationTime;
 
     @OneToMany(mappedBy = "datex2", cascade = CascadeType.ALL)
     private List<Datex2Situation> situations;
@@ -85,20 +85,20 @@ public class Datex2 extends ReadOnlyCreatedAndModifiedFields {
         this.message = message;
     }
 
-    public ZonedDateTime getImportTime() {
+    public Instant getImportTime() {
         return importTime;
     }
 
-    public void setImportTime(final ZonedDateTime importTime) {
+    public void setImportTime(final Instant importTime) {
         this.importTime = importTime;
     }
 
-    public ZonedDateTime getPublicationTime() {
+    public Instant getPublicationTime() {
         return publicationTime;
     }
 
 
-    public void setPublicationTime(final ZonedDateTime publicationTime) {
+    public void setPublicationTime(final Instant publicationTime) {
         this.publicationTime = publicationTime;
     }
 

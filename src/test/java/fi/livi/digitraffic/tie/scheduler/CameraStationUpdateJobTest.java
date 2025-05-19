@@ -17,7 +17,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
 import fi.livi.digitraffic.tie.service.lotju.LotjuCameraStationMetadataClient;
@@ -31,13 +31,13 @@ public class CameraStationUpdateJobTest extends AbstractMetadataUpdateJobTest {
     @Autowired
     private CameraStationUpdater cameraStationUpdater;
 
-    @SpyBean
+    @MockitoSpyBean
     private CameraPresetService cameraPresetService;
 
     @Autowired
     private LotjuKameraPerustiedotServiceEndpointMock lotjuKameraPerustiedotServiceMock;
 
-    @SpyBean
+    @MockitoSpyBean
     private CameraImageUpdateHandler cameraImageUpdateHandler;
 
     @Autowired

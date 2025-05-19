@@ -56,14 +56,14 @@ public class MaintenanceTrackingJobConfiguration {
                             MAX_HANDLE_COUNT_PER_CALL);
                     totalCount += count;
                     if (count > 0) {
-                        final long msPerObservation = startInternal.getTime() / count;
+                        final long msPerObservation = startInternal.getDuration().toMillis() / count;
                         log.info("method=handleUnhandledMaintenanceTrackingObservations " +
                                         "handledCount={} tookMs={} tookMsPerObservation={}",
-                                count, startInternal.getTime(), msPerObservation);
+                                count, startInternal.getDuration().toMillis(), msPerObservation);
                     }
                 } catch (final Exception e) {
                     log.error("method=handleUnhandledMaintenanceTrackingObservations observations failed tookMs={}",
-                            startInternal.getTime(), e);
+                            startInternal.getDuration().toMillis(), e);
                     throw e;
                 }
             } else {
@@ -72,17 +72,17 @@ public class MaintenanceTrackingJobConfiguration {
                 count = 0; // to end the loop
             }
         // Stop if UNHANDLED data handled: count != MAX_HANDLE_COUNT_PER_CALL
-        // Make sure job stops now and then even when it can't handle all data: start.getTime() < runRateMs * 10
-        } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getTime() < runRateMs * 10);
+        // Make sure job stops now and then even when it can't handle all data: start.getDuration().toMillis() < runRateMs * 10
+        } while (count == MAX_HANDLE_COUNT_PER_CALL && start.getDuration().toMillis() < runRateMs * 10);
 
         if (totalCount > 0) {
-            final long msPerObservation = start.getTime() / totalCount;
+            final long msPerObservation = start.getDuration().toMillis() / totalCount;
             log.info("method=handleUnhandledMaintenanceTrackingObservations " +
                             "handledTotalCount={} tookMs={} tookMsPerObservation={}",
-                    totalCount, start.getTime(), msPerObservation);
+                    totalCount, start.getDuration().toMillis(), msPerObservation);
         } else {
             log.info("method=handleUnhandledMaintenanceTrackingObservations handledTotalCount={} tookMs={}",
-                    totalCount, start.getTime());
+                    totalCount, start.getDuration().toMillis());
         }
     }
 }

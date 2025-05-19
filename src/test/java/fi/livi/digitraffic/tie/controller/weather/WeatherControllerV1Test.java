@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,8 +86,8 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA);
         dataStatusService.updateDataUpdated(DataType.WEATHER_STATION_SENSOR_METADATA_CHECK);
 
-        final SensorValue sv1 = new SensorValue(ws.getRoadStation(), publishable.get(0), 10.0, ZonedDateTime.now(), SensorValueReliability.OK);
-        final SensorValue sv2 = new SensorValue(ws.getRoadStation(), publishable.get(1), 10.0, ZonedDateTime.now(), SensorValueReliability.OK);
+        final SensorValue sv1 = new SensorValue(ws.getRoadStation(), publishable.getFirst(), 10.0, Instant.now(), SensorValueReliability.OK);
+        final SensorValue sv2 = new SensorValue(ws.getRoadStation(), publishable.get(1), 10.0, Instant.now(), SensorValueReliability.OK);
         this.dataLastUpdatedMillis =  TimeUtil.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();
 
         sensorValueRepository.save(sv1); // 2023-11-06T13:18:32Z

@@ -79,7 +79,7 @@ public class ForecastWebDataServiceV1 {
         convertTime.stop();
 
         log.debug("method=findSimpleForecastSections resultSize:{}, dbTookMs:{}, convertTookMs:{} tookMs={}",
-                  featureCollectionSimple.getFeatures().size(), dbTime.getTime(), convertTime.getTime(), dbTime.getTime() + convertTime.getTime());
+                  featureCollectionSimple.getFeatures().size(), dbTime.getDuration().toMillis(), convertTime.getDuration().toMillis(), dbTime.getDuration().toMillis() + convertTime.getDuration().toMillis());
 
         return featureCollectionSimple;
     }
@@ -115,7 +115,7 @@ public class ForecastWebDataServiceV1 {
         convertTime.stop();
 
         log.debug("method=findForecastSections resultSize:{}, dbTookMs:{}, convertTookMs:{} tookMs={}",
-                  featureCollection.getFeatures().size(), dbTime.getTime(), convertTime.getTime(), dbTime.getTime() + convertTime.getTime());
+                  featureCollection.getFeatures().size(), dbTime.getDuration().toMillis(), convertTime.getDuration().toMillis(), dbTime.getDuration().toMillis() + convertTime.getDuration().toMillis());
 
         return featureCollection;
     }
@@ -134,7 +134,7 @@ public class ForecastWebDataServiceV1 {
         final StopWatch time = StopWatch.createStarted();
         final List<ForecastSectionWeatherForecastDtoV1> data =
             forecastSectionWeatherRepository.findForecastSectionWeatherOrderByIdAndTime(version.getVersion(), area, roadNumber);
-        log.info("method=getForecastSectionWeatherData db tookMs={}", time.getTime());
+        log.info("method=getForecastSectionWeatherData db tookMs={}", time.getDuration().toMillis());
 
         return new ForecastSectionsWeatherDtoV1(lastModified, createForecastSectionWeatherDtos(data, lastModified));
     }
@@ -148,14 +148,14 @@ public class ForecastWebDataServiceV1 {
         final StopWatch time = StopWatch.createStarted();
         final List<ForecastSectionWeatherForecastDtoV1> data =
             forecastSectionWeatherRepository.findForecastSectionWeatherOrderByTime(version.getVersion(), id);
-        log.info("method=getForecastSectionWeatherData db tookMs={}", time.getTime());
+        log.info("method=getForecastSectionWeatherData db tookMs={}", time.getDuration().toMillis());
         final List<ForecastSectionWeatherDtoV1> dtos = createForecastSectionWeatherDtos(data, lastModified);
         if (dtos.isEmpty()) {
           throw new ObjectNotFoundException("Forecast section data", id);
         } else if (dtos.size() > 1) {
             log.error("ForecastSectionWeatherRepository.findForecastSectionWeatherBy id {} returned result of {} ids", id, dtos.size());
         }
-        return dtos.get(0);
+        return dtos.getFirst();
     }
 
     private List<ForecastSectionWeatherDtoV1> createForecastSectionWeatherDtos(final List<ForecastSectionWeatherForecastDtoV1> data,
@@ -175,7 +175,7 @@ public class ForecastWebDataServiceV1 {
                 })
                     .sorted(Comparator.comparing(dto -> dto.id))
                     .collect(Collectors.toList());
-        log.info("method=createForecastSectionWeatherDtos tookMs={}", time.getTime());
+        log.info("method=createForecastSectionWeatherDtos tookMs={}", time.getDuration().toMillis());
         return dtos;
     }
 

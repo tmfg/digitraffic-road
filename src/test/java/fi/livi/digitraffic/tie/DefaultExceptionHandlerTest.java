@@ -13,14 +13,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Instant;
 import java.util.Collections;
 
-import jakarta.validation.ConstraintViolationException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -30,12 +28,13 @@ import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationDataDtoV1;
 import fi.livi.digitraffic.tie.service.BadRequestException;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
+import jakarta.validation.ConstraintViolationException;
 
 public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
-    @MockBean
+    @MockitoBean
     private TmsDataWebServiceV1 tmsDataService;
 
-    @MockBean
+    @MockitoBean
     private Logger exceptionHandlerLogger;
 
     @BeforeEach

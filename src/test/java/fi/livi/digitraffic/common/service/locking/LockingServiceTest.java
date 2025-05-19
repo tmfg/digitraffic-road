@@ -100,15 +100,15 @@ public class LockingServiceTest extends AbstractDaemonTest {
         assertFalse(lockingService2.acquireLock(LOCKNAME1, expirationSeconds));
 
         // Wait for ID2 to get the lock or expiration to pass by second
-        while (!lockingService2.acquireLock(LOCKNAME1, expirationSeconds) && locked1Time.getTime() < expirationMs+1000) {
+        while (!lockingService2.acquireLock(LOCKNAME1, expirationSeconds) && locked1Time.getDuration().toMillis() < expirationMs+1000) {
             ThreadUtil.delayMs(100);
         }
 
         final boolean locked = lockingService2.acquireLock(LOCKNAME1, expirationSeconds);
-        if (locked && locked1Time.getTime() < expirationMs) {
-            fail("Locked before expiration. Lock has been locked for " + locked1Time.getTime() + " ms and expiration is " + expirationMs + " ms");
-        } else if (!locked && locked1Time.getTime() > expirationMs) {
-            fail("Failed to lock after expiration. Lock has been locked for " + locked1Time.getTime() + " ms and expiration is " + expirationMs + " ms");
+        if (locked && locked1Time.getDuration().toMillis() < expirationMs) {
+            fail("Locked before expiration. Lock has been locked for " + locked1Time.getDuration().toMillis() + " ms and expiration is " + expirationMs + " ms");
+        } else if (!locked && locked1Time.getDuration().toMillis() > expirationMs) {
+            fail("Failed to lock after expiration. Lock has been locked for " + locked1Time.getDuration().toMillis() + " ms and expiration is " + expirationMs + " ms");
         }
         assertTrue(locked, "Failed to lock after expiration");
     }

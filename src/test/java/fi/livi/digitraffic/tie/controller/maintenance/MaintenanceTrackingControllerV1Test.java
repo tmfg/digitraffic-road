@@ -42,6 +42,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
@@ -49,7 +50,6 @@ import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
-import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTracking;
@@ -246,8 +246,8 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         entityManager.clear();
 
         final List<MaintenanceTracking> allTrackings = maintenanceTrackingRepository.findAll();
-        AssertHelper.assertCollectionSize(machineCount, allTrackings);
-        final Instant created = allTrackings.get(0).getCreated();
+        AssertUtil.assertCollectionSize(machineCount, allTrackings);
+        final Instant created = allTrackings.getFirst().getCreated();
 
 
         // Exlusive created parameters same as tracking created time -> not returning anything
@@ -431,7 +431,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
 
         final Double maxX = k.getHavainnot().stream()
             .map(h -> h.getHavainto().getSijainti().getViivageometria().getCoordinates().stream()
-                .map(c -> (Double) c.get(0)) // X
+                .map(c -> (Double) c.getFirst()) // X
                 .max(Double::compareTo)
                 .orElseThrow())
             .max(Double::compareTo)

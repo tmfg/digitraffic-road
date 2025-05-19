@@ -85,7 +85,7 @@ public class TrafficMessageDatex2MqttConfigurationV2 {
             final String datex2 = trafficMessage.getMessage();
             return new MqttDataMessageV2(topic, datex2);
         } catch (final Exception e) {
-            LOGGER.error(String.format("method=createMqttDataMessage failed situationId=%s versionTime: %s", trafficMessage.getSituations().get(0).getSituationId(), trafficMessage.getSituations().get(0).getVersionTime()), e);
+            LOGGER.error(String.format("method=createMqttDataMessage failed situationId=%s versionTime: %s", trafficMessage.getSituations().getFirst().getSituationId(), trafficMessage.getSituations().getFirst().getVersionTime()), e);
             return null;
         }
 

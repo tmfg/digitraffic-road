@@ -384,7 +384,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
         final Instant versionTime = getVersionTime(start, imsJsonVersion);
         assertEquals(versionTime, situation.getSituationRecords().getFirst().getSituationRecordVersionTime());
-        assertEquals(versionTime, jsonProperties.releaseTime.toInstant());
+        assertEquals(versionTime, jsonProperties.releaseTime);
 
         assertEquals(end, situation.getSituationRecords().getFirst().getValidity().getValidityTimeSpecification()
                 .getOverallEndTime());

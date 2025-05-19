@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.converter.StationSensorConverterService;
 import fi.livi.digitraffic.tie.dao.roadstation.RoadStationSensorRepository;
@@ -41,7 +42,6 @@ import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamLaskennallinenAnturiVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.TieosoiteVO;
-import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
@@ -120,7 +120,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final Map<Long, List<Long>> rsSensorsNaturalIdsAfterInsert =
             stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rsAfterInsert.getId(), RoadStationType.TMS_STATION);
         final List<Long> stationsSensors = rsSensorsNaturalIdsAfterInsert.get(rsAfterInsert.getId());
-        AssertHelper.assertCollectionSize(1, stationsSensors);
+        AssertUtil.assertCollectionSize(1, stationsSensors);
         final long addedSensorNaturalId = stationsSensors.getFirst();
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), addedSensorNaturalId);
     }
@@ -154,7 +154,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final Map<Long, List<Long>> rsSensorsNaturalIdsAfterUpdate =
             stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rsAfterUpdate.getId(), RoadStationType.TMS_STATION);
         final List<Long> stationsSensors = rsSensorsNaturalIdsAfterUpdate.get(rsAfterUpdate.getId());
-        AssertHelper.assertCollectionSize(1, stationsSensors);
+        AssertUtil.assertCollectionSize(1, stationsSensors);
         final long addedSensorNaturalId = stationsSensors.getFirst();
         assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2.getRight(), addedSensorNaturalId);
     }
@@ -196,13 +196,13 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
 
         // 3. Check that new sensor is place
         final List<RoadStationSensor> allSensors = getTmsSensorsFromDb();
-        AssertHelper.assertCollectionSize(sensorsCountBeforeUpdate+1, allSensors);
+        AssertUtil.assertCollectionSize(sensorsCountBeforeUpdate+1, allSensors);
         assertTrue(allSensors.stream().anyMatch(s -> s.getLotjuId().equals(NEW_LOTJU_ID)));
         // And it is added to road station
         final long tmsId = requireNonNull(getTmsStationRoadStationByLotjuId(ROAD_STATION_LOTJU_ID)).getId();
         final Map<Long, List<Long>> rsSensorsNaturalIdsAfterUpdate = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(tmsId, RoadStationType.TMS_STATION);
         final List<Long> roadStationsSensors = rsSensorsNaturalIdsAfterUpdate.get(tmsId);
-        AssertHelper.assertCollectionSize(1, roadStationsSensors);
+        AssertUtil.assertCollectionSize(1, roadStationsSensors);
         assertEquals(NEW_LOTJU_ID, roadStationsSensors.getFirst().longValue());
     }
 
@@ -225,7 +225,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
 
         // 3. Check that new sensor is place
         final List<RoadStationSensor> sensors = getTmsSensorsFromDb();
-        AssertHelper.assertCollectionSize(sensorsCountBeforeUpdate+1, sensors);
+        AssertUtil.assertCollectionSize(sensorsCountBeforeUpdate+1, sensors);
         final RoadStationSensor updatedSensor = sensors.stream().filter(s -> s.getLotjuId().equals(anturi.getId())).findFirst().orElseThrow();
         assertEquals(newDesc, updatedSensor.getDescriptionFi());
     }
@@ -323,7 +323,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         // 3. Check that new sensor constant value is added to station
         final List<TmsSensorConstantValueDtoV1> allValues =
             tmsSensorConstantValueDtoRepository.findAllPublishableSensorConstantValues();
-        AssertHelper.assertCollectionSize(1, allValues);
+        AssertUtil.assertCollectionSize(1, allValues);
         final TmsSensorConstantValueDtoV1 value = allValues.getFirst();
         Assertions.assertEquals(95, value.getValue());
         Assertions.assertEquals(sensorName, value.getName());
@@ -347,7 +347,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         // 3. Check that new sensor constant value is updated
         final List<TmsSensorConstantValueDtoV1> allValues =
             tmsSensorConstantValueDtoRepository.findAllPublishableSensorConstantValues();
-        AssertHelper.assertCollectionSize(1, allValues);
+        AssertUtil.assertCollectionSize(1, allValues);
         final TmsSensorConstantValueDtoV1 value = allValues.getFirst();
         Assertions.assertEquals(80, value.getValue());
         Assertions.assertEquals(SENSOR_CONSTANT_NAME_1, value.getName());
@@ -369,7 +369,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         // 3. Check that deleted sensor constant value is removed from station
         final List<TmsSensorConstantValueDtoV1> allValues =
             tmsSensorConstantValueDtoRepository.findAllPublishableSensorConstantValues();
-        AssertHelper.assertCollectionSize(0, allValues);
+        AssertUtil.assertCollectionSize(0, allValues);
     }
 
     @Test

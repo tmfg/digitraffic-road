@@ -63,7 +63,7 @@ public class WazeReverseGeocodingService {
             return ((MultiLineString) geometry).getCoordinates().stream()
                     .findFirst()
                     .flatMap(this::middleElement)
-                    .flatMap(pair -> Optional.of(new Point(pair.get(0), pair.get(1))));
+                    .flatMap(pair -> Optional.of(new Point(pair.getFirst(), pair.get(1))));
         }
 
         logger.warn(String.format("method=getPoint Unknown geometry type %s", geometry.getClass().getSimpleName()));

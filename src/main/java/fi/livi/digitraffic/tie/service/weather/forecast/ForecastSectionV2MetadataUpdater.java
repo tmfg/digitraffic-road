@@ -41,7 +41,7 @@ public class ForecastSectionV2MetadataUpdater {
         final StopWatch timeUpdate = StopWatch.createStarted();
         forecastSectionMetadataUpdateService.updateForecastSectionsV2Metadata(metadata);
 
-        log.info("method=updateForecastSectionsV2Metadata apiVersion=V2 operation=fetch tookMs={} totalTimeMs={}", timeGet.getTime(), timeAll.getTime());
-        log.info("method=updateForecastSectionsV2Metadata apiVersion=V2 operation=update tookMs={} totalTimeMs={}", timeUpdate.getTime(), timeAll.getTime());
+        log.info("method=updateForecastSectionsV2Metadata apiVersion=V2 operation=fetch tookMs={} totalTimeMs={}", timeGet.getDuration().toMillis(), timeAll.getDuration().toMillis());
+        log.info("method=updateForecastSectionsV2Metadata apiVersion=V2 operation=update tookMs={} totalTimeMs={}", timeUpdate.getDuration().toMillis(), timeAll.getDuration().toMillis());
     }
 }

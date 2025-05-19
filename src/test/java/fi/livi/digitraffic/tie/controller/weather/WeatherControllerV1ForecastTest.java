@@ -85,7 +85,7 @@ public class WeatherControllerV1ForecastTest extends AbstractRestWebTest {
         forecastSectionDataUpdater.updateForecastSectionWeatherDataV2();
         entityManager.flush();
         entityManager.clear();
-        log.info("Init data tookMs={}", start.getTime());
+        log.info("Init data tookMs={}", start.getDuration().toMillis());
     }
 
     @AfterEach

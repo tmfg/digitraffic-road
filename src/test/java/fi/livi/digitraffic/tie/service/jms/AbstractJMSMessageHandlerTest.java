@@ -27,8 +27,8 @@ import org.apache.activemq.artemis.api.core.client.SessionFailureListener;
 import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.apache.activemq.artemis.jms.client.ActiveMQTextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
 import com.google.protobuf.AbstractMessage;
@@ -52,10 +52,10 @@ public abstract class AbstractJMSMessageHandlerTest extends AbstractDaemonTest {
     @Autowired
     protected SensorDataTestUpdateService sensorDataUpdateService;
 
-    @MockBean
+    @MockitoBean
     protected LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
 
-    @SpyBean
+    @MockitoSpyBean
     protected CameraImageUpdateHandler cameraImageUpdateHandler;
 
     @Autowired

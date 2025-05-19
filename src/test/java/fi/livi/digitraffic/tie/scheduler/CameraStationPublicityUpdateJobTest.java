@@ -23,7 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import fi.livi.digitraffic.common.util.ThreadUtil;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -44,10 +44,10 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
     @Autowired
     private CameraPresetService cameraPresetService;
 
-    @MockBean
+    @MockitoBean
     private LotjuCameraStationMetadataClient lotjuCameraStationMetadataClient;
 
-    @MockBean
+    @MockitoBean
     private CameraPresetHistoryUpdateService cameraPresetHistoryUpdateService;
 
     @AfterEach
@@ -72,34 +72,34 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         kameras.put(kameraOther, esiasentosOther);
         updateCameraMetadataAndVerifyLotjuCalls(kameras, 1);
 
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, initialPublicFrom, false, true);
+        checkCameraPresetRoadStationPublicity(esiasentos.getFirst().getId(), true, initialPublicFrom, false, true);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, initialPublicFrom, false, true);
-        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, false, true);
-        checkAllPublishableCameraPresetsContainsOnly(esiasentos.get(0).getId(), esiasentos.get(1).getId(), esiasentosOther.get(0).getId());
+        checkCameraPresetRoadStationPublicity(esiasentosOther.getFirst().getId(), true, initialPublicFrom, false, true);
+        checkAllPublishableCameraPresetsContainsOnly(esiasentos.getFirst().getId(), esiasentos.get(1).getId(), esiasentosOther.getFirst().getId());
 
         // Public -> secret in past -> valid now
         final Instant secretFrom = getInstant(-10);
         kamera.setJulkisuus(createKameraJulkisuus(secretFrom, VALIAIKAISESTI_SALAINEN));
         updateCameraMetadataAndVerifyLotjuCalls(kameras, 2);
 
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), false, secretFrom, true, false);
+        checkCameraPresetRoadStationPublicity(esiasentos.getFirst().getId(), false, secretFrom, true, false);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), false, secretFrom, true, false);
-        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, false, true);
-        checkAllPublishableCameraPresetsContainsOnly(esiasentosOther.get(0).getId());
+        checkCameraPresetRoadStationPublicity(esiasentosOther.getFirst().getId(), true, initialPublicFrom, false, true);
+        checkAllPublishableCameraPresetsContainsOnly(esiasentosOther.getFirst().getId());
 
         // Secret -> public now
         final Instant publicFrom = getInstant(0);
         kamera.setJulkisuus(createKameraJulkisuus(publicFrom, JULKINEN));
         updateCameraMetadataAndVerifyLotjuCalls(kameras, 3);
 
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, publicFrom, false, true);
+        checkCameraPresetRoadStationPublicity(esiasentos.getFirst().getId(), true, publicFrom, false, true);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, publicFrom, false, true);
-        checkCameraPresetRoadStationPublicity(esiasentosOther.get(0).getId(), true, initialPublicFrom, false, true);
-        checkAllPublishableCameraPresetsContainsOnly(esiasentos.get(0).getId(), esiasentos.get(1).getId(), esiasentosOther.get(0).getId());
+        checkCameraPresetRoadStationPublicity(esiasentosOther.getFirst().getId(), true, initialPublicFrom, false, true);
+        checkAllPublishableCameraPresetsContainsOnly(esiasentos.getFirst().getId(), esiasentos.get(1).getId(), esiasentosOther.getFirst().getId());
     }
 
     @Test
-    public void publicityChangeInFuture() throws InterruptedException {
+    public void publicityChangeInFuture() {
 
         // Create now public camera with presets
         final Instant publicFrom = getInstant(-60);
@@ -110,9 +110,9 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         updateCameraMetadataAndVerifyLotjuCalls(kameras, 1);
 
         // Check presets are public
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, publicFrom, false, true);
+        checkCameraPresetRoadStationPublicity(esiasentos.getFirst().getId(), true, publicFrom, false, true);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, publicFrom, false, true);
-        checkAllPublishableCameraPresetsContainsOnly(esiasentos.get(0).getId(), esiasentos.get(1).getId());
+        checkAllPublishableCameraPresetsContainsOnly(esiasentos.getFirst().getId(), esiasentos.get(1).getId());
 
         // Public -> secret in future -> No change to current publicity
         final Instant secretFrom = getInstant(2);
@@ -120,9 +120,9 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         updateCameraMetadataAndVerifyLotjuCalls(kameras, 2);
 
         // At current time, road RoadStation is still public
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), true, secretFrom, true, false);
+        checkCameraPresetRoadStationPublicity(esiasentos.getFirst().getId(), true, secretFrom, true, false);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), true, secretFrom, true, false);
-        checkAllPublishableCameraPresetsContainsOnly(esiasentos.get(0).getId(), esiasentos.get(1).getId());
+        checkAllPublishableCameraPresetsContainsOnly(esiasentos.getFirst().getId(), esiasentos.get(1).getId());
 
         // Wait for secretFrom time to pass -> RoadStation changes to not public
         while ( Instant.now().isBefore(secretFrom) ) {
@@ -130,7 +130,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
         }
 
         // At current time, road RoadStation is not public as secretFrom time has passed
-        checkCameraPresetRoadStationPublicity(esiasentos.get(0).getId(), false, secretFrom, true, false);
+        checkCameraPresetRoadStationPublicity(esiasentos.getFirst().getId(), false, secretFrom, true, false);
         checkCameraPresetRoadStationPublicity(esiasentos.get(1).getId(), false, secretFrom, true, false);
         checkAllPublishableCameraPresetsContainsOnly();
     }
@@ -147,7 +147,7 @@ public class CameraStationPublicityUpdateJobTest extends AbstractMetadataUpdateJ
                                                               final boolean previousIsPublic, final boolean isPublic) {
         final CameraPreset cp = cameraPresetService.findCameraPresetByLotjuId(lotjuId);
         final RoadStation rs = cp.getRoadStation();
-        assertEquals(publicityStart, rs.getPublicityStartTime().toInstant());
+        assertEquals(publicityStart, rs.getPublicityStartTime());
         assertEquals(isPublicNow, rs.isPublicNow());
         assertEquals(previousIsPublic, rs.isPublicPrevious());
         assertEquals(isPublic, rs.internalIsPublic());

@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.weathercam;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -36,14 +37,14 @@ public class CameraImageReader {
         destinationProvider = new MultiDestinationProvider(HostWithHealthCheck.createHostsWithHealthCheck(lotjuMetadataProperties, lotjuMetadataProperties.getPath().image));
     }
 
-    public byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException {
+    public byte[] readImage(final long kuvaId, final ImageUpdateInfo info) throws IOException, URISyntaxException {
         final StopWatch start = StopWatch.createStarted();
         final URI destination = destinationProvider.getDestination();
         final String imageDownloadUrl = getCameraDownloadUrl(destination, kuvaId);
         info.setDownloadUrl(imageDownloadUrl);
 
         try {
-            final URL url = new URL(imageDownloadUrl);
+            final URL url = new URI(imageDownloadUrl).toURL();
             final URLConnection con = url.openConnection();
             con.setConnectTimeout(connectTimeout);
             con.setReadTimeout(readTimeout);
@@ -51,7 +52,7 @@ public class CameraImageReader {
                 final byte[] data = IOUtils.toByteArray(is);
                 info.setSizeBytes(data.length);
                 info.updateReadStatusSuccess();
-                info.setReadDurationMs(start.getTime());
+                info.setReadDurationMs(start.getDuration().toMillis());
                 return data;
             }
         } catch (final Exception e) {

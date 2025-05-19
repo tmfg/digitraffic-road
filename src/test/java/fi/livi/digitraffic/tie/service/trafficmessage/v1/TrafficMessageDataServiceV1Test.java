@@ -23,8 +23,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.IntStream;
 
-import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
-
 import org.apache.commons.compress.utils.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +33,7 @@ import org.springframework.test.annotation.Rollback;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
+import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryServiceAndGitMock;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
@@ -46,7 +45,6 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType;
-import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 
@@ -244,8 +242,8 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
 
         final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
 
-        AssertHelper.assertCollectionSize(1, situations);
-        AssertHelper.assertCollectionSize(1, jsons.getFeatures());
+        AssertUtil.assertCollectionSize(1, situations);
+        AssertUtil.assertCollectionSize(1, jsons.getFeatures());
         final Situation situation = situations.getFirst();
         final TrafficAnnouncementFeature situationJson = jsons.getFeatures().getFirst();
 
@@ -259,8 +257,8 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         final List<Situation> activeSituations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
         final TrafficAnnouncementFeatureCollection activeJsons = trafficMessageDataServiceV1.findActiveJson(0, true, situationType);
 
-        AssertHelper.assertCollectionSize(1, activeSituations);
-        AssertHelper.assertCollectionSize(1, activeJsons.getFeatures());
+        AssertUtil.assertCollectionSize(1, activeSituations);
+        AssertUtil.assertCollectionSize(1, activeJsons.getFeatures());
         final Situation situation = activeSituations.getFirst();
         final TrafficAnnouncementFeature situationJson = activeJsons.getFeatures().getFirst();
 
@@ -274,7 +272,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
         final TimeAndDuration jsonTimeAndDuration = jsonProperties.announcements.getFirst().timeAndDuration;
 
         assertEquals(getVersionTime(start, imsJsonVersion.intVersion), situationVersionTime);
-        assertEquals(getVersionTime(start, imsJsonVersion.intVersion), jsonProperties.releaseTime.toInstant());
+        assertEquals(getVersionTime(start, imsJsonVersion.intVersion), jsonProperties.releaseTime);
 
         assertEquals(start, situationStart);
         assertEquals(start, jsonTimeAndDuration.startTime);
@@ -312,7 +310,7 @@ public class TrafficMessageDataServiceV1Test extends AbstractWebServiceTestWithR
                 foundInJson,
                 withJson.getFeatures().stream().anyMatch(f -> f.getProperties().situationId.equals(situationId)));
         } else {
-            AssertHelper.assertCollectionSize(0, withJson.getFeatures());
+            AssertUtil.assertCollectionSize(0, withJson.getFeatures());
         }
     }
 }

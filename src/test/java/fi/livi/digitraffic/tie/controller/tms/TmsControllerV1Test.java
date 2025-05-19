@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,9 +113,10 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA);
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_METADATA_CHECK);
 
-        final ZonedDateTime measured = ZonedDateTime.now().minusMinutes(2);
+        final Instant measured = Instant.now().minus(2, ChronoUnit.MINUTES);
         final SensorValue sv1 = new SensorValue(tms.getRoadStation(), sensor1, 10.0, measured, null);
-        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), sensor2, 10.0, measured.minusMinutes(1), null);
+        final SensorValue sv2 = new SensorValue(tms.getRoadStation(), sensor2, 10.0, measured.minus(1,
+                ChronoUnit.MINUTES), null);
         sensorValueRepository.save(sv1);
         sensorValueRepository.save(sv2);
         this.dataLastUpdatedMillis =  TimeUtil.roundInstantSeconds(getTransactionTimestampRoundedToSeconds()).toEpochMilli();

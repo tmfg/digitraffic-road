@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -75,11 +74,11 @@ public class Datex2UpdateService {
 
     @Transactional
     public int updateTrafficDatex2ImsMessages(final List<ExternalIMSMessage> imsMessages) {
-        final ZonedDateTime now = TimeUtil.getZonedDateTimeNowAtUtc();
+        final Instant now = Instant.now();
         final int newAndUpdated = imsMessages.stream().mapToInt(imsMessage -> {
             if (log.isDebugEnabled()) {
                 log.debug("method=updateTrafficDatex2ImsMessages imsMessage d2Message datex2: {}",
-                          LoggerHelper.objectToStringLoggerSafe(imsMessage.getMessageContent().getD2Message()));
+                        LoggerHelper.objectToStringLoggerSafe(imsMessage.getMessageContent().getD2Message()));
             }
             final List<Datex2UpdateValues> models = createModels(imsMessage, now);
             return updateTrafficDatex2Messages(models);
@@ -90,52 +89,46 @@ public class Datex2UpdateService {
 
     @Transactional
     public int updateTrafficDatex2Messages(final List<Datex2UpdateValues> imsMessages) {
-        return (int)imsMessages.stream()
-            .filter(imsMessage -> isNewOrUpdatedSituation(imsMessage.model, imsMessage.situationType))
-            .filter(this::updateDatex2Data)
-            .count();
+        return (int) imsMessages.stream()
+                .filter(imsMessage -> isNewOrUpdatedSituation(imsMessage.model, imsMessage.situationType))
+                .filter(this::updateDatex2Data)
+                .count();
     }
 
-    @Transactional
-    public int updateDatex2Data(final List<Datex2UpdateValues> data) {
-        return (int) data.stream().filter(this::updateDatex2Data).count();
-    }
-
-    private List<Datex2UpdateValues> createModels(final ExternalIMSMessage imsMessage, final ZonedDateTime importTime) {
-        final D2LogicalModel d2 = datex2XmlStringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
+    private List<Datex2UpdateValues> createModels(final ExternalIMSMessage imsMessage, final Instant importTime) {
+        final D2LogicalModel d2 =
+                datex2XmlStringToObjectMarshaller.convertToObject(imsMessage.getMessageContent().getD2Message());
         final String jMessage = imsMessage.getMessageContent().getJMessage();
         final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> situationIdJsonMap =
-            imsJsonConverter.parseFeatureJsonsFromImsJson(jMessage);
+                imsJsonConverter.parseFeatureJsonsFromImsJson(jMessage);
         final Map<String, Situation> situationIdSituationMap = parseDatex2Situations(sp);
 
         return situationIdJsonMap.entrySet().stream()
-            .map(entry -> {
-                final String situationId = entry.getKey();
-                final Triple<String, SituationType, TrafficAnnouncementType> properties = entry.getValue();
-                final String json = properties.getLeft();
-                final SituationType situationType = properties.getMiddle();
-                final TrafficAnnouncementType trafficAnnouncementType = properties.getRight();
-                final Situation situation = situationIdSituationMap.get(situationId);
-                if (situationId == null || situationType == null || situation == null || json == null) {
-                    log.error(String.format("method=createModels Failed with IMSMessage situationId=%s situationType: %s, json: %b, situation: %b, imsMessage: %s",
-                                            situationId, situationType, StringUtils.isBlank(json), situation != null,
-                                            LoggerHelper.objectToStringLoggerSafe(ToStringHelper.toStringFull(imsMessage))));
-                    return null;
-                }
-                return convertToDatex2MessageDto(situationType, trafficAnnouncementType, situation, json, importTime, d2, sp);
-            })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                .map(entry -> {
+                    final String situationId = entry.getKey();
+                    final Triple<String, SituationType, TrafficAnnouncementType> properties = entry.getValue();
+                    final String json = properties.getLeft();
+                    final SituationType situationType = properties.getMiddle();
+                    final TrafficAnnouncementType trafficAnnouncementType = properties.getRight();
+                    final Situation situation = situationIdSituationMap.get(situationId);
+                    if (situationId == null || situationType == null || situation == null || json == null) {
+                        log.error(String.format(
+                                "method=createModels Failed with IMSMessage situationId=%s situationType: %s, json: %b, situation: %b, imsMessage: %s",
+                                situationId, situationType, StringUtils.isBlank(json), situation != null,
+                                LoggerHelper.objectToStringLoggerSafe(ToStringHelper.toStringFull(imsMessage))));
+                        return null;
+                    }
+                    return convertToDatex2MessageDto(situationType, trafficAnnouncementType, situation, json,
+                            importTime, d2, sp);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private Map<String, Situation> parseDatex2Situations(final SituationPublication sp) {
         return sp.getSituations().stream()
-            .collect(Collectors.toMap(Situation::getId, Function.identity()));
-    }
-
-    private String combineJsonsForErroLogging(final Map<String, String> situationIdJsonMap) {
-        return String.join("\n\n", situationIdJsonMap.values());
+                .collect(Collectors.toMap(Situation::getId, Function.identity()));
     }
 
     private boolean isNewOrUpdatedSituation(final D2LogicalModel d2, final SituationType situationType) {
@@ -149,10 +142,12 @@ public class Datex2UpdateService {
         return datex2Repository.findDatex2SituationLatestVersionTime(situationId, situationType.name());
     }
 
-    private Datex2UpdateValues convertToDatex2MessageDto(final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType,
+    private Datex2UpdateValues convertToDatex2MessageDto(final SituationType situationType,
+                                                         final TrafficAnnouncementType trafficAnnouncementType,
                                                          final Situation situation, final String jsonValue,
-                                                         final ZonedDateTime importTime,
-                                                         final D2LogicalModel sourceD2, final SituationPublication sourceSituationPublication) {
+                                                         final Instant importTime,
+                                                         final D2LogicalModel sourceD2,
+                                                         final SituationPublication sourceSituationPublication) {
         final D2LogicalModel d2 = new D2LogicalModel();
         final SituationPublication newSp = new SituationPublication();
 
@@ -167,11 +162,14 @@ public class Datex2UpdateService {
         final String messageValue = datex2XmlStringToObjectMarshaller.convertToString(d2);
 
         final String fixedJson = createJsonWithValidGeometryIfInvalid(jsonValue);
-        if ( fixedJson == null ) {
-            return new Datex2UpdateValues(d2, situationType, trafficAnnouncementType, messageValue, jsonValue, importTime, situation.getId());
+        if (fixedJson == null) {
+            return new Datex2UpdateValues(d2, situationType, trafficAnnouncementType, messageValue, jsonValue,
+                    importTime, situation.getId());
         } else {
-            log.warn("method=convertToDatex2MessageDto Json's geometry was not valid and was fixed for situationId={}", situation.getId());
-            return new Datex2UpdateValues(d2, situationType, trafficAnnouncementType, messageValue, fixedJson, importTime, situation.getId(), jsonValue);
+            log.warn("method=convertToDatex2MessageDto Json's geometry was not valid and was fixed for situationId={}",
+                    situation.getId());
+            return new Datex2UpdateValues(d2, situationType, trafficAnnouncementType, messageValue, fixedJson,
+                    importTime, situation.getId(), jsonValue);
         }
     }
 
@@ -188,7 +186,8 @@ public class Datex2UpdateService {
             return null;
         }
         try {
-            final Geometry geometry = PostgisGeometryUtils.convertGeoJsonGeometryToGeometry(geometryNode.toPrettyString());
+            final Geometry geometry =
+                    PostgisGeometryUtils.convertGeoJsonGeometryToGeometry(geometryNode.toPrettyString());
             if (!geometry.isValid()) {
                 final Geometry fixedGeometry = PostgisGeometryUtils.fixGeometry(geometry);
                 final String fixedGeoJsonGeometry = PostgisGeometryUtils.convertGeometryToGeoJsonString(fixedGeometry);
@@ -196,7 +195,8 @@ public class Datex2UpdateService {
             }
             return null;
         } catch (final ParseException | JsonProcessingException e) {
-            log.error(String.format("method=createJsonWithValidGeometryIfInvalid Failed to fix feature json: %s", geoJsonFeature), e);
+            log.error(String.format("method=createJsonWithValidGeometryIfInvalid Failed to fix feature json: %s",
+                    geoJsonFeature), e);
         }
         return null;
     }
@@ -204,7 +204,6 @@ public class Datex2UpdateService {
     /* COPIED */
 
     /**
-     *
      * @param message datex2 message
      * @return true if message was new or updated otherwise false
      */
@@ -217,10 +216,11 @@ public class Datex2UpdateService {
             final Datex2 datex2 = new Datex2(message.situationType, message.trafficAnnouncementType);
             final D2LogicalModel d2 = message.model;
 
-            final ZonedDateTime latestVersionTime = getLatestSituationRecordVersionTime(d2);
+            final Instant latestVersionTime = getLatestSituationRecordVersionTime(d2);
 
             datex2.setImportTime(
-                Objects.requireNonNullElseGet(message.importTime, () -> latestVersionTime != null ? latestVersionTime : ZonedDateTime.now()));
+                    Objects.requireNonNullElseGet(message.importTime,
+                            () -> latestVersionTime != null ? latestVersionTime : Instant.now()));
             datex2.setMessage(message.message);
             datex2.setJsonMessage(message.jsonMessage);
             // This is normally null and has value only if geometry has been fixed
@@ -230,26 +230,29 @@ public class Datex2UpdateService {
             dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_DATA);
 
             final String situationId = Datex2Helper.getSituationPublication(d2).getSituations().getFirst().getId();
-            log.info("Update Datex2 situationId={}messageType situationType={} trafficAnnouncementType: {} with importTime={}",
-                situationId, message.situationType, message.trafficAnnouncementType, datex2.getImportTime());
+            log.info(
+                    "Update Datex2 situationId={}messageType situationType={} trafficAnnouncementType: {} with importTime={}",
+                    situationId, message.situationType, message.trafficAnnouncementType, datex2.getImportTime());
             return true;
         } else {
-            log.info("method=updateDatex2Data Not updating situationId={} situationType={} trafficAnnouncementType: {} as it is already uptodate",
-                     message.situationId, message.situationType, message.trafficAnnouncementType);
+            log.info(
+                    "method=updateDatex2Data Not updating situationId={} situationType={} trafficAnnouncementType: {} as it is already uptodate",
+                    message.situationId, message.situationType, message.trafficAnnouncementType);
         }
         return false;
     }
 
-    private ZonedDateTime getLatestSituationRecordVersionTime(final D2LogicalModel d2) {
-        final Instant latest = Datex2Helper.getSituationPublication(d2).getSituations().stream()
-            .map(s -> s.getSituationRecords().stream()
-                .map(SituationRecord::getSituationRecordVersionTime).max(Comparator.naturalOrder()).orElseThrow())
-            .max(Comparator.naturalOrder()).orElseThrow();
-        return TimeUtil.toZonedDateTimeAtUtc(latest);
+    private Instant getLatestSituationRecordVersionTime(final D2LogicalModel d2) {
+        return Datex2Helper.getSituationPublication(d2).getSituations().stream()
+                .map(s -> s.getSituationRecords().stream()
+                        .map(SituationRecord::getSituationRecordVersionTime).max(Comparator.naturalOrder())
+                        .orElseThrow())
+                .max(Comparator.naturalOrder()).orElseThrow();
     }
 
-    private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication, final Datex2 datex2) {
-        datex2.setPublicationTime(TimeUtil.toZonedDateTimeAtUtc(payloadPublication.getPublicationTime()));
+    private static void parseAndAppendPayloadPublicationData(final PayloadPublication payloadPublication,
+                                                             final Datex2 datex2) {
+        datex2.setPublicationTime(payloadPublication.getPublicationTime());
         if (payloadPublication instanceof SituationPublication) {
             parseAndAppendSituationPublicationData((SituationPublication) payloadPublication, datex2);
         } else {
@@ -257,7 +260,8 @@ public class Datex2UpdateService {
         }
     }
 
-    private static void parseAndAppendSituationPublicationData(final SituationPublication situationPublication, final Datex2 datex2) {
+    private static void parseAndAppendSituationPublicationData(final SituationPublication situationPublication,
+                                                               final Datex2 datex2) {
         final List<Situation> situations = situationPublication.getSituations();
         for (final Situation situation : situations) {
             final Datex2Situation d2Situation = new Datex2Situation();
@@ -265,13 +269,14 @@ public class Datex2UpdateService {
             datex2.addSituation(d2Situation);
 
             d2Situation.setSituationId(situation.getId());
-            d2Situation.setVersionTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(situation.getSituationVersionTime()));
+            d2Situation.setVersionTime(TimeUtil.withoutMillis(situation.getSituationVersionTime()));
 
             parseAndAppendSituationRecordData(situation.getSituationRecords(), d2Situation);
         }
     }
 
-    private static void parseAndAppendSituationRecordData(final List<SituationRecord> situationRecords, final Datex2Situation d2Situation) {
+    private static void parseAndAppendSituationRecordData(final List<SituationRecord> situationRecords,
+                                                          final Datex2Situation d2Situation) {
         for (final SituationRecord record : situationRecords) {
             final Datex2SituationRecord d2SituationRecord = new Datex2SituationRecord();
 
@@ -288,15 +293,16 @@ public class Datex2UpdateService {
             }
 
             d2SituationRecord.setSituationRecordId(record.getId());
-            d2SituationRecord.setCreationTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordCreationTime()));
-            d2SituationRecord.setVersionTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordVersionTime()));
-            d2SituationRecord.setObservationTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(record.getSituationRecordObservationTime()));
+            d2SituationRecord.setCreationTime(record.getSituationRecordCreationTime());
+            d2SituationRecord.setVersionTime(record.getSituationRecordVersionTime());
+            d2SituationRecord.setObservationTime(record.getSituationRecordObservationTime());
 
             final Validity validy = record.getValidity();
-            d2SituationRecord.setValidyStatus(Datex2SituationRecordValidyStatus.fromValue(validy.getValidityStatus().name()));
+            d2SituationRecord.setValidyStatus(
+                    Datex2SituationRecordValidyStatus.fromValue(validy.getValidityStatus().name()));
             final OverallPeriod period = validy.getValidityTimeSpecification();
-            d2SituationRecord.setOverallStartTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(period.getOverallStartTime()));
-            d2SituationRecord.setOverallEndTime(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(period.getOverallEndTime()));
+            d2SituationRecord.setOverallStartTime(period.getOverallStartTime());
+            d2SituationRecord.setOverallEndTime(period.getOverallEndTime());
 
             // lifeCycleManagement
             d2SituationRecord.setLifeCycleManagementCanceled(resolveIsLifeCycleManagementCanceled(record));
@@ -305,13 +311,14 @@ public class Datex2UpdateService {
 
     private static boolean resolveIsLifeCycleManagementCanceled(final SituationRecord record) {
         return record.getManagement() != null
-            && record.getManagement().getLifeCycleManagement() != null
-            && record.getManagement().getLifeCycleManagement().isCancel() != null
-            && record.getManagement().getLifeCycleManagement().isCancel();
+                && record.getManagement().getLifeCycleManagement() != null
+                && record.getManagement().getLifeCycleManagement().isCancel() != null
+                && record.getManagement().getLifeCycleManagement().isCancel();
     }
 
     /**
      * Joins comments of same language as one comment
+     *
      * @param value comments to join
      * @return joined comments
      */
@@ -322,12 +329,13 @@ public class Datex2UpdateService {
         final Map<String, SituationRecordCommentI18n> langToCommentMap = new HashMap<>();
         for (final MultilingualStringValue msv : value) {
             final String lang = msv.getLang();
-            final SituationRecordCommentI18n i18n = langToCommentMap.computeIfAbsent(lang, SituationRecordCommentI18n::new);
+            final SituationRecordCommentI18n i18n =
+                    langToCommentMap.computeIfAbsent(lang, SituationRecordCommentI18n::new);
             i18n.setValue(StringUtils.join(i18n.getValue(), msv.getValue()));
         }
 
         return langToCommentMap.values().stream()
-            .filter(situationRecordCommentI18n -> !StringUtils.isBlank(situationRecordCommentI18n.getValue()))
-            .collect(Collectors.toList());
+                .filter(situationRecordCommentI18n -> !StringUtils.isBlank(situationRecordCommentI18n.getValue()))
+                .collect(Collectors.toList());
     }
 }

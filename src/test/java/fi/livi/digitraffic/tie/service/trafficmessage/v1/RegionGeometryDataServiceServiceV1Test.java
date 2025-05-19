@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
 import static fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper.readRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryGitMock;
 import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
@@ -44,7 +44,7 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
 
     @Autowired
     private RegionGeometryRepository regionGeometryRepository;
-    @SpyBean
+    @MockitoSpyBean
     private RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
     @Autowired
     private DataStatusService dataStatusService;

@@ -89,7 +89,7 @@ public class TmsStationSensorConstantUpdater {
         }
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA_CHECK);
 
-        log.info("method=updateTmsStationsSensorConstants tms count={} tookMs={}", tmsLotjuIds.size(), start.getTime());
+        log.info("method=updateTmsStationsSensorConstants tms count={} tookMs={}", tmsLotjuIds.size(), start.getDuration().toMillis());
         return updated;
     }
 
@@ -108,7 +108,7 @@ public class TmsStationSensorConstantUpdater {
         }
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_METADATA_CHECK);
 
-        log.info("method=updateTmsStationSensorConstants tms lotjuId={} tookMs={}", stationLotjuId, start.getTime());
+        log.info("method=updateTmsStationSensorConstants tms lotjuId={} tookMs={}", stationLotjuId, start.getDuration().toMillis());
         return updated;
     }
 
@@ -159,7 +159,7 @@ public class TmsStationSensorConstantUpdater {
         }
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA_CHECK);
 
-        log.info("method=updateTmsStationsSensorConstantsValues tookMs={}", start.getTime());
+        log.info("method=updateTmsStationsSensorConstantsValues tookMs={}", start.getDuration().toMillis());
         return updated;
     }
 
@@ -176,7 +176,7 @@ public class TmsStationSensorConstantUpdater {
         }
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA_CHECK);
 
-        log.info("method=updateTmsStationsSensorConstantsValues tookMs={}", start.getTime());
+        log.info("method=updateTmsStationsSensorConstantsValues tookMs={}", start.getDuration().toMillis());
         return updated;
     }
 }

@@ -47,7 +47,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKaikkiKameratResponse> response = (JAXBElement<HaeKaikkiKameratResponse>)
                 marshalSendAndReceive(objectFactory.createHaeKaikkiKamerat(request));
-        log.info("cameraFetchedCount={} Cameras tookMs={}", response.getValue().getKamerat().size(), start.getTime());
+        log.info("cameraFetchedCount={} Cameras tookMs={}", response.getValue().getKamerat().size(), start.getDuration().toMillis());
         return response.getValue().getKamerat();
     }
 
@@ -72,7 +72,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKameraResponse> response = (JAXBElement<HaeKameraResponse>)
             marshalSendAndReceive(objectFactory.createHaeKamera(request));
-        log.info("Fetched cameraLotjuId={} tookMs={}", lotjuId, start.getTime());
+        log.info("Fetched cameraLotjuId={} tookMs={}", lotjuId, start.getDuration().toMillis());
         return response.getValue().getKamera();
     }
 
@@ -84,7 +84,7 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeEsiasentoResponse> response = (JAXBElement<HaeEsiasentoResponse>)
             marshalSendAndReceive(objectFactory.createHaeEsiasento(request));
-        log.info("Fetched cameraPresetLotjuId={} tookMs={}", lotjuId, start.getTime());
+        log.info("Fetched cameraPresetLotjuId={} tookMs={}", lotjuId, start.getDuration().toMillis());
         return response.getValue().getEsiasento();
     }
 }

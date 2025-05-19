@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.AbstractWebServiceTestWithRegionGeometryServiceAndGitMock;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Area;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
@@ -49,7 +50,6 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperti
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.WeekdayTimePeriod;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.WorkType;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
-import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
@@ -278,9 +278,9 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
     private void assertRoadWorkPhases(final TrafficAnnouncement announcement,
                                       final ImsJsonVersion version) {
         if (version.version < ImsJsonVersion.V0_2_5.version) {
-            AssertHelper.assertCollectionSize(0, announcement.roadWorkPhases);
+            AssertUtil.assertCollectionSize(0, announcement.roadWorkPhases);
         } else {
-            AssertHelper.assertCollectionSize(1, announcement.roadWorkPhases);
+            AssertUtil.assertCollectionSize(1, announcement.roadWorkPhases);
             final RoadWorkPhase rwp = announcement.roadWorkPhases.getFirst();
             assertNotNull(rwp.location);
             assertNotNull(rwp.locationDetails.roadAddressLocation);

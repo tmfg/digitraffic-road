@@ -42,6 +42,6 @@ public class RegionGeometryUpdateJob extends SimpleUpdateJob {
         }
         dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA_CHECK);
         log.info("method=updateAreaLocationRegion from commitId {} to {} insertCount={} tookMs={}",
-            currentLatestCommitId, latestCommitId, changes.size(), start.getTime());
+            currentLatestCommitId, latestCommitId, changes.size(), start.getDuration().toMillis());
     }
 }

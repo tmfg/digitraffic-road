@@ -4,14 +4,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 
 public class AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock extends AbstractRestWebTest {
 
-    @MockBean
+    @MockitoBean
     protected RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
 
     protected void whenV3RegionGeometryDataServicGetAreaLocationRegionEffectiveOn(final RegionGeometry regionGeometry) {

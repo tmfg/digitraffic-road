@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -29,7 +29,7 @@ public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
     @Autowired
     private WazeReverseGeocodingService wazeReverseGeocodingService;
 
-    @MockBean
+    @MockitoBean
     private WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
     @BeforeEach
@@ -99,7 +99,7 @@ public class WazeReverseGeocodingServiceTest extends AbstractRestWebTest {
         when(this.wazeReverseGeocodingApi.fetch(anyDouble(), anyDouble())).thenReturn(Optional.empty());
         wazeReverseGeocodingService.getStreetName(geometry);
 
-        verify(this.wazeReverseGeocodingApi, times(1)).fetch(coords.get(18).get(1), coords.get(18).get(0));
+        verify(this.wazeReverseGeocodingApi, times(1)).fetch(coords.get(18).get(1), coords.get(18).getFirst());
 
     }
 

@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +99,7 @@ public class WazeFeedServiceTestHelper {
         final Datex2 datex2 = new Datex2(SituationType.valueOf(params.situationType.name()), taType);
         final Datex2Situation situation = new Datex2Situation();
         final Datex2SituationRecord situationRecord = new Datex2SituationRecord();
-        final ZonedDateTime dateTimeNow = ZonedDateTime.now();
+        final Instant dateTimeNow = Instant.now();
 
         situationRecord.setSituationRecordId(situationRecordId);
         situationRecord.setValidyStatus(Datex2SituationRecordValidyStatus.ACTIVE);

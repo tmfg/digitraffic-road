@@ -23,7 +23,7 @@ public abstract class AbstractMetadataUpdateJobTest extends AbstractDaemonTest {
         final DestinationProvider original = tgt.getDestinationProvider();
         lotjuClienOriginalDestinationProvider.put(tgt, original);
 
-        final URI firstDest = ((MultiDestinationProvider) original).getDestinations().get(0);
+        final URI firstDest = ((MultiDestinationProvider) original).getDestinations().getFirst();
         log.info("Set DestinationProvider url to first destination {} for {}", firstDest, tgt.getClass());
         tgt.setDestinationProvider(() -> firstDest);
     }

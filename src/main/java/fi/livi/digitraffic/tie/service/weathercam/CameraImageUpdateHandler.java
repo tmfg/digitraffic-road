@@ -125,7 +125,7 @@ public class CameraImageUpdateHandler {
     private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename,
                                          final boolean isPublic) {
         final ImageUpdateInfo info =
-            new ImageUpdateInfo(presetId, TimeUtil.toZonedDateTimeAtUtc(kuva.getAikaleima()));
+            new ImageUpdateInfo(presetId, TimeUtil.toInstant(kuva.getAikaleima()));
         try {
             byte[] image = readKuva(kuva.getKuvaId(), info);
             try {
@@ -155,7 +155,7 @@ public class CameraImageUpdateHandler {
                 info.updateReadStatusFailed(e);
                 throw new CameraImageReadFailureException(e);
             } finally {
-                info.updateReadTotalDurationMs(start.getTime());
+                info.updateReadTotalDurationMs(start.getDuration().toMillis());
             }
             if (image.length <= 0) {
                 final CameraImageReadFailureException e =
@@ -180,13 +180,13 @@ public class CameraImageUpdateHandler {
                     filename, timestampEpochMillis);
                 info.setVersionId(versionId);
                 info.updateWriteStatusSuccess();
-                info.setWriteDurationMs(writeStart.getTime());
+                info.setWriteDurationMs(writeStart.getDuration().toMillis());
 
             } catch (final Exception e) {
                 info.updateWriteStatusFailed(e);
                 throw new CameraImageWriteFailureException(e);
             } finally {
-                info.updateWriteTotalDurationMs(writeStart.getTime());
+                info.updateWriteTotalDurationMs(writeStart.getDuration().toMillis());
             }
             return null;
         });

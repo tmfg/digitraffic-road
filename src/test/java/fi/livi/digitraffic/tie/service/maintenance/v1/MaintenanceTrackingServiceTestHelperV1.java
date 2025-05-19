@@ -164,8 +164,8 @@ public class MaintenanceTrackingServiceTestHelperV1 {
 
         final GeometriaSijaintiViivasijaintiCombinedSchema sijainti = coordinatesEtrsAsObjects.size() == 1 ?
             new GeometriaSijaintiViivasijaintiCombinedSchema().withKoordinaatit(new KoordinaattisijaintiSchema()
-                .withX((double)coordinatesEtrsAsObjects.get(0).get(0))
-                .withY((double)coordinatesEtrsAsObjects.get(0).get(1))) :
+                .withX((double)coordinatesEtrsAsObjects.getFirst().getFirst())
+                .withY((double)coordinatesEtrsAsObjects.getFirst().get(1))) :
             new GeometriaSijaintiViivasijaintiCombinedSchema().withViivageometria(new ViivageometriasijaintiSchema().withCoordinates(coordinatesEtrsAsObjects));
         final List<Havainnot> havainnot = singletonList(
             new Havainnot().withHavainto(
@@ -462,7 +462,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
 
     public static Instant getEndTime(final TyokoneenseurannanKirjausRequestSchema seuranta) {
         final List<Havainnot> havainnot = seuranta.getHavainnot();
-        return havainnot.get(havainnot.size()-1).getHavainto().getHavaintoaika();
+        return havainnot.getLast().getHavainto().getHavaintoaika();
     }
 
     public static Instant getStartTimeOneHourInPast() {

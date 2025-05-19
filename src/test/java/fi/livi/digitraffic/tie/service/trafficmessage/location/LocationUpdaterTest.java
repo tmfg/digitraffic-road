@@ -54,10 +54,10 @@ public class LocationUpdaterTest extends AbstractServiceTest {
     public void correctAreaReference() {
         final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_correct_area_reference.csv"), getSubtypes(), VERSION);
         assertThat(locations, Matchers.hasSize(3));
-        assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(21));
+        assertThat(locations.getFirst().getLocationCode(), Matchers.comparesEqualTo(21));
         assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(23));
         assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(22));
-        assertThat(locations.get(0).getAreaRef(), Matchers.nullValue());
+        assertThat(locations.getFirst().getAreaRef(), Matchers.nullValue());
         assertThat(locations.get(1).getAreaRef(), Matchers.comparesEqualTo(22));
         assertThat(locations.get(1).getLinearRef(), Matchers.nullValue());
         assertThat(locations.get(2).getAreaRef(), Matchers.comparesEqualTo(21));
@@ -68,10 +68,10 @@ public class LocationUpdaterTest extends AbstractServiceTest {
     public void correctLinearReference() {
         final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_correct_linear_reference.csv"), getSubtypes(), VERSION);
         assertThat(locations, Matchers.hasSize(3));
-        assertThat(locations.get(0).getLocationCode(), Matchers.comparesEqualTo(31));
+        assertThat(locations.getFirst().getLocationCode(), Matchers.comparesEqualTo(31));
         assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(33));
         assertThat(locations.get(2).getLocationCode(), Matchers.comparesEqualTo(32));
-        assertThat(locations.get(0).getLinearRef(), Matchers.nullValue());
+        assertThat(locations.getFirst().getLinearRef(), Matchers.nullValue());
         assertThat(locations.get(1).getLinearRef(), Matchers.comparesEqualTo(32));
         assertThat(locations.get(1).getAreaRef(), Matchers.nullValue());
         assertThat(locations.get(2).getLinearRef(), Matchers.comparesEqualTo(31));

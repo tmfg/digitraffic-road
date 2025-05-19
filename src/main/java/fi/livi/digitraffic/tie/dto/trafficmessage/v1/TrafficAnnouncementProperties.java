@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,10 +39,10 @@ public class TrafficAnnouncementProperties extends PropertiesV1 {
     private TrafficAnnouncementType trafficAnnouncementType;
 
     @Schema(description = "Announcement release time", requiredMode = Schema.RequiredMode.REQUIRED)
-    public final ZonedDateTime releaseTime;
+    public final Instant releaseTime;
 
     @Schema(description = "Announcement version time", requiredMode = Schema.RequiredMode.REQUIRED)
-    public final ZonedDateTime versionTime;
+    public final Instant versionTime;
 
     @Schema(description = "Contains announcement's different language versions available.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
@@ -53,8 +52,8 @@ public class TrafficAnnouncementProperties extends PropertiesV1 {
     public final Contact contact;
 
     private Instant lastModified;
-    public TrafficAnnouncementProperties(final String situationId, final Integer version, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType, final ZonedDateTime releaseTime,
-                                         final ZonedDateTime versionTime, final List<TrafficAnnouncement> announcements, final Contact contact) {
+    public TrafficAnnouncementProperties(final String situationId, final Integer version, final SituationType situationType, final TrafficAnnouncementType trafficAnnouncementType, final Instant releaseTime,
+                                         final Instant versionTime, final List<TrafficAnnouncement> announcements, final Contact contact) {
         super();
         this.situationId = situationId;
         this.version = version;

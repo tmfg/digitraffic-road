@@ -7,13 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.AbstractWebServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
@@ -24,7 +25,6 @@ import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
-import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
@@ -70,8 +70,8 @@ public class TmsDataWebServiceV1Test extends AbstractWebServiceTest {
             entityManager.persist(s);
             entityManager.flush();
 
-            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.get(0), getRandom(0, 100), ZonedDateTime.now(), null);
-            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), ZonedDateTime.now(), null);
+            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.getFirst(), getRandom(0, 100), Instant.now(), null);
+            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), Instant.now(), null);
             sensorValueRepository.save(sensorValue1);
             sensorValueRepository.save(sensorValue2);
         });
@@ -86,9 +86,9 @@ public class TmsDataWebServiceV1Test extends AbstractWebServiceTest {
         assertNotNull(stationsData);
         assertNotNull(stationsData.dataUpdatedTime);
 
-        AssertHelper.assertCollectionSize(2, stationsData.stations);
+        AssertUtil.assertCollectionSize(2, stationsData.stations);
         final TmsStationDataDtoV1 data = stationsData.stations.stream().filter(s -> s.id.equals(tmsStation.getRoadStationNaturalId())).findFirst().orElseThrow();
-        AssertHelper.assertCollectionSize(2, data.sensorValues);
+        AssertUtil.assertCollectionSize(2, data.sensorValues);
 
         final SensorValueDtoV1 sv1 =
             data.sensorValues.stream().filter(sv -> sensorValue1.getRoadStationSensor().getNaturalId() == sv.getSensorNaturalId()).findFirst()
@@ -140,8 +140,8 @@ public class TmsDataWebServiceV1Test extends AbstractWebServiceTest {
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio, vakioArvo);
 
         final TmsStationsSensorConstantsDataDtoV1 result = tmsDataWebServiceV1.findPublishableSensorConstants(false);
-        AssertHelper.assertCollectionSize(1, result.stations);
-        AssertHelper.assertCollectionSize(1, result.stations.getFirst().sensorConstanValues);
+        AssertUtil.assertCollectionSize(1, result.stations);
+        AssertUtil.assertCollectionSize(1, result.stations.getFirst().sensorConstanValues);
         final TmsSensorConstantValueDtoV1 scv = result.stations.getFirst().sensorConstanValues.getFirst();
         assertEquals(vakioNimi, scv.getName());
         assertEquals(vakioArvo, scv.getValue());
@@ -159,7 +159,7 @@ public class TmsDataWebServiceV1Test extends AbstractWebServiceTest {
 
         final TmsStationSensorConstantDtoV1 result =
             tmsDataWebServiceV1.findPublishableSensorConstantsForStation(tmsStation.getRoadStationNaturalId());
-        AssertHelper.assertCollectionSize(1, result.sensorConstanValues);
+        AssertUtil.assertCollectionSize(1, result.sensorConstanValues);
         final TmsSensorConstantValueDtoV1 scv = result.sensorConstanValues.getFirst();
         assertEquals(vakioNimi, scv.getName());
         assertEquals(vakioArvo, scv.getValue());

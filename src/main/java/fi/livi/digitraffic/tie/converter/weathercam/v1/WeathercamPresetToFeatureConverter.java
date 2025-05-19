@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.converter.roadstation.v1.AbstractRoadstationToFeatureConverterV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetDetailedV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamPresetSimpleV1;
@@ -26,7 +27,6 @@ import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationFeatureV1Detai
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.dto.weathercam.v1.WeathercamStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.helper.DataValidityHelper;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
@@ -118,7 +118,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
             throw new IllegalArgumentException("Empty collection");
         }
 
-        final WeathercamStationFeatureV1Detailed feature = createWeathercamFeatureDetailedV1(cameraPresets.get(0));
+        final WeathercamStationFeatureV1Detailed feature = createWeathercamFeatureDetailedV1(cameraPresets.getFirst());
 
         cameraPresets
             .forEach(cp -> feature.getProperties().addPreset(convertToDetailedPreset(cp)));

@@ -14,10 +14,10 @@ public class Coordinate {
 
     public Coordinate(final List<BigDecimal> coordinate) {
         if (coordinate.size() >= 2) {
-            this.longitude = coordinate.get(0);
+            this.longitude = coordinate.getFirst();
             this.latitude = coordinate.get(1);
         } else if (coordinate.size() == 1) {
-            this.longitude = coordinate.get(0);
+            this.longitude = coordinate.getFirst();
             this.latitude = null;
         } else {
             this.longitude = null;

@@ -93,7 +93,7 @@ public class TrafficMessageImsJsonConverterV1 {
 
         if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
             if (includeAreaGeometry) {
-                final Instant effectiveDate = feature.getProperties().releaseTime.toInstant();
+                final Instant effectiveDate = feature.getProperties().releaseTime;
                 final Integer[] ids = announcementsWithAreas.stream()
                         .map(withArea ->
                                 withArea.locationDetails.areaLocation.areas.stream()

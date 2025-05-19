@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
@@ -87,7 +86,7 @@ public class RoadStationTest extends AbstractTest {
     @Test
     public void publicityUpdateInPast() {
         final RoadStation rs = RoadStation.createCameraStation();
-        rs.updatePublicity(true, getNow().minusHours(1));
+        rs.updatePublicity(true, getNow().minus(1, ChronoUnit.HOURS));
         assertFalse(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
     }
@@ -98,14 +97,14 @@ public class RoadStationTest extends AbstractTest {
         // public at the beginning
         rs.updatePublicity(true);
 
-        final ZonedDateTime secretInFuture = getNow().plusSeconds(1);
+        final Instant secretInFuture = getNow().plusSeconds(1);
         rs.updatePublicity(false, secretInFuture);
         assertTrue(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
         assertFalse(rs.internalIsPublic());
 
         // Wait for secretFrom time to pass -> RoadStation changes to not public
-        while (ZonedDateTime.now().isBefore(secretInFuture)) {
+        while (Instant.now().isBefore(secretInFuture)) {
             ThreadUtil.delayMs(100);
         }
         assertFalse(rs.isPublicNow());
@@ -117,14 +116,14 @@ public class RoadStationTest extends AbstractTest {
         // public at the beginning
         rs.updatePublicity(true);
 
-        final ZonedDateTime secretInFuture1 = getNow().plusSeconds(1);
+        final Instant secretInFuture1 = getNow().plusSeconds(1);
         rs.updatePublicity(false, secretInFuture1);
         assertTrue(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
         assertFalse(rs.internalIsPublic());
 
         // Previous value should not be updated if start time is in future
-        final ZonedDateTime secretInFuture2 = getNow().plusSeconds(2);
+        final Instant secretInFuture2 = getNow().plusSeconds(2);
         rs.updatePublicity(false, secretInFuture2);
         assertTrue(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
@@ -132,13 +131,13 @@ public class RoadStationTest extends AbstractTest {
 
         // Wait for secretInFuture1 time to pass -> RoadStation should not change to secret
         // as second update moved change to secretInFuture2
-        while (ZonedDateTime.now().isBefore(secretInFuture1)) {
+        while (Instant.now().isBefore(secretInFuture1)) {
             ThreadUtil.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
 
         // Wait for secretInFuture2 time to pass -> RoadStation changes to not public
-        while (ZonedDateTime.now().isBefore(secretInFuture2)) {
+        while (Instant.now().isBefore(secretInFuture2)) {
             ThreadUtil.delayMs(100);
         }
         assertFalse(rs.isPublicNow());
@@ -150,49 +149,49 @@ public class RoadStationTest extends AbstractTest {
         // public at the beginning
         rs.updatePublicity(true);
 
-        final ZonedDateTime secretInFuture1 = getNow().plusSeconds(1);
+        final Instant secretInFuture1 = getNow().plusSeconds(1);
         rs.updatePublicity(false, secretInFuture1);
-        final ZonedDateTime secretInFuture2 = getNow().plusSeconds(2);
+        final Instant secretInFuture2 = getNow().plusSeconds(2);
         rs.updatePublicity(false, secretInFuture2);
         assertTrue(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
         assertFalse(rs.internalIsPublic());
 
         // Future public, previous public as secretInFuture not passed
-        final ZonedDateTime publicInFuture = getNow().plusSeconds(3);
+        final Instant publicInFuture = getNow().plusSeconds(3);
         rs.updatePublicity(true, publicInFuture);
         assertTrue(rs.isPublicPrevious());
         assertTrue(rs.isPublicNow());
         assertTrue(rs.internalIsPublic());
 
         // Wait for secretInFuture1 time to pass -> RoadStation should not change to secret
-        while (ZonedDateTime.now().isBefore(secretInFuture1)) {
+        while (Instant.now().isBefore(secretInFuture1)) {
             ThreadUtil.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
 
         // Wait for secretInFuture2 time to pass -> RoadStation changes to not public
-        while (ZonedDateTime.now().isBefore(secretInFuture2)) {
+        while (Instant.now().isBefore(secretInFuture2)) {
             ThreadUtil.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
 
         // Wait for publicInFuture time to pass -> RoadStation stays public
-        while (ZonedDateTime.now().isBefore(publicInFuture)) {
+        while (Instant.now().isBefore(publicInFuture)) {
             ThreadUtil.delayMs(100);
         }
         assertTrue(rs.isPublicNow());
     }
 
     private void updatePublicityWithTime(final RoadStation rs) {
-        rs.updatePublicity(true, ZonedDateTime.now());
+        rs.updatePublicity(true, Instant.now());
     }
 
     private void updatePublicityWithoutTime(final RoadStation rs) {
         rs.updatePublicity(true);
     }
 
-    private ZonedDateTime getNow() {
-        return TimeUtil.toZonedDateTimeAtUtc(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+    private Instant getNow() {
+        return TimeUtil.nowWithoutMillis();
     }
 }

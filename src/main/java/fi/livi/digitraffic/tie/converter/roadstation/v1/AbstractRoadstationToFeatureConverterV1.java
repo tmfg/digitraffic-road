@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesDetailedV1;
 import fi.livi.digitraffic.tie.dto.geojson.v1.RoadStationPropertiesSimpleV1;
 import fi.livi.digitraffic.tie.dto.roadstation.v1.StationRoadAddressV1;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
@@ -41,9 +41,9 @@ public abstract class AbstractRoadstationToFeatureConverterV1 {
 
         properties.setLiviId(roadStation.getLiviId());
         properties.setCountry(roadStation.getCountry());
-        properties.setStartTime(TimeUtil.toInstant(roadStation.getStartDate()));
-        properties.setRepairMaintenanceTime(TimeUtil.toInstant(roadStation.getRepairMaintenanceDate()));
-        properties.setAnnualMaintenanceTime(TimeUtil.toInstant(roadStation.getAnnualMaintenanceDate()));
+        properties.setStartTime(roadStation.getStartDate());
+        properties.setRepairMaintenanceTime(roadStation.getRepairMaintenanceDate());
+        properties.setAnnualMaintenanceTime(roadStation.getAnnualMaintenanceDate());
         // HOX: Removed temporary until LOTJU data is fixed in 2016
         // properties.setLocation(roadStation.getLocation());
         properties.setPurpose(roadStation.getPurpose());

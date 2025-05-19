@@ -88,13 +88,13 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
                 X_MIN_DOUBLE, Y_MIN_DOUBLE, X_MAX_DOUBLE, Y_MAX_DOUBLE);
 
         assertEquals(4, data.forecastSections.size());
-        assertEquals("00001_001_000_0", data.forecastSections.get(0).id);
-        assertEquals(5, data.forecastSections.get(0).forecasts.size());
-        assertEquals("0h", data.forecastSections.get(0).forecasts.get(0).getForecastName());
-        assertEquals("2h", data.forecastSections.get(0).forecasts.get(1).getForecastName());
-        assertEquals("4h", data.forecastSections.get(0).forecasts.get(2).getForecastName());
-        assertEquals("6h", data.forecastSections.get(0).forecasts.get(3).getForecastName());
-        assertEquals("12h", data.forecastSections.get(0).forecasts.get(4).getForecastName());
+        assertEquals("00001_001_000_0", data.forecastSections.getFirst().id);
+        assertEquals(5, data.forecastSections.getFirst().forecasts.size());
+        assertEquals("0h", data.forecastSections.getFirst().forecasts.getFirst().getForecastName());
+        assertEquals("2h", data.forecastSections.getFirst().forecasts.get(1).getForecastName());
+        assertEquals("4h", data.forecastSections.getFirst().forecasts.get(2).getForecastName());
+        assertEquals("6h", data.forecastSections.getFirst().forecasts.get(3).getForecastName());
+        assertEquals("12h", data.forecastSections.getFirst().forecasts.get(4).getForecastName());
     }
 
     @Test
@@ -115,13 +115,13 @@ public class ForecastSectionDataUpdaterTest extends AbstractDaemonTest {
                 X_MIN_DOUBLE, Y_MIN_DOUBLE, X_MAX_DOUBLE, Y_MAX_DOUBLE);
 
         assertNotNull(data);
-        assertEquals("00004_229_00307_1_0", data.forecastSections.get(0).id);
-        assertEquals(5, data.forecastSections.get(0).forecasts.size());
-        assertEquals("0h", data.forecastSections.get(0).forecasts.get(0).getForecastName());
-        assertEquals(ForecastSectionTestHelper.TIMES[0], data.forecastSections.get(0).forecasts.get(0).getTime().toString());
-        assertEquals(5.7, data.forecastSections.get(0).forecasts.get(0).getTemperature());
-        assertEquals("12h", data.forecastSections.get(0).forecasts.get(4).getForecastName());
-        assertEquals(RoadCondition.WET, data.forecastSections.get(0).forecasts.get(4).getForecastConditionReason().roadCondition);
+        assertEquals("00004_229_00307_1_0", data.forecastSections.getFirst().id);
+        assertEquals(5, data.forecastSections.getFirst().forecasts.size());
+        assertEquals("0h", data.forecastSections.getFirst().forecasts.getFirst().getForecastName());
+        assertEquals(ForecastSectionTestHelper.TIMES[0], data.forecastSections.getFirst().forecasts.getFirst().getTime().toString());
+        assertEquals(5.7, data.forecastSections.getFirst().forecasts.getFirst().getTemperature());
+        assertEquals("12h", data.forecastSections.getFirst().forecasts.get(4).getForecastName());
+        assertEquals(RoadCondition.WET, data.forecastSections.getFirst().forecasts.get(4).getForecastConditionReason().roadCondition);
 
         assertEquals("00409_001_01796_0_0", data.forecastSections.get(1).id);
         assertEquals(5, data.forecastSections.get(1).forecasts.size());

@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.service.maintenance;
 
+import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
+import static fi.livi.digitraffic.test.util.AssertUtil.assertEmpty;
 import static fi.livi.digitraffic.tie.TestUtils.commitAndEndTransactionAndStartNew;
 import static fi.livi.digitraffic.tie.TestUtils.flushCommitEndTransactionAndStartNew;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
 
 import java.time.Instant;
 import java.util.List;
@@ -59,7 +59,7 @@ public class MaintenanceTrackingMqttDataServiceTest extends AbstractServiceTest 
 
         final List<MaintenanceTracking> all = maintenanceTrackingRepository.findAll();
         assertCollectionSize(2, all);
-        final Instant created = all.get(0).getCreated();
+        final Instant created = all.getFirst().getCreated();
 
         // no data as param is exlusive
         assertCollectionSize(0, maintenanceTrackingWebDataServiceV1.findTrackingsForMqttCreatedAfter(created));

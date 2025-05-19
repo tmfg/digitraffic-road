@@ -52,7 +52,7 @@ public class LocationReaderTest extends AbstractJpaTest {
 
         final List<Location> locations = spyReader.read(TestUtils.getPath("/locations/locations_illegal_geocode.csv"));
         assertThat(locations, Matchers.hasSize(2));
-        assertThat(locations.get(0).getGeocode(), Matchers.equalTo("test"));
+        assertThat(locations.getFirst().getGeocode(), Matchers.equalTo("test"));
         assertThat(locations.get(1).getGeocode(), Matchers.emptyOrNullString());
 
         //Mockito.verify(spyReader).log.error(anyString());

@@ -2,9 +2,9 @@ package fi.livi.digitraffic.tie.service.tms;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAsemaVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.TieosoiteVO;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
@@ -41,9 +41,9 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         to.setProvince(la.getMaakunta());
         to.setProvinceCode(la.getMaakuntaKoodi());
         to.setLiviId(la.getLiviId());
-        to.setStartDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(la.getAlkamisPaiva()));
-        to.setRepairMaintenanceDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(la.getKorjaushuolto()));
-        to.setAnnualMaintenanceDate(TimeUtil.toZonedDateTimeWithoutMillisAtUtc(la.getVuosihuolto()));
+        to.setStartDate(TimeUtil.toInstantWithoutMillis(la.getAlkamisPaiva()));
+        to.setRepairMaintenanceDate(TimeUtil.toInstantWithoutMillis(la.getKorjaushuolto()));
+        to.setAnnualMaintenanceDate(TimeUtil.toInstantWithoutMillis(la.getVuosihuolto()));
         to.setState(RoadStationState.fromTilaTyyppi(la.getAsemanTila()));
         to.setLocation(la.getAsemanSijainti());
         to.setCountry(la.getMaa());

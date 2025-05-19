@@ -151,11 +151,11 @@ public class CameraStationUpdater {
             }
             final StopWatch timeFetch = StopWatch.createStarted();
             final List<EsiasentoVO> eas = lotjuCameraStationMetadataClientWrapper.getEsiasentos(kamera.getId());
-            incrementalFetchTookMs.addAndGet(timeFetch.getTime());
+            incrementalFetchTookMs.addAndGet(timeFetch.getDuration().toMillis());
             final StopWatch timeUpdate = StopWatch.createStarted();
             final Pair<Integer, Integer> result =
                     cameraStationUpdateService.updateOrInsertRoadStationAndPresets(kamera, eas);
-            incrementalUpdateTookMs.addAndGet(timeUpdate.getTime());
+            incrementalUpdateTookMs.addAndGet(timeUpdate.getDuration().toMillis());
             return result;
 
         } finally {

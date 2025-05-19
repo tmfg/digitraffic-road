@@ -87,13 +87,13 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
         // Create camera with preset to lotju
         final KameraVO kamera_T1 = createKamera(Instant.now());
         final List<EsiasentoVO> esiasentos_T1 = createEsiasentos(kamera_T1.getId(), 2);
-        final EsiasentoVO esiasento_T1_1 = esiasentos_T1.get(0);
+        final EsiasentoVO esiasento_T1_1 = esiasentos_T1.getFirst();
         final EsiasentoVO esiasento_T1_2 = esiasentos_T1.get(1);
 
         // First camera with 1 preset
         when(lotjuCameraStationMetadataClient.getKamera(kamera_T1.getId())).thenReturn(kamera_T1);
         when(lotjuCameraStationMetadataClient.getEsiasentos(kamera_T1.getId())).thenReturn(
-                Collections.singletonList(esiasentos_T1.get(0)));
+                Collections.singletonList(esiasentos_T1.getFirst()));
         sendMessage(getCameraUpdateMessageXml(UpdateType.INSERT, kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
@@ -211,11 +211,11 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
     @Test
     public void cameraMetadataUpdateDeletePresetMessages() {
         final List<CameraPreset> presets = createAndSaveCameraPresets(2);
-        final CameraPreset ps1 = presets.get(0);
+        final CameraPreset ps1 = presets.getFirst();
         final CameraPreset ps2 = presets.get(1);
 
-        sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.get(0).getLotjuId(),
-                presets.get(0).getCameraLotjuId()));
+        sendMessage(getPresetUpdateMessageXml(UpdateType.DELETE, presets.getFirst().getLotjuId(),
+                presets.getFirst().getCameraLotjuId()));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         final CameraPreset preset1 = cameraPresetRepository.findFirstByLotjuIdOrderByObsoleteDateDesc(ps1.getLotjuId());
@@ -228,7 +228,7 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
     @Test
     public void cameraMetadataUpdateDeleteCameraMessages() {
         final List<CameraPreset> presets = createAndSaveCameraPresets(2);
-        final CameraPreset ps1 = presets.get(0);
+        final CameraPreset ps1 = presets.getFirst();
         final CameraPreset ps2 = presets.get(1);
         TestUtils.entityManagerFlushAndClear(entityManager);
         sendMessage(getCameraUpdateMessageXml(UpdateType.DELETE, ps1.getCameraLotjuId()));

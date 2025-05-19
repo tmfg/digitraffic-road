@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.lotju;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.service.tms.TmsSensorUpdater;
@@ -12,22 +12,22 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraStationUpdater;
 
 public abstract class AbstractMetadataUpdateMessageHandlerTest extends AbstractDaemonTest {
 
-    @MockBean
+    @MockitoBean
     protected TmsStationUpdater tmsStationUpdater;
 
-    @MockBean
+    @MockitoBean
     protected TmsSensorUpdater tmsSensorUpdater;
 
-    @MockBean
+    @MockitoBean
     protected TmsStationSensorConstantUpdater tmsStationSensorConstantUpdater;
 
-    @MockBean
+    @MockitoBean
     protected WeatherStationUpdater weatherStationUpdater;
 
-    @MockBean
+    @MockitoBean
     protected WeatherStationSensorUpdater weatherStationSensorUpdater;
 
-    @MockBean
+    @MockitoBean
     protected CameraStationUpdater cameraStationUpdater;
 
 }

@@ -60,7 +60,7 @@ public class LocationMetadataUpdater {
                 removeTempFiles(paths);
                 stopWatch.stop();
 
-                log.info("Locations and locationtypes updated, tookMs={}", stopWatch.getTime());
+                log.info("Locations and locationtypes updated, tookMs={}", stopWatch.getDuration().toMillis());
             } else {
                 log.info("No need to update locations or locationtypes");
             }

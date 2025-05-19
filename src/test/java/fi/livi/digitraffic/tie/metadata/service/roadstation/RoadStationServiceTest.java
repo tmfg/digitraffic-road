@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.metadata.service.roadstation;
 
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
+import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
 
 import java.util.List;
 

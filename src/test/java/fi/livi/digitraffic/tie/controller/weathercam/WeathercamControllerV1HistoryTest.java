@@ -69,7 +69,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
     @Test
     public void getWeathercamPresetsHistoryByIdTooOldNotFound() throws Exception {
-        final CameraPreset preset = cameras3Presets2.get(0).get(0);
+        final CameraPreset preset = cameras3Presets2.getFirst().getFirst();
 
         insertHistoryTestData(preset.getPresetId(), nowWithoutNanos().minus(25, HOURS));
 
@@ -80,7 +80,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
     @Test
     public void getWeathercamPresetsHistoryByIdIsFound() throws Exception {
-        final CameraPreset preset = cameras3Presets2.get(0).get(0);
+        final CameraPreset preset = cameras3Presets2.getFirst().getFirst();
 
         insertHistoryTestData(preset.getPresetId(), nowWithoutNanos().minus(23, HOURS));
 
@@ -94,8 +94,8 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
     @Test
     public void getWeathercamPresetsHistoryByIdExistsWithoutSecret() throws Exception {
-        final CameraPreset preset_0 = cameras3Presets2.get(0).get(0);
-        final CameraPreset preset_1 = cameras3Presets2.get(0).get(1);
+        final CameraPreset preset_0 = cameras3Presets2.getFirst().getFirst();
+        final CameraPreset preset_1 = cameras3Presets2.getFirst().get(1);
         final Instant now = nowWithoutMillis();
 
         // Insert 4 versions for preset1 with one not public and one too old
@@ -130,8 +130,8 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
     @Test
     public void getWeathercamPresetsHistoryByPresetIdExistsWithoutSecret() throws Exception {
-        final CameraPreset preset_0 = cameras3Presets2.get(0).get(0);
-        final CameraPreset preset_1 = cameras3Presets2.get(0).get(1);
+        final CameraPreset preset_0 = cameras3Presets2.getFirst().getFirst();
+        final CameraPreset preset_1 = cameras3Presets2.getFirst().get(1);
         final Instant now = nowWithoutMillis();
         // Insert 4 versions for preset1 with one not public and one too old
         insertHistoryTestData(preset_0.getPresetId(), now.minus(25, HOURS)); // This is too old

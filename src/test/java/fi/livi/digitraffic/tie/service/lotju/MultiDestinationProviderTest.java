@@ -108,7 +108,7 @@ public class MultiDestinationProviderTest extends AbstractMultiDestinationProvid
     @Test
     public void hostWithoutHealthCheckButUnhealthy() {
         final MultiDestinationProvider mdp = createMultiDestinationProviderWithoutHealthCheck();
-        mdp.setHostNotHealthy(mdp.getDestinations().get(0)); // first destination not healthy
+        mdp.setHostNotHealthy(mdp.getDestinations().getFirst()); // first destination not healthy
         final URI dest = mdp.getDestination();
         assertEquals(dataUrl2, dest.toString());
         verifyServer1HealthCount(0);

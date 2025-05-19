@@ -43,8 +43,8 @@
             }
         ],
 11. Add ned data also to `ImsJsonMessageTestFactory` when creating test objects
-12. Modify/add changes also to API-objects at src/main/java/fi/livi/digitraffic/tie/dto/trafficmessage/v1 
-or if the changes are breaking then create new version. Remember to add new fields also to constructor. 
+12. Modify/add changes also to API-objects at src/main/java/fi/livi/digitraffic/tie/dto/trafficmessage/v1
+or if the changes are breaking then create new version. Remember to add new fields also to constructor.
 Ie. `RoadWorkPhase.java`:
 
             @ApiModelProperty(value = "Time periods when the road work is expected to cause slow moving traffic.")
@@ -53,7 +53,7 @@ Ie. `RoadWorkPhase.java`:
             @ApiModelProperty(value = "Time periods when the road work is expected to cause queuing of the traffic.")
             public List<WorkingHour> queuingTrafficTimes = new ArrayList<>();
 
-            public RoadWorkPhase(..., final List<WorkingHour> slowTrafficTimes, final List<WorkingHour> queuingTrafficTimes,...) {            
+            public RoadWorkPhase(..., final List<WorkingHour> slowTrafficTimes, final List<WorkingHour> queuingTrafficTimes,...) {
 
     You can look/copy base for the changes from generated sources at `target/generated-sources/json/fi/livi/digitraffic/tie/external/tloik/ims/jmessage`
 13. Add new version to `TrafficMessageTestHelper$ImsJsonVersion` ie. `V0_2_17(2.17, 217);`
@@ -63,12 +63,12 @@ Ie. `RoadWorkPhase.java`:
                                               final ImsJsonVersion version) {
             ...
                 if (version.version >= 2.17) {
-                    assertEquals(WorkingHour.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
-                    assertEquals(WorkingHour.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
-                    assertNotNull(rwp.slowTrafficTimes.get(0).startTime);
-                    assertNotNull(rwp.slowTrafficTimes.get(0).endTime);
-                    assertNotNull(rwp.queuingTrafficTimes.get(0).startTime);
-                    assertNotNull(rwp.queuingTrafficTimes.get(0).endTime);
+                    assertEquals(WorkingHour.Weekday.TUESDAY, rwp.slowTrafficTimes.getFirst().weekday);
+                    assertEquals(WorkingHour.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.getFirst().weekday);
+                    assertNotNull(rwp.slowTrafficTimes.getFirst().startTime);
+                    assertNotNull(rwp.slowTrafficTimes.getFirst().endTime);
+                    assertNotNull(rwp.queuingTrafficTimes.getFirst().startTime);
+                    assertNotNull(rwp.queuingTrafficTimes.getFirst().endTime);
                 }
             }
 15. Modify test `TrafficMessagesControllerV1Test.java` to check new values ie.
@@ -77,9 +77,9 @@ Ie. `RoadWorkPhase.java`:
             ...
                 if (imsJsonVersion.version >= 2.17 && situationType.equals(SituationType.ROAD_WORK)) {
                     final RoadWorkPhase rwp =
-                        feature.getProperties().announcements.get(0).roadWorkPhases.get(0);
-                    assertEquals(WorkingHour.Weekday.TUESDAY, rwp.slowTrafficTimes.get(0).weekday);
-                    assertEquals(WorkingHour.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.get(0).weekday);
+                        feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
+                    assertEquals(WorkingHour.Weekday.TUESDAY, rwp.slowTrafficTimes.getFirst().weekday);
+                    assertEquals(WorkingHour.Weekday.WEDNESDAY, rwp.queuingTrafficTimes.getFirst().weekday);
                 }
             }
 16. Run tests, commit, squash commits and push

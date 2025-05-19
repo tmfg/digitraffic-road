@@ -74,29 +74,29 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         final Instant lastModified = forecastSectionRepository.getLastModified(2, AREA, null);
         assertEquals(lastModified, featureCollection.dataUpdatedTime);
 
-        final ForecastSectionFeatureV1 feature = featureCollection.getFeatures().get(0);
+        final ForecastSectionFeatureV1 feature = featureCollection.getFeatures().getFirst();
         assertEquals(11, featureCollection.getFeatures().size());
         assertEquals("00004_229_00307_1_0", feature.getProperties().id);
 
         final List<List<List<Double>>> coordinates = (List<List<List<Double>>>) feature.getGeometry().getCoordinates();
-        assertEquals(2, coordinates.get(0).size());
+        assertEquals(2, coordinates.getFirst().size());
 
-        assertCoordinates(25.9564265, coordinates.get(0).get(0).get(0));
-        assertCoordinates(62.1203392, coordinates.get(0).get(0).get(1));
-        assertCoordinates(25.9563029, coordinates.get(0).get(1).get(0));
-        assertCoordinates(62.1203895, coordinates.get(0).get(1).get(1));
+        assertCoordinates(25.9564265, coordinates.getFirst().getFirst().getFirst());
+        assertCoordinates(62.1203392, coordinates.getFirst().getFirst().get(1));
+        assertCoordinates(25.9563029, coordinates.getFirst().get(1).getFirst());
+        assertCoordinates(62.1203895, coordinates.getFirst().get(1).get(1));
         assertEquals(76, coordinates.get(15).size());
-        assertCoordinates(25.9721482, coordinates.get(15).get(0).get(0));
-        assertCoordinates(62.1119208, coordinates.get(15).get(0).get(1));
-        assertCoordinates(25.9564265, coordinates.get(15).get(75).get(0));
+        assertCoordinates(25.9721482, coordinates.get(15).getFirst().getFirst());
+        assertCoordinates(62.1119208, coordinates.get(15).getFirst().get(1));
+        assertCoordinates(25.9564265, coordinates.get(15).get(75).getFirst());
         assertCoordinates(62.1203392, coordinates.get(15).get(75).get(1));
 
         assertEquals(2, feature.getProperties().roadSegments.size());
-        assertEquals(307, feature.getProperties().roadSegments.get(0).startDistance.intValue());
-        assertEquals(2830, feature.getProperties().roadSegments.get(0).endDistance.intValue());
+        assertEquals(307, feature.getProperties().roadSegments.getFirst().startDistance.intValue());
+        assertEquals(2830, feature.getProperties().roadSegments.getFirst().endDistance.intValue());
 
         assertEquals(13, feature.getProperties().linkIds.size());
-        assertEquals(5742592L, feature.getProperties().linkIds.get(0).longValue());
+        assertEquals(5742592L, feature.getProperties().linkIds.getFirst().longValue());
         assertEquals(12471709L, feature.getProperties().linkIds.get(12).longValue());
     }
 
@@ -113,7 +113,7 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
 
         assertEquals(1, featureCollection.getFeatures().size());
 
-        final ForecastSectionFeatureV1 feature1 = featureCollection.getFeatures().get(0);
+        final ForecastSectionFeatureV1 feature1 = featureCollection.getFeatures().getFirst();
 
         assertEquals("00941_010_00000_0_0", feature1.getProperties().id);
         assertEquals("Posiontie, Ranuantie 941.10", feature1.getProperties().description);
@@ -121,10 +121,10 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
         assertEquals(9, feature1.getProperties().linkIds.size());
         assertEquals(Geometry.Type.MultiLineString, feature1.getGeometry().getType());
         assertEquals(11, feature1.getGeometry().getCoordinates().size());
-        assertEquals(22, ((List<Double>)feature1.getGeometry().getCoordinates().get(0)).size());
-        assertCoordinates(27.3965783, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(0)).get(0).get(0));
-        assertCoordinates(65.9882322, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(0)).get(0).get(1));
-        assertCoordinates(27.4148914, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(10)).get(18).get(0));
+        assertEquals(22, ((List<Double>)feature1.getGeometry().getCoordinates().getFirst()).size());
+        assertCoordinates(27.3965783, ((List<List<Double>>)feature1.getGeometry().getCoordinates().getFirst()).getFirst().getFirst());
+        assertCoordinates(65.9882322, ((List<List<Double>>)feature1.getGeometry().getCoordinates().getFirst()).getFirst().get(1));
+        assertCoordinates(27.4148914, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(10)).get(18).getFirst());
         assertCoordinates(65.9934206, ((List<List<Double>>)feature1.getGeometry().getCoordinates().get(10)).get(18).get(1));
     }
 

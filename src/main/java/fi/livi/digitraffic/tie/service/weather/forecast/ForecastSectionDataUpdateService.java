@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.service.weather.forecast;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -65,13 +64,12 @@ public class ForecastSectionDataUpdateService {
 
     private void updateForecastSectionWeatherData(final ForecastSectionApiVersion version, final ForecastSectionDataDto data) {
         dataStatusService.updateDataUpdated(ForecastWebDataServiceV1.getDataCheckDataType(version));
-        final Instant messageTimestamp = data.messageTimestamp.toInstant();
         final DataType updateDataType = ForecastWebDataServiceV1.getDataUpdatedDataType(version);
-        final ZonedDateTime previousTimestamp = dataStatusService.findDataUpdatedTime(updateDataType);
-        if (previousTimestamp != null && previousTimestamp.toInstant().isAfter(messageTimestamp)) {
+        final Instant previousTimestamp = dataStatusService.findDataUpdatedTime(updateDataType);
+        if (previousTimestamp != null && previousTimestamp.isAfter(data.messageTimestamp)) {
             log.warn("method=updateForecastSectionWeatherData timestamp warning: apiVersion={} previousTimestamp={} > latestTimestamp={}. " +
                             "Not updating forecast section weather data",
-                    version.getVersion(), previousTimestamp.toInstant(), messageTimestamp);
+                    version.getVersion(), previousTimestamp, data.messageTimestamp);
             return;
         }
 
@@ -83,7 +81,7 @@ public class ForecastSectionDataUpdateService {
 
             log.info("method=updateForecastSectionWeatherData Forecast section weather data contains weather forecasts for apiVersion={} " +
                             "forecastCount={} forecast sections, forecastSectionsInDatabase={} messageTimestamp={}",
-                    version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size(), data.messageTimestamp.toInstant());
+                    version.getVersion(), weatherDataByNaturalId.size(), forecastSections.size(), data.messageTimestamp);
 
             final Map<String, ForecastSection> forecastSectionsByNaturalId = forecastSections.stream().collect(
                     Collectors.toMap(ForecastSection::getNaturalId, fs -> fs));
@@ -97,7 +95,7 @@ public class ForecastSectionDataUpdateService {
             return;
         }
 
-        dataStatusService.updateDataUpdated(updateDataType, messageTimestamp);
+        dataStatusService.updateDataUpdated(updateDataType, data.messageTimestamp);
     }
 
     private void updateForecastSectionWeatherData(final Map<String, ForecastSectionWeatherDto> weatherDataByNaturalId, final Map<String, ForecastSection> forecastSectionsByNaturalId) {

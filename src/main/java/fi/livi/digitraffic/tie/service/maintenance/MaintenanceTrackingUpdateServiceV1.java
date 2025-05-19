@@ -95,7 +95,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
         final StopWatch start = StopWatch.createStarted();
         final Instant olderThanDate = Instant.now().minus(olderThanDays, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS);
         final long count = maintenanceTrackingObservationDataRepository.deleteByObservationTimeIsBefore(olderThanDate, maxToDelete);
-        log.info("method=deleteDataOlderThanDays before {} deleted {} tookMs={}", olderThanDate, count, start.getTime());
+        log.info("method=deleteDataOlderThanDays before {} deleted {} tookMs={}", olderThanDate, count, start.getDuration().toMillis());
         return count;
     }
 
@@ -114,7 +114,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                  fromDbCountAndMs.getLeft(), fromCacheCount,
                  fromDbCountAndMs.getRight(),
                  fromDbCountAndMs.getLeft() > 0 ? fromDbCountAndMs.getRight()/fromDbCountAndMs.getLeft() : 0,
-                start.getTime());
+                start.getDuration().toMillis());
         return count;
     }
 
@@ -224,7 +224,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
                     harjaWorkMachineIdContractId.getLeft(),
                     harjaWorkMachineIdContractId.getRight());
             cacheByHarjaWorkMachineIdAndContractId.put(harjaWorkMachineIdContractId, tracking);
-            fromDbCountAndMs = Pair.of(fromDbCountAndMs.getLeft()+1, fromDbCountAndMs.getRight() + start.getTime());
+            fromDbCountAndMs = Pair.of(fromDbCountAndMs.getLeft()+1, fromDbCountAndMs.getRight() + start.getDuration().toMillis());
             return tracking;
         }
     }
@@ -361,7 +361,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
             return Collections.emptyList();
         }
         if (coordinates.size() == 1) { // Point
-            return Collections.singletonList(PostgisGeometryUtils.createPointWithZ(coordinates.get(0)));
+            return Collections.singletonList(PostgisGeometryUtils.createPointWithZ(coordinates.getFirst()));
         }
 
         return splitLineStringsWithGaps(coordinates, havainto, kirjausOtsikkoJson);
@@ -378,12 +378,12 @@ public class MaintenanceTrackingUpdateServiceV1 {
     private List<Geometry> splitLineStringsWithGaps(final List<Coordinate> coordinates, final Havainto havainto, final String kirjausOtsikkoJson) {
         final List<Geometry> geometries = new ArrayList<>();
         final List<Coordinate> tmpCoordinates = new ArrayList<>();
-        tmpCoordinates.add(coordinates.get(0));
+        tmpCoordinates.add(coordinates.getFirst());
 
         final StringBuilder sb = new StringBuilder();
         for (int i = 1; i < coordinates.size(); i++) {
             final Coordinate next = coordinates.get(i);
-            final double km = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(tmpCoordinates.get(tmpCoordinates.size()-1), next);
+            final double km = PostgisGeometryUtils.distanceBetweenWGS84PointsInKm(tmpCoordinates.getLast(), next);
             if (km > distinctLineStringObservationGapKm) {
                 sb.append(String.format("[%d]: %s and [%d]: %s is %s km. ", i-1, coordinates.get(i-1).toString(), i, coordinates.get(i).toString(), km));
                 geometries.add(createGeometry(tmpCoordinates));
@@ -411,7 +411,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
 
     private static Geometry createGeometry(final List<Coordinate> coordinates) {
         if (coordinates.size() == 1) {
-            return PostgisGeometryUtils.createPointWithZ(coordinates.get(0));
+            return PostgisGeometryUtils.createPointWithZ(coordinates.getFirst());
         }
         return PostgisGeometryUtils.createLineStringWithZ(coordinates);
     }
@@ -421,7 +421,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
             final List<List<Object>> lineStringCoords = sijainti.getViivageometria().getCoordinates();
             return lineStringCoords.stream().map(point -> {
                 try {
-                    final double x = ((Number) point.get(0)).doubleValue();
+                    final double x = ((Number) point.getFirst()).doubleValue();
                     final double y = ((Number) point.get(1)).doubleValue();
                     final double z = point.size() > 2 ? ((Number) point.get(2)).doubleValue() : 0.0;
                     final Coordinate coordinate = PostgisGeometryUtils.createCoordinateWithZFromETRS89ToWGS84(x, y, z);

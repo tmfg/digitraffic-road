@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.model.roadstation;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -23,30 +23,34 @@ import jakarta.persistence.SequenceGenerator;
 public class SensorValue extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
-    @SequenceGenerator(name = "SEQ_SENSOR_VALUE", sequenceName = "SEQ_SENSOR_VALUE", allocationSize = 1)
+    @SequenceGenerator(name = "SEQ_SENSOR_VALUE",
+                       sequenceName = "SEQ_SENSOR_VALUE",
+                       allocationSize = 1)
     @GeneratedValue(generator = "SEQ_SENSOR_VALUE")
     private Long id;
 
     private Double value;
 
     @Column(name = "MEASURED")
-    private ZonedDateTime sensorValueMeasured;
+    private Instant sensorValueMeasured;
 
     @OneToOne
-    @JoinColumn(name="ROAD_STATION_ID", nullable = false)
+    @JoinColumn(name = "ROAD_STATION_ID",
+                nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
 
     @OneToOne
-    @JoinColumn(name="ROAD_STATION_SENSOR_ID", nullable = false)
+    @JoinColumn(name = "ROAD_STATION_SENSOR_ID",
+                nullable = false)
     @Fetch(FetchMode.JOIN)
     private RoadStationSensor roadStationSensor;
 
     @Column(name = "TIME_WINDOW_START")
-    private ZonedDateTime timeWindowStart;
+    private Instant timeWindowStart;
 
     @Column(name = "TIME_WINDOW_END")
-    private ZonedDateTime timeWindowEnd;
+    private Instant timeWindowEnd;
 
     @Enumerated(EnumType.STRING)
     private SensorValueReliability reliability;
@@ -58,7 +62,7 @@ public class SensorValue extends ReadOnlyCreatedAndModifiedFields {
     }
 
     public SensorValue(final RoadStation roadStation, final RoadStationSensor roadStationSensor, final double value,
-                       final ZonedDateTime sensorValueMeasured, final SensorValueReliability reliability) {
+                       final Instant sensorValueMeasured, final SensorValueReliability reliability) {
         this.roadStation = roadStation;
         this.roadStationSensor = roadStationSensor;
         this.value = value;
@@ -82,11 +86,11 @@ public class SensorValue extends ReadOnlyCreatedAndModifiedFields {
         this.value = value;
     }
 
-    public ZonedDateTime getSensorValueMeasured() {
+    public Instant getSensorValueMeasured() {
         return sensorValueMeasured;
     }
 
-    public void setSensorValueMeasured(final ZonedDateTime sensorValueMeasured) {
+    public void setSensorValueMeasured(final Instant sensorValueMeasured) {
         this.sensorValueMeasured = sensorValueMeasured;
     }
 
@@ -106,11 +110,11 @@ public class SensorValue extends ReadOnlyCreatedAndModifiedFields {
         this.roadStationSensor = roadStationSensor;
     }
 
-    public ZonedDateTime getTimeWindowStart() {
+    public Instant getTimeWindowStart() {
         return timeWindowStart;
     }
 
-    public ZonedDateTime getTimeWindowEnd() {
+    public Instant getTimeWindowEnd() {
         return timeWindowEnd;
     }
 

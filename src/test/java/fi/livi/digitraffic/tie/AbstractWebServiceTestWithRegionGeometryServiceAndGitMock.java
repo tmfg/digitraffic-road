@@ -1,23 +1,21 @@
 package fi.livi.digitraffic.tie;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 
 public class AbstractWebServiceTestWithRegionGeometryServiceAndGitMock extends AbstractWebServiceTestWithRegionGeometryGitMock {
 
-    @MockBean
+    @MockitoBean
     protected RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
 
     @BeforeEach

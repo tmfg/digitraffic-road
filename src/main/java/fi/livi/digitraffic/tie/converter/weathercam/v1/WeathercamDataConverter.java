@@ -48,7 +48,7 @@ public class WeathercamDataConverter {
             .collect(toList());
         final Instant dataUpdatedTime = getMaxPicLastModifiedDb(presets);
 
-        return new WeathercamStationDataV1(presets.get(0).getCameraId(), presetsDatas, dataUpdatedTime);
+        return new WeathercamStationDataV1(presets.getFirst().getCameraId(), presetsDatas, dataUpdatedTime);
     }
 
     private static Instant getMaxMeasuredTime(final List<WeathercamPresetDataV1> presetDatas) {

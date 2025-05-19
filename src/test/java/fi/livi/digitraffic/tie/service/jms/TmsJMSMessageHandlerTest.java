@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertTimesEqual;
+
+import static fi.livi.digitraffic.test.util.AssertUtil.assertTimesEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -61,10 +61,10 @@ public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
             datatypeFactory.newXMLGregorianCalendar("2016-02-16T10:00:00Z");
     private static final XMLGregorianCalendar aikaikkunaLoppu =
             datatypeFactory.newXMLGregorianCalendar("2016-06-16T11:00:00Z");
-    private static final ZonedDateTime timeWindowStart =
-            ZonedDateTime.parse("2016-02-16T12:00:00+02:00[Europe/Helsinki]");
-    private static final ZonedDateTime timeWindowEnd =
-            ZonedDateTime.parse("2016-06-16T14:00:00+03:00[Europe/Helsinki]");
+    private static final Instant timeWindowStart =
+            Instant.parse("2016-02-16T12:00:00+02:00");
+    private static final Instant timeWindowEnd =
+            Instant.parse("2016-06-16T14:00:00+03:00");
     private static int sensorValueToSet = new Random().nextInt(1000);
 
     @Autowired
@@ -134,16 +134,16 @@ public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
             } while (data.size() < 100 && lamsWithLotjuId.size() > data.size());
 
-            log.info("Data generation tookMs={}", sw.getTime());
+            log.info("Data generation tookMs={}", sw.getDuration().toMillis());
             final StopWatch swHandle = StopWatch.createStarted();
 
             tmsJmsMessageListener.drainQueueScheduled();
-            handleDataTotalTime += swHandle.getTime();
+            handleDataTotalTime += swHandle.getDuration().toMillis();
 
             // send data with 1 s interval
-            final long sleep = 1000 - sw.getTime();
+            final long sleep = 1000 - sw.getDuration().toMillis();
             if (sleep < 0) {
-                log.warn("Data generation and handle took {} ms and should use maximum 1000 ms", sw.getTime());
+                log.warn("Data generation and handle took {} ms and should use maximum 1000 ms", sw.getDuration().toMillis());
             } else {
                 ThreadUtil.delayMs(sleep);
             }
@@ -268,7 +268,7 @@ public class TmsJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
             final int updated = sensorDataUpdateService.updateLamValueBuffer(data);
 
-            log.info("handleData tookMs={}", sw.getTime());
+            log.info("handleData tookMs={}", sw.getDuration().toMillis());
             return updated;
         };
     }

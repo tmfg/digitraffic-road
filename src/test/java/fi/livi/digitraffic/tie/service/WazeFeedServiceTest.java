@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.converter.waze.WazeDatex2JsonConverter;
@@ -59,10 +59,10 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     @Autowired
     private WazeDatex2MessageConverter wazeDatex2MessageConverter;
 
-    @MockBean
+    @MockitoBean
     private WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
-    @SpyBean
+    @MockitoSpyBean
     private Datex2Repository datex2Repository;
 
     public static final String EXAMPLE_WAZE_REVERSE_GEOCODING_RESPONSE = "{\"lat\":60.1,\"lon\":21.3,\"radius\":50,\"result\":[{\"distance\":3.1415,\"names\":[\"Lautta\"]},{\"distance\":20.24164959825527,\"names\":[\"192 - Kivimaantie\"]}]}";

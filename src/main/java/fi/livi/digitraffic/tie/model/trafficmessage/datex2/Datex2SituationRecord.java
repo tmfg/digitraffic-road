@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.model.trafficmessage.datex2;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -53,21 +52,21 @@ public class Datex2SituationRecord {
 
     @Schema(description = "Record creation date time", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    private ZonedDateTime creationTime;
+    private Instant creationTime;
 
     @Schema(description = "Record version date time", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    private ZonedDateTime versionTime;
+    private Instant versionTime;
 
     @Schema(description = "Record observation date time")
-    private ZonedDateTime observationTime;
+    private Instant observationTime;
 
     @Schema(description = "Record overall start date time", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    private ZonedDateTime overallStartTime;
+    private Instant overallStartTime;
 
     @Schema(description = "Record overall end date time")
-    private ZonedDateTime overallEndTime;
+    private Instant overallEndTime;
 
     @Schema(description = "Record type", requiredMode = Schema.RequiredMode.REQUIRED)
     @Enumerated(EnumType.STRING)
@@ -114,27 +113,27 @@ public class Datex2SituationRecord {
         this.situationRecordId = situationRecordId;
     }
 
-    public void setCreationTime(final ZonedDateTime creationTime) {
+    public void setCreationTime(final Instant creationTime) {
         this.creationTime = creationTime;
     }
 
-    public ZonedDateTime getCreationTime() {
+    public Instant getCreationTime() {
         return creationTime;
     }
 
-    public void setVersionTime(final ZonedDateTime versionTime) {
+    public void setVersionTime(final Instant versionTime) {
         this.versionTime = versionTime;
     }
 
-    public ZonedDateTime getVersionTime() {
+    public Instant getVersionTime() {
         return versionTime;
     }
 
-    public void setObservationTime(final ZonedDateTime observationTime) {
+    public void setObservationTime(final Instant observationTime) {
         this.observationTime = observationTime;
     }
 
-    public ZonedDateTime getObservationTime() {
+    public Instant getObservationTime() {
         return observationTime;
     }
 
@@ -146,19 +145,19 @@ public class Datex2SituationRecord {
         this.validyStatus = validyStatus;
     }
 
-    public void setOverallStartTime(final ZonedDateTime overallStartTime) {
+    public void setOverallStartTime(final Instant overallStartTime) {
         this.overallStartTime = overallStartTime;
     }
 
-    public ZonedDateTime getOverallStartTime() {
+    public Instant getOverallStartTime() {
         return overallStartTime;
     }
 
-    public void setOverallEndTime(final ZonedDateTime overallEndTime) {
+    public void setOverallEndTime(final Instant overallEndTime) {
         this.overallEndTime = overallEndTime;
     }
 
-    public ZonedDateTime getOverallEndTime() {
+    public Instant getOverallEndTime() {
         return overallEndTime;
     }
 

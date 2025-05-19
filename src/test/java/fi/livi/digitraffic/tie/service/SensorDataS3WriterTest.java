@@ -116,7 +116,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
 
     @Test
     public void s3Bucket() throws IOException {
-        final Instant now = TimeUtil.withoutMillis(ZonedDateTime.now().withMinute(1).toInstant());
+        final Instant now = TimeUtil.withoutMillis(Instant.now().atZone(ZoneOffset.UTC).withHour(1).toInstant());
         final Instant to = now.truncatedTo(ChronoUnit.HOURS);
         final Instant from = to.minus(1, ChronoUnit.HOURS);
 

@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,7 +118,7 @@ public class TestUtils {
         cp.setResolution("1920x1080");
         cp.setDirection("1");
         cp.setCameraLotjuId(cp.getLotjuId());
-        cp.setPictureLastModified(ZonedDateTime.now());
+        cp.setPictureLastModified(Instant.now());
         cp.setPictureLastModifiedDb(cp.getPictureLastModified().plusSeconds(10));
 
         return cp;
@@ -156,9 +155,9 @@ public class TestUtils {
         rs.setNameFi(name + "_fi");
         rs.setNameEn(name + "_en");
         rs.setNameSv(name + "_sv");
-        rs.setStartDate(ZonedDateTime.now().minusDays(7));
-        rs.setRepairMaintenanceDate(ZonedDateTime.now().minusDays(6));
-        rs.setAnnualMaintenanceDate(ZonedDateTime.now().minusDays(10));
+        rs.setStartDate(Instant.now().minus(7,ChronoUnit.DAYS));
+        rs.setRepairMaintenanceDate(Instant.now().minus(6,ChronoUnit.DAYS));
+        rs.setAnnualMaintenanceDate(Instant.now().minus(10,ChronoUnit.DAYS));
 
         final RoadAddress ra = generateDummyRoadAddres();
         rs.setRoadAddress(ra);

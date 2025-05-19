@@ -127,14 +127,14 @@ public class CameraImageS3Writer {
                 amazonS3Client.deleteObject(weathercamS3Properties.getS3WeathercamBucketName(), imageKey);
                 if (amazonS3Client.doesObjectExist(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey)) {
                     amazonS3Client.deleteObject(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey);
-                    return DeleteInfo.success(start.getTime(), versionedKey);
+                    return DeleteInfo.success(start.getDuration().toMillis(), versionedKey);
                 }
-                return DeleteInfo.success(start.getTime(), imageKey);
+                return DeleteInfo.success(start.getDuration().toMillis(), imageKey);
             }
-            return DeleteInfo.doesNotExist(start.getTime(), imageKey);
+            return DeleteInfo.doesNotExist(start.getDuration().toMillis(), imageKey);
         } catch (final Exception e) {
             log.error(String.format("Failed to remove s3 file s3Key=%s", imageKey), e);
-            return DeleteInfo.failed(start.getTime(), imageKey);
+            return DeleteInfo.failed(start.getDuration().toMillis(), imageKey);
         }
     }
 

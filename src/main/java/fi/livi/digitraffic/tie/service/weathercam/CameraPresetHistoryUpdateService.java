@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +43,11 @@ public class CameraPresetHistoryUpdateService {
         // If statTime is null it means now -> no history to update or
         // if startTime is in the future -> no history to update
         final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
-        if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(ZonedDateTime.now())) {
+        if (rs.getPublicityStartTime() != null && !rs.getPublicityStartTime().isAfter(Instant.now())) {
             log.info("method=updatePresetHistoryPublicityForCamera cameraId={} toPublic={} fromPublicityStartTime={}",
-                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
+                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime());
             cameraPresetHistoryRepository.updatePresetHistoryPublicityForCameraId(
-                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime().toInstant());
+                cameraId, rs.internalIsPublic(), rs.getPublicityStartTime());
         }
         // If camera is not public, hide current image
         if (!rs.isPublicNow()) {

@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -39,16 +38,13 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     @Autowired
     protected WebApplicationContext wac;
 
-    @Autowired
-    protected GenericApplicationContext applicationContext;
-
     protected MockMvc mockMvc;
 
     @Autowired
     void setConverters(final HttpMessageConverter<?>[] converters) {
 
         final HttpMessageConverter<?> mappingJackson2HttpMessageConverter = Arrays.stream(converters).filter(
-            hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElseThrow();
+                hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElseThrow();
 
         assertNotNull(mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
     }
@@ -64,7 +60,8 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     }
 
     protected ResultActions executeGet(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url).characterEncoding(StandardCharsets.UTF_8);
+        final MockHttpServletRequestBuilder get =
+                MockMvcRequestBuilders.get(url).characterEncoding(StandardCharsets.UTF_8);
         get.contentType(MediaType.APPLICATION_JSON);
         return mockMvc.perform(get);
     }
@@ -73,15 +70,16 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
         return rs.andExpect(status().isOk());
     }
 
-    protected ResultActions expectOkFeatureCollectionWithSize(final ResultActions rs, final int featuresSize) throws Exception {
+    protected ResultActions expectOkFeatureCollectionWithSize(final ResultActions rs, final int featuresSize)
+            throws Exception {
         return rs.andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(featuresSize)));
+                .andExpect(jsonPath("type", equalTo("FeatureCollection")))
+                .andExpect(jsonPath("features", hasSize(featuresSize)));
     }
 
     protected ResultActions expectOkFeature(final ResultActions rs) throws Exception {
         return rs.andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("Feature")));
+                .andExpect(jsonPath("type", equalTo("Feature")));
     }
 
     protected ResultActions logInfoResponse(final ResultActions result) throws UnsupportedEncodingException {
@@ -91,7 +89,9 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     protected ResultActions logDebugResponse(final ResultActions result) throws UnsupportedEncodingException {
         return logResponse(result, true);
     }
-    private ResultActions logResponse(final ResultActions result, final boolean debug) throws UnsupportedEncodingException {
+
+    private ResultActions logResponse(final ResultActions result, final boolean debug)
+            throws UnsupportedEncodingException {
         final String responseStr = result.andReturn().getResponse().getContentAsString();
         if (debug) {
             log.debug("\n" + responseStr);

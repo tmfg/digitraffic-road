@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
+import static fi.livi.digitraffic.tie.converter.waze.WazeAnnouncementDurationConverter.getAnnouncementDuration;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,8 +30,6 @@ import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.service.waze.WazeReverseGeocodingService;
 
-import static fi.livi.digitraffic.tie.converter.waze.WazeAnnouncementDurationConverter.getAnnouncementDuration;
-
 @ConditionalOnWebApplication
 @Component
 public class WazeDatex2JsonConverter {
@@ -57,7 +57,7 @@ public class WazeDatex2JsonConverter {
         final String situationId = properties.situationId;
         final Optional<WazeFeedIncidentDto.WazeType> maybeType = wazeTypeConverter.convertToWazeType(wazeDatex2FeatureDto);
 
-        final TrafficAnnouncement announcement = properties.announcements.get(0);
+        final TrafficAnnouncement announcement = properties.announcements.getFirst();
         final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());
 
         final String description = wazeDatex2MessageConverter.export(situationId, wazeDatex2FeatureDto.d2LogicalModel);
@@ -93,11 +93,9 @@ public class WazeDatex2JsonConverter {
     }
 
     public static Optional<String> formatPolyline(final Geometry<?> geometry, final WazeFeedLocationDto.Direction direction) {
-        if (geometry instanceof Point) {
-            final Point point = (Point) geometry;
+        if (geometry instanceof final Point point) {
             return Optional.of(formatPolylineFromPoint(point));
-        } else if (geometry instanceof MultiLineString) {
-            final MultiLineString multiLineString = (MultiLineString) geometry;
+        } else if (geometry instanceof final MultiLineString multiLineString) {
             return Optional.of(formatPolylineFromMultiLineString(multiLineString, direction));
         }
 
@@ -126,7 +124,7 @@ public class WazeDatex2JsonConverter {
     }
 
     private static String formatPolylineFromPoint(final List<Double> point) {
-        return formatPolylineFromPoint(point.get(0), point.get(1));
+        return formatPolylineFromPoint(point.getFirst(), point.get(1));
     }
 
     private static String formatPolylineFromPoint(final Double longitude, final Double latitude) {

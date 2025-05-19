@@ -1,14 +1,14 @@
 package fi.livi.digitraffic.tie.service.lotju;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 
 public abstract class AbstractMetadataUpdateMessageHandlerIntegrationTest extends AbstractDaemonTest {
-    @MockBean
+    @MockitoBean
     protected LotjuWeatherStationMetadataClient lotjuWeatherStationMetadataClient;
 
-    @MockBean
+    @MockitoBean
     protected LotjuTmsStationMetadataClient lotjuTmsStationMetadataClient;
 
 }

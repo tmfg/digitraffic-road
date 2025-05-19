@@ -34,6 +34,6 @@ public class RegionGeometryUpdateService {
     public void saveChanges(final List<RegionGeometry> changes) {
         final StopWatch start = StopWatch.createStarted();
         regionGeometryRepository.saveAll(changes);
-        log.info("method=saveChanges insertCount={} tookMs={}", changes.size(), start.getTime());
+        log.info("method=saveChanges insertCount={} tookMs={}", changes.size(), start.getDuration().toMillis());
     }
 }

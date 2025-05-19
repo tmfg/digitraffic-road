@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.model.roadstation;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -74,7 +74,7 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
     /**
      * Tells when isPublic value is effective. If null then always effective.
      */
-    private ZonedDateTime publicityStartTime;
+    private Instant publicityStartTime;
 
     private String nameFi, nameSv, nameEn;
 
@@ -95,11 +95,11 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
     private String provinceCode;
 
     private String location;
-    private ZonedDateTime startDate;
+    private Instant startDate;
     private String country;
     private String liviId;
-    private ZonedDateTime repairMaintenanceDate;
-    private ZonedDateTime annualMaintenanceDate;
+    private Instant repairMaintenanceDate;
+    private Instant annualMaintenanceDate;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name="ROAD_ADDRESS_ID", unique=true)
@@ -210,11 +210,11 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
         isPublicPrevious = publicPrevious;
     }
 
-    private void setPublicityStartTime(final ZonedDateTime publicityStartTime) {
+    private void setPublicityStartTime(final Instant publicityStartTime) {
         this.publicityStartTime = publicityStartTime;
     }
 
-    public ZonedDateTime getPublicityStartTime() {
+    public Instant getPublicityStartTime() {
         return publicityStartTime;
     }
 
@@ -351,19 +351,19 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
         this.roadStationSensors = roadStationSensors;
     }
 
-    public void setRepairMaintenanceDate(final ZonedDateTime repairMaintenanceDate) {
+    public void setRepairMaintenanceDate(final Instant repairMaintenanceDate) {
         this.repairMaintenanceDate = repairMaintenanceDate;
     }
 
-    public ZonedDateTime getRepairMaintenanceDate() {
+    public Instant getRepairMaintenanceDate() {
         return repairMaintenanceDate;
     }
 
-    public void setAnnualMaintenanceDate(final ZonedDateTime annualMaintenanceDate) {
+    public void setAnnualMaintenanceDate(final Instant annualMaintenanceDate) {
         this.annualMaintenanceDate = annualMaintenanceDate;
     }
 
-    public ZonedDateTime getAnnualMaintenanceDate() {
+    public Instant getAnnualMaintenanceDate() {
         return annualMaintenanceDate;
     }
 
@@ -391,11 +391,11 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
         return location;
     }
 
-    public void setStartDate(final ZonedDateTime startDate) {
+    public void setStartDate(final Instant startDate) {
         this.startDate = startDate;
     }
 
-    public ZonedDateTime getStartDate() {
+    public Instant getStartDate() {
         return startDate;
     }
 
@@ -451,7 +451,7 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
      */
     public boolean isPublicNow() {
         // If current value is valid now, let's use it
-        if (publicityStartTime == null || publicityStartTime.isBefore(ZonedDateTime.now())) {
+        if (publicityStartTime == null || publicityStartTime.isBefore(Instant.now())) {
             return isPublic;
         }
         return isPublicPrevious;
@@ -475,7 +475,7 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
      *
      * @throws IllegalStateException If called other than camera station with time set
      */
-    public boolean updatePublicity(final boolean isPublicNew, final ZonedDateTime publicityStartTimeNew) {
+    public boolean updatePublicity(final boolean isPublicNew, final Instant publicityStartTimeNew) {
         if (publicityStartTimeNew != null && !RoadStationType.CAMERA_STATION.equals(getType())) {
             throw new IllegalStateException(String.format("Only %s can have publicityStartTime. Tried to it set to %s.",
                                                           RoadStationType.CAMERA_STATION, this.getType()));
@@ -484,7 +484,7 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
         // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
         // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
         if ( isPublic != isPublicNew &&
-            (publicityStartTime == null || publicityStartTime.isBefore(ZonedDateTime.now())) ) {
+            (publicityStartTime == null || publicityStartTime.isBefore(Instant.now())) ) {
             setPublicPrevious(isPublic);
         }
         internalSetPublic(isPublicNew);

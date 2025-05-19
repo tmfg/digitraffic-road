@@ -30,6 +30,6 @@ public class TmsStationSensorConstantsMetadataUpdateJob extends SimpleUpdateJob 
         dataStatusService.updateDataUpdated(DataType.TMS_STATION_SENSOR_CONSTANT_METADATA_CHECK);
 
         log.info("TmsStationSensorConstants took: sensorConstantsTimeMs={} ms, TmsStationSensorConstantValues took: sensorConstantsValuesTimeMs={}",
-                 stationsSensorConstantsWatch.getTime(), stationsSensorConstantValuesWatch.getTime());
+                 stationsSensorConstantsWatch.getDuration().toMillis(), stationsSensorConstantValuesWatch.getDuration().toMillis());
     }
 }

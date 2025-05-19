@@ -88,7 +88,7 @@ public class CameraImageUpdateManager {
 
             log.info(
                 "method=updateCameraData Updating success for weather camera images updateCount={} of futuresCount={} failedCount={} tookMs={} presetIds=[{}]",
-                updateCount, futures.size(), futures.size() - updateCount, start.getTime(), presetIds);
+                updateCount, futures.size(), futures.size() - updateCount, start.getDuration().toMillis(), presetIds);
             return (int) updateCount;
         } catch (final Exception e) {
             log.error("method=updateCameraData Error while handling Camera data", e);

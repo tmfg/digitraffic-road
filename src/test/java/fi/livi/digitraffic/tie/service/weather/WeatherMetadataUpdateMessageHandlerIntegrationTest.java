@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.weather;
 
+import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
 import static fi.livi.digitraffic.tie.TestUtils.createTiesaaAsema;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType.ROAD_ADDRESS;
 import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType.WEATHER_COMPUTATIONAL_SENSOR;
 import static fi.livi.digitraffic.tie.service.jms.marshaller.dto.WeatherMetadataUpdatedMessageDto.EntityType.WEATHER_STATION;
@@ -102,7 +102,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
             stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.WEATHER_STATION);
         final List<Long> stationsSensors = allSensorsAfterInsert.get(after.getId());
         assertCollectionSize(1, stationsSensors);
-        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), stationsSensors.get(0).longValue());
+        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), stationsSensors.getFirst().longValue());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         when(lotjuWeatherStationMetadataClient.getTiesaaAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(anturit);
 
         // 2. Send insert message
-        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(WEATHER_STATION_COMPUTATIONAL_SENSOR, UpdateType.INSERT, anturit.get(0).getId(), ROAD_STATION_LOTJU_ID));
+        weatherMetadataUpdateMessageHandler.updateMetadataFromJms(createMessage(WEATHER_STATION_COMPUTATIONAL_SENSOR, UpdateType.INSERT, anturit.getFirst().getId(), ROAD_STATION_LOTJU_ID));
         TestUtils.entityManagerFlushAndClear(entityManager);
 
         // 3. Check that new station and sensor are in place
@@ -126,7 +126,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
             stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.WEATHER_STATION);
         final List<Long> stationsSensors = allSensorsAfterInsert.get(after.getId());
         assertCollectionSize(1, stationsSensors);
-        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), stationsSensors.get(0).longValue());
+        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), stationsSensors.getFirst().longValue());
 
     }
 
@@ -153,13 +153,13 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
             stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(after.getId(), RoadStationType.WEATHER_STATION);
         final List<Long> stationsSensors = allSensorsAfterInsert.get(after.getId());
         assertCollectionSize(1, stationsSensors);
-        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), stationsSensors.get(0).longValue());
+        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_1.getRight(), stationsSensors.getFirst().longValue());
     }
 
     private List<TiesaaLaskennallinenAnturiVO> createAnturiListWith(final Pair<Long, Long> sensorLotjuIdAndNaturalId) {
         final List<TiesaaLaskennallinenAnturiVO> anturit = TestUtils.createTiesaaLaskennallinenAnturis(1);
-        anturit.get(0).setId(sensorLotjuIdAndNaturalId.getLeft());
-        anturit.get(0).setVanhaId(sensorLotjuIdAndNaturalId.getRight().intValue());
+        anturit.getFirst().setId(sensorLotjuIdAndNaturalId.getLeft());
+        anturit.getFirst().setVanhaId(sensorLotjuIdAndNaturalId.getRight().intValue());
         return anturit;
     }
 
@@ -203,7 +203,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final Map<Long, List<Long>> allSensorsAfterUpdate = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rsAfterUpdate.getId(), RoadStationType.WEATHER_STATION);
         final List<Long> roadStationsSensors = allSensorsAfterUpdate.get(rsAfterUpdate.getId());
         assertCollectionSize(1, roadStationsSensors);
-        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2.getRight(), roadStationsSensors.get(0).longValue());
+        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2.getRight(), roadStationsSensors.getFirst().longValue());
     }
 
     @Test
@@ -248,7 +248,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final Map<Long, List<Long>> allSensorsAfterDelete = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rws.getRoadStationId(), RoadStationType.WEATHER_STATION);
         final List<Long> roadStationSensors = allSensorsAfterDelete.get(rws.getRoadStationId());
         assertCollectionSize(1, roadStationSensors);
-        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2.getRight(), roadStationSensors.get(0).longValue());
+        assertEquals(ALLOWED_SENSOR_LOTJU_ID_AND_NATURAL_ID_PAIR_2.getRight(), roadStationSensors.getFirst().longValue());
     }
 
     @Test
@@ -260,7 +260,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final int sensorsCountBeforeUpdate = getWeatherSensorsFromDb().size();
 
         // 2. Send insert message
-        final TiesaaLaskennallinenAnturiVO anturi = createAnturiListWith(Pair.of(NEW_LOTJU_ID, NEW_LOTJU_ID)).get(0);
+        final TiesaaLaskennallinenAnturiVO anturi = createAnturiListWith(Pair.of(NEW_LOTJU_ID, NEW_LOTJU_ID)).getFirst();
         when(lotjuWeatherStationMetadataClient.getTiesaaLaskennallinenAnturi(eq(NEW_LOTJU_ID))).thenReturn(anturi);
         when(lotjuWeatherStationMetadataClient.getTiesaaAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(tsa);
         when(lotjuWeatherStationMetadataClient.getTiesaaAsemanLaskennallisetAnturit(eq(ROAD_STATION_LOTJU_ID))).thenReturn(Collections.singletonList(anturi));
@@ -279,7 +279,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final Map<Long, List<Long>> allSensorsMappedByRsId = stationSensorConverterService.getPublishableSensorsNaturalIdsMappedByRoadStationId(rwsId, RoadStationType.WEATHER_STATION);
         final List<Long> roadStationsSensors = allSensorsMappedByRsId.get(rwsId);
         assertCollectionSize(1, roadStationsSensors);
-        assertEquals(NEW_LOTJU_ID, roadStationsSensors.get(0).longValue());
+        assertEquals(NEW_LOTJU_ID, roadStationsSensors.getFirst().longValue());
     }
 
 
@@ -288,7 +288,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         // 1. there is no sensor with new lotju id
         final int sensorsCountBeforeUpdate = getWeatherSensorsFromDb().size();
 
-        final TiesaaLaskennallinenAnturiVO anturi = TestUtils.createTiesaaLaskennallinenAnturis(1).get(0);
+        final TiesaaLaskennallinenAnturiVO anturi = TestUtils.createTiesaaLaskennallinenAnturis(1).getFirst();
         assertEquals(UpdateStatus.INSERTED, roadStationSensorService.updateOrInsert(anturi));
 
         // 2. Send update message
@@ -314,7 +314,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
     @Test
     public void weatherComputationalSensorDeleteMessage() {
         // 1. there is no sensor with new lotju id
-        final TiesaaLaskennallinenAnturiVO anturi = TestUtils.createTiesaaLaskennallinenAnturis(1).get(0);
+        final TiesaaLaskennallinenAnturiVO anturi = TestUtils.createTiesaaLaskennallinenAnturis(1).getFirst();
         assertEquals(UpdateStatus.INSERTED, roadStationSensorService.updateOrInsert(anturi));
 
         // 2. Send update message

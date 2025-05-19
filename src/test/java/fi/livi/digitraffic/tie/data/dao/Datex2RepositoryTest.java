@@ -1,13 +1,14 @@
 package fi.livi.digitraffic.tie.data.dao;
 
+import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         datex2Repository.deleteAll();
         final Datex2 datex2 = new Datex2(SituationType.ROAD_WORK, null);
 
-        datex2.setImportTime(ZonedDateTime.now());
+        datex2.setImportTime(Instant.now());
         datex2.setMessage("Message of high importance");
 
         datex2Repository.save(datex2);
@@ -50,7 +51,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         final List<Datex2> all = datex2Repository.findAll();
         assertCollectionSize(1, all);
 
-        datex2Repository.delete(all.get(0));
+        datex2Repository.delete(all.getFirst());
 
         final List<Datex2> after = datex2Repository.findAll();
         assertCollectionSize(0, after);
@@ -67,15 +68,15 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
                     createAndSaveDatex2Message(type, trafficAnnouncementType);
                     final List<Datex2> found = datex2Repository.findAll();
                     assertCollectionSize(1, found);
-                    assertEquals(type, found.get(0).getSituationType());
-                    assertEquals(trafficAnnouncementType, found.get(0).getTrafficAnnouncementType());
+                    assertEquals(type, found.getFirst().getSituationType());
+                    assertEquals(trafficAnnouncementType, found.getFirst().getTrafficAnnouncementType());
                 }
             } else {
                 createAndSaveDatex2Message(type, null);
                 final List<Datex2> found = datex2Repository.findAll();
                 assertCollectionSize(1, found);
-                assertEquals(type, found.get(0).getSituationType());
-                assertNull(found.get(0).getTrafficAnnouncementType());
+                assertEquals(type, found.getFirst().getSituationType());
+                assertNull(found.getFirst().getTrafficAnnouncementType());
             }
 
         }
@@ -83,7 +84,7 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
 
     private void createAndSaveDatex2Message(final SituationType type, final TrafficAnnouncementType trafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(type, trafficAnnouncementType);
-        datex2.setImportTime(ZonedDateTime.now());
+        datex2.setImportTime(Instant.now());
         datex2.setMessage("Message of high importance");
         datex2Repository.save(datex2);
         entityManager.flush();
@@ -118,9 +119,9 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
 
     private void createDatex2InPast2h(final String situationId, final SituationType type, final TrafficAnnouncementType trafficAnnouncementType) {
         final Datex2 datex2 = new Datex2(type, trafficAnnouncementType);
-        datex2.setImportTime(ZonedDateTime.now());
+        datex2.setImportTime(Instant.now());
         datex2.setMessage("xml message");
-        datex2.setPublicationTime(ZonedDateTime.now());
+        datex2.setPublicationTime(Instant.now());
 
         final Datex2Situation situation = new Datex2Situation();
         situation.setSituationId(situationId);
@@ -130,11 +131,11 @@ public class Datex2RepositoryTest extends AbstractJpaTest {
         final Datex2SituationRecord record = new Datex2SituationRecord();
         record.setType(Datex2SituationRecordType.TRAFFIC_ELEMENT_ACCIDENT);
         record.setSituationRecordId(situationId + "01");
-        record.setVersionTime(ZonedDateTime.now().minusHours(10));
-        record.setCreationTime(ZonedDateTime.now().minusHours(10));
+        record.setVersionTime(Instant.now().minus(10, ChronoUnit.HOURS));
+        record.setCreationTime(Instant.now().minus(10, ChronoUnit.HOURS));
         record.setValidyStatus(Datex2SituationRecordValidyStatus.DEFINED_BY_VALIDITY_TIME_SPEC);
-        record.setOverallStartTime(ZonedDateTime.now().minusHours(10));
-        record.setOverallEndTime(ZonedDateTime.now().minusHours(2).minusSeconds(1));
+        record.setOverallStartTime(Instant.now().minus(10, ChronoUnit.HOURS));
+        record.setOverallEndTime(Instant.now().minus(2, ChronoUnit.HOURS).minusSeconds(1));
         record.setLifeCycleManagementCanceled(false);
         record.setSituation(situation);
         situation.setSituationRecords(Collections.singletonList(record));

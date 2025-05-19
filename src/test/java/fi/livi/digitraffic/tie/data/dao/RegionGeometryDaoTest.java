@@ -14,9 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.AbstractJpaTest;
 import fi.livi.digitraffic.tie.dao.trafficmessage.RegionGeometryRepository;
-import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper;
 
@@ -42,8 +42,8 @@ public class RegionGeometryDaoTest extends AbstractJpaTest {
         assertEquals(src.getGitCommitId(), latestCommitId);
 
         final List<RegionGeometry> result = regionGeometryRepository.findAll();
-        AssertHelper.assertCollectionSize(1, result);
-        final RegionGeometry tgt = result.get(0);
+        AssertUtil.assertCollectionSize(1, result);
+        final RegionGeometry tgt = result.getFirst();
 
         assertArrayEquals(src.getGeometry().getCoordinates(), tgt.getGeometry().getCoordinates());
         assertEquals(src.getGeometry(), tgt.getGeometry());

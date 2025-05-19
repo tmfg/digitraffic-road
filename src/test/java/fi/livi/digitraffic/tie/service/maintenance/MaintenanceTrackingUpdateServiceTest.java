@@ -1,8 +1,8 @@
 package fi.livi.digitraffic.tie.service.maintenance;
 
+import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
 import static fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema.ASFALTOINTI;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
 import static fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData.Status.HANDLED;
 import static fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingObservationData.Status.UNHANDLED;
 import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTrackingServiceTestHelperV1.createMaintenanceTrackingWithPoints;
@@ -45,6 +45,7 @@ import org.springframework.test.annotation.Rollback;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fi.livi.digitraffic.common.util.StringUtil;
+import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDataRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
@@ -53,7 +54,6 @@ import fi.livi.digitraffic.tie.external.harja.Tyokone;
 import fi.livi.digitraffic.tie.external.harja.TyokoneenseurannanKirjausRequestSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.KoordinaattisijaintiSchema;
 import fi.livi.digitraffic.tie.external.harja.entities.SuoritettavatTehtavatSchema;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
@@ -88,7 +88,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void isAllTaskTypesMapped() throws IOException {
+    public void isAllTaskTypesMapped() {
         // Check mapping from DT -> HARJA
         for (final MaintenanceTrackingTask value : MaintenanceTrackingTask.values()) {
             if (!value.equals(MaintenanceTrackingTask.UNKNOWN)) {
@@ -216,8 +216,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         assertTrackingGroupsSize(machineCount, trackings);
         assertEquals(machineCount, groups.size());
         groups.values().forEach(g -> {
-            final MaintenanceTracking start = g.get(0);
-            final MaintenanceTracking end = g.get(g.size() - 1);
+            final MaintenanceTracking start = g.getFirst();
+            final MaintenanceTracking end = g.getLast();
             // 10 observations for each
             assertEquals(10, g.size());
             assertEquals(1, start.getTasks().size());
@@ -270,8 +270,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
 
         groups.values().forEach(g -> {
             // 10 observations for each
-            final MaintenanceTracking start = g.get(0);
-            final MaintenanceTracking end = g.get(g.size() - 1);
+            final MaintenanceTracking start = g.getFirst();
+            final MaintenanceTracking end = g.getLast();
             assertEquals(trackingMessagesCount * observationCountPerTracking, g.size());
             assertEquals(1, start.getTasks().size());
             assertTrue(start.getTasks().contains(MaintenanceTrackingTask.PAVING));
@@ -302,8 +302,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
                 log.debug("Tracking start={} end={}",
-                        seuranta.getHavainnot().get(0).getHavainto().getHavaintoaika(),
-                        seuranta.getHavainnot().get(seuranta.getHavainnot().size() - 1).getHavainto()
+                        seuranta.getHavainnot().getFirst().getHavainto().getHavaintoaika(),
+                        seuranta.getHavainnot().getLast().getHavainto()
                                 .getHavaintoaika());
             } catch (final JsonProcessingException e) {
                 throw new RuntimeException(e);
@@ -479,8 +479,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(1, trackings);
 
-        final MaintenanceTracking endOfTracking = trackings.get(trackings.size() - 1);
-        final Havainto transitionHavainto = transition.getHavainnot().get(0).getHavainto();
+        final MaintenanceTracking endOfTracking = trackings.getLast();
+        final Havainto transitionHavainto = transition.getHavainnot().getFirst().getHavainto();
         final KoordinaattisijaintiSchema koordinaatit = transitionHavainto.getSijainti().getKoordinaatit();
         final Point transitionFirstPoint =
                 CoordinateConverter.convertFromETRS89ToWGS84(new Point(koordinaatit.getX(), koordinaatit.getY()));
@@ -519,7 +519,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         final List<MaintenanceTracking> trackings = findAllMaintenanceTrackings();
         assertTrackingGroupsSize(1, trackings);
         // First tracking has end poind added from second tracking first poing
-        final MaintenanceTracking first = trackings.get(0);
+        final MaintenanceTracking first = trackings.getFirst();
         final MaintenanceTracking second = trackings.get(1);
         assertEquals(3, first.getGeometry()
                 .getNumPoints()); // Simplification takes points from 3 -> 2, but next tracking start point is appended so sum is 2+1
@@ -548,15 +548,15 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         // tracking[0]: [t1p1,t2p1] (t1 = tracking 1., p1 = point 1.)
         // tracking[1]: [t2p1,t3p1],
         // tracking[2]: [t3p1],
-        assertEquals(2, trackings.get(0).getGeometry().getNumPoints());
+        assertEquals(2, trackings.getFirst().getGeometry().getNumPoints());
         assertEquals(2, trackings.get(1).getGeometry().getNumPoints());
         assertEquals(1, trackings.get(2).getGeometry().getNumPoints());
         // previous tracking end point should be next tracking start point
         assertEquals(trackings.get(1).getGeometry().getCoordinates()[0],
-                trackings.get(0).getGeometry().getCoordinates()[1]);
+                trackings.getFirst().getGeometry().getCoordinates()[1]);
         assertEquals(trackings.get(2).getGeometry().getCoordinates()[0],
                 trackings.get(1).getGeometry().getCoordinates()[1]);
-        assertEquals(trackings.get(0).getId(), trackings.get(1).getPreviousTrackingId());
+        assertEquals(trackings.getFirst().getId(), trackings.get(1).getPreviousTrackingId());
         assertEquals(trackings.get(1).getId(), trackings.get(2).getPreviousTrackingId());
     }
 
@@ -578,15 +578,15 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         // tracking[0]: [t1p1,t2p1] (t1 = tracking 1., p1 = point 1.)
         // tracking[1]: [t2p1,t3p1],
         // tracking[2]: [t3p1],
-        assertEquals(2, trackings.get(0).getGeometry().getNumPoints());
+        assertEquals(2, trackings.getFirst().getGeometry().getNumPoints());
         assertEquals(2, trackings.get(1).getGeometry().getNumPoints());
         assertEquals(1, trackings.get(2).getGeometry().getNumPoints());
         // previous tracking end point should be next tracking start point
         assertEquals(trackings.get(1).getGeometry().getCoordinates()[0],
-                trackings.get(0).getGeometry().getCoordinates()[1]);
+                trackings.getFirst().getGeometry().getCoordinates()[1]);
         assertEquals(trackings.get(2).getGeometry().getCoordinates()[0],
                 trackings.get(1).getGeometry().getCoordinates()[1]);
-        assertEquals(trackings.get(0).getId(), trackings.get(1).getPreviousTrackingId());
+        assertEquals(trackings.getFirst().getId(), trackings.get(1).getPreviousTrackingId());
         assertEquals(trackings.get(1).getId(), trackings.get(2).getPreviousTrackingId());
     }
 
@@ -688,7 +688,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     private void checkAllWorkMachinesExists(final Map<Long, List<MaintenanceTracking>> groups, final int machineCount) {
         final List<MaintenanceTrackingWorkMachine> wms =
                 groups.values().stream()
-                        .map(list -> list.get(0).getWorkMachine())
+                        .map(list -> list.getFirst().getWorkMachine())
                         .sorted(Comparator.comparing(MaintenanceTrackingWorkMachine::getHarjaId))
                         .toList();
         // Check all work machines exists with harjaIds generated sequential from 1 onwards
@@ -699,8 +699,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         final LinkedHashMap<Long, List<MaintenanceTracking>> groups = groupTrackingsByStartId(trackings);
         final Iterator<List<MaintenanceTracking>> iter = groups.values().iterator();
         final List<MaintenanceTracking> firstGroup = iter.next();
-        final MaintenanceTracking firstGroupEnd = firstGroup.get(firstGroup.size() - 1);
-        final MaintenanceTracking secondGroupStart = iter.next().get(0);
+        final MaintenanceTracking firstGroupEnd = firstGroup.getLast();
+        final MaintenanceTracking secondGroupStart = iter.next().getFirst();
         assertNotEquals(firstGroupEnd.getEndTime(), secondGroupStart.getStartTime());
         assertNotEquals(firstGroupEnd.getLastPoint(),
                 secondGroupStart.getGeometry() != null ?
@@ -711,8 +711,8 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
         final LinkedHashMap<Long, List<MaintenanceTracking>> groups = groupTrackingsByStartId(trackings);
         final Iterator<List<MaintenanceTracking>> iter = groups.values().iterator();
         final List<MaintenanceTracking> firstGroup = iter.next();
-        final MaintenanceTracking firstGroupEnd = firstGroup.get(firstGroup.size() - 1);
-        final MaintenanceTracking secondGroupStart = iter.next().get(0);
+        final MaintenanceTracking firstGroupEnd = firstGroup.getLast();
+        final MaintenanceTracking secondGroupStart = iter.next().getFirst();
         assertEquals(firstGroupEnd.getEndTime(), secondGroupStart.getStartTime());
         assertEquals(firstGroupEnd.getLastPoint(),
                 secondGroupStart.getGeometry() != null ?

@@ -244,7 +244,7 @@ public class SensorDataUpdateService {
 
         stopWatch.stop();
 
-        log.info("method=updateSensorData for {} stations updateCount={} insertCount={} tookMs={}", roadStationType, updatedCount, insertedCount, stopWatch.getTime());
+        log.info("method=updateSensorData for {} stations updateCount={} insertCount={} tookMs={}", roadStationType, updatedCount, insertedCount, stopWatch.getDuration().toMillis());
     }
 
     private void updateSensorHistoryData(final List<SensorValueUpdateParameterDto> params, final RoadStationType roadStationType) {
@@ -258,7 +258,7 @@ public class SensorDataUpdateService {
 
         final int[] inserted = sensorValueHistoryDao.insertSensorData(params);
 
-        log.info("method=updateSensorHistoryData for {} stations insertCount={} tookMs={}", roadStationType, inserted.length, stopWatch.getTime());
+        log.info("method=updateSensorHistoryData for {} stations insertCount={} tookMs={}", roadStationType, inserted.length, stopWatch.getDuration().toMillis());
     }
 
     private void updateDataUpdatedTime(final RoadStationType roadStationType) {
@@ -276,7 +276,7 @@ public class SensorDataUpdateService {
 
         final int removeCount = sensorValueHistoryDao.cleanSensorData(before);
 
-        log.info("method=cleanSensorHistoryData for {} stations older than {} removeCount={} tookMs={}", RoadStationType.WEATHER_STATION, before, removeCount, stopWatch.getTime());
+        log.info("method=cleanSensorHistoryData for {} stations older than {} removeCount={} tookMs={}", RoadStationType.WEATHER_STATION, before, removeCount, stopWatch.getDuration().toMillis());
 
         return removeCount;
     }

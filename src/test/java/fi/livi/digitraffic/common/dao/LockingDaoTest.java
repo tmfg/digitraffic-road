@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -17,7 +15,6 @@ import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import jakarta.transaction.Transactional;
 
 public class LockingDaoTest extends AbstractDaemonTest {
-    private static final Logger log = LoggerFactory.getLogger(LockingDao.class);
 
     private static final String LOCKNAME1 = "testLock_1";
     private static final String LOCKNAME2 = "testLock_2";
@@ -92,15 +89,15 @@ public class LockingDaoTest extends AbstractDaemonTest {
         assertFalse(lockingDao.acquireLock(LOCKNAME1, ID2, expirationSeconds));
 
         // Wait for ID2 to get the lock or expiration to pass by second
-        while (!lockingDao.acquireLock(LOCKNAME1, ID2, expirationSeconds) && locked1Time.getTime() < expirationMs+1000) {
+        while (!lockingDao.acquireLock(LOCKNAME1, ID2, expirationSeconds) && locked1Time.getDuration().toMillis() < expirationMs+1000) {
             ThreadUtil.delayMs(100);
         }
 
         final boolean locked = lockingDao.acquireLock(LOCKNAME1, ID2, expirationSeconds);
-        if (locked && locked1Time.getTime() < expirationMs) {
-            fail("Locked before expiration. Lock has been locked for " + locked1Time.getTime() + " ms and expiration is " + expirationMs + " ms");
-        } else if (!locked && locked1Time.getTime() > expirationMs) {
-            fail("Failed to lock after expiration. Lock has been locked for " + locked1Time.getTime() + " ms and expiration is " + expirationMs + " ms");
+        if (locked && locked1Time.getDuration().toMillis() < expirationMs) {
+            fail("Locked before expiration. Lock has been locked for " + locked1Time.getDuration().toMillis() + " ms and expiration is " + expirationMs + " ms");
+        } else if (!locked && locked1Time.getDuration().toMillis() > expirationMs) {
+            fail("Failed to lock after expiration. Lock has been locked for " + locked1Time.getDuration().toMillis() + " ms and expiration is " + expirationMs + " ms");
         }
         assertTrue(locked, "Failed to lock after expiration");
     }

@@ -1,12 +1,13 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import static fi.livi.digitraffic.common.util.TimeUtil.getZonedDateTimeNowAtUtc;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,14 +28,14 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     }
 
     @Test
-    public void firstHealthOk() throws IOException {
+    public void firstHealthOk() throws IOException, URISyntaxException {
         // Health response from server OK
         server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         // Data request goes to server 1
         final int id = TestUtils.getRandomId(1, 999999);
         final String presetId = randomPresetId();
         serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, OK, img1);
-        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
+        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, Instant.now());
         final byte[] img = cameraImageReader.readImage(id, info);
 
         assertArrayEquals(img1, img);
@@ -43,7 +44,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     }
 
     @Test
-    public void firstHealthNotOk() throws IOException {
+    public void firstHealthNotOk() throws IOException, URISyntaxException {
         // Health response from server OK
         server1WhenRequestHealthThenReturn(INTERNAL_SERVER_ERROR, NOT_OK_RESPONSE_CONTENT);
         server2WhenRequestHealthThenReturn(OK, getOkResponseString());
@@ -52,7 +53,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         final String presetId = randomPresetId();
         serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, OK, img1);
         serverWhenRequestUrlThenReturn(wireMockServer2, dataPath + "/" +  id, OK, img2);
-        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
+        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, Instant.now());
         final byte[] img = cameraImageReader.readImage(id, info);
 
         assertArrayEquals(img2, img);
@@ -63,7 +64,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
     }
 
     @Test
-    public void firstHealthOkDataNotOk() throws IOException {
+    public void firstHealthOkDataNotOk() throws IOException, URISyntaxException {
         // Health response from server OK
         server1WhenRequestHealthThenReturn(OK, getOkResponseString());
         server2WhenRequestHealthThenReturn(OK, getOkResponseString());
@@ -72,7 +73,7 @@ public class CameraImageReaderTest extends AbstractMultiDestinationProviderTest 
         final String presetId = randomPresetId();
         serverWhenRequestUrlThenReturn(wireMockServer1, dataPath + "/" +  id, INTERNAL_SERVER_ERROR, (String) null);
         serverWhenRequestUrlThenReturn(wireMockServer2, dataPath + "/" +  id, OK, img2);
-        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, getZonedDateTimeNowAtUtc());
+        final ImageUpdateInfo info = new ImageUpdateInfo(presetId, Instant.now());
         try {
             cameraImageReader.readImage(id, info);
             fail("First request to server1 should fail and throw exception");

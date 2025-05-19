@@ -138,13 +138,13 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
             }
 
             sw.stop();
-            log.info("Data generation tookMs={}", sw.getTime());
+            log.info("Data generation tookMs={}", sw.getDuration().toMillis());
             final StopWatch swHandle = StopWatch.createStarted();
             jmsMessageListener.drainQueueScheduled();
-            handleDataTotalTime += swHandle.getTime();
+            handleDataTotalTime += swHandle.getDuration().toMillis();
 
             // send data with 1 s intervall
-            final long sleep = 1000 - sw.getTime();
+            final long sleep = 1000 - sw.getDuration().toMillis();
 
             if (sleep < 0) {
                 log.error("Data generation took too long");
@@ -299,7 +299,7 @@ public class WeatherJMSMessageHandlerTest extends AbstractJMSMessageHandlerTest 
 
             final int updated = sensorDataUpdateService.updateWeatherValueBuffer(data);
 
-            log.info("handleData tookMs={}", sw.getTime());
+            log.info("handleData tookMs={}", sw.getDuration().toMillis());
             return updated;
         };
     }

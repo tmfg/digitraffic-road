@@ -25,8 +25,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -77,7 +77,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
     @Autowired
     private MaintenanceTrackingServiceTestHelperV1 testHelper;
 
-    @SpyBean
+    @MockitoSpyBean
     private MaintenanceTrackingWebDataServiceV1 maintenanceTrackingWebDataServiceV1;
 
     @BeforeEach
@@ -103,7 +103,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
                         getTrackingsJson(
                                 API_DOMAIN_PARAMETERS.get(index),
                                 API_TASK_PARAMETERS.get(index), // check that task order don't mess the cache
-                                areaCoordinates.get(0), // xMin
+                                areaCoordinates.getFirst(), // xMin
                                 areaCoordinates.get(1), // xMax
                                 areaCoordinates.get(2), // yMin
                                 areaCoordinates.get(3)  // yMax
@@ -119,12 +119,12 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
 
         expectOkFeatureCollectionWithSize(
                 getTrackingsJson(
-                        API_DOMAIN_PARAMETERS.get(0),
-                        API_TASK_PARAMETERS.get(0), // check that task order don't mess the cache
+                        API_DOMAIN_PARAMETERS.getFirst(),
+                        API_TASK_PARAMETERS.getFirst(), // check that task order don't mess the cache
                         API_AREA_PARAMETERS_X_MIN_OUTSIDE_ROUTE, // xMin diff from cached one
-                        API_AREA_PARAMETERS.get(0).get(1), // xMax
-                        API_AREA_PARAMETERS.get(0).get(2), // yMin
-                        API_AREA_PARAMETERS.get(0).get(3)  // yMax
+                        API_AREA_PARAMETERS.getFirst().get(1), // xMax
+                        API_AREA_PARAMETERS.getFirst().get(2), // yMin
+                        API_AREA_PARAMETERS.getFirst().get(3)  // yMax
                 ),
                 0
         );
@@ -149,7 +149,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
                         getLatestTrackingsJson(
                                 API_DOMAIN_PARAMETERS.get(index),
                                 API_TASK_PARAMETERS.get(index), // check that task order don't mess the cache
-                                areaCoordinates.get(0), // xMin
+                                areaCoordinates.getFirst(), // xMin
                                 areaCoordinates.get(1), // xMax
                                 areaCoordinates.get(2), // yMin
                                 areaCoordinates.get(3)  // yMax
@@ -165,12 +165,12 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
 
         expectOkFeatureCollectionWithSize(
                 getLatestTrackingsJson(
-                        API_DOMAIN_PARAMETERS.get(0),
-                        API_TASK_PARAMETERS.get(0),
+                        API_DOMAIN_PARAMETERS.getFirst(),
+                        API_TASK_PARAMETERS.getFirst(),
                         API_AREA_PARAMETERS_X_MIN_OUTSIDE_ROUTE, // xMin diff from cached one
-                        API_AREA_PARAMETERS.get(0).get(1), // xMax
-                        API_AREA_PARAMETERS.get(0).get(2), // yMin
-                        API_AREA_PARAMETERS.get(0).get(3)  // yMax
+                        API_AREA_PARAMETERS.getFirst().get(1), // xMax
+                        API_AREA_PARAMETERS.getFirst().get(2), // yMin
+                        API_AREA_PARAMETERS.getFirst().get(3)  // yMax
                 ),
                 0
         );

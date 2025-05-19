@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -14,18 +14,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.AbstractWebServiceTest;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationDataDtoV1;
 import fi.livi.digitraffic.tie.dto.weather.v1.WeatherStationsDataDtoV1;
-import fi.livi.digitraffic.tie.helper.AssertHelper;
 import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.roadstation.SensorValueReliability;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
+import fi.livi.digitraffic.tie.model.roadstation.SensorValueReliability;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -63,8 +63,8 @@ public class WeatherDataWebServiceV1Test extends AbstractWebServiceTest {
             entityManager.persist(s);
             entityManager.flush();
 
-            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.get(0), getRandom(0, 100), ZonedDateTime.now(), SensorValueReliability.OK);
-            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), ZonedDateTime.now(), SensorValueReliability.OK);
+            sensorValue1 = new SensorValue(s.getRoadStation(), publishable.getFirst(), getRandom(0, 100), Instant.now(), SensorValueReliability.OK);
+            sensorValue2 = new SensorValue(s.getRoadStation(), publishable.get(1), getRandom(101, 200), Instant.now(), SensorValueReliability.OK);
             sensorValueRepository.save(sensorValue1);
             sensorValueRepository.save(sensorValue2);
         });
@@ -85,10 +85,10 @@ public class WeatherDataWebServiceV1Test extends AbstractWebServiceTest {
         assertNotNull(stationsData);
         assertNotNull(stationsData.dataUpdatedTime);
 
-        AssertHelper.assertCollectionSize(2, stationsData.stations);
+        AssertUtil.assertCollectionSize(2, stationsData.stations);
         final WeatherStationDataDtoV1
             data = stationsData.stations.stream().filter(s -> s.id.equals(weatherStation.getRoadStationNaturalId())).findFirst().orElseThrow();
-        AssertHelper.assertCollectionSize(2, data.sensorValues);
+        AssertUtil.assertCollectionSize(2, data.sensorValues);
 
         final SensorValueDtoV1 sv1 =
             data.sensorValues.stream().filter(sv -> sensorValue1.getRoadStationSensor().getNaturalId() == sv.getSensorNaturalId()).findFirst()

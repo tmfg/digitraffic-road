@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,10 +18,6 @@ import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementTy
 
 public class Datex2Helper {
     private static final Logger log = LoggerFactory.getLogger(Datex2Helper.class);
-
-    public static boolean isNewOrUpdatedSituation(final ZonedDateTime latestVersionTime, final Situation situation) {
-        return isNewOrUpdatedSituation(TimeUtil.toInstant(latestVersionTime), situation);
-    }
 
     public static boolean isNewOrUpdatedSituation(final Instant latestVersionTime, final Situation situation) {
         // does any record have new version time?

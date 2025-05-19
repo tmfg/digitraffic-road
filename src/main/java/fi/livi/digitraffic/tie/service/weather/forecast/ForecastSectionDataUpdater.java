@@ -39,9 +39,9 @@ public class ForecastSectionDataUpdater {
         timeGet.stop();
         final StopWatch timeUpdate = StopWatch.createStarted();
         forecastSectionDataUpdateService.updateForecastSectionWeatherDataV1(data);
-        log.info("method=updateForecastSectionWeatherDataV1 apiVersion={} operation=fetch tookMs={} totalTimeMs={}", V1.getVersion(), timeGet.getTime(), timeAll.getTime());
-        log.info("method=updateForecastSectionWeatherDataV1 apiVersion={} operation=update tookMs={} totalTimeMs={}", V1.getVersion(), timeUpdate.getTime(), timeAll.getTime());
-        return data.messageTimestamp.toInstant();
+        log.info("method=updateForecastSectionWeatherDataV1 apiVersion={} operation=fetch tookMs={} totalTimeMs={}", V1.getVersion(), timeGet.getDuration().toMillis(), timeAll.getDuration().toMillis());
+        log.info("method=updateForecastSectionWeatherDataV1 apiVersion={} operation=update tookMs={} totalTimeMs={}", V1.getVersion(), timeUpdate.getDuration().toMillis(), timeAll.getDuration().toMillis());
+        return data.messageTimestamp;
     }
 
     @PerformanceMonitor(maxWarnExcecutionTime = 60000, maxErrorExcecutionTime = 80000) // normally takes between 10-50s
@@ -53,8 +53,8 @@ public class ForecastSectionDataUpdater {
         timeGet.stop();
         final StopWatch timeUpdate = StopWatch.createStarted();
         forecastSectionDataUpdateService.updateForecastSectionWeatherDataV2(data);
-        log.info("method=updateForecastSectionWeatherDataV2 apiVersion={} operation=fetch tookMs={} totalTimeMs={}", V2.getVersion(), timeGet.getTime(), timeAll.getTime());
-        log.info("method=updateForecastSectionWeatherDataV2 apiVersion={} operation=update tookMs={} totalTimeMs={}", V2.getVersion(), timeUpdate.getTime(), timeAll.getTime());
-        return data.messageTimestamp.toInstant();
+        log.info("method=updateForecastSectionWeatherDataV2 apiVersion={} operation=fetch tookMs={} totalTimeMs={}", V2.getVersion(), timeGet.getDuration().toMillis(), timeAll.getDuration().toMillis());
+        log.info("method=updateForecastSectionWeatherDataV2 apiVersion={} operation=update tookMs={} totalTimeMs={}", V2.getVersion(), timeUpdate.getDuration().toMillis(), timeAll.getDuration().toMillis());
+        return data.messageTimestamp;
     }
 }

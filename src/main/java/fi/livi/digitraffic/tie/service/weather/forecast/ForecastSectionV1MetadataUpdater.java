@@ -32,7 +32,7 @@ public class ForecastSectionV1MetadataUpdater {
     /**
      * Takes on average 1,5 s
      */
-    @PerformanceMonitor(maxWarnExcecutionTime = 5000)
+    @PerformanceMonitor()
     @NotTransactionalServiceMethod
     public void updateForecastSectionV1Metadata() {
         final StopWatch timeAll = StopWatch.createStarted();
@@ -43,8 +43,8 @@ public class ForecastSectionV1MetadataUpdater {
         final StopWatch timeUpdate = StopWatch.createStarted();
         forecastSectionMetadataUpdateService.updateForecastSectionsV1Metadata(forecastSectionCoordinates);
 
-        log.info("method=updateForecastSectionV1Metadata apiVersion=V1 operation=fetch tookMs={} totalTimeMs={}", timeGet.getTime(), timeAll.getTime());
-        log.info("method=updateForecastSectionV1Metadata apiVersion=V1 operation=update tookMs={} totalTimeMs={}", timeUpdate.getTime(), timeAll.getTime());
+        log.info("method=updateForecastSectionV1Metadata apiVersion=V1 operation=fetch tookMs={} totalTimeMs={}", timeGet.getDuration().toMillis(), timeAll.getDuration().toMillis());
+        log.info("method=updateForecastSectionV1Metadata apiVersion=V1 operation=update tookMs={} totalTimeMs={}", timeUpdate.getDuration().toMillis(), timeAll.getDuration().toMillis());
     }
 
 

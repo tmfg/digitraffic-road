@@ -51,7 +51,7 @@ public class WazeReverseGeocodingApi {
             logger.info(
                     "method=fetch reverse geocoding for lat: {} and lon: {} tookMs={}",
                     latitude, longitude,
-                    start.getTime());
+                    start.getDuration().toMillis());
         }
         return Optional.empty();
     }

@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.model.weathercam;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -69,9 +69,9 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
     private String direction;
 
     @Column(name="PIC_LAST_MODIFIED")
-    private ZonedDateTime pictureLastModified;
+    private Instant pictureLastModified;
     @Column(name="PIC_LAST_MODIFIED_DB")
-    private ZonedDateTime pictureLastModifiedDb;
+    private Instant pictureLastModifiedDb;
 
     private LocalDate obsoleteDate;
 
@@ -281,19 +281,19 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
         return nearestWeatherStation != null ? nearestWeatherStation.getRoadStationNaturalId() : null;
     }
 
-    public ZonedDateTime getPictureLastModified() {
+    public Instant getPictureLastModified() {
         return pictureLastModified;
     }
 
-    public void setPictureLastModified(final ZonedDateTime pictureLastModified) {
+    public void setPictureLastModified(final Instant pictureLastModified) {
         this.pictureLastModified = pictureLastModified;
     }
 
-    public ZonedDateTime getPictureLastModifiedDb() {
+    public Instant getPictureLastModifiedDb() {
         return pictureLastModifiedDb;
     }
 
-    public void setPictureLastModifiedDb(final ZonedDateTime pictureLastModifiedDb) {
+    public void setPictureLastModifiedDb(final Instant pictureLastModifiedDb) {
         this.pictureLastModifiedDb = pictureLastModifiedDb;
     }
 

@@ -106,7 +106,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
                 normalizedDomains);
 
         log.info("method=findLatestMaintenanceTrackings with params area {} endFrom={} endTo={} foundCount={} tookMs={}",
-                 normalizedArea, toZonedDateTimeAtUtc(endFrom), toZonedDateTimeAtUtc(endTo), found.size(), start.getTime());
+                 normalizedArea, toZonedDateTimeAtUtc(endFrom), toZonedDateTimeAtUtc(endTo), found.size(), start.getDuration().toMillis());
 
         return new MaintenanceTrackingLatestFeatureCollectionV1(lastUpdated, found);
     }
@@ -131,7 +131,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
                 normalizedArea, convertTasksToStringSetOrNull(taskIds), normalizedDomains);
 
         log.info("method=findMaintenanceTrackings with params area {} endFrom {} endBefore {} createdAfter {} createdBefore {} domains {} foundCount {} tookMs={}",
-                 normalizedArea, endFrom, endBefore, createdAfter, createdBefore, normalizedDomains, found.size(), start.getTime());
+                 normalizedArea, endFrom, endBefore, createdAfter, createdBefore, normalizedDomains, found.size(), start.getDuration().toMillis());
 
         return new MaintenanceTrackingFeatureCollectionV1(lastUpdated, found);
     }

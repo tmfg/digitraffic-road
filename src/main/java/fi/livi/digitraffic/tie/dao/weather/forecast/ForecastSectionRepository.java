@@ -47,7 +47,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         if (sections.size() != 1) {
             throw new ObjectNotFoundException("ForecastSection", id);
         }
-        return sections.get(0);
+        return sections.getFirst();
     }
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
@@ -99,7 +99,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         if (sections.size() != 1) {
             throw new ObjectNotFoundException("ForecastSection", id);
         }
-        return sections.get(0);
+        return sections.getFirst();
     }
 
 

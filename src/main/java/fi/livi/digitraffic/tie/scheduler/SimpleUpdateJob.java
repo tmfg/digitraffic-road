@@ -26,9 +26,9 @@ public abstract class SimpleUpdateJob extends AbstractUpdateJob {
 
         try {
             doExecute(context);
-            JobLogger.logJobEndStatusSuccess(log, jobType, jobName, stopWatch.getTime());
+            JobLogger.logJobEndStatusSuccess(log, jobType, jobName, stopWatch.getDuration().toMillis());
         } catch(final Exception e) {
-            JobLogger.logJobEndStatusFail(log, jobType, jobName, stopWatch.getTime(), e);
+            JobLogger.logJobEndStatusFail(log, jobType, jobName, stopWatch.getDuration().toMillis(), e);
         }
     }
 

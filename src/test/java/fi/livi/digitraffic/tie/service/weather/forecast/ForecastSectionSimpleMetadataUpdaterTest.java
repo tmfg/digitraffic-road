@@ -66,9 +66,9 @@ public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest
         assertEquals(now.getEpochSecond(), collection.dataUpdatedTime.getEpochSecond(), 1);
 
         assertEquals(10, collection.getFeatures().size());
-        assertEquals("00001_001_000_0", collection.getFeatures().get(0).getProperties().id);
-        assertEquals(10, collection.getFeatures().get(0).getGeometry().getCoordinates().size());
-        assertEquals(Double.parseDouble("24.944"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(0), 0.01);
-        assertEquals(Double.parseDouble("60.167"), collection.getFeatures().get(0).getGeometry().getCoordinates().get(0).get(1), 0.01);
+        assertEquals("00001_001_000_0", collection.getFeatures().getFirst().getProperties().id);
+        assertEquals(10, collection.getFeatures().getFirst().getGeometry().getCoordinates().size());
+        assertEquals(Double.parseDouble("24.944"), collection.getFeatures().getFirst().getGeometry().getCoordinates().getFirst().getFirst(), 0.01);
+        assertEquals(Double.parseDouble("60.167"), collection.getFeatures().getFirst().getGeometry().getCoordinates().getFirst().get(1), 0.01);
     }
 }

@@ -69,7 +69,7 @@ public class LotjuWeatherStationMetadataClientWrapper {
         });
         executor.shutdown();
 
-        log.info("method=getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId Fetched sensorsCount={}     tookMs={}", countAnturis, start.getTime());
+        log.info("method=getTiesaaLaskennallinenAnturisMappedByAsemaLotjuId Fetched sensorsCount={}     tookMs={}", countAnturis, start.getDuration().toMillis());
         return tiesaaAnturisMappedByRwsLotjuId;
     }
 

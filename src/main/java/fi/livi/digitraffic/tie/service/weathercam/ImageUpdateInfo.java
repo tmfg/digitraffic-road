@@ -1,12 +1,10 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import static fi.livi.digitraffic.common.util.TimeUtil.getZonedDateTimeNowAtUtc;
-
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 public class ImageUpdateInfo {
 
-    private final ZonedDateTime updateTime;
+    private final Instant updateTime;
     public enum Status {
         SUCCESS, FAILED, NONE;
 
@@ -17,7 +15,7 @@ public class ImageUpdateInfo {
 
     private final String presetId;
     private String versionId;
-    private final ZonedDateTime lastUpdated;
+    private final Instant lastUpdated;
 
     private long readTotalDurationMs = 0;
     private long writeTotalDurationMs = 0;
@@ -30,17 +28,17 @@ public class ImageUpdateInfo {
     private Throwable readError;
     private Throwable writeError;
 
-    ImageUpdateInfo(final String presetId, final ZonedDateTime lastUpdated) {
+    ImageUpdateInfo(final String presetId, final Instant lastUpdated) {
         this.presetId = presetId;
         this.lastUpdated = lastUpdated;
-        this.updateTime = getZonedDateTimeNowAtUtc();
+        this.updateTime = Instant.now();
     }
 
     public String getPresetId() {
         return presetId;
     }
 
-    public ZonedDateTime getLastUpdated() {
+    public Instant getLastUpdated() {
         return lastUpdated;
     }
 
@@ -161,11 +159,11 @@ public class ImageUpdateInfo {
         this.writeError = writeError;
     }
 
-    public ZonedDateTime getUpdateTime() {
+    public Instant getUpdateTime() {
         return updateTime;
     }
 
     long getImageTimeInPastSeconds() {
-        return updateTime.toEpochSecond() - lastUpdated.toEpochSecond();
+        return updateTime.getEpochSecond() - lastUpdated.getEpochSecond();
     }
 }

@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.metadata.dao;
 
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertCollectionSize;
-import static fi.livi.digitraffic.tie.helper.AssertHelper.assertEmpty;
+import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
+import static fi.livi.digitraffic.test.util.AssertUtil.assertEmpty;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 

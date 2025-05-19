@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.model.trafficmessage.datex2;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class Datex2Situation {
     private List<Datex2SituationRecord> situationRecords;
 
     @Schema(description = "Situation version date time")
-    private ZonedDateTime versionTime;
+    private Instant versionTime;
 
     public Long getId() {
         return id;
@@ -71,11 +71,11 @@ public class Datex2Situation {
         this.situationId = situationId;
     }
 
-    public void setVersionTime(final ZonedDateTime versionTime) {
+    public void setVersionTime(final Instant versionTime) {
         this.versionTime = versionTime;
     }
 
-    public ZonedDateTime getVersionTime() {
+    public Instant getVersionTime() {
         return versionTime;
     }
 

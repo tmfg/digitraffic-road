@@ -14,7 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -186,7 +185,7 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
                 final String key = preset.getPresetId() + ".jpg";
                 final String versionKey = preset.getPresetId() + "-versions.jpg";
-                final String versionId = preset.getPresetId() + "-version-" + RandomStringUtils.randomAlphanumeric(10);
+                final String versionId = preset.getPresetId() + "-version-" + RandomStringUtils.secure();
 
                 mockS3PutImageVersion(versionId, versionKey);
                 mockS3GetObjectWithImageKey(kuva, key);
@@ -201,11 +200,11 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
                 }
             }
 
-            final long generation = sw.getTime();
+            final long generation = sw.getDuration().toMillis();
             assertFalse(jmsKuvaMessages.isEmpty(), "Data was empty");
             final StopWatch drain = StopWatch.createStarted();
             cameraJmsMessageListener.drainQueueScheduled();
-            handleDataTotalTime += drain.getTime();
+            handleDataTotalTime += drain.getDuration().toMillis();
 
             // send data with 1 s intervall
             final long sleep = 1000 - generation;
@@ -225,10 +224,10 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
         final long latestImageTimestampToExpect =
                 jmsKuvaMessages.stream().mapToLong(KuvaProtos.Kuva::getAikaleima).max().orElseThrow();
-        final ZonedDateTime imageUpdatedInDb =
+        final Instant imageUpdatedInDb =
                 dataStatusService.findDataUpdatedTime(DataType.CAMERA_STATION_IMAGE_UPDATED);
         assertEquals(Instant.ofEpochMilli(roundToZeroMillis(latestImageTimestampToExpect)),
-                imageUpdatedInDb.toInstant(), "Latest image update time not correct");
+                imageUpdatedInDb, "Latest image update time not correct");
 
         log.info("Data is valid");
         assertTrue(handleDataTotalTime <= maxHandleTime,
@@ -249,7 +248,7 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
             final CameraPreset preset = updatedPresets.get(kuva.getEsiasentoId());
 
             final Instant kuvaTaken = Instant.ofEpochMilli(kuva.getAikaleima());
-            final Instant presetPictureLastModified = preset.getPictureLastModified().toInstant();
+            final Instant presetPictureLastModified = preset.getPictureLastModified();
 
             assertEquals(kuvaTaken, presetPictureLastModified,
                     "Preset not updated with kuva's timestamp " + preset.getPresetId());
@@ -315,7 +314,7 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
-            log.info("handleData tookMs={}", start.getTime());
+            log.info("handleData tookMs={}", start.getDuration().toMillis());
             return updated;
         };
     }

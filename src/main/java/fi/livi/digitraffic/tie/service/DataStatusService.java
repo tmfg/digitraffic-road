@@ -9,7 +9,6 @@ import static fi.livi.digitraffic.tie.model.DataType.WEATHER_STATION_METADATA_CH
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -114,8 +113,8 @@ public class DataStatusService {
     }
 
     @Transactional(readOnly = true)
-    public ZonedDateTime findDataUpdatedTime(final DataType dataType) {
-        return TimeUtil.toZonedDateTimeAtUtc(dataUpdatedRepository.findUpdatedTime(dataType));
+    public Instant findDataUpdatedTime(final DataType dataType) {
+        return dataUpdatedRepository.findUpdatedTime(dataType);
     }
 
     @Transactional(readOnly = true)

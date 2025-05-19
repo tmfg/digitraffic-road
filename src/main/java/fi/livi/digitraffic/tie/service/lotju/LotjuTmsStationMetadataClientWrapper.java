@@ -98,7 +98,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         executor.shutdown();
 
         log.info("lamFetchedCount={} LamLaskennallinenAnturis for lamStationCount={} LAMAsemas, tookMs={}",
-                 countAnturis, lamAnturisMappedByTmsLotjuId.size(), start.getTime());
+                 countAnturis, lamAnturisMappedByTmsLotjuId.size(), start.getDuration().toMillis());
         return lamAnturisMappedByTmsLotjuId;
     }
 
@@ -137,7 +137,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         executor.shutdown();
 
         log.info("method=getAllLamAnturiVakios fetchedCount={} for lamStationCount={} tookMs={}",
-                 allAnturiVakios.size(), tmsLotjuIds.size(), start.getTime());
+                 allAnturiVakios.size(), tmsLotjuIds.size(), start.getDuration().toMillis());
         return allAnturiVakios;
     }
 
@@ -169,7 +169,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
 
         log.info("method=getAnturiVakioArvos fetchedCount={} for 12 months distincLamAnturiVakiosCount={} tookMs={}",
-                 lamAnturiVakioArvos.size(), distincLamAnturiVakios.size(), start.getTime());
+                 lamAnturiVakioArvos.size(), distincLamAnturiVakios.size(), start.getDuration().toMillis());
         return distincLamAnturiVakios;
     }
 
@@ -207,7 +207,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
 
         log.info("method=getAllLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
-                 lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getTime());
+                 lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getDuration().toMillis());
         return distincLamAnturiVakios;
     }
 
@@ -245,7 +245,7 @@ public class LotjuTmsStationMetadataClientWrapper {
         final List<LamAnturiVakioArvoVO> distincLamAnturiVakios = filterDistinctLamAnturiVakioArvos(lamAnturiVakioArvos);
 
         log.info("method=getAsemanLamAnturiVakioArvos fetchedCount={} for monthCount={} distincLamAnturiVakiosCount={} tookMs={}",
-            lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getTime());
+            lamAnturiVakioArvos.size(), monthCounter, distincLamAnturiVakios.size(), start.getDuration().toMillis());
         return distincLamAnturiVakios;
     }
     /**
