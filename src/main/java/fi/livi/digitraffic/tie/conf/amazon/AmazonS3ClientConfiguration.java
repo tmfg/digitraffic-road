@@ -11,7 +11,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @ConditionalOnExpression("'${config.test}' != 'true'")
-@ConditionalOnNotWebApplication
 @Configuration
 public class AmazonS3ClientConfiguration {
 

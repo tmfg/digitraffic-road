@@ -32,7 +32,6 @@ import static fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer.LAS
  * Makes it easier to mock-tests.
  */
 @Service
-@ConditionalOnNotWebApplication
 public class S3Service {
     private static final Logger log = LoggerFactory.getLogger(S3Service.class);
 
