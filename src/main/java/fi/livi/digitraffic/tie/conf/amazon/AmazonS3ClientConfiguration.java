@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @ConditionalOnExpression("'${config.test}' != 'true'")
 @ConditionalOnNotWebApplication
@@ -16,15 +16,14 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 public class AmazonS3ClientConfiguration {
 
     @Bean
-    public AmazonS3 s3Client(final @Value("${dt.amazon.s3.region}") String region) {
+    public S3Client s3Client(final @Value("${dt.amazon.s3.region}") String region) {
         return build(region);
     }
 
-    private AmazonS3 build(final String region) {
-        return AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
-                .withRegion(region)
+    private S3Client build(final String region) {
+        return S3Client.builder()
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .region(Region.of(region))
                 .build();
     }
 }

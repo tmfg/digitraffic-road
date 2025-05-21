@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import fi.livi.digitraffic.tie.service.aws.S3Service;
+
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
@@ -36,14 +36,14 @@ public class SensorDataS3Writer {
 
     private final RoadStationSensorValueHistoryDtoRepositoryV1 repository;
     private final SensorDataS3Properties s3Properties;
-    private final AmazonS3 s3Client;
+    private final S3Service s3Service;
 
     public SensorDataS3Writer(final RoadStationSensorValueHistoryDtoRepositoryV1 repository,
                               final SensorDataS3Properties sensorDataS3Properties,
-                              final AmazonS3 s3Client) {
+                              final S3Service s3Service) {
         this.repository = repository;
         this.s3Properties = sensorDataS3Properties;
-        this.s3Client = s3Client;
+        this.s3Service = s3Service;
     }
 
     /**
@@ -94,22 +94,14 @@ public class SensorDataS3Writer {
             zos.closeEntry();
             zos.close();
 
-            final InputStream inputStream = bos.toInputStream();
-
-            final String fileName = s3Properties.getFileStorageName();
-
-            final ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("application/zip");
-            metadata.setContentLength(bos.size());
-
             // Write to S3
-            s3Client.putObject(s3Properties.getS3BucketName(), fileName, inputStream, metadata);
+            s3Service.putObject(s3Properties.getS3BucketName(), s3Properties.getFileStorageName(), "application/zip", bos.toByteArray());
 
             // Local copy-to-file hack
             // FileUtils.copyInputStreamToFile(inputStream, new File(fileName));
 
             log.info("method=writeSensorData Collected addCount={} , window {} - {} , file {}", counter.get(), from, to,
-                    fileName);
+                    s3Properties.getFileStorageName());
 
             return counter.get();
         } catch (final Exception e) {

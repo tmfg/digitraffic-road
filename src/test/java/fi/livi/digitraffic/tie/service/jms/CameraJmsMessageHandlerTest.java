@@ -9,16 +9,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import fi.livi.digitraffic.tie.service.aws.S3Service;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.apache.commons.io.FileUtils;
@@ -28,7 +36,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +44,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 import fi.ely.lotju.kamera.proto.KuvaProtos;
@@ -85,16 +89,14 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     @Autowired
     private EntityManager entityManager;
 
-    @Autowired
-    private AmazonS3 amazonS3;
+    @MockitoBean
+    private S3Service s3Service;
 
     @Value("${dt.amazon.s3.weathercam.bucketName}")
     private String bucketName;
 
     @Value("${metadata.server.path.image}")
     private String lotjuImagePath;
-
-    //private final WeathercamDataJMSMessageMarshaller messageMarshaller = new WeathercamDataJMSMessageMarshaller();
 
     private final Map<String, byte[]> imageFilesMap = new HashMap<>();
 
@@ -185,9 +187,9 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
                 final String key = preset.getPresetId() + ".jpg";
                 final String versionKey = preset.getPresetId() + "-versions.jpg";
-                final String versionId = preset.getPresetId() + "-version-" + RandomStringUtils.secure();
+                final String versionId = preset.getPresetId() + "-version-" + RandomStringUtils.insecure().next(10);
 
-                mockS3PutImageVersion(versionId, versionKey);
+                mockS3PutImageVersion(versionKey, versionId);
                 mockS3GetObjectWithImageKey(kuva, key);
 
                 time = time.plusMillis(1000);
@@ -255,20 +257,15 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
         }
     }
 
-    private void mockS3GetObjectWithImageKey(final KuvaProtos.Kuva kuva, final String key) {
+    private void mockS3GetObjectWithImageKey(final KuvaProtos.Kuva kuva, final String key) throws IOException {
         final byte[] imageData = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
-        final S3Object s3Object = new S3Object();
-        final S3ObjectInputStream objectContent = new S3ObjectInputStream(new ByteArrayInputStream(imageData), null);
-        s3Object.setObjectContent(objectContent);
-        Mockito.when(amazonS3.getObject(Mockito.eq(bucketName), Mockito.eq(key))).thenReturn(s3Object);
+
+        when(s3Service.readImage(anyString(), eq(key), anyString())).thenReturn(new S3Service.S3ImageObject(imageData, new Date()));
+        when(s3Service.readImage(anyString(), eq(key), isNull())).thenReturn(new S3Service.S3ImageObject(imageData, new Date()));
     }
 
     private void mockS3PutImageVersion(final String versionId, final String versionKey) {
-        final PutObjectResult result = new PutObjectResult();
-        result.setVersionId(versionId);
-        Mockito
-                .when(amazonS3.putObject(Mockito.anyString(), Mockito.eq(versionKey), Mockito.any(), Mockito.any()))
-                .thenReturn(result);
+        when(s3Service.putImage(anyString(), eq(versionId), anyLong(), isA(byte[].class))).thenReturn(versionKey);
     }
 
     private static KuvaProtos.Kuva createKuvaMessage(final CameraPreset preset, final Instant time) {
@@ -321,10 +318,8 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
     private byte[] readCameraImageFromS3(final String presetId) throws IOException {
         final String key = presetId + ".jpg";
-        final S3Object o = amazonS3.getObject(bucketName, key);
-        final byte[] imageData = o.getObjectContent().readAllBytes();
-        o.getObjectContent().close();
-        return imageData;
+
+        return s3Service.readImage(bucketName, key, null).data();
     }
 
     private void createHealthOKStubFor(final String healthPath) {

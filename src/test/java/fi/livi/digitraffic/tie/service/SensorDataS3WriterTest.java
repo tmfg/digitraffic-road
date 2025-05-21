@@ -2,10 +2,10 @@ package fi.livi.digitraffic.tie.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import fi.livi.digitraffic.tie.service.aws.S3Service;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.opencsv.bean.CsvToBeanBuilder;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
@@ -48,11 +49,13 @@ import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
     public static final Logger log = LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 
-    @Autowired
-    private AmazonS3 amazonS3;
+    @MockitoBean
+    private S3Service s3Service;
 
     @Autowired
     private SensorDataS3Writer writer;
@@ -75,7 +78,7 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
     private SensorValueHistoryBuilder builder;
 
     @Captor
-    ArgumentCaptor<InputStream> inputStreamArgumentCaptor;
+    ArgumentCaptor<byte[]> inputArgumentCaptor;
 
     @BeforeEach
     public void setUp() {
@@ -130,13 +133,12 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         assertEquals(origCount, sum, "element count mismatch");
 
         // Check S3 object
-        Mockito.verify(amazonS3, Mockito.times(1))
-                .putObject(
-                        Mockito.eq(sensorDataS3Properties.getS3BucketName()),
-                        Mockito.eq(sensorDataS3Properties.getFileStorageName()),
-                        inputStreamArgumentCaptor.capture(),
-                        Mockito.any());
-        final byte[] zipBytes = inputStreamArgumentCaptor.getValue().readAllBytes();
+        Mockito.verify(s3Service, Mockito.times(1))
+                .putObject(Mockito.eq(sensorDataS3Properties.getS3BucketName()),
+                           Mockito.eq(sensorDataS3Properties.getFileStorageName()),
+                           anyString(),
+                           inputArgumentCaptor.capture());
+        final byte[] zipBytes = inputArgumentCaptor.getValue();
 
         //        For debugging, write zip file to project root
         //        try {

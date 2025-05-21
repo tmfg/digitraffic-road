@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie;
 
+import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
+import fi.livi.digitraffic.tie.service.aws.S3Service;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -10,7 +13,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.common.dao.LockingDao;
-import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
@@ -68,7 +70,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          RoadStationService.class, TmsStationSensorConstantService.class, RoadStationSensorService.class,
          CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class,
          CameraPresetHistoryUpdateService.class, FlywayService.class,
-         SensorDataUpdateService.class,
+         SensorDataUpdateService.class, S3Service.class,
          ImsJsonConverter.class, Datex2UpdateService.class,
          RegionGeometryUpdateService.class,
          MaintenanceTrackingUpdateServiceV1.class,

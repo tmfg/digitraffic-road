@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie;
 
+import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
+import fi.livi.digitraffic.tie.service.aws.S3Service;
+
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -10,7 +13,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
 
 import fi.livi.digitraffic.tie.conf.RoadCacheConfiguration;
-import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.S3PropertiesConfiguration;
 import fi.livi.digitraffic.tie.conf.jaxb2.XmlMarshallerConfiguration;
 import fi.livi.digitraffic.tie.conf.properties.PropertiesConfiguration;
@@ -59,12 +61,12 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
 
          // Old Services
          TmsStationService.class, DataStatusService.class, TmsStationSensorConstantService.class, StationSensorConverterService.class,
-         WeatherStationService.class,
+         WeatherStationService.class, S3Service.class,
 
          // Repositories and daos
          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, MaintenanceTrackingDao.class,
 
-         // Conveters
+         // Converters
          TmsStationToFeatureConverterV1.class,
          WeatherStationToFeatureConverterV1.class,
          TrafficMessageImsJsonConverterV1.class, ImsJsonConverter.class, CoordinateConverter.class,

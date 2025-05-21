@@ -132,8 +132,8 @@ public class CameraPresetService {
             final CameraPresetHistory history =
                 new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
                                         isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
-            log.debug("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId=\"{}\" versionIdLenght={}",
-                     cameraPreset.getPresetId(), updateInfo.getVersionId(), updateInfo.getVersionId().length());
+            log.debug("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId=\"{}\"",
+                     cameraPreset.getPresetId(), updateInfo.getVersionId());
             cameraPresetHistoryRepository.save(history);
         }
         // Preset can be public when camera is secret. If camera is secret then public presets are not returned by the api.

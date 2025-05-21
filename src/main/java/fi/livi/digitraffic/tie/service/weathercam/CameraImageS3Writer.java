@@ -1,7 +1,9 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import java.io.ByteArrayInputStream;
 import java.time.Instant;
+import java.util.Map;
+
+import fi.livi.digitraffic.tie.service.aws.S3Service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -10,11 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
-
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.service.IllegalArgumentException;
 
@@ -24,13 +21,13 @@ public class CameraImageS3Writer {
     private static final Logger log = LoggerFactory.getLogger(CameraImageS3Writer.class);
     public static final String IMAGE_VERSION_KEY_SUFFIX = "-versions.jpg";
 
-    private final AmazonS3 amazonS3Client;
+    private final S3Service s3Service;
     private final WeathercamS3Properties weathercamS3Properties;
 
     public final static String LAST_MODIFIED_USER_METADATA_HEADER = "last-modified";
 
-    CameraImageS3Writer(final AmazonS3 s3Client, final WeathercamS3Properties weathercamS3Properties) {
-        this.amazonS3Client = s3Client;
+    CameraImageS3Writer(final S3Service s3Service, final WeathercamS3Properties weathercamS3Properties) {
+        this.s3Service = s3Service;
         this.weathercamS3Properties = weathercamS3Properties;
     }
 
@@ -38,7 +35,6 @@ public class CameraImageS3Writer {
                              final String imageKey, final long timestampEpochMillis) {
         writeCurrentImage(currentImageData, imageKey, timestampEpochMillis);
         return writeVersionedImage(versionedImageData, imageKey, timestampEpochMillis);
-
     }
 
     /**
@@ -52,17 +48,9 @@ public class CameraImageS3Writer {
                                   final long timestampEpochMillis) {
         try {
             checkS3KeyFormat(imageKey);
-            final ObjectMetadata metadata = createS3Metadata(timestampEpochMillis, currentImageData.length);
-
-            if (log.isDebugEnabled()) {
-                log.debug("method=writeCurrentImage s3Key={} lastModified={}", imageKey,
-                        metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER));
-            }
 
             // Put current image
-            metadata.setContentLength(currentImageData.length);
-            amazonS3Client.putObject(weathercamS3Properties.getS3WeathercamBucketName(), imageKey,
-                    new ByteArrayInputStream(currentImageData), metadata);
+            s3Service.putImage(weathercamS3Properties.getS3WeathercamBucketName(), imageKey, timestampEpochMillis, currentImageData);
         } catch (final Exception e) {
             throw new RuntimeException(String.format("%s method writeCurrentImage Failed to write image to S3 s3Key=%s",
                     getClass().getSimpleName(), imageKey), e);
@@ -84,32 +72,12 @@ public class CameraImageS3Writer {
 
         try {
             checkS3KeyFormat(imageKey);
-            final ObjectMetadata metadata = createS3Metadata(timestampEpochMillis, versionedImageData.length);
 
-            // Put versions image
-            final PutObjectResult result =
-                    amazonS3Client.putObject(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey,
-                            new ByteArrayInputStream(versionedImageData), metadata);
-            if (log.isDebugEnabled()) {
-                log.debug("method=writeVersionedImage s3Key={} lastModified: {} s3VersionId=\"{}\"",
-                        versionedKey, metadata.getUserMetaDataOf(LAST_MODIFIED_USER_METADATA_HEADER),
-                        result.getVersionId());
-            }
-            return result.getVersionId();
+            return s3Service.putImage(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey, timestampEpochMillis, versionedImageData);
         } catch (final Exception e) {
             throw new RuntimeException(
                     String.format("method=writeVersionedImage Failed to write image to S3 s3Key=%s", versionedKey), e);
         }
-    }
-
-    private ObjectMetadata createS3Metadata(final long timestampEpochMillis, final long contentLength) {
-        final ObjectMetadata metadata = new ObjectMetadata();
-        final String lastModifiedInHeaderFormat =
-                TimeUtil.getInLastModifiedHeaderFormat(Instant.ofEpochMilli(timestampEpochMillis));
-        metadata.addUserMetadata(LAST_MODIFIED_USER_METADATA_HEADER, lastModifiedInHeaderFormat);
-        metadata.setContentType("image/jpeg");
-        metadata.setContentLength(contentLength);
-        return metadata;
     }
 
     /**
@@ -121,12 +89,15 @@ public class CameraImageS3Writer {
         // Hide current image and last from history
         try {
             checkS3KeyFormat(imageKey);
-            if (amazonS3Client.doesObjectExist(weathercamS3Properties.getS3WeathercamBucketName(), imageKey)) {
+            if(s3Service.doesObjectExist(weathercamS3Properties.getS3WeathercamBucketName(), imageKey)) {
                 final String versionedKey = getVersionedKey(imageKey);
                 log.info("method=deleteImage presetId={} s3Key={}", resolvePresetIdFromKey(imageKey), imageKey);
-                amazonS3Client.deleteObject(weathercamS3Properties.getS3WeathercamBucketName(), imageKey);
-                if (amazonS3Client.doesObjectExist(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey)) {
-                    amazonS3Client.deleteObject(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey);
+
+                s3Service.deleteObject(weathercamS3Properties.getS3WeathercamBucketName(), imageKey);
+
+                if(s3Service.doesObjectExist(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey)) {
+                    s3Service.deleteObject(weathercamS3Properties.getS3WeathercamBucketName(), versionedKey);
+
                     return DeleteInfo.success(start.getDuration().toMillis(), versionedKey);
                 }
                 return DeleteInfo.success(start.getDuration().toMillis(), imageKey);

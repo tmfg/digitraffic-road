@@ -1,24 +1,28 @@
 package fi.livi.digitraffic.tie.data.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 
+import fi.livi.digitraffic.tie.service.aws.S3Service;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.amazonaws.services.s3.AmazonS3;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
 import fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer;
 
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
 public class CameraImageS3WriterTest extends AbstractDaemonTest {
 
-    @Autowired
-    private AmazonS3 amazonS3;
+    @MockitoBean
+    private S3Service s3Service;
 
     @Autowired
     private CameraImageS3Writer cameraImageS3Writer;
@@ -41,8 +45,9 @@ public class CameraImageS3WriterTest extends AbstractDaemonTest {
     public void cameraS3WriterDeleteTest() {
         final String imgKey = "C0650802.jpg";
         final String versionedKey = CameraImageS3Writer.getVersionedKey(imgKey);
-        Mockito.when(amazonS3.doesObjectExist(Mockito.anyString(), Mockito.eq(imgKey))).thenReturn(true);
-        Mockito.when(amazonS3.doesObjectExist(Mockito.anyString(), Mockito.eq(versionedKey))).thenReturn(false);
+
+        when(s3Service.doesObjectExist(anyString(), eq(imgKey))).thenReturn(true);
+        when(s3Service.doesObjectExist(anyString(), eq(versionedKey))).thenReturn(false);
 
         final CameraImageS3Writer.DeleteInfo deleteInfo = cameraImageS3Writer.deleteImage(imgKey);
         Assertions.assertTrue(deleteInfo.isDeleteSuccess());
