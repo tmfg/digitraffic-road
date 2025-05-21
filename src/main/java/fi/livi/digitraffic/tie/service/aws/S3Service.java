@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -31,6 +32,7 @@ import static fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer.LAS
  * Makes it easier to mock-tests.
  */
 @Service
+@ConditionalOnNotWebApplication
 public class S3Service {
     private static final Logger log = LoggerFactory.getLogger(S3Service.class);
 
