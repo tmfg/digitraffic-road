@@ -69,7 +69,7 @@ public class S3Service {
             builder.versionId(versionId);
         }
 
-        return s3Client.getObject(builder.build()));
+        return s3Client.getObject(builder.build());
     }
 
     @NotTransactionalServiceMethod
