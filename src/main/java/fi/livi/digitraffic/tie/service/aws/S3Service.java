@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectAttributesRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectAttributesResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
@@ -48,14 +50,14 @@ public class S3Service {
     public S3ImageObject readImage(final String bucketName, final String key, final String versionId)
             throws IOException {
         final var image = getObject(bucketName, key, versionId);
-        final var headObject = getObjectMetadata(bucketName, key, versionId);
+        final var attributesResponse = getObjectMetadata(bucketName, key, versionId);
 
-        return new S3ImageObject(image, Date.from(headObject.lastModified()));
+        return new S3ImageObject(image, Date.from(attributesResponse.lastModified()));
     }
 
     @NotTransactionalServiceMethod
-    public HeadObjectResponse getObjectMetadata(final String bucketName, final String key, final String versionId) {
-        final var builder = HeadObjectRequest.builder()
+    public GetObjectAttributesResponse getObjectMetadata(final String bucketName, final String key, final String versionId) {
+        final var builder = GetObjectAttributesRequest.builder()
                 .bucket(bucketName)
                 .key(key);
 
@@ -63,7 +65,7 @@ public class S3Service {
             builder.versionId(versionId);
         }
 
-        return s3Client.headObject(builder.build());
+        return s3Client.getObjectAttributes(builder.build());
     }
 
     @NotTransactionalServiceMethod
