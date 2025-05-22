@@ -61,7 +61,7 @@ public class S3Service {
                 .bucket(bucketName)
                 .key(key);
 
-        if(versionId != null) {
+        if(StringUtils.isNotBlank(versionId)) {
             builder.versionId(versionId);
         }
 
