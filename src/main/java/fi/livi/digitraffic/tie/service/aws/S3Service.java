@@ -19,6 +19,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectAttributesResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.ObjectAttributes;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -50,15 +51,16 @@ public class S3Service {
     public S3ImageObject readImage(final String bucketName, final String key, final String versionId)
             throws IOException {
         final var image = getObject(bucketName, key, versionId);
-        final var attributesResponse = getObjectMetadata(bucketName, key, versionId);
+        final var attributesResponse = getObjectAttributes(bucketName, key, versionId);
 
         return new S3ImageObject(image, Date.from(attributesResponse.lastModified()));
     }
 
     @NotTransactionalServiceMethod
-    public GetObjectAttributesResponse getObjectMetadata(final String bucketName, final String key, final String versionId) {
+    public GetObjectAttributesResponse getObjectAttributes(final String bucketName, final String key, final String versionId) {
         final var builder = GetObjectAttributesRequest.builder()
                 .bucket(bucketName)
+                .objectAttributes(ObjectAttributes.fromValue(LAST_MODIFIED_USER_METADATA_HEADER))
                 .key(key);
 
         if(StringUtils.isNotBlank(versionId)) {
@@ -81,7 +83,6 @@ public class S3Service {
         }
 
         return s3Client.getObject(builder.build()).readAllBytes();
-
     }
 
     @NotTransactionalServiceMethod
