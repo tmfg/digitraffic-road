@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.stereotype.Service;
 
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectAttributesRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectAttributesResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.ObjectAttributes;
@@ -50,28 +52,13 @@ public class S3Service {
     @NotTransactionalServiceMethod
     public S3ImageObject readImage(final String bucketName, final String key, final String versionId)
             throws IOException {
-        final var image = getObject(bucketName, key, versionId);
-        final var attributesResponse = getObjectAttributes(bucketName, key, versionId);
+        final var response = getObject(bucketName, key, versionId);
 
-        return new S3ImageObject(image, Date.from(attributesResponse.lastModified()));
+        return new S3ImageObject(response.readAllBytes(), Date.from(response.response().lastModified()));
     }
 
     @NotTransactionalServiceMethod
-    public GetObjectAttributesResponse getObjectAttributes(final String bucketName, final String key, final String versionId) {
-        final var builder = GetObjectAttributesRequest.builder()
-                .bucket(bucketName)
-                .objectAttributes(ObjectAttributes.fromValue(LAST_MODIFIED_USER_METADATA_HEADER))
-                .key(key);
-
-        if(StringUtils.isNotBlank(versionId)) {
-            builder.versionId(versionId);
-        }
-
-        return s3Client.getObjectAttributes(builder.build());
-    }
-
-    @NotTransactionalServiceMethod
-    public byte[] getObject(final String bucketName, final String key, final String versionId) throws IOException {
+    public ResponseInputStream<GetObjectResponse> getObject(final String bucketName, final String key, final String versionId) throws IOException {
         log.info("method=getObject getting from bucket={} with key={} and versionId={}", bucketName, key, versionId);
 
         final GetObjectRequest.Builder builder = GetObjectRequest.builder()
@@ -82,7 +69,7 @@ public class S3Service {
             builder.versionId(versionId);
         }
 
-        return s3Client.getObject(builder.build()).readAllBytes();
+        return s3Client.getObject(builder.build()));
     }
 
     @NotTransactionalServiceMethod
