@@ -10,6 +10,7 @@ import java.util.Base64;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.service.aws.S3Service;
 import net.coobird.thumbnailator.Thumbnails;
+
 
 @Service
 public class CameraImageThumbnailService {
@@ -46,6 +48,10 @@ public class CameraImageThumbnailService {
             final String base64OriginalImage = Base64.getEncoder().encodeToString(image.data());
             log.debug("Original image as Base64 for imageName {}, versionId {}, lastModified {}: {}",
                     imageName, versionId, image.lastModified(), base64OriginalImage);
+
+            final String imageHash = DigestUtils.sha256Hex(image.data());
+            log.debug("Original image hash (SHA-256) for imageName {}, versionId {}, lastModified {}: {}",
+                    imageName, versionId, image.lastModified(), imageHash);
 
             final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.data()));
             final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_FACTOR);
