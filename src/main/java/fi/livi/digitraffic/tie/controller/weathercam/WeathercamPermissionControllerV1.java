@@ -27,6 +27,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraImageThumbnailService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
 import fi.livi.digitraffic.tie.service.weathercam.ThumbnailGenerationError;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 @RestController
 @Validated
@@ -92,12 +93,15 @@ public class WeathercamPermissionControllerV1 {
                         "method=imageVersion thumbnail generated for image {} tookMs={}", imageName,
                         stopWatch.getDuration().toMillis());
                 return new ResponseEntity<>(thumbnailBytes, headers, HttpStatus.OK);
+            } catch (final NoSuchKeyException e) {
+                log.info("Image not found image={} versionId={}", imageName, versionId, e);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } catch (final ThumbnailGenerationError e) {
+                log.error("Thumbnail generation error for imageName={} with versionId={} having lastModified {}",
+                        e.getImageName(), e.getVersionId(), e.getLastModified(), e);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             } catch (final IOException e) {
                 log.error("IOException when generating thumbnail for image={} versionId={}", imageName, versionId, e);
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            } catch (final ThumbnailGenerationError e) {
-                log.error("Thumbnail generation error: imageName={} versionId={} lastModified={}",
-                        e.getImageName(), e.getVersionId(), e.getLastModified(), e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
