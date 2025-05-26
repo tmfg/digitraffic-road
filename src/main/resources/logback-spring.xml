@@ -21,14 +21,14 @@
 
     <!-- JSON logger for AWS -->
     <springProfile name="aws">
-        <root level="INFO">
+        <root level="DEBUG">
             <appender-ref ref="CONSOLE_JSON" />
         </root>
     </springProfile>
 
     <!-- Standard log for others -->
     <springProfile name="!aws">
-        <root level="INFO">
+        <root level="DEBUG">
             <appender-ref ref="CONSOLE" />
         </root>
     </springProfile>
