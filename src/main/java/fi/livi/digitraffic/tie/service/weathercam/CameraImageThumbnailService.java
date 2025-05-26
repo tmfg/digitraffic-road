@@ -6,10 +6,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 import javax.imageio.ImageIO;
-
-import fi.livi.digitraffic.tie.service.aws.S3Service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
+import fi.livi.digitraffic.tie.service.aws.S3Service;
 import net.coobird.thumbnailator.Thumbnails;
 
 @Service
@@ -43,6 +43,10 @@ public class CameraImageThumbnailService {
         final S3Service.S3ImageObject image = s3Service.readImage(weathercamImageBucket, imageKey, versionId);
 
         try {
+            final String base64OriginalImage = Base64.getEncoder().encodeToString(image.data());
+            log.debug("Original image as Base64 for imageName {}, versionId {}, lastModified {}: {}",
+                    imageName, versionId, image.lastModified(), base64OriginalImage);
+
             final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.data()));
             final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_FACTOR);
 
