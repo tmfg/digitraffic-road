@@ -45,13 +45,9 @@ public class CameraImageThumbnailService {
         final S3Service.S3ImageObject image = s3Service.readImage(weathercamImageBucket, imageKey, versionId);
 
         try {
-            final String base64OriginalImage = Base64.getEncoder().encodeToString(image.data());
-            log.debug("Original image as Base64 for imageName {}, versionId {}, lastModified {}: {}",
-                    imageName, versionId, image.lastModified(), base64OriginalImage);
-
             final String imageHash = DigestUtils.sha256Hex(image.data());
-            log.debug("Original image hash (SHA-256) for imageName {}, versionId {}, lastModified {}: {}",
-                    imageName, versionId, image.lastModified(), imageHash);
+            log.debug("Generating thumbnail, imageName={} versionId={} lastModified={} length={}kB hash={}",
+                    imageName, versionId, image.lastModified(), image.data().length / 1024, imageHash);
 
             final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.data()));
             final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_FACTOR);
