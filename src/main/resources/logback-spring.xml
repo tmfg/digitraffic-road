@@ -19,14 +19,18 @@
         </encoder>
     </appender>
 
-    <!-- JSON logger for AWS -->
+    <!-- JSON logger for AWS
+        DO NOT SET ROOT LEVEL TO "DEBUG" - use Spring logging.level properties instead
+    -->
     <springProfile name="aws">
         <root level="INFO">
             <appender-ref ref="CONSOLE_JSON" />
         </root>
     </springProfile>
 
-    <!-- Standard log for others -->
+    <!-- Standard log for others
+        DO NOT SET ROOT LEVEL TO "DEBUG" - use Spring logging.level properties instead
+    -->
     <springProfile name="!aws">
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
