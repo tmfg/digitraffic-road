@@ -6,11 +6,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Base64;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.imaging.Imaging;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,19 +45,17 @@ public class CameraImageThumbnailService {
         final S3Service.S3ImageObject image = s3Service.readImage(weathercamImageBucket, imageKey, versionId);
 
         try {
-            final String imageHash = DigestUtils.sha256Hex(image.data());
-            log.debug("Generating thumbnail, imageName={} versionId={} lastModified={} length={}kB hash={}",
-                    imageName, versionId, image.lastModified(), image.data().length / 1024, imageHash);
-
-            final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(image.data()));
+            final BufferedImage originalImage = Imaging.getBufferedImage(new ByteArrayInputStream(image.data()));
             final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_FACTOR);
 
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(thumbnailImage, "jpg", baos);
 
             return baos.toByteArray();
+
         } catch (final Exception e) {
-            throw new ThumbnailGenerationError("Error generating thumbnail", imageName, versionId, image.lastModified(), e);
+            final String imageHash = DigestUtils.sha256Hex(image.data());
+            throw new ThumbnailGenerationError("Error generating thumbnail", imageName, versionId, image.lastModified(), imageHash, image.data().length / 1024, e);
         }
     }
 
