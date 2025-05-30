@@ -69,13 +69,10 @@ public class CameraImageThumbnailService {
     public static BufferedImage readImageWithFallback(final ByteArrayInputStream image) throws IOException {
         try {
             return Imaging.getBufferedImage(image);
-        } catch (final Exception imagingException) {
-            log.error("Failed to read image with Imaging, falling back to ImageIO...", imagingException);
-            try {
-                return ImageIO.read(image);
-            } catch (final Exception imageIOException) {
-                throw imageIOException;
-            }
+        } catch (final Exception e) {
+            log.error("Failed to read image with Imaging, falling back to ImageIO...", e);
+            image.reset();
+            return ImageIO.read(image);
         }
     }
 
