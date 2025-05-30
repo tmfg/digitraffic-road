@@ -461,7 +461,15 @@
             <version>4.12.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-jpeg</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+        
     </dependencies>
+
 
     <!-- If you have access to scm then you can place actual url's.
          Otherwise with <revisionOnScmFailure /> you can give some fake URLs as follows. -->
