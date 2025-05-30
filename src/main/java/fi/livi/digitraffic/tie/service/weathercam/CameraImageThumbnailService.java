@@ -45,7 +45,7 @@ public class CameraImageThumbnailService {
         final S3Service.S3ImageObject image = s3Service.readImage(weathercamImageBucket, imageKey, versionId);
 
         try {
-            final BufferedImage originalImage = Imaging.getBufferedImage(new ByteArrayInputStream(image.data()));
+            final BufferedImage originalImage = readImageWithFallback(new ByteArrayInputStream(image.data()));
             final BufferedImage thumbnailImage = resizeImageByPercentage(originalImage, RESIZE_FACTOR);
 
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -59,10 +59,20 @@ public class CameraImageThumbnailService {
         }
     }
 
-    private BufferedImage resizeImageByPercentage(final BufferedImage originalImage, final double resizeFactor)
+    public static BufferedImage resizeImageByPercentage(final BufferedImage originalImage, final double resizeFactor)
             throws IOException {
         return Thumbnails.of(originalImage)
                 .size((int) (originalImage.getWidth() * resizeFactor), (int) (originalImage.getHeight() * resizeFactor))
                 .asBufferedImage();
     }
+
+    public static BufferedImage readImageWithFallback(final ByteArrayInputStream image) throws IOException {
+        try {
+            return Imaging.getBufferedImage(image);
+        } catch (final Exception e) {
+            log.error("Failed to read image with Imaging, falling back to ImageIO...", e.getMessage());
+            return ImageIO.read(image);
+        }
+    }
+
 }
