@@ -17,6 +17,13 @@ import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.VEHICLE_
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceTypeEnum.ANIMALS_ON_THE_ROAD;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceTypeEnum.HERD_OF_ANIMALS_ON_THE_ROAD;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceTypeEnum.LARGE_ANIMALS_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.CROWD;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.DEMONSTRATION;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.MARCH;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.PUBLIC_DISTURBANCE;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.RIOT;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.STRIKE;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.UNSPECIFIED_ALERT;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.AVALANCHES;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.EARTHQUAKE_DAMAGE;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.FALLEN_TREES;
@@ -270,6 +277,7 @@ import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ConstructionWorkTypeEnum;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ConstructionWorks;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivity;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstruction;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemFault;
@@ -324,6 +332,7 @@ public class WazeDatex2MessageConverter {
     private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
     private final Map<AnimalPresenceTypeEnum, String> animalPresenceTypeEnumStringMap = new HashMap<>();
+    private final Map<DisturbanceActivityTypeEnum, String> disturbanceActivityTypeEnumStringMap = new HashMap<>();
     private final Map<EnvironmentalObstructionTypeEnum, String> environmentalObstructionTypeEnumStringMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
@@ -372,6 +381,14 @@ public class WazeDatex2MessageConverter {
         animalPresenceTypeEnumStringMap.put(ANIMALS_ON_THE_ROAD, "Animals on the road");
         animalPresenceTypeEnumStringMap.put(HERD_OF_ANIMALS_ON_THE_ROAD, "Herd of animals on the road");
         animalPresenceTypeEnumStringMap.put(LARGE_ANIMALS_ON_THE_ROAD, "Large animals on the road");
+
+        disturbanceActivityTypeEnumStringMap.put(CROWD, "Crowd");
+        disturbanceActivityTypeEnumStringMap.put(DEMONSTRATION, "Demonstration");
+        disturbanceActivityTypeEnumStringMap.put(MARCH, "March");
+        disturbanceActivityTypeEnumStringMap.put(PUBLIC_DISTURBANCE, "Public disturbance");
+        disturbanceActivityTypeEnumStringMap.put(RIOT, "Riot");
+        disturbanceActivityTypeEnumStringMap.put(STRIKE, "Strike");
+        disturbanceActivityTypeEnumStringMap.put(UNSPECIFIED_ALERT, "Unspecified alert");
 
         environmentalObstructionTypeEnumStringMap.put(AVALANCHES, "Avalanches");
         environmentalObstructionTypeEnumStringMap.put(EARTHQUAKE_DAMAGE, "Earthquake damage");
@@ -744,7 +761,7 @@ public class WazeDatex2MessageConverter {
         return Optional.of(SKIP_SUBTYPE);
     }
     private Optional<String> accept(final DisturbanceActivity disturbanceActivity) {
-        return Optional.empty();
+        return Optional.of(disturbanceActivityTypeEnumStringMap.getOrDefault(disturbanceActivity.getDisturbanceActivityType(), null));
     }
     private Optional<String> accept(final EnvironmentalObstruction environmentalObstruction) {
         final Optional<EnvironmentalObstructionTypeEnum> environmentalObstructionTypeEnumOptional = Optional.ofNullable(environmentalObstruction.getEnvironmentalObstructionType());
@@ -938,6 +955,9 @@ public class WazeDatex2MessageConverter {
         } else if (situationRecord instanceof MaintenanceWorks) {
             result = accept((MaintenanceWorks) situationRecord);
             situationRecordType = "MaintenanceWorks";
+        } else if (situationRecord instanceof DisturbanceActivity) {
+            result = accept((DisturbanceActivity) situationRecord);
+            situationRecordType = "DisturbanceActivity";
         } else {
             logger.error("method=accept unknown class {} in {}", situationRecord.getClass().getSimpleName(), situationId);
             return Optional.empty();
