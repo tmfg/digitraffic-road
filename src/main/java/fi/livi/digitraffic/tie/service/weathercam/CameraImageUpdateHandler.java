@@ -102,12 +102,13 @@ public class CameraImageUpdateHandler {
             } else {
                 log.error("method=handleKuva presetId=\"{}\" s3Key=\"{}\" readImageStatus={} writeImageStatus={} " +
                         "readTookMs={} readTotalTookMs={} writeTooksMs={} writeTotalTookMs={} tookMs={} " +
-                        "downloadImageUrl={} sizeBytes={}",
+                        "downloadImageUrl={} sizeBytes={} error={}",
                     presetId, imageKey, transferInfo.getReadStatus(), transferInfo.getWriteStatus(),
                     transferInfo.getReadDurationMs(), transferInfo.getReadTotalDurationMs(),
                     transferInfo.getWriteDurationMs(), transferInfo.getWriteTotalDurationMs(),
                     transferInfo.getDurationMs(),
                     transferInfo.getDownloadUrl(), transferInfo.getSizeBytes(),
+                    getErrorMessage(transferInfo),
                     transferInfo.getReadError() != null ? transferInfo.getReadError() : transferInfo.getWriteError());
             }
             return transferInfo.isSuccess();
@@ -120,6 +121,11 @@ public class CameraImageUpdateHandler {
                 deleteInfoS3.getDurationMs());
             return deleteInfoS3.isSuccess();
         }
+    }
+
+    private String getErrorMessage(final ImageUpdateInfo transferInfo) {
+        return transferInfo.getReadError() != null ? transferInfo.getReadError().getMessage() :
+               transferInfo.getWriteError() != null ? transferInfo.getWriteError().getMessage() : "Unknown error";
     }
 
     private ImageUpdateInfo transferKuva(final KuvaProtos.Kuva kuva, final String presetId, final String filename,

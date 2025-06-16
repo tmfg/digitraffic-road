@@ -37,7 +37,7 @@ public class MultiDestinationProvider implements DestinationProvider {
         final String urls = hosts.stream()
             .map(host -> host.getDataUrl().toString())
             .collect(Collectors.joining(","));
-        log.error("method=getDestination No healthy hosts for dataUrls={}", urls);
+        log.warn("method=getDestination No healthy hosts for dataUrls={}", urls);
         throw new IllegalStateException(String.format("No healthy hosts for dataUrls=%s", urls));
     }
 

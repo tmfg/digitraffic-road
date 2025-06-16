@@ -107,11 +107,9 @@ public class WeathercamPermissionControllerV1 {
 
         }
 
-        final ResponseEntity<Void> response = ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity.status(HttpStatus.FOUND)
                 .location(weathercamS3Properties.getS3UriForVersion(imageName, versionId))
-                .build();
-
-        return response;
+                .<Void>build();
     }
 
     private ResponseEntity<Void> createNotFoundResponse() {

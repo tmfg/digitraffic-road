@@ -53,23 +53,28 @@ public abstract class AbstractLotjuMetadataClient extends WebServiceGatewaySuppo
 
             if (dp instanceof final MultiDestinationProvider mdp) {
 				int tryCount = 0;
-
                 Exception lastException;
                 do {
                     tryCount++;
-                    final URI dest = mdp.getDestination();
-                    String dataUri = null;
                     try {
-                        dataUri = getDefaultUri();
-                        final Object value = marshalSendAndReceive(dataUri, requestPayload, requestCallback);
-                        // mark host as healthy
-                        mdp.setHostHealthy(dest);
-                        return value;
+                        final URI dest = mdp.getDestination();
+                        String dataUri = null;
+                        try {
+                            dataUri = getDefaultUri();
+                            final Object value = marshalSendAndReceive(dataUri, requestPayload, requestCallback);
+                            // mark host as healthy
+                            mdp.setHostHealthy(dest);
+                            return value;
+                        } catch (final Exception e) {
+                            // mark host not healthy
+                            mdp.setHostNotHealthy(dest);
+                            lastException = e;
+                            log.warn("method=marshalSendAndReceive returned error for dataUrl={} reason: {}", dataUri,
+                                    lastException.getMessage());
+                        }
                     } catch (final Exception e) {
-                        // mark host not healthy
-                        mdp.setHostNotHealthy(dest);
                         lastException = e;
-                        log.warn("method=marshalSendAndReceive returned error for dataUrl={} reason: {}", dataUri, lastException.getMessage());
+                        log.warn("method=marshalSendAndReceive getDestination failed reason: {}", lastException.getMessage());
                     }
                 } while (tryCount < mdp.getDestinationsCount());
 
