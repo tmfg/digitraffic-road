@@ -97,7 +97,7 @@ public class WeathercamPermissionControllerV1 {
                 log.info("Image not found image={} versionId={}", imageName, versionId, e);
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } catch (final ThumbnailGenerationError e) {
-                log.error("Thumbnail generation error for imageName={} with versionId={} having lastModified {}, original image size {}, original image hash {}",
+                log.warn("Thumbnail generation failed for imageName={} with versionId={} having lastModified {}, original image size {}, original image hash {}",
                         e.getImageName(), e.getVersionId(), e.getLastModified(), e.getOriginalImageSize(), e.getOriginalImageHash(), e);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             } catch (final IOException e) {
