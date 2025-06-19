@@ -70,7 +70,7 @@ public class CameraImageThumbnailService {
         try {
             return Imaging.getBufferedImage(image);
         } catch (final Exception e) {
-            log.warn("Failed to read image with Imaging, falling back to ImageIO...", e);
+            log.warn("method=readImageWithFallback Failed to read image with Imaging, falling back to ImageIO...", e);
             image.reset();
             return ImageIO.read(image);
         }
