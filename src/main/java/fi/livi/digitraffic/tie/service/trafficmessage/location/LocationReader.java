@@ -2,12 +2,11 @@ package fi.livi.digitraffic.tie.service.trafficmessage.location;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.base.Charsets;
 
 import fi.livi.digitraffic.tie.model.trafficmessage.location.Location;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationSubtype;
@@ -20,7 +19,7 @@ public class LocationReader extends AbstractReader<Location> {
     private static final String GEOCODE_FIN_CODE = "FinCode:";
 
     public LocationReader(final Map<String, LocationSubtype> subtypeMap, final String version) {
-        super(Charsets.UTF_8, DELIMITER_COMMA, version);
+        super(StandardCharsets.UTF_8, DELIMITER_COMMA, version);
         this.subtypeMap = subtypeMap;
     }
 
@@ -58,24 +57,25 @@ public class LocationReader extends AbstractReader<Location> {
     }
 
     private String parseGeocode(final String component) {
-        if(StringUtils.isEmpty(component)) {
+        if (StringUtils.isEmpty(component)) {
             return null;
         }
 
-         if(!component.startsWith(GEOCODE_FIN_CODE)) {
-             log.error("invalid geocode={}", component);
-             return null;
-         }
+        if (!component.startsWith(GEOCODE_FIN_CODE)) {
+            log.error("invalid geocode={}", component);
+            return null;
+        }
 
         return component.substring(GEOCODE_FIN_CODE.length());
     }
 
-    private static String parseSubtype(final String classValue, final String typeValue, final String subtypeValue, final Map<String, LocationSubtype> subtypeMap) {
+    private static String parseSubtype(final String classValue, final String typeValue, final String subtypeValue,
+                                       final Map<String, LocationSubtype> subtypeMap) {
         final String subtypeCode = String.format("%s%s.%s", classValue, typeValue, subtypeValue);
 
         final LocationSubtype subtype = subtypeMap.get(subtypeCode);
 
-        if(subtype == null) {
+        if (subtype == null) {
             throw new IllegalArgumentException("Could not find subtype " + subtypeCode);
         }
 
@@ -97,14 +97,15 @@ public class LocationReader extends AbstractReader<Location> {
     }
 
     private static BigDecimal parseDecimal(final String value, final int scale) {
-        return StringUtils.isEmpty(value) ? null : new BigDecimal(value.replace(',', '.')).setScale(scale, RoundingMode.HALF_UP);
+        return StringUtils.isEmpty(value) ? null :
+               new BigDecimal(value.replace(',', '.')).setScale(scale, RoundingMode.HALF_UP);
     }
 
     private void addLinearRef(final Location location, final String value) {
         final Integer refValue = parseInteger(value);
 
         // for some reason, there is no 0 present
-        if(refValue != null && !refValue.equals(0)) {
+        if (refValue != null && !refValue.equals(0)) {
             linearRefMap.put(location.getLocationCode(), refValue);
         }
     }
@@ -113,7 +114,7 @@ public class LocationReader extends AbstractReader<Location> {
         final Integer refValue = parseInteger(value);
 
         // for some reason, there is no 0 present
-        if(refValue != null && !refValue.equals(0)) {
+        if (refValue != null && !refValue.equals(0)) {
             areaRefMap.put(location.getLocationCode(), refValue);
         }
     }

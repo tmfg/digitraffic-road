@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>3.5.0</version>
         <relativePath/>
     </parent>
 
@@ -24,15 +24,15 @@
         <java.version>21</java.version>
         <maven.compiler.release>21</maven.compiler.release>
         <!-- https://mvnrepository.com/artifact/com.google.protobuf/protoc -->
-        <com.google.protobuf.version>4.28.3</com.google.protobuf.version>
-        <org.apache.cxf.version>4.1.0</org.apache.cxf.version>
+        <com.google.protobuf.version>4.31.1</com.google.protobuf.version>
+        <org.apache.cxf.version>4.1.2</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
-        <spring.cloud.version>4.2.1</spring.cloud.version>
-        <proj4j.version>1.3.0</proj4j.version>
-        <org.jvnet.jaxb.version>4.0.8</org.jvnet.jaxb.version>
+        <spring.cloud.version>4.3.0</spring.cloud.version>
+        <proj4j.version>1.4.1</proj4j.version>
+        <org.jvnet.jaxb.version>4.0.9</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java
         </project.digitraffic-common-java.directory>
-        <aws.sdk.version>2.31.43</aws.sdk.version>
+        <aws.sdk.version>2.31.72</aws.sdk.version>
     </properties>
 
     <profiles>
@@ -90,20 +90,13 @@
         </dependency>
 
         <!-- TEMPORARY DEPS TO MITIGATE SECURITY VULNERABILITIES STARTS -->
-        <!-- TODO: Temporary patch for CVE-2025-22228 in spring-security-crypto 6.4.3 -->
-        <!-- Remove this dependency once spring-cloud-starter-bootstrap is updated -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
-            <version>6.4.5</version>
-        </dependency>
-        <!-- TODO: Temporary patch for CVE-2025-27820 in spring-cloud-starter-config:4.2.1:httpclient5 -->
-        <!-- Remove this dependency once spring-cloud-starter-config is updated -->
-        <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-            <version>5.4.4</version>
-        </dependency>
+        <!--E.g.-->
+        <!-- Temporary patch for CVE-2025-27820 in spring-cloud-starter-config:4.2.1:httpclient5 -->
+        <!--<dependency>-->
+        <!--    <groupId>org.apache.httpcomponents.client5</groupId>-->
+        <!--    <artifactId>httpclient5</artifactId>-->
+        <!--    <version>5.5</version>-->
+        <!--</dependency>-->
         <!-- TEMPORARY DEPS TO MITIGATE SECURITY VULNERABILITIES ENDS -->
 
         <dependency>
@@ -170,9 +163,16 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <!-- https://docs.spring.io/spring-integration/reference/mqtt.html
+             From 6.5.0 org.eclipse.paho has to be included explicitly for MQTT v3 support -->
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-mqtt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <version>1.2.5</version>
         </dependency>
 
         <dependency>
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.1.8</version>
+            <version>3.2.1</version>
         </dependency>
 
         <dependency>
@@ -224,14 +224,14 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
-            <version>2.0.10</version>
+            <version>2.0.12</version>
         </dependency>
 
         <!-- JGit -->
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>7.2.1.202505142326-r</version>
+            <version>7.3.0.202506031305-r</version>
         </dependency>
 
         <!-- google protobuf -->
@@ -251,6 +251,12 @@
         <!-- Web Service dependencies-->
 
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.8-jre</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.17.0</version>
@@ -259,7 +265,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.18.0</version>
+            <version>2.19.0</version>
         </dependency>
 
         <dependency>
@@ -296,7 +302,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.6</version>
+            <version>2.8.9</version>
         </dependency>
 
         <!-- Static Reader of META-INF/MANIFEST.MF Files -->
@@ -321,7 +327,7 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.9</version>
+            <version>5.11.2</version>
         </dependency>
 
         <dependency>
@@ -339,14 +345,14 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>6.6.4.Final</version>
+            <version>6.6.15.Final</version>
         </dependency>
 
         <!-- json column type -->
         <dependency>
             <groupId>io.hypersistence</groupId>
             <artifactId>hypersistence-utils-hibernate-63</artifactId>
-            <version>3.9.0</version>
+            <version>3.10.1</version>
         </dependency>
 
         <!-- Library to transform GeoJSON <-> jts Geometry.
@@ -361,7 +367,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>8.0</version>
+            <version>8.1</version>
         </dependency>
 
         <dependency>
@@ -385,7 +391,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.11.4</version>
+            <version>5.13.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -412,7 +418,7 @@
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
+            <version>2.4.0-b180830.0359</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -430,14 +436,14 @@
         <dependency>
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock-standalone</artifactId>
-            <version>3.10.0</version>
+            <version>3.13.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-subclass</artifactId>
-            <version>5.15.2</version>
+            <version>5.18.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -451,7 +457,7 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -467,7 +473,7 @@
             <artifactId>imageio-jpeg</artifactId>
             <version>3.12.0</version>
         </dependency>
-        
+
     </dependencies>
 
 

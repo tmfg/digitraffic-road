@@ -42,10 +42,9 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.MoreObjects;
 
 import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 import fi.livi.digitraffic.common.util.StringUtil;
@@ -172,7 +171,7 @@ public enum MaintenanceTrackingTask implements DataUpdatedSupportV1 {
         final String values = Arrays.stream(MaintenanceTrackingTask.values())
                 .map(t ->
                         StringUtil.format("  ('{}', '{}', '{}', '{}', '{}')",
-                                t.name(), MoreObjects.firstNonNull(t.getHarjaEnumName(), "TUNTEMATON"), t.getNameFi(), t.getNameSv(), t.getNameEn()))
+                                t.name(), ObjectUtils.firstNonNull(t.getHarjaEnumName(), "TUNTEMATON"), t.getNameFi(), t.getNameSv(), t.getNameEn()))
                 .collect(Collectors.joining(",\n"));
         sb.append(values);
         sb.append("\n");

@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.dto;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Serializable;
@@ -27,10 +26,10 @@ import fi.livi.digitraffic.tie.helper.LoggerHelper;
 public abstract class JsonAdditionalProperties implements Serializable {
 
     private final Map<Class<?>, Set<String>> ignoreClassToPropertiesMap = Stream.of(
-            new ClassWithProperties(RoadWorkPhase.class, newHashSet("features")),
-            new ClassWithProperties(TrafficAnnouncementProperties.class, newHashSet("locationToDisplay")),
-            new ClassWithProperties(Contact.class, newHashSet("fax")),
-            new ClassWithProperties(TrafficAnnouncementFeature.class, newHashSet("bbox"))
+            new ClassWithProperties(RoadWorkPhase.class, Set.of("features")),
+            new ClassWithProperties(TrafficAnnouncementProperties.class, Set.of("locationToDisplay")),
+            new ClassWithProperties(Contact.class, Set.of("fax")),
+            new ClassWithProperties(TrafficAnnouncementFeature.class, Set.of("bbox"))
     ).collect(Collectors.toMap(ClassWithProperties::getType, ClassWithProperties::getProperties));
 
     /**
