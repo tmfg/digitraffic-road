@@ -29,7 +29,7 @@ jobs:
         run: |
           mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -e -U -Dmaven.gitcommitid.skip=true -Dspring.jdbc.getParameterType.ignore=true -Dspring.profiles.active=ci -Dquartz.enabled=false -Droad.datasource.url=jdbc:postgresql://${{ env.db_addr }}:5432/road
       - name: Publish test results
-        uses: dorny/test-reporter@v2.1.0
+        uses: dorny/test-reporter@v2.1.1
         if: success() || failure()
         with:
           name: jUnit tests
