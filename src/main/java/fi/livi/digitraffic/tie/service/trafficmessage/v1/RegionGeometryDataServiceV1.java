@@ -17,7 +17,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.locationtech.jts.geom.util.GeometryFixer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +55,13 @@ public class RegionGeometryDataServiceV1 {
     }
 
     // Update Every hour
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 3600000, initialDelay = 5000)
     @Transactional
     public void refreshCache() {
         final StopWatch start = StopWatch.createStarted();
         try {
             final String latestCommitId = getLatestCommitId();
-            if (StringUtils.equals(regionStatus.currentCommitId, latestCommitId)) {
+            if (latestCommitId != null && StringUtils.equals(regionStatus.currentCommitId, latestCommitId)) {
                 log.info("method=refreshCache No changes currentCommitId {} and latestCommitId {} are the same", regionStatus.currentCommitId, latestCommitId);
                 return;
             }
@@ -132,35 +131,39 @@ public class RegionGeometryDataServiceV1 {
     @NotTransactionalServiceMethod
     public Geometry<?> getGeoJsonGeometryUnion(final Instant effectiveDate, final Integer...ids) {
         awaitDataPopulation();
-        final List<org.locationtech.jts.geom.Geometry> geometryCollection = new ArrayList<>();
+        final List<org.locationtech.jts.geom.Geometry> geometries = new ArrayList<>();
         try {
             for (final int id : ids) {
                 final RegionGeometry region = getAreaLocationRegionEffectiveOn(id, effectiveDate);
                 if (region != null) {
                     final org.locationtech.jts.geom.Geometry geometry = region.getGeometry();
+                    geometries.add(geometry);
+                    /* Remove line above and restore this if there is problems with invalid geometries.
+                       This should not be needed as the result geometry is anyways fixed in union method.
                     if (geometry.isValid()) {
-                        geometryCollection.add(geometry);
+                        geometries.add(geometry);
                     } else {
                         // Try to make geometry valid by adding 0 buffer around it
                         final String type = geometry.getGeometryType();
-                        geometryCollection.add(GeometryFixer.fix(geometry));
+                        geometries.add(GeometryFixer.fix(geometry));
                         log.warn("method=getGeoJsonGeometryUnion regionGeometry is not valid id: {} locationCode: {} name: {} " +
                                  "effectiveDate: {} type: {} type after: {} valid after fix: {}",
-                                region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate(), type, geometryCollection.getLast().getGeometryType(),
-                                geometry.isValid());
+                                region.getId(), region.getLocationCode(), region.getName(), region.getEffectiveDate(), type, geometries.getLast().getGeometryType(),
+                                geometries.getLast().isValid());
                     }
+                    */
                 }
             }
-            if (geometryCollection.isEmpty()) {
+            if (geometries.isEmpty()) {
                 if (ObjectUtils.isNotEmpty(ids)) {
                     log.error("method=getGeoJsonGeometryUnion No area geometries found with ids: {}", (Object) ids);
                 }
                 return null;
             }
-            final org.locationtech.jts.geom.Geometry union = PostgisGeometryUtils.union(geometryCollection);
+            final org.locationtech.jts.geom.Geometry union = PostgisGeometryUtils.union(geometries);
             return PostgisGeometryUtils.convertGeometryToGeoJSONGeometry(union);
         } catch (final Exception e) {
-            final String geometryTypes = geometryCollection.stream().map(org.locationtech.jts.geom.Geometry::getGeometryType)
+            final String geometryTypes = geometries.stream().map(org.locationtech.jts.geom.Geometry::getGeometryType)
                     .collect(Collectors.joining(", "));
             log.error("method=getGeoJsonGeometryUnion failed with parameters effectiveDate: {}, ids: {}, types: {}", effectiveDate, ids, geometryTypes, e);
             throw e;

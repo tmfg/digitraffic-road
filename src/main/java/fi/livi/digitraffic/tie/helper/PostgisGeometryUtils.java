@@ -6,6 +6,7 @@ import static fi.livi.digitraffic.tie.helper.GeometryConstants.JTS_GEOMETRY_FACT
 import static fi.livi.digitraffic.tie.helper.GeometryConstants.SIMPLIFY_DOUGLAS_PEUCKER_TOLERANCE;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +16,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -164,16 +167,16 @@ public class PostgisGeometryUtils {
     // Tested with geometries from https://tie.digitraffic.fi/api/traffic-message/v1/messages/GUID50439056?includeAreaGeometry=true&latest=true
 
     /**
-     * Makes union of given geometries. Should return always a valid geometry.
-     * @param geometryCollection geometries to merge
+     * Makes union of given geometries. Should return always a valid geometry. Returns newer GeometryCollection.
+     * @param geometries geometries to merge
      * @return Valid union geometry.
      */
-    public static Geometry union(final List<Geometry> geometryCollection) {
+    public static Geometry union(final List<Geometry> geometries) {
         // Add buffer around geometry edges to fill small gaps between joined geometries and form united geometry.
         // And then remove the added extra at the end.
         // This results in a loss of some meters in accuracy around corners and close or small shapes but that is acceptable.
         final Geometry geometry = JTS_GEOMETRY_FACTORY
-                .buildGeometry(geometryCollection)
+                .buildGeometry(geometries)
                 .buffer(BUFFER_DISTANCE, MITRE_LIMIT)
                 .union()
                 .buffer(-1 * BUFFER_DISTANCE, MITRE_LIMIT);
@@ -185,10 +188,15 @@ public class PostgisGeometryUtils {
 //                        0.001,
 //                        false);
 
-        if (!geometry.isValid()) {
-            return GeometryFixer.fix(geometry);
+        // Return fixed geometry if union produced invalid geometry
+        final Geometry result = geometry.isValid() ? geometry : GeometryFixer.fix(geometry);
+        // If geometry is not GeometryCollection we can return it
+        if (!Geometry.TYPENAME_GEOMETRYCOLLECTION.equals(result.getGeometryType())) {
+            return result;
         }
-        return geometry;
+
+        // Now we have GeometryCollection in result and that is not supported in many cases so convert it to Polygon or MultiPolygon
+        return fixGeometryCollectionToPolygonal((GeometryCollection)result);
 
         // This makes also holes in result
         //        Geometry union = JTS_GEOMETRY_FACTORY.buildGeometry(geometryCollection).union();
@@ -196,6 +204,54 @@ public class PostgisGeometryUtils {
         //            union = GeometryFixer.fix(union);
         //        }
         //        return CoverageUnion.union(union);
+    }
+
+    /**
+     * Converts a GeometryCollection to a polygonal geometry (Polygon or MultiPolygon).
+     * Non-polygonal geometries are ignored. Nested GeometryCollections are recursively processed.
+     *
+     * @param geometry the GeometryCollection to fix
+     * @return a Polygon, MultiPolygon, or null if no polygonal geometries exist
+     */
+    private static Geometry fixGeometryCollectionToPolygonal(final GeometryCollection geometry) {
+        if (geometry == null || geometry.isEmpty()) {
+            return null;
+        }
+
+        final List<Polygon> polygons = collectPolygons(geometry);
+
+        if (polygons.isEmpty()) {
+            log.error("method=fixGeometryCollectionToPolygonal No polygons in GeometryCollection: {}", geometry);
+            return null;
+        } else if (polygons.size() == 1) {
+            return polygons.getFirst();
+        } else {
+            return JTS_GEOMETRY_FACTORY.createMultiPolygon(polygons.toArray(new Polygon[0]));
+        }
+    }
+
+    /**
+     * Recursively collects all polygons from a geometry, including nested GeometryCollections.
+     *
+     * @param geometry the geometry to process
+     * @return The list of polygons found within the geometry
+     */
+    private static List<Polygon> collectPolygons(final Geometry geometry) {
+        final List<Polygon> polygons = new ArrayList<>();
+
+        if (geometry instanceof Polygon) {
+            polygons.add((Polygon) geometry);
+        } else if (geometry instanceof MultiPolygon) {
+            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+                polygons.add((Polygon) geometry.getGeometryN(i));
+            }
+        } else if (geometry instanceof GeometryCollection) {
+            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+                polygons.addAll(collectPolygons(geometry.getGeometryN(i)));
+            }
+        }
+        // Points, LineStrings, LinearRings, etc. are ignored as they are not useful in area definition
+        return polygons;
     }
 
     public static Geometry convertGeoJsonGeometryToGeometry(final String geometryJson) throws ParseException {

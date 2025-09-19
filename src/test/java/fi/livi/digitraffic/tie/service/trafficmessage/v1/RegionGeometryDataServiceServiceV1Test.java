@@ -10,7 +10,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
@@ -181,21 +180,43 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
     @Test
     public void combineGeometriesThatFailedInProdEnv() {
         final RegionGeometry kokkola =
-                readRegionGeometry(169, "Kokkola", ZonedDateTime.parse("2020-01-01T00:00:00.000+02:00").toInstant(), "123",
+                readRegionGeometry(169, "Kokkola", Instant.parse("2020-01-01T00:00:00Z"), "123",
                         AreaType.MUNICIPALITY);
         final RegionGeometry lestijarvi =
-                readRegionGeometry(226, "Lestijärvi", ZonedDateTime.parse("2020-01-01T00:00:00.000+02:00").toInstant(), "123",
+                readRegionGeometry(226, "Lestijärvi", Instant.parse("2020-01-01T00:00:00Z"), "123",
                         AreaType.MUNICIPALITY);
         doReturn(kokkola).when(regionGeometryDataServiceV1)
                 .getAreaLocationRegionEffectiveOn(eq(169), any(Instant.class));
         doReturn(lestijarvi).when(regionGeometryDataServiceV1)
                 .getAreaLocationRegionEffectiveOn(eq(226), any(Instant.class));
-
+        regionGeometryDataServiceV1.refreshCache(); // Just to coundown the dataPopulationLatch
         final Geometry<?> area = regionGeometryDataServiceV1.getGeoJsonGeometryUnion(Instant.now(), 169, 226);
         assertEquals(Geometry.Type.MultiPolygon, area.getType());
         log.info("Got area: {}", area);
 
         final Geometry<?> area2 = regionGeometryDataServiceV1.getGeoJsonGeometryUnion(Instant.now(), 226, 169);
+        assertEquals(Geometry.Type.MultiPolygon, area2.getType());
+        log.info("Got area: {}", area2);
+    }
+
+    @Test
+    public void combineGeometriesThatFailedInProdEnvGUID50452788() {
+        final RegionGeometry heinola = // 00086_Heinola.json
+                readRegionGeometry(86, "Heinola", Instant.parse("2025-09-12T00:48:21.998Z"), "123",
+                        AreaType.MUNICIPALITY);
+        final RegionGeometry porvoo = // 00339_Porvoo.json
+                readRegionGeometry(339, "Porvoo", Instant.parse("2025-09-12T00:48:21.998Z"), "123",
+                        AreaType.MUNICIPALITY);
+        doReturn(heinola).when(regionGeometryDataServiceV1)
+                .getAreaLocationRegionEffectiveOn(eq(86), any(Instant.class));
+        doReturn(porvoo).when(regionGeometryDataServiceV1)
+                .getAreaLocationRegionEffectiveOn(eq(339), any(Instant.class));
+        regionGeometryDataServiceV1.refreshCache(); // Just to coundown the dataPopulationLatch
+        final Geometry<?> area = regionGeometryDataServiceV1.getGeoJsonGeometryUnion(Instant.now(), 86, 339);
+        assertEquals(Geometry.Type.MultiPolygon, area.getType());
+        log.info("Got area: {}", area);
+
+        final Geometry<?> area2 = regionGeometryDataServiceV1.getGeoJsonGeometryUnion(Instant.now(), 339, 86);
         assertEquals(Geometry.Type.MultiPolygon, area2.getType());
         log.info("Got area: {}", area2);
     }
