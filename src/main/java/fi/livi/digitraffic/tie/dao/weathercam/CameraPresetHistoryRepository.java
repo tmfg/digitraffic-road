@@ -89,7 +89,8 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     List<CameraPresetHistory> findByIdPresetIdOrderByLastModifiedAsc(final String presetId);
 
     @Modifying
-    int deleteByIdPresetId(final String presetId);
+    @Query("delete from CameraPresetHistory c where c.id.presetId = :presetId")
+    int deleteAllByIdPresetId(final String presetId);
 
     boolean existsByIdPresetId(final String presetId);
 
@@ -223,7 +224,7 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
             FROM camera_preset_history history
             WHERE history.publishable = true
               AND history.last_modified >= :oldestTimeLimit
-              AND history.preset_id = :presetId   
+              AND history.preset_id = :presetId
             ORDER BY history.preset_id, history.last_modified""",
            nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))

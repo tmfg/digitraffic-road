@@ -35,7 +35,7 @@ public class CameraPresetHistoryUpdateService {
 
     @Transactional
     public int deleteAllWithPresetId(final String presetId) {
-        return cameraPresetHistoryRepository.deleteByIdPresetId(presetId);
+        return cameraPresetHistoryRepository.deleteAllByIdPresetId(presetId);
     }
 
     @Transactional
