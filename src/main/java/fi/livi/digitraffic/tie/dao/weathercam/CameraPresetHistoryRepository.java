@@ -89,8 +89,10 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     List<CameraPresetHistory> findByIdPresetIdOrderByLastModifiedAsc(final String presetId);
 
     @Modifying
-    @Query("delete from CameraPresetHistory c where c.id.presetId = :presetId")
-    int deleteAllByIdPresetId(final String presetId);
+    // Spring Boot 3.5.6 produces an error with the default implementation of deleteByIdPresetId in case there is more than row with the same presetId - maybe a bug?
+    @Query(value = """
+        DELETE FROM camera_preset_history history WHERE history.preset_id = :presetId""", nativeQuery = true)
+    int deleteByIdPresetId(final String presetId);
 
     boolean existsByIdPresetId(final String presetId);
 
