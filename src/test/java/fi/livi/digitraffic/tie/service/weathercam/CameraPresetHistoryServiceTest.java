@@ -471,7 +471,10 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         assertEquals(presetIdNotToDelete, notDelete.getPresetId());
         assertTrue(notDelete.isHistoryPresent(), presetIdNotToDelete);
 
-        cameraPresetHistoryUpdateService.deleteAllWithPresetId(presetIdToDelete);
+        final int toDeleteCount = cameraPresetHistoryDataService.findAllByPresetIdInclSecretAscInternal(presetIdToDelete).size();
+        final int deletedCount = cameraPresetHistoryUpdateService.deleteAllWithPresetId(presetIdToDelete);
+
+        assertEquals(toDeleteCount, deletedCount);
 
         boolean exception = false;
         try {

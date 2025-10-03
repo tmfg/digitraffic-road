@@ -53,38 +53,40 @@ public class LotjuCameraStationMetadataClient extends AbstractLotjuMetadataClien
 
     @PerformanceMonitor(maxWarnExcecutionTime = 10000)
     @Retryable(maxAttempts = 5)
-    public List<EsiasentoVO> getEsiasentos(final Long kameraId) {
+    public List<EsiasentoVO> getEsiasentos(final Long cameraLotjuId) {
+        final StopWatch start = StopWatch.createStarted();
         final HaeEsiasennotKameranTunnuksella haeEsiasennotKameranTunnuksellaRequest =
                 new HaeEsiasennotKameranTunnuksella();
-        haeEsiasennotKameranTunnuksellaRequest.setId(kameraId);
+        haeEsiasennotKameranTunnuksellaRequest.setId(cameraLotjuId);
 
         final JAXBElement<HaeEsiasennotKameranTunnuksellaResponse> haeEsiasennotResponse =
                 (JAXBElement<HaeEsiasennotKameranTunnuksellaResponse>)
                         marshalSendAndReceive(objectFactory.createHaeEsiasennotKameranTunnuksella(haeEsiasennotKameranTunnuksellaRequest));
+        log.info("method=getEsiasentos Fetched cameraLotjuId={} tookMs={}", cameraLotjuId, start.getDuration().toMillis());
         return haeEsiasennotResponse.getValue().getEsiasennot();
     }
 
     @PerformanceMonitor()
     @Retryable(maxAttempts = 5)
-    public KameraVO getKamera(final long lotjuId) {
+    public KameraVO getKamera(final long cameraLotjuId) {
         final HaeKamera request = new HaeKamera();
-        request.setId(lotjuId);
+        request.setId(cameraLotjuId);
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeKameraResponse> response = (JAXBElement<HaeKameraResponse>)
             marshalSendAndReceive(objectFactory.createHaeKamera(request));
-        log.info("Fetched cameraLotjuId={} tookMs={}", lotjuId, start.getDuration().toMillis());
+        log.info("method=getKamera Fetched cameraLotjuId={} tookMs={}", cameraLotjuId, start.getDuration().toMillis());
         return response.getValue().getKamera();
     }
 
     @PerformanceMonitor()
     @Retryable(maxAttempts = 5)
-    public EsiasentoVO getEsiasento(final long lotjuId) {
+    public EsiasentoVO getEsiasento(final long cameraLotjuId) {
         final HaeEsiasento request = new HaeEsiasento();
-        request.setId(lotjuId);
+        request.setId(cameraLotjuId);
         final StopWatch start = StopWatch.createStarted();
         final JAXBElement<HaeEsiasentoResponse> response = (JAXBElement<HaeEsiasentoResponse>)
             marshalSendAndReceive(objectFactory.createHaeEsiasento(request));
-        log.info("Fetched cameraPresetLotjuId={} tookMs={}", lotjuId, start.getDuration().toMillis());
+        log.info("method=getEsiasento Fetched cameraLotjuId={} tookMs={}", cameraLotjuId, start.getDuration().toMillis());
         return response.getValue().getEsiasento();
     }
 }
