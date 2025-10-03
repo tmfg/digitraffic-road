@@ -92,7 +92,7 @@ public interface CameraPresetHistoryRepository extends JpaRepository<CameraPrese
     // Spring Boot 3.5.6 produces an error with the default implementation of deleteByIdPresetId in case there is more than row with the same presetId - maybe a bug?
     @Query(value = """
         DELETE FROM camera_preset_history history WHERE history.preset_id = :presetId""", nativeQuery = true)
-    int deleteByIdPresetId(final String presetId);
+    int deleteAllByIdPresetId(final String presetId);
 
     boolean existsByIdPresetId(final String presetId);
 
