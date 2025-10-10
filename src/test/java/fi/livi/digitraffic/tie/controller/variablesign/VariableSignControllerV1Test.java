@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.hamcrest.Matchers;
@@ -50,7 +49,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     /// creates data for testing TestDataFilteringService
-    private void insertTestDataForTestData(final ZonedDateTime time) {
+    private void insertTestDataForTestData(final Instant time) {
         entityManager.createNativeQuery(
             "insert into device(id,type,road_address,etrs_tm35fin_x,etrs_tm35fin_y,direction,carriageway) " +
                 "values(:id, 'NOPEUSRAJOITUS', '1 2 3',10, 20,'KASVAVA', 'NORMAALI');")
@@ -98,22 +97,14 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     private ResultActions testFiltering(final int offset) throws Exception {
-        final ZonedDateTime time = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(testTimes.iterator().next().getStart().getMillis()),
-            ZoneId.of("UTC"))
-                .plusMinutes(offset);
-
+        final Instant time = testTimes.iterator().next().getStart().plus(offset, java.time.temporal.ChronoUnit.MINUTES);
         insertTestDataForTestData(time);
 
         return getJson(API_SIGNS + "?deviceId=" + FILTERING_ID);
     }
 
     private ResultActions testHistoryFiltering(final int offset) throws Exception {
-        final ZonedDateTime time = ZonedDateTime.ofInstant(
-                Instant.ofEpochMilli(testTimes.iterator().next().getStart().getMillis()),
-                ZoneId.of("UTC"))
-            .plusMinutes(offset);
-
+        final Instant time = testTimes.iterator().next().getStart().plus(offset, java.time.temporal.ChronoUnit.MINUTES);
         insertTestDataForTestData(time);
 
         return getJson(API_SIGNS_HISTORY + "?deviceId=" + FILTERING_ID);

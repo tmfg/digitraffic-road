@@ -71,15 +71,25 @@ Or without Maven
 
 ### Misc commands
 
-To compile Java-classes from wsdl:s run command
+#### To compile Java-classes from wsdl:s run command
 
     $ mvn jaxb2:generate
 
-Check for Maven dependency updates
+#### Check for Maven dependency updates
 
     $ mvn versions:display-dependency-updates
 
-Update Maven dependencies
+#### Update Maven dependencies
 
     $  mvn versions:use-latest-releases versions:update-properties
+
+#### Run dependency check
+
+    mvn -Pdepcheck
+
+Report can be found at  [target/dependency-check-report.html](target/dependency-check-report.html)
+
+Oneliner to run dependency check and open the report in default browser (MacOS):
+
+    mvn -Pdepcheck; open target/dependency-check-report.html
 

@@ -1,23 +1,23 @@
 package fi.livi.digitraffic.tie.service.variablesign.v1;
 
-
-import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
-import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureV1;
-import org.joda.time.Interval;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import fi.livi.digitraffic.tie.dto.variablesigns.v1.TrafficSignHistoryV1;
+import fi.livi.digitraffic.tie.dto.variablesigns.v1.VariableSignFeatureV1;
+
+
 /**
  * Component for filtering out unreliable data that contains test data for set of devices
  * and for two time slices.
  */
+@Service
 public class TestDataFilteringService {
     private static final Logger logger = LoggerFactory.getLogger(TestDataFilteringService.class);
 
@@ -63,13 +63,32 @@ public class TestDataFilteringService {
 
     private boolean isTestTime(final Instant time) {
             return testTimes.stream()
-            .anyMatch(i -> i.contains(time.toEpochMilli()));
+            .anyMatch(i -> i.contains(time));
     }
 
     private static Interval interval(final String instant1, final String instant2) {
         return new Interval(
-            Instant.parse(instant1).toEpochMilli(),
-            Instant.parse(instant2).toEpochMilli()
+            Instant.parse(instant1),
+            Instant.parse(instant2)
         );
+    }
+
+    public static class Interval {
+        private final Instant start;
+        private final Instant end;
+
+        public Interval(final Instant start, final Instant end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        public boolean contains(final Instant instant) {
+            // inclusive start, exclusive end (same as Joda)
+            return !instant.isBefore(start) && instant.isBefore(end);
+        }
+
+        public Instant getStart() {
+            return start;
+        }
     }
 }

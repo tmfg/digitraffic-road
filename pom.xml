@@ -101,14 +101,8 @@
 
         <dependency>
             <groupId>io.awspring.cloud</groupId>
-            <artifactId>spring-cloud-starter-aws-secrets-manager-config</artifactId>
-            <version>2.4.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws.secretsmanager</groupId>
-            <artifactId>aws-secretsmanager-jdbc</artifactId>
-            <version>2.0.2</version>
+            <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
+            <version>3.4.0</version>
         </dependency>
 
         <dependency>
@@ -319,7 +313,6 @@
             <version>2.2.0</version>
         </dependency>
 
-        <!-- Update also in dbroad/schemaspy/get-deps-and-run-schemaspy.sh -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
