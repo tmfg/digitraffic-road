@@ -65,7 +65,6 @@ public class TmsStationData2Datex2JsonConverter {
     }
 
     public MeasuredDataPublication convertToJson(final Map<TmsStation, List<SensorValueDtoV1>> stations, final Instant updated) {
-
         final MeasuredDataPublication publication =
                 new MeasuredDataPublication()
                         .withPublicationTime(updated)
