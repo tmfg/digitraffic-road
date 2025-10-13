@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.dao.tms;
 import java.time.Instant;
 import java.util.List;
 
+import fi.livi.digitraffic.tie.model.tms.TmsSensorConstantValue;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -60,6 +62,15 @@ public interface TmsSensorConstantValueDtoV1Repository extends JpaRepository<Tms
     TmsSensorConstantValueDtoV1 getStationSensorConstantValue(final long stationLotjuId, final long sensorConstantValueLotjuId);
 
     @Query(value = """
+select value
+from tms_sensor_constant tsc
+inner join tms_sensor_constant_value tscv on tscv.sensor_constant_lotju_id = tsc.lotju_id
+where tsc.road_station_id = :roadStationId
+and tsc.name = :constantName
+""", nativeQuery = true)
+    List<Integer> getStationSensorConstantValueForConstant(final long roadStationId, final String constantName);
+
+    @Query(value = """
             SELECT GREATEST(tsc.modified, tscv.modified) as data_last_updated
             FROM tms_sensor_constant tsc
             INNER JOIN tms_sensor_constant_value tscv
@@ -69,4 +80,6 @@ public interface TmsSensorConstantValueDtoV1Repository extends JpaRepository<Tms
         """,
            nativeQuery = true)
     Instant getTmsSensorConstantsLastUpdated();
+
+    void save(final TmsSensorConstantValue value);
 }

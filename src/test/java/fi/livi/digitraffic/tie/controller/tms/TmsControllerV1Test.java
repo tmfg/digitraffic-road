@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,6 +21,12 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
+import fi.livi.digitraffic.tie.external.datex2.v3_5.PointLocation;
+
+import fi.livi.digitraffic.tie.model.tms.TmsSensorConstant;
+import fi.livi.digitraffic.tie.model.tms.TmsSensorConstantValue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
@@ -64,6 +71,8 @@ import jakarta.xml.bind.Unmarshaller;
  * Test for {@link TmsControllerV1}
  */
 public class TmsControllerV1Test extends AbstractRestWebTest {
+    @Autowired
+    private TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoV1Repository;
 
     @Autowired
     private TmsStationRepository tmsStationRepository;
@@ -101,8 +110,6 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final RoadStationSensor sensor2 = publishable.stream()
                 .filter(s -> s.getNameFi().equals("OHITUKSET_60MIN_KIINTEA_SUUNTA1")).findFirst().orElseThrow();
 
-
-
         roadStationSensorService.updateSensorsOfRoadStation(tms.getRoadStationId(),
             RoadStationType.TMS_STATION,
             publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
@@ -131,6 +138,30 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final Instant stationsUpdated = dataStatusService.findDataUpdatedInstant(DataType.TMS_STATION_METADATA);
         this.metadataLastModified = getGreatest(sensorsUpdated, stationsUpdated);
         this.metadataLastModifiedMillis = TimeUtil.roundInstantSeconds(metadataLastModified).toEpochMilli();
+    }
+
+    private void insertSensorConstant() {
+        final TmsSensorConstant tsc = new TmsSensorConstant();
+        tsc.setLotjuId(1L);
+        tsc.setName("Tien_suunta");
+        tsc.setRoadStation(tmsStation.getRoadStation());
+
+        final TmsSensorConstantValue cv = new TmsSensorConstantValue();
+        cv.setLotjuId(1L);
+        cv.setSensorConstant(tsc);
+        cv.setValue(42);
+        cv.setValidFrom(101);
+        cv.setValidTo(1231);
+
+        final TmsSensorConstantValue cv2 = new TmsSensorConstantValue();
+        cv2.setLotjuId(2L);
+        cv2.setSensorConstant(tsc);
+        cv2.setValue(43);
+        cv2.setValidFrom(101);
+        cv2.setValidTo(1231);
+
+        tmsSensorConstantValueDtoV1Repository.save(cv);
+        tmsSensorConstantValueDtoV1Repository.save(cv2);
     }
 
     @AfterEach
@@ -355,15 +386,18 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void tmsStationsDatex2XmlRestApi() throws Exception {
+        insertSensorConstant();
 
         final String xmlResponse =
                 mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATEX2 + ApiConstants.XML))
                         .andReturn().getResponse().getContentAsString();
 
-
         checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
 
         final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
+
+        final PointLocation location = (PointLocation) publication.getMeasurementSiteTables().getFirst().getMeasurementSites().getFirst().getMeasurementSiteLocation();
+        assertEquals(42, location.getPointByCoordinates().getBearing());
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
         assertEquals("FI", publication.getPublicationCreator().getCountry());
@@ -375,6 +409,7 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void tmsStationsByIdDatex2XmlRestApi() throws Exception {
+        insertSensorConstant();
 
         final String xmlResponse =
                 mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2 + ApiConstants.XML))
@@ -383,6 +418,9 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
 
         final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
+
+        final PointLocation location = (PointLocation) publication.getMeasurementSiteTables().getFirst().getMeasurementSites().getFirst().getMeasurementSiteLocation();
+        assertEquals(42, location.getPointByCoordinates().getBearing());
 
         assertEquals(metadataLastModified, publication.getPublicationTime());
         assertEquals("FI", publication.getPublicationCreator().getCountry());

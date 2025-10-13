@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 
+///  this is used only by tests
 @Entity
 public class TmsSensorConstant {
 
@@ -24,8 +25,8 @@ public class TmsSensorConstant {
     @NotNull
     private String name;
 
-    @NotNull
-    private LocalDate updated;
+//    @NotNull
+    private LocalDate modified;
 
     private LocalDate obsoleteDate;
     /**
@@ -52,8 +53,8 @@ public class TmsSensorConstant {
         this.name = name;
     }
 
-    public LocalDate getUpdated() {
-        return updated;
+    public LocalDate getModified() {
+        return modified;
     }
 
     public LocalDate getObsoleteDate() {

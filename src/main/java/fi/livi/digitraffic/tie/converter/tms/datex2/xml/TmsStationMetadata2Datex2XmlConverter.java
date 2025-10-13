@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
@@ -38,15 +40,17 @@ import fi.livi.digitraffic.tie.model.tms.TmsStation;
 @ConditionalOnWebApplication
 @Component
 public class TmsStationMetadata2Datex2XmlConverter {
+    private final TmsStationSensorConstantService tmsStationSensorConstantService;
 
     private final InformationStatusEnum informationStatus;
 
-    public TmsStationMetadata2Datex2XmlConverter(@Value("${dt.domain.url}") final String appUrl) {
+    public TmsStationMetadata2Datex2XmlConverter(final TmsStationSensorConstantService tmsStationSensorConstantService,
+                                                 @Value("${dt.domain.url}") final String appUrl) {
+        this.tmsStationSensorConstantService = tmsStationSensorConstantService;
         this.informationStatus = appUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 
     public MeasurementSiteTablePublication convertToXml(final List<TmsStation> stations, final Instant metadataLastUpdated) {
-
         final MeasurementSiteTablePublication measurementSiteTablePublication =
             new MeasurementSiteTablePublication()
                 .withPublicationTime(metadataLastUpdated)
@@ -72,16 +76,15 @@ public class TmsStationMetadata2Datex2XmlConverter {
                 )
         );
 
-
-
-
         measurementSiteTablePublication.getMeasurementSiteTables().add(siteTable);
 
         return measurementSiteTablePublication;
     }
 
-    private static MeasurementSite getMeasurementSiteRecord(final TmsStation station, final List<RoadStationSensor> sensors) {
+    private MeasurementSite getMeasurementSiteRecord(final TmsStation station, final List<RoadStationSensor> sensors) {
         final fi.livi.digitraffic.tie.metadata.geojson.Point point = TmsDatex2Common.resolveETRS89PointLocation(station.getRoadStation());
+
+        final var bearing = tmsStationSensorConstantService.getCachedBearing(station.getRoadStationId());
 
         final String measurementEquipmentType =
                 station.getCalculatorDeviceType() != null ? station.getCalculatorDeviceType().getValue() : null;
@@ -95,8 +98,9 @@ public class TmsStationMetadata2Datex2XmlConverter {
                         .withMeasurementSiteLocation(
                                 new PointLocation()
                                         .withPointByCoordinates(
-                                                new PointByCoordinates().withPointCoordinates(
-                                                        new PointCoordinates()
+                                                new PointByCoordinates()
+                                                        .withBearing(bearing)
+                                                        .withPointCoordinates(new PointCoordinates()
                                                                 .withLongitude(point != null && point.getLongitude() != null ? point.getLongitude().floatValue() : 0)
                                                                 .withLatitude(point != null && point.getLatitude() != null ? point.getLatitude().floatValue() : 0))))
                         .withMeasurementSpecificCharacteristics(

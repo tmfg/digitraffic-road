@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,8 @@ import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
 import fi.livi.digitraffic.tie.dto.v1.tms.TmsSensorConstantValueDtoV1;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioArvoVO;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
+
+import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_BEARING;
 
 @Service
 public class TmsStationSensorConstantService {
@@ -116,5 +119,19 @@ public class TmsStationSensorConstantService {
     @Transactional(readOnly = true)
     public TmsSensorConstantValueDtoV1 getStationSensorConstantValue(final long stationLotjuId, final long sensorConstantValueLotjuId) {
         return tmsSensorConstantValueDtoRepository.getStationSensorConstantValue(stationLotjuId, sensorConstantValueLotjuId);
+    }
+
+    @Cacheable(CACHE_BEARING)
+    @Transactional(readOnly = true)
+    public Integer getCachedBearing(final long roadStationId) {
+        final var bearings = tmsSensorConstantValueDtoRepository.getStationSensorConstantValueForConstant(roadStationId, "Tien_suunta");
+
+        if(bearings.isEmpty()) {
+            return null;
+        } else if(bearings.size() > 1) {
+            log.error("method=getCachedBearing multiple bearings for roadStationId={}", roadStationId);
+        }
+
+        return bearings.getFirst();
     }
 }

@@ -231,7 +231,7 @@ public class ToStringHelper {
         final StringBuffer sb = createStartSb(tmsSensorConstant);
         JSON_STYLE.append(sb, "lotjuId", tmsSensorConstant.getLotjuId(), true);
         JSON_STYLE.append(sb, "nimi", tmsSensorConstant.getName(), true);
-        JSON_STYLE.append(sb, "updated", tmsSensorConstant.getUpdated(), true);
+        JSON_STYLE.append(sb, "modified", tmsSensorConstant.getModified(), true);
         JSON_STYLE.append(sb, "obsoleteDate", tmsSensorConstant.getObsoleteDate(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
@@ -243,7 +243,7 @@ public class ToStringHelper {
         JSON_STYLE.append(sb, "lotjuId", tmsSensorConstantValue.getLotjuId(), true);
         JSON_STYLE.append(sb, "value", tmsSensorConstantValue.getValue(), true);
         JSON_STYLE.append(sb, "valid", tmsSensorConstantValue.getValidFrom() + " " + tmsSensorConstantValue.getValidTo(), true);
-        JSON_STYLE.append(sb, "updated", tmsSensorConstantValue.getUpdated(), true);
+        JSON_STYLE.append(sb, "modified", tmsSensorConstantValue.getModified(), true);
         JSON_STYLE.append(sb, "obsoleteDate", tmsSensorConstantValue.getObsoleteDate(), true);
         removeLastFieldSeparatorFromEnd(sb);
         sb.append("}");
