@@ -228,10 +228,14 @@ import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnu
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.BROKEN_DOWN_VEHICLE;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.DAMAGED_VEHICLE;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.MILITARY_CONVOY;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.SALTING_OR_GRITTING_VEHICLE_IN_USE;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.SLOW_MOVING_MAINTENANCE_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.SNOWPLOUGH;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_ON_FIRE;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_ON_WRONG_CARRIAGEWAY;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_STUCK;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_WITH_OVERHEIGHT_LOAD;
+import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_WITH_OVERWIDE_LOAD;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.BLACK_ICE;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.FREEZING_OF_WET_ROADS;
 import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.FREEZING_PAVEMENTS;
@@ -351,6 +355,7 @@ public class WazeDatex2MessageConverter {
     private final Map<WeatherRelatedRoadConditionTypeEnum, String> weatherRelatedRoadConditionTypeMap = new HashMap<>();
     private final Map<ConstructionWorkTypeEnum, String> constructionWorksTypeMap = new HashMap<>();
     private final Map<RoadMaintenanceTypeEnum, String> maintenanceWorksTypeMap = new HashMap<>();
+
 
     @Autowired
     public WazeDatex2MessageConverter(final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller) {
@@ -659,7 +664,12 @@ public class WazeDatex2MessageConverter {
         vehicleObstructionTypeMap.put(BROKEN_DOWN_HEAVY_LORRY, "Broken down heavy lorry");
         vehicleObstructionTypeMap.put(DAMAGED_VEHICLE, "Damaged vehicle");
         vehicleObstructionTypeMap.put(MILITARY_CONVOY, "Military convoy");
+        vehicleObstructionTypeMap.put(SALTING_OR_GRITTING_VEHICLE_IN_USE, "Salting or gritting vehicle in use");
         vehicleObstructionTypeMap.put(SLOW_MOVING_MAINTENANCE_VEHICLE, "Slow moving maintenance vehicle");
+        vehicleObstructionTypeMap.put(SNOWPLOUGH, "Snowplough");
+        vehicleObstructionTypeMap.put(VEHICLE_WITH_OVERHEIGHT_LOAD, "Vehicle with oversize load");
+        vehicleObstructionTypeMap.put(VEHICLE_WITH_OVERWIDE_LOAD, "Vehicle with oversize load");
+        vehicleObstructionTypeMap.put(VehicleObstructionTypeEnum.OTHER, "Vehicle obstruction");
 
         weatherRelatedRoadConditionTypeMap.put(BLACK_ICE, "Black ice");
         weatherRelatedRoadConditionTypeMap.put(FREEZING_OF_WET_ROADS, "Freezing of wet roads");
