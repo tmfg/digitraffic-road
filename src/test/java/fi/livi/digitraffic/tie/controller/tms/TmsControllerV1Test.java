@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PointLocation;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointLocation;
 
 import fi.livi.digitraffic.tie.model.tms.TmsSensorConstant;
 import fi.livi.digitraffic.tie.model.tms.TmsSensorConstantValue;
