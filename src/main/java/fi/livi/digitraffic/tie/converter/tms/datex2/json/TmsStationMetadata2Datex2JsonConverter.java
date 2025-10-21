@@ -6,8 +6,8 @@ import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex
 import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex2ConverterJsonCommon.getInternationalIdentifier;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex2ConverterJsonCommon.getMeasurementSiteName;
 import static fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStation2Datex2ConverterJsonCommon.getMultilingualString;
-import static fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum.REAL;
-import static fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum.TEST;
+import static fi.livi.digitraffic.tie.tms.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum.REAL;
+import static fi.livi.digitraffic.tie.tms.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum.TEST;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,19 +22,19 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.ComputationMethodEnumG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.LocationReferenceG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSite;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteIndexMeasurementSpecificCharacteristicsG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTable;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTablePublication;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSpecificCharacteristics;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.PointByCoordinates;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.PointCoordinates;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.PointLocation;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.VehicleCharacteristics;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.VehicleTypeEnumG;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.ComputationMethodEnumG;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.InformationStatusEnumG;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.LocationReferenceG;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSite;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteIndexMeasurementSpecificCharacteristicsG;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTable;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSpecificCharacteristics;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.PointByCoordinates;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.PointCoordinates;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.PointLocation;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.VehicleCharacteristics;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.VehicleTypeEnumG;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 

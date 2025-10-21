@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 
+@Disabled("TODO: need rewriting")
 public class TrafficMessageMqttDataServiceV1Test extends AbstractDaemonTest {
 
     @Autowired

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<xs:schema targetNamespace="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_1.xsd" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema targetNamespace="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_2.xsd"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:ims="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_2.xsd">
   <xs:element name="imsMessage">
     <xs:complexType>
       <xs:all>
@@ -30,38 +34,34 @@
         </xs:element>
         <xs:element name="messageContent">
           <xs:annotation>
-            <xs:documentation>Specifically formatted messages: Datex II, InfoXML and roadwork compilation. At least one should always be included!</xs:documentation>
+            <xs:documentation>Specifically formatted messages: Datex II, Simppeli (JSON), InfoXML and roadwork compilation. At least one should always be included!</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <!-- At least one of these must exist! -->
-              <xs:element minOccurs="0" name="d2Message" type="xs:string">
+              <xs:element minOccurs="1" maxOccurs="unbounded" name="message">
                 <xs:annotation>
-                  <xs:documentation>Datex II formatted message content.</xs:documentation>
+                  <xs:documentation>Datex II messages.</xs:documentation>
                 </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="type" type="ims:MessageTypeEnum" minOccurs="1" maxOccurs="1">
+                      <xs:annotation>
+                        <xs:documentation>Message type</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="version" type="xs:string" minOccurs="1" maxOccurs="1">
+                      <xs:annotation>
+                        <xs:documentation>Message schema version</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="content" type="xs:string" minOccurs="1" maxOccurs="1">
+                      <xs:annotation>
+                        <xs:documentation>Message content</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
               </xs:element>
-              <xs:element minOccurs="0" name="jMessage" type="xs:string">
-                <xs:annotation>
-                  <xs:documentation>JSON formatted message content.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element minOccurs="0" name="infoXmlMessage" type="xs:string">
-                <xs:annotation>
-                  <xs:documentation>InfoXML formatted message content.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:sequence>
-                <xs:element minOccurs="0" name="roadworkCoordinates" type="xs:string">
-                  <xs:annotation>
-                    <xs:documentation>Roadwork compilation formatted message coordinates. &lt;roadworkMessage&gt; must also be included.</xs:documentation>
-                  </xs:annotation>
-                </xs:element>
-                <xs:element minOccurs="0" name="roadworkMessage" type="xs:string">
-                  <xs:annotation>
-                    <xs:documentation>Roadwork compilation formatted message content. &lt;roadworkCoordinates&gt; must also be included.</xs:documentation>
-                  </xs:annotation>
-                </xs:element>
-              </xs:sequence>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -141,4 +141,13 @@
       </xs:all>
     </xs:complexType>
   </xs:element>
+
+    <xs:simpleType name="MessageTypeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DATEX2"/>
+            <xs:enumeration value="SIMPPELI"/>
+            <xs:enumeration value="INFOXML"/>
+            <xs:enumeration value="OTHER"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

@@ -20,20 +20,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.ComputationMethodEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSite;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTable;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSpecificCharacteristics;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PointByCoordinates;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PointCoordinates;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PointLocation;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.VehicleCharacteristics;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.VehicleTypeEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._ComputationMethodEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._MeasurementSiteIndexMeasurementSpecificCharacteristics;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._VehicleTypeEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.ComputationMethodEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSite;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTable;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSpecificCharacteristics;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointByCoordinates;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointCoordinates;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointLocation;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.VehicleCharacteristics;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.VehicleTypeEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._ComputationMethodEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._MeasurementSiteIndexMeasurementSpecificCharacteristics;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._VehicleTypeEnum;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 

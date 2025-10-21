@@ -47,10 +47,10 @@ import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.ConfidentialityValueEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.ConfidentialityValueEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
@@ -173,7 +173,6 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void tmsStationsRestApi() throws Exception {
-
         mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
@@ -199,7 +198,6 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void tmsStationRestApi() throws Exception {
-
         final Integer vvapaas1Arvo = getRandomId(80, 100);
         final Integer vvapaas2Arvo = getRandomId(101, 120);
 

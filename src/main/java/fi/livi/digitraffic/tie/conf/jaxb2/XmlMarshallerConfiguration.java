@@ -46,8 +46,12 @@ public class XmlMarshallerConfiguration {
 
     @Bean
     public Jaxb2Marshaller imsJaxb2Marshaller() {
-        return createMarshaller("fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0",
-                                "fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1");
+        return createMarshaller("fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2");
+    }
+
+    @Bean
+    public Jaxb2Marshaller datex2v2_3_5_jaxb2Marshaller() {
+        return createMarshaller("fi.livi.digitraffic.tie.datex2.v3_5");
     }
 
     @Bean

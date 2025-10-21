@@ -2,32 +2,28 @@ package fi.livi.digitraffic.tie.service.jms;
 
 import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
 import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
-import static fi.livi.digitraffic.tie.TestUtils.entityManagerFlushAndClear;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomString;
-import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
-import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQTextMessage;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
+import fi.livi.digitraffic.tie.dao.data.DataIncomingRepository;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
@@ -37,16 +33,17 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsJMSMessageMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 import jakarta.jms.JMSException;
 
 public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
-    private static final Logger log = LoggerFactory.getLogger(ImsJmsMessageHandlerTest.class);
 
     @Autowired
     private Datex2Repository datex2Repository;
+
+    @Autowired
+    private DataIncomingRepository dataIncomingRepository;
 
     @Autowired
     @Qualifier("imsJaxb2Marshaller")
@@ -57,23 +54,23 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
     @BeforeEach
     public void cleanDbAndInit() {
+        dataIncomingRepository.deleteAll();
         datex2Repository.deleteAll();
     }
 
-    @Test
-    public void datex2ReceiveImsMessagesAllVersions() throws IOException {
+    @ParameterizedTest
+    @CsvSource(value = {"DATEX2:3.5:1", "DATEX2:2.3:1", "DATEX2:1.1:1", "DATEX:3.5:0"}, delimiter = ':')
+    public void handeDatex2(final String messageType, final String version, final int expectedCount) throws IOException {
         final JMSMessageHandler<ExternalIMSMessage> imsJMSMessageHandler = createImsJMSMessageHandler();
 
-        // Only V0_2_12 version is received at the moment
-        for (final ImsJsonVersion imsJsonVersion : List.of(ImsJsonVersion.getLatestVersion())) {
-            for (final SituationType type : SituationType.values()) {
-                cleanDbAndInit();
-                log.info("Run datex2ReceiveImsMessagesAllVersions with imsJsonVersion={}", imsJsonVersion);
-                sendJmsMessage(ImsXmlVersion.V1_2_1, type, imsJsonVersion, imsJMSMessageHandler);
-                entityManagerFlushAndClear(entityManager);
-                checkActiveSituations(type, getSituationIdForSituationType(type.name()));
-            }
-        }
+        sendJmsMessage(imsJMSMessageHandler, messageType, version);
+        checkIncomingData("50003469", expectedCount);
+    }
+
+    private void checkIncomingData(final String messageId, final long expectedCount) {
+        final var incomingData = dataIncomingRepository.findByMessageId(messageId);
+
+        Assertions.assertEquals(expectedCount, incomingData.size());
     }
 
     private void checkActiveSituations(final SituationType type, final String... situationIdsToFind) {
@@ -137,16 +134,15 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
     private JMSMessageHandler<ExternalIMSMessage> createImsJMSMessageHandler() {
         final JMSMessageHandler.JMSDataUpdater<ExternalIMSMessage> dataUpdater =
-                (data) -> trafficMessageTestHelper.getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(data);
+                (data) -> trafficMessageTestHelper.getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(data);
         return new JMSMessageHandler<>(JMSMessageHandler.JMSMessageType.TRAFFIC_MESSAGE, dataUpdater,
                 new ImsJMSMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), lockingService.getInstanceId());
     }
 
-    private void sendJmsMessage(final ImsXmlVersion xmlVersion, final SituationType situationType,
-                                final ImsJsonVersion jsonVersion,
-                                final JMSMessageHandler<ExternalIMSMessage> messageListener) throws IOException {
-        final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationType.name(), jsonVersion,
-                Instant.now().minus(1, ChronoUnit.HOURS), null, false);
+    private void sendJmsMessage(final JMSMessageHandler<ExternalIMSMessage> messageListener, final String messageType, final String version)
+            throws IOException {
+        final String xmlImsMessage = readImsMessageResourceContent(messageType, version);
+
         createAndSendJmsMessage(xmlImsMessage, messageListener);
     }
 

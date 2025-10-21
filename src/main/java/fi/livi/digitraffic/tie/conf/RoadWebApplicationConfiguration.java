@@ -45,9 +45,9 @@ import fi.livi.digitraffic.tie.conf.jaxb2.DatexII_3_NamespacePrefixMapper;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2RootElementHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PayloadPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PayloadPublication;
 import jakarta.servlet.Filter;
 
 @ConditionalOnWebApplication
@@ -110,9 +110,9 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 MeasurementSiteTablePublication.class,
                 PayloadPublication.class,
                 "payload")
-                .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
-                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
-                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
+            .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
+            .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+            .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
     @Bean

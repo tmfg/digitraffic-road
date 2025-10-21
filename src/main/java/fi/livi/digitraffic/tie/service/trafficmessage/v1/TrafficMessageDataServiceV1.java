@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 
 @ConditionalOnWebApplication
@@ -33,12 +33,12 @@ public class TrafficMessageDataServiceV1 {
     private static final Logger log = LoggerFactory.getLogger(TrafficMessageDataServiceV1.class);
 
     private final Datex2Repository datex2Repository;
-    private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
+    private final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller;
     private final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1;
 
     @Autowired
     public TrafficMessageDataServiceV1(final Datex2Repository datex2Repository,
-                                       final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller,
+                                       final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller,
                                        final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1) {
         this.datex2Repository = datex2Repository;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
@@ -151,7 +151,7 @@ public class TrafficMessageDataServiceV1 {
 
     private D2LogicalModel convertToD2LogicalModel(final List<Datex2> datex2s) {
 
-        // conver Datex2s to D2LogicalModels
+        // convert Datex2s to D2LogicalModels
         final List<D2LogicalModel> modelsNewestFirst = datex2s.stream()
             .map(datex2 -> datex2XmlStringToObjectMarshaller.convertToObject(datex2.getMessage()))
             .filter(d2 -> d2.getPayloadPublication() != null)
@@ -163,11 +163,11 @@ public class TrafficMessageDataServiceV1 {
         }
 
         // Append all older situations to newest and return newest that combines all situations
-        final D2LogicalModel containerModel = modelsNewestFirst.remove(0);
-        final SituationPublication conainerSituationPublication = getSituationPublication(containerModel);
+        final D2LogicalModel containerModel = modelsNewestFirst.removeFirst();
+        final SituationPublication containerSituationPublication = getSituationPublication(containerModel);
         modelsNewestFirst.forEach(d2 -> {
             final SituationPublication toAdd = getSituationPublication(d2);
-            conainerSituationPublication.getSituations().addAll(toAdd.getSituations());
+            containerSituationPublication.getSituations().addAll(toAdd.getSituations());
         });
         return containerModel;
     }

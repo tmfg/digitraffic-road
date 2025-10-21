@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStationMetadata2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStationMetadata2Datex2XmlConverter;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
 
@@ -43,13 +43,13 @@ public class TmsStationDatex2Service {
     }
 
     @Transactional(readOnly = true)
-    public fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTablePublication findAllPublishableTmsStationsAsDatex2Json(final RoadStationState roadStationState) {
+    public fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTablePublication findAllPublishableTmsStationsAsDatex2Json(final RoadStationState roadStationState) {
         final List<TmsStation> stations = tmsStationMetadataWebServiceV1.findPublishableStations(roadStationState);
         return tmsStationMetadata2Datex2JsonConverter.convertToJson(stations, tmsStationMetadataWebServiceV1.getMetadataLastUpdated());
     }
 
     @Transactional(readOnly = true)
-    public fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTablePublication getPublishableTmsStationAsDatex2Json(final long id) {
+    public fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTablePublication getPublishableTmsStationAsDatex2Json(final long id) {
         final TmsStation station = tmsStationMetadataWebServiceV1.getPublishableStationById(id);
         return tmsStationMetadata2Datex2JsonConverter.convertToJson(Collections.singletonList(station), station.getMaxModified());
     }

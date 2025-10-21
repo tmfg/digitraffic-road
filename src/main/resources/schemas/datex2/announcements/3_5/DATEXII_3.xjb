@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings
+        xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jaxb https://jakarta.ee/xml/ns/jaxb/bindingschema_3_0.xsd"
+        xmlns:annox="urn:jaxb.jvnet.org:annox"
+        jaxb:extensionBindingPrefixes="xjc annox"
+        version="3.0">
+
+    <jaxb:bindings schemaLocation="DATEXII_3_LocationReferencing.xsd" node="//xs:element[@name='_namedAreaExtension']">
+        <jaxb:property name="_locNamedAreaExtension" />
+    </jaxb:bindings>
+
+    <!-- Generate XmlRootElement annotations fox JAXB -->
+    <jaxb:bindings schemaLocation="DATEXII_3_Situation.xsd" node="/xs:schema">
+        <jaxb:bindings node="xs:complexType[@name='SituationPublication']">
+            <annox:annotate>
+                <annox:annotate annox:class="jakarta.xml.bind.annotation.XmlRootElement" name="payload" namespace = "http://datex2.eu/schema/3/d2Payload" />
+            </annox:annotate>
+        </jaxb:bindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

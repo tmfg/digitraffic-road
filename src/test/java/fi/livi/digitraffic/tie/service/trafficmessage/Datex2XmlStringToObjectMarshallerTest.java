@@ -22,7 +22,7 @@ public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
     private static final Logger log = LoggerFactory.getLogger(Datex2XmlStringToObjectMarshallerTest.class);
 
     @Autowired
-    private Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
+    private Datex223XmlMarshaller datex2XmlStringToObjectMarshaller;
 
     // match values tags ending with name Time
     private final static Pattern timesPattern = Pattern.compile("<[^>]*Time>(.+?)</");

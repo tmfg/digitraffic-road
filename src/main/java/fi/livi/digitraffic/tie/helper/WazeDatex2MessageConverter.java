@@ -322,7 +322,7 @@ import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditions;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi._AbnormalTrafficExtensionType;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi._EquipmentOrSystemFaultExtensionType;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi._RoadOrCarriagewayOrLaneManagementExtensionType;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
 
 @Component
 public class WazeDatex2MessageConverter {
@@ -331,7 +331,7 @@ public class WazeDatex2MessageConverter {
     // use this string, when you want to skip some type-enum without error
     private static final String SKIP_SUBTYPE = "SKIP_SUBTYPE-5O7jh8ytZjQLKCurmFwYowFBaghhMk3U-SKIP_SUBTYPE";
 
-    private final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller;
+    private final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller;
 
     private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
@@ -358,7 +358,7 @@ public class WazeDatex2MessageConverter {
 
 
     @Autowired
-    public WazeDatex2MessageConverter(final Datex2XmlStringToObjectMarshaller datex2XmlStringToObjectMarshaller) {
+    public WazeDatex2MessageConverter(final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller) {
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
 
         constructMaps();

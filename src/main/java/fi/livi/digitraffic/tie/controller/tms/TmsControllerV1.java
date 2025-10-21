@@ -35,8 +35,8 @@ import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorConstantDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationSensorsDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsDataDtoV1;
 import fi.livi.digitraffic.tie.dto.tms.v1.TmsStationsSensorConstantsDataDtoV1;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
 import fi.livi.digitraffic.tie.service.tms.TmsDataDatex2Service;
 import fi.livi.digitraffic.tie.service.tms.TmsStationDatex2Service;
@@ -313,12 +313,12 @@ public class TmsControllerV1 {
     @Operation(summary = SUMMARY_DATEX2_STATIONS)
     @RequestMapping(method = RequestMethod.GET, path = API_TMS_V1 + STATIONS + TmsControllerV1.DATEX2 , produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 metadata"))
-    public ResponseEntity<fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTablePublication> tmsStationsDatex2Json(
+    public ResponseEntity<fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTablePublication> tmsStationsDatex2Json(
             @Parameter(description = "Return TMS stations of given state.")
             @RequestParam(required = false, defaultValue = "ACTIVE")
             final RoadStationState state) {
 
-        final fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTablePublication datex2 =
+        final fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTablePublication datex2 =
                 tmsStationDatex2Service.findAllPublishableTmsStationsAsDatex2Json(state);
         return ResponseEntityWithLastModifiedHeader.of(datex2, datex2.getPublicationTime(), API_TMS_V1 + STATIONS + TmsControllerV1.DATEX2 );
     }
@@ -326,11 +326,11 @@ public class TmsControllerV1 {
     @Operation(summary = SUMMARY_DATEX2_STATIONS)
     @RequestMapping(method = RequestMethod.GET, path = API_TMS_V1 + STATIONS + "/{id}" + TmsControllerV1.DATEX2, produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 metadata"))
-    public ResponseEntity<fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTablePublication> tmsStationsByIdDatex2Json(
+    public ResponseEntity<fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTablePublication> tmsStationsByIdDatex2Json(
             @PathVariable("id")
             final Long id) {
 
-        final fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasurementSiteTablePublication datex2 =
+        final fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasurementSiteTablePublication datex2 =
                 tmsStationDatex2Service.getPublishableTmsStationAsDatex2Json(id);
         return ResponseEntityWithLastModifiedHeader.of(datex2, datex2.getPublicationTime(), API_TMS_V1 + STATIONS + "/" + id + TmsControllerV1.DATEX2);
     }
@@ -360,18 +360,18 @@ public class TmsControllerV1 {
     @Operation(summary = SUMMARY_DATEX2_STATIONS_DATA)
     @RequestMapping(method = RequestMethod.GET, path = API_TMS_V1 + STATIONS + TmsControllerV1.DATA + TmsControllerV1.DATEX2, produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 data"))
-    public ResponseEntityWithLastModifiedHeader<fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredDataPublication> tmsDataDatex2Json() {
-        final fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredDataPublication datex2 = tmsDataDatex2Service.findAllPublishableTmsStationsDataAsDatex2Json();
+    public ResponseEntityWithLastModifiedHeader<fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasuredDataPublication> tmsDataDatex2Json() {
+        final fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasuredDataPublication datex2 = tmsDataDatex2Service.findAllPublishableTmsStationsDataAsDatex2Json();
         return ResponseEntityWithLastModifiedHeader.of(datex2, datex2.getPublicationTime(), API_TMS_V1 + STATIONS + TmsControllerV1.DATA + TmsControllerV1.DATEX2);
     }
 
     @Operation(summary = SUMMARY_DATEX2_STATIONS_DATA)
     @RequestMapping(method = RequestMethod.GET, path = API_TMS_V1 + STATIONS + "/{id}" + TmsControllerV1.DATA + TmsControllerV1.DATEX2 , produces = { APPLICATION_JSON_VALUE })
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of TMS Stations Datex2 data"))
-    public ResponseEntityWithLastModifiedHeader<fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredDataPublication> tmsDataByIdDatex2Json(
+    public ResponseEntityWithLastModifiedHeader<fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasuredDataPublication> tmsDataByIdDatex2Json(
             @PathVariable("id")
             final Long id) {
-        final fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredDataPublication datex2 = tmsDataDatex2Service.getPublishableTmsStationDataAsDatex2Json(id);
+        final fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasuredDataPublication datex2 = tmsDataDatex2Service.getPublishableTmsStationDataAsDatex2Json(id);
         return ResponseEntityWithLastModifiedHeader.of(datex2, datex2.getPublicationTime(), API_TMS_V1 + STATIONS + "/" + id + TmsControllerV1.DATA + TmsControllerV1.DATEX2 );
     }
 

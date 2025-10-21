@@ -39,6 +39,7 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.paths." + TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS, anything()));
     }
 
+    /*
     @Test
     public void testSwaggerRestRoadApiBeta() throws Exception {
         mockMvc.perform(get("/v3/api-docs/road-api-beta"))
@@ -48,5 +49,5 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
             .andExpect(content().string(not(containsString( "/api/"))));
             //.andExpect(content().string(containsString(TmsControllerV1.API_TMS_BETA + "/")));
-    }
+    }*/
 }

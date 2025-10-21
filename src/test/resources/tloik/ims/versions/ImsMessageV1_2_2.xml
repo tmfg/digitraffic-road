@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<imsMessage xmlns="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_1.xsd">
+<imsMessage xmlns="https://raw.githubusercontent.com/tmfg/metadata/master/schema/ImsXmlMessage_1_2_2.xsd">
     <messageId>50003469</messageId>
     <date>ISO_DATE</date>
     <messageSubject>MESSAGE_SUBJECT</messageSubject>
@@ -11,8 +11,10 @@
     <messageText><![CDATA[MESSAGE_TEXT]]></messageText>
     <shortMessageText>SHORT_MESSAGE_TEXT</shortMessageText>
     <messageContent>
-        <d2Message><![CDATA[D2_MESSAGE]]></d2Message>
-        <jMessage>
-            <![CDATA[JSON_MESSAGE]]></jMessage>
+        <message>
+            <type>MESSAGE_TYPE</type>
+            <version>VERSION</version>
+            <content><![CDATA[D2_MESSAGE]]></content>
+        </message>
     </messageContent>
 </imsMessage>

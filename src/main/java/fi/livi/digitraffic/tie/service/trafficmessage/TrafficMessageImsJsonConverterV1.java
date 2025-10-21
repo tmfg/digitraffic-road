@@ -45,7 +45,6 @@ public class TrafficMessageImsJsonConverterV1 {
 
     protected ObjectMapper objectMapper;
 
-    @Autowired
     public TrafficMessageImsJsonConverterV1(final ObjectMapper objectMapper,
                                             final RegionGeometryDataServiceV1 regionGeometryDataServiceV1) {
         this.objectMapper = objectMapper;
@@ -58,7 +57,6 @@ public class TrafficMessageImsJsonConverterV1 {
             this.validator = factory.getValidator();
         }
     }
-
 
     public fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature convertToFeatureJsonObject_V1(
         final String imsJson,

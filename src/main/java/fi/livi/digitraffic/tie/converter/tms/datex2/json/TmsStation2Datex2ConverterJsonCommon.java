@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.common.util.ObjectUtil;
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.ConfidentialityValueEnumG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.HeaderInformation;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.InternationalIdentifier;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MultiLingualStringValue;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.json.MultilingualString;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.ConfidentialityValueEnumG;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.HeaderInformation;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.InformationStatusEnumG;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.InformationStatusEnumG.InformationStatusEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.InternationalIdentifier;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MultiLingualStringValue;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MultilingualString;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
 @ConditionalOnWebApplication

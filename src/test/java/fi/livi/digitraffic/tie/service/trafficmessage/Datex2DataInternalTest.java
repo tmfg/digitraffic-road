@@ -59,11 +59,11 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
             }
         });
     }
-
+/*
     @Disabled("Just for internal testing")
     @Rollback(value = false)
     @Test
-    public void importSimpleJsonWithMultipeRegionGeometries() throws IOException {
+    public void importSimpleJsonWithMultipleRegionGeometries() throws IOException {
         final String jsonGuid = "GUID50379279";
         final String xmlImsMessage = readImsMessageResourceContent(ImsXmlVersion.V1_2_1);
         final String jsonImsMessage = readResourceContent("classpath:tloik/ims/internal/datex2_json_multiple_regions_geometries.json");
@@ -72,7 +72,7 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
         // Insert datex2 and message contents
         final String msg = xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(msg));
-        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        v2Datex2UpdateService.handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
     }
 
     @Disabled("Just for internal testing to import given simple json and xml traffic message to db")
@@ -86,6 +86,6 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
         // Insert datex2 and message contents
         final String msg = xmlImsMessage.replace(D2_MESSAGE_PLACEHOLDER, datex2ImsMessage).replace(JSON_MESSAGE_PLACEHOLDER, jsonImsMessage);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(msg));
-        v2Datex2UpdateService.updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
-    }
+        v2Datex2UpdateService.handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
+    }*/
 }

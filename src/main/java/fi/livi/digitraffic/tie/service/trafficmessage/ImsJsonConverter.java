@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +101,7 @@ public class ImsJsonConverter {
         return situationId.asText();
     }
 
-    private SituationType getSituationType(final JsonNode feature) {
+    public static SituationType getSituationType(final JsonNode feature) {
         final JsonNode properties = feature.get("properties");
         if (properties == null) {
             return resolveSituationTypeFromTextWithError(feature);
@@ -129,7 +130,7 @@ public class ImsJsonConverter {
         return resolvedType;
     }
 
-    private TrafficAnnouncementType getTrafficAnnouncementType(final JsonNode feature,
+    public static TrafficAnnouncementType getTrafficAnnouncementType(final JsonNode feature,
                                                                final SituationType situationType) {
         if (situationType != SituationType.TRAFFIC_ANNOUNCEMENT) {
             return null;
@@ -164,11 +165,11 @@ public class ImsJsonConverter {
 
     private boolean isFeatureCollection(final JsonNode root) {
         final JsonNode type = root.get("type");
-        return type != null && StringUtils.equals(type.asText(), "FeatureCollection");
+        return type != null && Strings.CS.equals(type.asText(), "FeatureCollection");
     }
     private boolean isFeature(final JsonNode root) {
         final JsonNode type = root.get("type");
-        return type != null && StringUtils.equals(type.asText(), "Feature");
+        return type != null && Strings.CS.equals(type.asText(), "Feature");
     }
 
     public JsonNode parseGeometryNodeFromFeatureJson(final String featureJson) {

@@ -38,7 +38,7 @@ import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryGitClient;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateService;
@@ -63,7 +63,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          //RetryTemplate.class,
          // Own configs
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class,
-         Datex2XmlStringToObjectMarshaller.class, XmlMarshallerConfiguration.class,
+         Datex223XmlMarshaller.class, XmlMarshallerConfiguration.class,
 
          // Services
          CameraPresetService.class, TmsStationService.class, DataStatusService.class,

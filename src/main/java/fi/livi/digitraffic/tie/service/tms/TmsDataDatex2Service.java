@@ -15,7 +15,7 @@ import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStationData2Datex2JsonConverter;
 import fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStationData2Datex2XmlConverter;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.roadstation.v1.RoadStationSensorServiceV1;
@@ -66,7 +66,7 @@ public class TmsDataDatex2Service {
 
 
     @Transactional(readOnly = true)
-    public fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredDataPublication findAllPublishableTmsStationsDataAsDatex2Json() {
+    public fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasuredDataPublication findAllPublishableTmsStationsDataAsDatex2Json() {
         final Instant updated = roadStationSensorServiceV1.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
         final List<TmsStation> tmsStations = tmsStationMetadataWebServiceV1.findPublishableStations(RoadStationState.ACTIVE);
 
@@ -81,7 +81,7 @@ public class TmsDataDatex2Service {
     }
 
     @Transactional(readOnly = true)
-    public fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredDataPublication getPublishableTmsStationDataAsDatex2Json(final long id) {
+    public fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasuredDataPublication getPublishableTmsStationDataAsDatex2Json(final long id) {
         final TmsStation tmsStation = tmsStationMetadataWebServiceV1.getPublishableStationById(id);
         final List<SensorValueDtoV1> sensorValues =
                 roadStationSensorServiceV1.findAllPublishableRoadStationSensorValues(id, RoadStationType.TMS_STATION);
@@ -92,7 +92,7 @@ public class TmsDataDatex2Service {
     // getPublishableTmsStationAsDatex2Xml
 
 //    @Transactional(readOnly = true)
-//    public fi.livi.digitraffic.tie.external.datex2.v3_5.json.MeasuredDataPublication findPublishableTmsDataDatex2Json() {
+//    public fi.livi.digitraffic.tie.tms.datex2.v3_5.json.MeasuredDataPublication findPublishableTmsDataDatex2Json() {
 //        final ZonedDateTime updated = roadStationSensorService.getLatestSensorValueUpdatedTime(RoadStationType.TMS_STATION);
 //        final List<TmsStation> tmsStations = tmsStationMetadataWebServiceV1.findPublishableStations(RoadStationState.ACTIVE);
 //

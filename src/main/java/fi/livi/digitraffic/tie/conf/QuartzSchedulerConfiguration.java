@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import fi.livi.digitraffic.tie.scheduler.DataIncomingHandlerJob;
+
 import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -229,6 +231,9 @@ public class QuartzSchedulerConfiguration {
     }
 
     @Bean
+    public JobDetailFactoryBean dataIncomingHandlerJob() { return createJobDetail(DataIncomingHandlerJob.class); }
+
+    @Bean
     public FactoryBean<? extends Trigger> cameraStationMetadataUpdateJobTrigger(final JobDetail cameraStationMetadataUpdateJob) {
         return createTrigger(cameraStationMetadataUpdateJob);
     }
@@ -295,12 +300,17 @@ public class QuartzSchedulerConfiguration {
 
     @Bean
     public FactoryBean<? extends Trigger> weatherHistoryUpdateJobTrigger(final JobDetail weatherHistoryUpdateJob) {
-        return  createTrigger(weatherHistoryUpdateJob);
+        return createTrigger(weatherHistoryUpdateJob);
     }
 
     @Bean
     public FactoryBean<? extends Trigger> regionGeometryUpdateJobTrigger(final JobDetail regionGeometryUpdateJob) {
-        return  createTrigger(regionGeometryUpdateJob);
+        return createTrigger(regionGeometryUpdateJob);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> dataIncomingHandlerJobTrigger(final JobDetail dataIncomingHandlerJob) {
+        return createTrigger(dataIncomingHandlerJob);
     }
 
     private static JobDetailFactoryBean createJobDetail(final Class<? extends Job> jobClass) {

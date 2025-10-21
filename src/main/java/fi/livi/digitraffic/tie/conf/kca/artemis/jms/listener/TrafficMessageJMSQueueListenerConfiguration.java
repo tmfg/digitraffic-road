@@ -31,7 +31,7 @@ public class TrafficMessageJMSQueueListenerConfiguration extends JMSListenerConf
             final Jaxb2Marshaller imsJaxb2Marshaller,
             final Datex2UpdateService v2Datex2UpdateService,
             final LockingService lockingService) {
-        super(TRAFFIC_MESSAGE, v2Datex2UpdateService::updateTrafficDatex2ImsMessages,
+        super(TRAFFIC_MESSAGE, v2Datex2UpdateService::handleTrafficDatex2ImsMessages,
                 new ImsJMSMessageMarshaller(imsJaxb2Marshaller), lockingService.getInstanceId());
     }
 

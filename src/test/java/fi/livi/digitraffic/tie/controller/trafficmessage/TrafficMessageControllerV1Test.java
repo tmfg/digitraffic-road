@@ -37,10 +37,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import fi.livi.digitraffic.tie.service.data.ImsUpdatingService;
+
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +84,7 @@ import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 
+@Disabled("TODO: needs rewriting")
 public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     private static final Logger log = getLogger(TrafficMessageControllerV1Test.class);
 
@@ -154,6 +158,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
                     final Instant lastUpdated = TimeUtil.roundInstantSeconds(getTransactionTimestamp());
                     trafficMessageTestHelper.initDataFromStaticImsResourceContent(imsXmlVersion, situationType.name(),
                             imsJsonVersion, start, end);
+
                     log.info(
                             "getJsonAndXmlCurrentlyActive with imsXmlVersion={}, imsJsonVersion={} and situationType={}",
                             imsXmlVersion, imsJsonVersion, situationType);

@@ -123,13 +123,16 @@ public class DefaultExceptionHandler {
     }
 
     @ExceptionHandler({ ObjectNotFoundException.class, ResourceAccessException.class, BadRequestException.class, ConversionFailedException.class,
-        IllegalArgumentException.class, MethodArgumentTypeMismatchException.class })
+                        IllegalArgumentException.class, fi.livi.digitraffic.tie.service.IllegalArgumentException.class, MethodArgumentTypeMismatchException.class })
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleObjectNotFoundException(final Exception exception, final ServletWebRequest request) {
         final HttpStatus status;
         if (exception instanceof ObjectNotFoundException) {
             status = HttpStatus.NOT_FOUND;
-        } else if (exception instanceof BadRequestException || exception instanceof IllegalArgumentException || exception instanceof MethodArgumentTypeMismatchException || exception instanceof ConversionFailedException) {
+        } else if (exception instanceof BadRequestException
+                || exception instanceof IllegalArgumentException
+                || exception instanceof fi.livi.digitraffic.tie.service.IllegalArgumentException
+                || exception instanceof MethodArgumentTypeMismatchException || exception instanceof ConversionFailedException) {
             status = HttpStatus.BAD_REQUEST;
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;

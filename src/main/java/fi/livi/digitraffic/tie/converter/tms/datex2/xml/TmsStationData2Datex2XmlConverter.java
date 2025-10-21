@@ -27,27 +27,27 @@ import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.dto.v1.SensorValueDtoV1;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.BasicData;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.MeasurementOrCalculationTime;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.Period;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PhysicalQuantity;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PhysicalQuantityFault;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.PhysicalQuantityFaultEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.SinglePhysicalQuantity;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.SiteMeasurements;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.SpeedValue;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.TimeMeaningEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.TrafficData;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.TrafficFlow;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.TrafficSpeed;
-import fi.livi.digitraffic.tie.external.datex2.v3_5.VehicleFlowValue;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._MeasurementSiteTableVersionedReference;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._MeasurementSiteVersionedReference;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._PhysicalQuantityFaultEnum;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._SiteMeasurementsIndexPhysicalQuantity;
-import fi.livi.digitraffic.tie.external.datex2.v3_5._TimeMeaningEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.BasicData;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementOrCalculationTime;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.Period;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PhysicalQuantity;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PhysicalQuantityFault;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PhysicalQuantityFaultEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.SinglePhysicalQuantity;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.SiteMeasurements;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.SpeedValue;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.TimeMeaningEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficData;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficFlow;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficSpeed;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.VehicleFlowValue;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._MeasurementSiteTableVersionedReference;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._MeasurementSiteVersionedReference;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._PhysicalQuantityFaultEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._SiteMeasurementsIndexPhysicalQuantity;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._TimeMeaningEnum;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
@@ -57,15 +57,15 @@ public class TmsStationData2Datex2XmlConverter {
 
     private static final Logger log = LoggerFactory.getLogger(TmsStationData2Datex2XmlConverter.class);
 
-    private final fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum informationStatus;
+    private final fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum informationStatus;
 
     public TmsStationData2Datex2XmlConverter(@Value("${dt.domain.url}") final String camUrl) {
-        this.informationStatus = camUrl.toLowerCase().contains("test") ? fi.livi.digitraffic.tie.external.datex2.v3_5.InformationStatusEnum.TEST : InformationStatusEnum.REAL;
+        this.informationStatus = camUrl.toLowerCase().contains("test") ? fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 
-    public fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication convertToXml(final Map<TmsStation, List<SensorValueDtoV1>> stations, final Instant updated) {
+    public fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication convertToXml(final Map<TmsStation, List<SensorValueDtoV1>> stations, final Instant updated) {
 
-        final fi.livi.digitraffic.tie.external.datex2.v3_5.MeasuredDataPublication publication =
+        final fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication publication =
                 new MeasuredDataPublication()
                         .withPublicationTime(updated)
                         .withPublicationCreator(getInternationalIdentifier())
@@ -86,12 +86,12 @@ public class TmsStationData2Datex2XmlConverter {
         return publication;
     }
 
-    private static fi.livi.digitraffic.tie.external.datex2.v3_5.SiteMeasurements getSiteMeasurements(
+    private static fi.livi.digitraffic.tie.tms.datex2.v3_5.SiteMeasurements getSiteMeasurements(
             final TmsStation station,
             final List<SensorValueDtoV1> sensorValues,
             final Instant updated) {
 
-        final fi.livi.digitraffic.tie.external.datex2.v3_5.SiteMeasurements measurementSite =
+        final fi.livi.digitraffic.tie.tms.datex2.v3_5.SiteMeasurements measurementSite =
                 new SiteMeasurements()
                         .withMeasurementSiteReference(new _MeasurementSiteVersionedReference()
                                         .withId(station.getRoadStationNaturalId().toString())
@@ -157,21 +157,21 @@ public class TmsStationData2Datex2XmlConverter {
         return quantity;
     }
 
-    private static fi.livi.digitraffic.tie.external.datex2.v3_5.TrafficData getBasicData(final RoadStationSensor sensor,
+    private static fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficData getBasicData(final RoadStationSensor sensor,
                                                                                          final SensorValueDtoV1 sensorValue) {
 
 
         if (sensor.isFlowSensor() || sensor.isSpeedSensor()) {
             final TrafficData trafficData;
             if (sensor.isFlowSensor()) {
-                final fi.livi.digitraffic.tie.external.datex2.v3_5.TrafficFlow trafficFlow = new TrafficFlow();
+                final fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficFlow trafficFlow = new TrafficFlow();
                 trafficData = trafficFlow;
                 if (sensorValue != null) {
                     final BigInteger value = BigDecimal.valueOf(sensorValue.getValue()).round(MathContext.UNLIMITED).toBigInteger();
                     trafficFlow.withVehicleFlow(new VehicleFlowValue().withVehicleFlowRate(value));
                 }
             } else  { // == sensor.isSpeedSensor()
-                final fi.livi.digitraffic.tie.external.datex2.v3_5.TrafficSpeed trafficSpeed = new TrafficSpeed();
+                final fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficSpeed trafficSpeed = new TrafficSpeed();
                 trafficData = trafficSpeed;
                 if (sensorValue != null) {
                     trafficSpeed.withAverageVehicleSpeed(new SpeedValue().withSpeed((float) sensorValue.getValue()));

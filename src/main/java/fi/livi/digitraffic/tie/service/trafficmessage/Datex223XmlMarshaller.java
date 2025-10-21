@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -7,21 +9,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.xml.transform.StringResult;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import jakarta.xml.bind.JAXBElement;
 
 @Component
-public class Datex2XmlStringToObjectMarshaller {
+public class Datex223XmlMarshaller {
     private final Jaxb2Marshaller datex2Jaxb2Marshaller;
 
-    public Datex2XmlStringToObjectMarshaller(@Qualifier("datex2v2_2_3_fiJaxb2Marshaller")
+    public Datex223XmlMarshaller(@Qualifier("datex2v2_2_3_fiJaxb2Marshaller")
                                              final Jaxb2Marshaller datex2Jaxb2Marshaller) {
         this.datex2Jaxb2Marshaller = datex2Jaxb2Marshaller;
     }
 
-    public D2LogicalModel convertToObject(final String xmlSting) {
+    public D2LogicalModel convertToObject(final String xmlString) {
         // Trim empty control before and after xml-declaration as they are not allowed
-        final Object object = datex2Jaxb2Marshaller.unmarshal(new StringSource(StringUtils.trim(xmlSting)));
+        final Object object = datex2Jaxb2Marshaller.unmarshal(new StringSource(StringUtils.trim(xmlString)));
         if (object instanceof JAXBElement) {
             return ((JAXBElement<D2LogicalModel>) object).getValue();
         }

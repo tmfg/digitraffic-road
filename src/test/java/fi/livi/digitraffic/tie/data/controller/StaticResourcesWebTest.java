@@ -28,8 +28,8 @@ public class StaticResourcesWebTest extends AbstractRestWebTest {
 
     @Test
     public void testSchemaLocationUpdated() throws Exception {
-        // Load resource to compare http://localhost:9002/schemas/datex2/3_5/xml/DATEXII_3_RoadTrafficData.xsd
-        final Resource resource = loadResource("classpath:/schemas/datex2/3_5/xml/DATEXII_3_RoadTrafficData.xsd");
+        // Load resource to compare http://localhost:9002/schemas/datex2/tms/3_5/xml/DATEXII_3_RoadTrafficData.xsd
+        final Resource resource = loadResource("classpath:/schemas/datex2/tms/3_5/xml/DATEXII_3_RoadTrafficData.xsd");
         final String originalSchema = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
         final String originalFirstLocationLocation = StringUtils.substringBefore(
                 StringUtils.substringAfter(originalSchema, "schemaLocation=\""), "/>").trim();
@@ -39,14 +39,14 @@ public class StaticResourcesWebTest extends AbstractRestWebTest {
                      originalFirstLocationLocation.substring(0, expectedOriginalLocationValue.length()));
 
         // Get resource from server
-        final MvcResult result = expectOk(executeGet("/schemas/datex2/3_5/xml/DATEXII_3_RoadTrafficData.xsd")).andReturn();
+        final MvcResult result = expectOk(executeGet("/schemas/datex2/tms/3_5/xml/DATEXII_3_RoadTrafficData.xsd")).andReturn();
         final String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
         final String actualLocation = StringUtils.substringAfter(content, "schemaLocation=\"");
         assertFalse(dtDomainUrl.isBlank());
         assertEquals(dtDomainUrl, actualLocation.substring(0, dtDomainUrl.length()));
         final String expectedLocation =
-                URI.create(StringUtil.format("{}/{}/{}", dtDomainUrl, "/schemas/datex2/3_5/xml/",
+                URI.create(StringUtil.format("{}/{}/{}", dtDomainUrl, "/schemas/datex2/tms/3_5/xml/",
                                 expectedOriginalLocationValue))
                         .normalize().toString();
         log.info("expectedLocation: {}", expectedLocation);

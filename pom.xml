@@ -687,23 +687,23 @@
                     </plugins>
                 </configuration>
                 <executions>
-                    <!--Datex2 3.5 -->
+                    <!--Datex2 3.5 TMS-->
                     <execution>
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <id>DATEXII_3_5</id>
+                        <id>DATEXII_3_5_tms</id>
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
-                            <schemaDirectory>${basedir}/src/main/resources/schemas/datex2/3_5/xml</schemaDirectory>
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/datex2/tms/3_5/xml</schemaDirectory>
                             <schemaIncludes>DATEXII_3_D2Payload.xsd</schemaIncludes>
                             <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
                             <bindingIncludes>
                                 <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
-                                <bindingInclude>datex2/3_5/xml/DATEXII_3.xjb</bindingInclude>
+                                <bindingInclude>datex2/tms/3_5/xml/DATEXII_3.xjb</bindingInclude>
                             </bindingIncludes>
-                            <generatePackage>fi.livi.digitraffic.tie.external.datex2.v3_5</generatePackage>
-                            <generateDirectory>${project.build.directory}/generated-sources/datex2-v3_5-xml
+                            <generatePackage>fi.livi.digitraffic.tie.tms.datex2.v3_5</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/datex2-tms-v3_5-xml
                             </generateDirectory>
                         </configuration>
                     </execution>
@@ -716,14 +716,14 @@
                         <id>DATEXIISchema_2_2_3_with_definitions_FI</id>
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
-                            <schemaDirectory>${basedir}/src/main/resources/schemas/datex2/2_2_3_fi</schemaDirectory>
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/datex2/announcements/2_2_3_fi</schemaDirectory>
                             <schemaIncludes>
                                 <include>DATEXIISchema_2_2_3_with_definitions_FI.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
                             <bindingIncludes>
                                 <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
-                                <bindingInclude>datex2/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xjb
+                                <bindingInclude>datex2/announcements/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xjb
                                 </bindingInclude>
                             </bindingIncludes>
                             <generatePackage>fi.livi.digitraffic.tie.datex2.v2_2_3_fi</generatePackage>
@@ -732,6 +732,29 @@
                         </configuration>
                     </execution>
 
+                    <!--Datex2 3.5 traffic announcements -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>DATEXII_3.5</id>
+                        <configuration>
+                            <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>${basedir}/src/main/resources/schemas/datex2/announcements/3_5</schemaDirectory>
+                            <schemaIncludes>
+                                <include>DATEXII_3_D2Payload.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                                <bindingInclude>datex2/announcements/3_5/DATEXII_3.xjb
+                                </bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.datex2.v3_5</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/datex2-v3_5-xml
+                            </generateDirectory>
+                        </configuration>
+                    </execution>
                     <!-- Lotju Camera metadata JMS message -->
                     <execution>
                         <goals>
@@ -806,46 +829,24 @@
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <id>tloik-ims_1_2_0</id>
+                        <id>tloik-ims_1_2_2</id>
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
                             <schemaDirectory>${basedir}/src/main/resources/schemas/tloik/ims</schemaDirectory>
                             <schemaIncludes>
-                                <include>ImsXmlMessage_1_2_0.xsd</include>
+                                <include>ImsXmlMessage_1_2_2.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
                             <bindingIncludes>
                                 <bindingFile>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingFile>
-                                <bindingFile>tloik/ims/ImsXmlMessage_1_2_0.xjb</bindingFile>
+                                <bindingFile>tloik/ims/ImsXmlMessage_1_2_2.xjb</bindingFile>
                             </bindingIncludes>
-                            <generatePackage>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_0</generatePackage>
-                            <generateDirectory>${project.build.directory}/generated-sources/tloik-ims_1_2_0-xml
+                            <generatePackage>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2</generatePackage>
+                            <generateDirectory>${project.build.directory}/generated-sources/tloik-ims_1_2_2-xml
                             </generateDirectory>
                         </configuration>
                     </execution>
 
-                    <!-- TLOIK IMS JMS traffic message -->
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <id>tloik-ims_1_2_1</id>
-                        <configuration>
-                            <!--<forceRegenerate>true</forceRegenerate>-->
-                            <schemaDirectory>${basedir}/src/main/resources/schemas/tloik/ims</schemaDirectory>
-                            <schemaIncludes>
-                                <include>ImsXmlMessage_1_2_1.xsd</include>
-                            </schemaIncludes>
-                            <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
-                            <bindingIncludes>
-                                <bindingFile>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingFile>
-                                <bindingFile>tloik/ims/ImsXmlMessage_1_2_1.xjb</bindingFile>
-                            </bindingIncludes>
-                            <generatePackage>fi.livi.digitraffic.tie.external.tloik.ims.v1_2_1</generatePackage>
-                            <generateDirectory>${project.build.directory}/generated-sources/tloik-ims_1_2_1-xml
-                            </generateDirectory>
-                        </configuration>
-                    </execution>
                 </executions>
 
             </plugin>
@@ -894,8 +895,8 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${basedir}/src/main/resources/schemas/datex2/3_5/json</sourceDirectory>
-                            <targetPackage>fi.livi.digitraffic.tie.external.datex2.v3_5.json</targetPackage>
+                            <sourceDirectory>${basedir}/src/main/resources/schemas/datex2/tms/3_5/json</sourceDirectory>
+                            <targetPackage>fi.livi.digitraffic.tie.tms.datex2.v3_5.json</targetPackage>
                             <outputDirectory>${project.build.directory}/generated-sources/datex2-v3_5-json
                             </outputDirectory>
                         </configuration>

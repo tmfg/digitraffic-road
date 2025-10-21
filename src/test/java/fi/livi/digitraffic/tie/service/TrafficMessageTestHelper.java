@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
+import fi.livi.digitraffic.tie.service.data.ImsUpdatingService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ import org.springframework.xml.transform.StringSource;
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2XmlStringToObjectMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
@@ -37,7 +39,7 @@ public class TrafficMessageTestHelper {
 
     // Version of incoming ims message schema
     public enum ImsXmlVersion {
-        V1_2_1;
+        V1_2_2;
 
         public static ImsXmlVersion getLatestVersion() {
             return ImsXmlVersion.values()[ImsXmlVersion.values().length-1];
@@ -114,7 +116,7 @@ public class TrafficMessageTestHelper {
 
             trafficMessageDataServiceV1 = new TrafficMessageDataServiceV1(
                 applicationContext.getBean(Datex2Repository.class),
-                applicationContext.getBean(Datex2XmlStringToObjectMarshaller.class),
+                applicationContext.getBean(Datex223XmlMarshaller.class),
                 applicationContext.getBean(TrafficMessageImsJsonConverterV1.class)
             );
         }
@@ -138,14 +140,14 @@ public class TrafficMessageTestHelper {
         final String rawWithJsonOk = replaceSimpleJsonPlaceholders(raw, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final String rawWithJsonAndDatexOk = replaceDatex2Placeholders(rawWithJsonOk, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(rawWithJsonAndDatexOk));
-        getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
         entityManagerFlushAndClear(entityManager);
     }
 
     public void initDataFromFile(final String file) throws IOException {
         final String xmlImsMessage = readResourceContent("classpath:tloik/ims/" + file);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
-        getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
         entityManagerFlushAndClear(entityManager);
     }
 
@@ -180,11 +182,18 @@ public class TrafficMessageTestHelper {
         final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationTypeName, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         try {
-            getV2Datex2UpdateService().updateTrafficDatex2ImsMessages(Collections.singletonList(ims));
+            getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
         entityManagerFlushAndClear(entityManager);
+    }
+
+    public static String readImsMessageResourceContent(final String messageType, final String version)
+            throws IOException {
+        final String xmlImsMessageTemplate = readImsMessageResourceContent(ImsXmlVersion.V1_2_2);
+
+        return xmlImsMessageTemplate.replace("MESSAGE_TYPE", messageType).replace("VERSION", version);
     }
 
     public static String readImsMessageResourceContent(final ImsXmlVersion xmlVersion, final String situationTypeName, final ImsJsonVersion jsonVersion,

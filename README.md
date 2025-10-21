@@ -3,7 +3,7 @@
 ## Development
 
 ### Preconditions
-1. Java 17 JDK
+1. Java 21 JDK
 2. Maven
 3. Git client
 

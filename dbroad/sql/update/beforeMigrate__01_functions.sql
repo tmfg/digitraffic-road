@@ -11,6 +11,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_modified_at_column()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  IF OLD IS DISTINCT FROM NEW THEN
+    NEW.modified_at = now();
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Updates modified column also when data has not changed
 CREATE OR REPLACE FUNCTION update_modified_column_always()
   RETURNS TRIGGER AS
