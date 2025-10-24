@@ -28,6 +28,7 @@ public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetaile
     @Schema(description = "Direction 2 municipality code")
     public final Integer direction2MunicipalityCode;
 
+
     @Schema(description = "Type of  TMS station")
     public final TmsStationType stationType;
 
@@ -44,11 +45,14 @@ public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetaile
     @Schema(description = "Free flow speed to direction 2 [km/h]")
     public final Double freeFlowSpeed2;
 
+    @Schema(description = "Road station bearing (in degrees)")
+    public final Integer bearing;
+
     public TmsStationPropertiesDetailedV1(final long id, final long tmsNumber,
                                           final String direction1Municipality, final Integer direction1MunicipalityCode,
                                           final String direction2Municipality, final Integer direction2MunicipalityCode, final TmsStationType stationType,
                                           final CalculatorDeviceType calculatorDeviceType, final List<Long> sensors,
-                                          final Double freeFlowSpeed1, final Double freeFlowSpeed2) {
+                                          final Double freeFlowSpeed1, final Double freeFlowSpeed2, final Integer bearing) {
         super(id);
         this.tmsNumber = tmsNumber;
         this.direction1Municipality = direction1Municipality;
@@ -60,5 +64,6 @@ public class TmsStationPropertiesDetailedV1 extends RoadStationPropertiesDetaile
         this.sensors = sensors;
         this.freeFlowSpeed1 = freeFlowSpeed1;
         this.freeFlowSpeed2 = freeFlowSpeed2;
+        this.bearing = bearing;
     }
 }

@@ -13,8 +13,12 @@ public class TmsStationPropertiesSimpleV1 extends RoadStationPropertiesSimpleV1<
     @Schema(description = "TMS station number (naturalId) for legacy support", requiredMode = Schema.RequiredMode.REQUIRED)
     public final long tmsNumber;
 
-    public TmsStationPropertiesSimpleV1(final long id, final long tmsNumber) {
+    @Schema(description = "Road station bearing (in degrees)")
+    public final Integer bearing;
+
+    public TmsStationPropertiesSimpleV1(final long id, final long tmsNumber, final Integer bearing) {
         super(id);
         this.tmsNumber = tmsNumber;
+        this.bearing = bearing;
     }
 }

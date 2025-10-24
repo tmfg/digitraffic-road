@@ -20,6 +20,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
+import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
 
 @Component
 public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeatureConverterV1 {
@@ -27,11 +28,14 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
     private static final Logger log = LoggerFactory.getLogger(TmsStationToFeatureConverterV1.class);
 
     private final StationSensorConverterService stationSensorConverterService;
+    private final TmsStationSensorConstantService tmsStationSensorConstantService;
+
 
     @Autowired
-    private TmsStationToFeatureConverterV1(final CoordinateConverter coordinateConverter, final StationSensorConverterService stationSensorConverterService) {
+    private TmsStationToFeatureConverterV1(final CoordinateConverter coordinateConverter, final StationSensorConverterService stationSensorConverterService, final TmsStationSensorConstantService tmsStationSensorConstantService) {
         super(coordinateConverter);
         this.stationSensorConverterService = stationSensorConverterService;
+        this.tmsStationSensorConstantService = tmsStationSensorConstantService;
     }
 
     public TmsStationFeatureCollectionSimpleV1 convertToSimpleFeatureCollection(final List<TmsStation> stations,
@@ -50,8 +54,10 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
             log.debug("method=convertToSimpleFeature " + station);
         }
 
+        final var bearing = tmsStationSensorConstantService.getCachedBearing(station.getRoadStationId());
+
         final TmsStationPropertiesSimpleV1 properties =
-            new TmsStationPropertiesSimpleV1(station.getRoadStationNaturalId(), station.getNaturalId());
+            new TmsStationPropertiesSimpleV1(station.getRoadStationNaturalId(), station.getNaturalId(), bearing);
 
         // RoadStation properties
         final RoadStation rs = station.getRoadStation();
@@ -71,12 +77,14 @@ public class TmsStationToFeatureConverterV1 extends AbstractRoadstationToFeature
         final List<Long> sensorsNatualIds =
             stationSensorConverterService.getPublishableSensorsNaturalIdsByRoadStationId(station.getRoadStationId(), RoadStationType.TMS_STATION);
 
+        final var bearing = tmsStationSensorConstantService.getCachedBearing(station.getRoadStationId());
+
         final TmsStationPropertiesDetailedV1 properties =
             new TmsStationPropertiesDetailedV1(station.getRoadStationNaturalId(), station.getNaturalId(),
                 station.getDirection1Municipality(), station.getDirection1MunicipalityCode(),
                 station.getDirection2Municipality(), station.getDirection2MunicipalityCode(),
                 station.getTmsStationType(), station.getCalculatorDeviceType(),
-                sensorsNatualIds, freeFlowSpeed1, freeFlowSpeed2);
+                sensorsNatualIds, freeFlowSpeed1, freeFlowSpeed2, bearing);
 
         // RoadStation properties
         final RoadStation rs = station.getRoadStation();
