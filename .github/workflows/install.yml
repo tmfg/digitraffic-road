@@ -82,12 +82,12 @@ jobs:
 
           cp target/*.jar road.jar
       - name: Upload jar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: road.jar
           path: road.jar
       - name: Upload sql
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: sql
           path: dbroad/sql
