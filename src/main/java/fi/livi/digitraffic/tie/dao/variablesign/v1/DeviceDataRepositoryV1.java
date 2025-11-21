@@ -17,7 +17,7 @@ import jakarta.persistence.QueryHint;
 public interface DeviceDataRepositoryV1 extends JpaRepository<DeviceData, Long> {
     @Query(value =
         "select distinct on (device_id) id from device_data " +
-        "where effect_date > now() - interval '7 days' " +
+        "where effect_date > now() - interval '60 days' " +
         "order by device_id, effect_date desc",
         nativeQuery = true)
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
