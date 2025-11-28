@@ -1,15 +1,18 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
+import java.time.Instant;
+import java.util.*;
 import static fi.livi.digitraffic.tie.converter.waze.WazeAnnouncementDurationConverter.getAnnouncementDuration;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadAddressLocation;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedLocationDto;
@@ -29,6 +28,8 @@ import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.metadata.geojson.MultiLineString;
 import fi.livi.digitraffic.tie.metadata.geojson.Point;
 import fi.livi.digitraffic.tie.service.waze.WazeReverseGeocodingService;
+
+import static fi.livi.digitraffic.tie.converter.waze.WazeAnnouncementDurationConverter.createDuration;
 
 @ConditionalOnWebApplication
 @Component
@@ -50,30 +51,64 @@ public class WazeDatex2JsonConverter {
         this.wazeTypeConverter = wazeTypeConverter;
     }
 
-    public Optional<WazeFeedIncidentDto> convertToWazeFeedAnnouncementDto(final WazeDatex2FeatureDto wazeDatex2FeatureDto) {
+    public Stream<WazeFeedIncidentDto> convertToWazeFeedAnnouncementDto(final WazeDatex2FeatureDto wazeDatex2FeatureDto) {
         final TrafficAnnouncementFeature feature = wazeDatex2FeatureDto.feature;
+        if(feature.getGeometry() == null) return Stream.empty();
 
-        final TrafficAnnouncementProperties properties = feature.getProperties();
-        final String situationId = properties.situationId;
+        final Optional<String> maybeStreet = wazeReverseGeocodingService.getStreetName(feature.getGeometry());
+        if(maybeStreet.isEmpty()) return Stream.empty();
+
         final Optional<WazeFeedIncidentDto.WazeType> maybeType = wazeTypeConverter.convertToWazeType(wazeDatex2FeatureDto);
+        if(maybeType.isEmpty()) return Stream.empty();
 
-        final TrafficAnnouncement announcement = properties.announcements.getFirst();
-        final Optional<Geometry<?>> maybeGeometry = Optional.ofNullable(feature.getGeometry());
+        final TrafficAnnouncement announcement = feature.getProperties().announcements.getFirst();
+        final WazeFeedLocationDto.Direction direction = convertDirection(announcement.locationDetails.roadAddressLocation.direction, feature.getGeometry())
+                .orElse(null);
 
+        final Optional<String> maybePolyline = formatPolyline(feature.getGeometry(), direction);
+        if(maybePolyline.isEmpty()) return Stream.empty();
+
+        final String situationId = feature.getProperties().situationId;
+
+        // special handling for roadworks
+        if(feature.getProperties().getSituationType().equals(SituationType.ROAD_WORK)) {
+            final var incidentsFromPhases = convertRoadClosed(announcement, wazeDatex2FeatureDto.d2LogicalModel, situationId, maybePolyline.get(), maybeStreet.get(), direction);
+
+            // if no phases that qualify are found, then use the old conversion
+            if(!incidentsFromPhases.isEmpty()) {
+                return incidentsFromPhases.stream();
+            }
+        }
+
+        final Pair<String, String> duration = getAnnouncementDuration(announcement, maybeType);
         final String description = wazeDatex2MessageConverter.export(situationId, wazeDatex2FeatureDto.d2LogicalModel);
 
-        final WazeFeedLocationDto.Direction direction = maybeGeometry.flatMap(geometry ->
-            convertDirection(announcement.locationDetails.roadAddressLocation.direction, geometry))
-            .orElse(null);
+        return Stream.of(new WazeFeedIncidentDto(situationId, maybeStreet.get(), description, direction, maybePolyline.get(), maybeType.get(), duration.getLeft(), duration.getRight()));
+    }
 
-        final Optional<String> maybePolyline = maybeGeometry.flatMap(geometry -> formatPolyline(geometry, direction));
-        final Optional<String> maybeStreet = maybeGeometry.flatMap(wazeReverseGeocodingService::getStreetName);
-        final Pair<String, String> duration = getAnnouncementDuration(announcement, maybeType);
+    private Collection<WazeFeedIncidentDto> convertRoadClosed(final TrafficAnnouncement announcement,
+                                                              final D2LogicalModel d2logicalModel,
+                                                              final String situationId,
+                                                              final String polyline,
+                                                              final String street,
+                                                              final WazeFeedLocationDto.Direction direction) {
+        return announcement.roadWorkPhases.stream()
+                .filter(this::includeWorkPhase)
+                .filter(WazeAnnouncementDurationConverter::isActive)
+                .map(p -> {
+                    final var duration = createDuration(p.timeAndDuration.startTime, p.timeAndDuration.endTime);
+                    final var id = String.format("%s.%s", situationId, p.id);
+                    final var description = wazeDatex2MessageConverter.exportPhase(situationId, p.id, d2logicalModel);
 
-        return maybePolyline.flatMap(polyline ->
-            maybeStreet.flatMap(street ->
-                maybeType.map(type ->
-                    new WazeFeedIncidentDto(situationId, street, description, direction, polyline, type, duration.getLeft(), duration.getRight()))));
+                    return new WazeFeedIncidentDto(id, street, description, direction, polyline, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION, duration.getLeft(), duration.getRight());
+                })
+                .toList();
+    }
+
+    private static final Set<Restriction.Type> INCLUDED_TYPES = EnumSet.of(Restriction.Type.ROAD_CLOSED);
+    /// only include phases that we are interested in(currently only ROAD_CLOSED)
+    private boolean includeWorkPhase(final RoadWorkPhase phase) {
+        return phase.restrictions.stream().anyMatch(r -> INCLUDED_TYPES.contains(r.type));
     }
 
     private Optional<WazeFeedLocationDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, final Geometry<?> geometry) {
@@ -81,15 +116,10 @@ public class WazeDatex2JsonConverter {
             return Optional.empty();
         }
 
-        switch (direction) {
-        case BOTH:
-            return Optional.of(WazeFeedLocationDto.Direction.BOTH_DIRECTIONS);
-        case UNKNOWN:
-        case POS:
-        case NEG:
-        default:
-            return Optional.of(WazeFeedLocationDto.Direction.ONE_DIRECTION);
-        }
+        return switch (direction) {
+            case BOTH -> Optional.of(WazeFeedLocationDto.Direction.BOTH_DIRECTIONS);
+            default -> Optional.of(WazeFeedLocationDto.Direction.ONE_DIRECTION);
+        };
     }
 
     public static Optional<String> formatPolyline(final Geometry<?> geometry, final WazeFeedLocationDto.Direction direction) {
@@ -99,22 +129,13 @@ public class WazeDatex2JsonConverter {
             return Optional.of(formatPolylineFromMultiLineString(multiLineString, direction));
         }
 
-        logger.warn(String.format("method=formatPolyline Unknown geometry type %s", geometry.getClass().getSimpleName()));
+        logger.warn("method=formatPolyline Unknown geometry type {}", geometry.getClass().getSimpleName());
         return Optional.empty();
     }
 
     private static String formatPolylineFromMultiLineString(final MultiLineString multiLineString, final WazeFeedLocationDto.Direction direction) {
-        final List<List<Double>> path = multiLineString.getCoordinates().stream()
+        return multiLineString.getCoordinates().stream()
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
-
-        if (direction == WazeFeedLocationDto.Direction.BOTH_DIRECTIONS) {
-            final List<List<Double>> copy = new ArrayList<>(path);
-            Collections.reverse(copy);
-            path.addAll(copy);
-        }
-
-        return path.stream()
             .map(WazeDatex2JsonConverter::formatPolylineFromPoint)
             .collect(Collectors.joining(" "));
     }

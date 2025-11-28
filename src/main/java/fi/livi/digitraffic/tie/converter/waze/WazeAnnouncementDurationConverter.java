@@ -28,7 +28,13 @@ public abstract class WazeAnnouncementDurationConverter {
         return p.restrictions.stream().anyMatch(r -> r.type == Restriction.Type.ROAD_CLOSED);
     }
 
-    private static Pair<String, String> createDuration(final Instant startTime, final Instant endTime) {
+    public static boolean isActive(final RoadWorkPhase phase) {
+        final var now = Instant.now();
+        return now.isAfter(phase.timeAndDuration.startTime) && (
+                phase.timeAndDuration.endTime == null || now.isBefore(phase.timeAndDuration.endTime));
+    }
+
+    public static Pair<String, String> createDuration(final Instant startTime, final Instant endTime) {
         final String starttime = Optional.ofNullable(startTime)
                 .map(wazeDateTimeFormatter::format)
                 .orElse(null);
@@ -41,7 +47,9 @@ public abstract class WazeAnnouncementDurationConverter {
     }
     public static Pair<String, String> getAnnouncementDuration(final TrafficAnnouncement announcement, final Optional<WazeFeedIncidentDto.WazeType> maybeType) {
         if(maybeType.isPresent() && maybeType.get() == ROAD_CLOSED_CONSTRUCTION) {
-            final Optional<RoadWorkPhase> maybePhase = announcement.roadWorkPhases.stream().filter(WazeAnnouncementDurationConverter::hasRoadClosed).findFirst();
+            final Optional<RoadWorkPhase> maybePhase = announcement.roadWorkPhases.stream()
+                    .filter(WazeAnnouncementDurationConverter::isActive)
+                    .filter(WazeAnnouncementDurationConverter::hasRoadClosed).findFirst();
             // get from phases
 
             if(maybePhase.isPresent()) {

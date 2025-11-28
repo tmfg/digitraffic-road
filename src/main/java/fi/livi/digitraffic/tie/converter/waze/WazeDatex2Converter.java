@@ -160,7 +160,7 @@ public class WazeDatex2Converter {
             return !hasIceRoadOpenRecord(feature) && !hasTransitInformationRecord(feature);
         }
 
-        // low serverity road-works are not relevant
+        // low severity road-works are not relevant
         if (feature.datex2.getMessage().contains(("<overallSeverity>low"))) {
             return false;
         }

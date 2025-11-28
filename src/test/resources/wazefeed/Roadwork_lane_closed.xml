@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>2024-09-12T02:40:29.277Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50435644" version="1">
+            <overallSeverity>high</overallSeverity>
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5043812201" version="1">
+                <situationRecordCreationTime>2024-09-12T02:40:28.867Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-09-12T02:40:28.865Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-09-12T02:40:28.866Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-09-11T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2026-10-17T20:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 1494, Pornainen. Tietyö.
+
+                                Tie 1494 välillä Nikkilä - Mäntsälä, Pornainen.
+                                Tarkempi paikka: Paikasta Borgby 4,6 km, vaikutusalue 7,2 km, suuntaan Halkia. Haittaa molempiin ajosuuntiin.
+
+                                Jyrsintä-/stabilointityö
+                                Päällystys- tai paikkaustyö
+                                Kevyen liikenteen väylän rakennus
+                                Rakenteen parannus
+                                Yksi ajokaista suljettu
+                                Kevyen liikenteen väylä suljettu/kavennettu
+                                Työkoneita liikenteen seassa
+                                Nopeusrajoitus: 50 km/h
+                                Matka, jolla nopeusrajoitus voimassa: 3000 m
+
+                                Ajankohta: 12.09.2024 - 17.10.2024.
+                                Työaika: ma-pe 06:00-18:00
+
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.44</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>4273</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>4573</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>4278</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>5809</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="ConstructionWorks" id="GUID5043812202" version="1">
+                <situationRecordCreationTime>2024-09-12T02:40:28.867Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-09-12T02:40:28.865Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-09-12T02:40:28.866Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-09-11T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2026-10-17T20:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <constructionWorkType>constructionWork</constructionWorkType>
+            </situationRecord>
+            <situationRecord xsi:type="SpeedManagement" id="GUID5043812203" version="1">
+                <situationRecordCreationTime>2024-09-12T02:40:28.867Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-09-12T02:40:28.865Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-09-12T02:40:28.866Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-09-11T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2026-10-17T20:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <temporarySpeedLimit>50.0</temporarySpeedLimit>
+            </situationRecord>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5043812204" version="1">
+                <situationRecordCreationTime>2024-09-12T02:40:28.867Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-09-12T02:40:28.865Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-09-12T02:40:28.866Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-09-11T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2026-10-17T20:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <roadMaintenanceType>resurfacingWork</roadMaintenanceType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

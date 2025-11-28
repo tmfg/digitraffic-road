@@ -1,5 +1,6 @@
 package fi.livi.digitraffic.tie.service.waze;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,9 +52,8 @@ public class WazeFeedService {
             .map(this.wazeDatex2Converter::convertToWazeDatex2FeatureDto)
             .flatMap(Optional::stream)
             .filter(WazeDatex2Converter::isValidWazeEntry)
-            .map(this.wazeDatex2JsonConverter::convertToWazeFeedAnnouncementDto)
-            .flatMap(Optional::stream)
-            .collect(Collectors.toList());
+            .flatMap(this.wazeDatex2JsonConverter::convertToWazeFeedAnnouncementDto)
+            .toList();
 
         filterTime.stop();
         logger.info("method=findActive valid incidents activeCount={} valid count={}, fetchTookMs={} filterTookMS={} tookMs={}",

@@ -1,0 +1,407 @@
+{
+  "geometry":{
+    "type":"MultiLineString",
+    "coordinates":[
+      [
+        [
+          24.580437,
+          60.191794
+        ],
+        [
+          24.580288,
+          60.191602
+        ],
+        [
+          24.580019,
+          60.191296
+        ],
+        [
+          24.579795,
+          60.191075
+        ],
+        [
+          24.579582,
+          60.190867
+        ],
+        [
+          24.579342,
+          60.19063
+        ],
+        [
+          24.57906,
+          60.190356
+        ],
+        [
+          24.578754,
+          60.190078
+        ],
+        [
+          24.578507,
+          60.189859
+        ],
+        [
+          24.578352,
+          60.189738
+        ],
+        [
+          24.578196,
+          60.189613
+        ],
+        [
+          24.578052,
+          60.189504
+        ],
+        [
+          24.577866,
+          60.189347
+        ],
+        [
+          24.577852,
+          60.189335
+        ],
+        [
+          24.577834,
+          60.189319
+        ],
+        [
+          24.577742,
+          60.189237
+        ],
+        [
+          24.57762,
+          60.189145
+        ],
+        [
+          24.577409,
+          60.188981
+        ],
+        [
+          24.57719,
+          60.188809
+        ],
+        [
+          24.576929,
+          60.188632
+        ],
+        [
+          24.576683,
+          60.188467
+        ],
+        [
+          24.576388,
+          60.188288
+        ],
+        [
+          24.57602,
+          60.188084
+        ],
+        [
+          24.575655,
+          60.187886
+        ],
+        [
+          24.575393,
+          60.187754
+        ],
+        [
+          24.575098,
+          60.187607
+        ],
+        [
+          24.574922,
+          60.187518
+        ]
+      ]
+    ]
+  },
+  "type":"Feature",
+  "properties":{
+    "situationId":"GUID50445160",
+    "version":15,
+    "situationType":"road work",
+    "releaseTime":"2025-04-24T11:38:23.975Z",
+    "versionTime":"2025-11-12T15:18:29.1Z",
+    "announcements":[
+      {
+        "language":"fi",
+        "title":"Tie 50, eli Kehä III, Espoo. Tietyö. ",
+        "location":{
+          "countryCode":6,
+          "locationTableNumber":17,
+          "locationTableVersion":"1.11.44",
+          "description":"Tie 50, eli Kehä III, Espoo.\nTarkempi paikka: Paikasta Kauklahden liittymä 1,4 km, vaikutusalue 600 m, suuntaan Sundsbergin liittymä."
+        },
+        "locationDetails":{
+          "roadAddressLocation":{
+            "primaryPoint":{
+              "municipality":"Espoo",
+              "province":"Uusimaa",
+              "country":"Suomi",
+              "roadAddress":{
+                "road":50,
+                "roadSection":1,
+                "distance":6931
+              },
+              "roadName":"Kehä III",
+              "alertCLocation":{
+                "locationCode":2797,
+                "name":"Kauklahden liittymä",
+                "distance":1426
+              }
+            },
+            "secondaryPoint":{
+              "municipality":"Espoo",
+              "province":"Uusimaa",
+              "country":"Suomi",
+              "roadAddress":{
+                "road":50,
+                "roadSection":1,
+                "distance":6362
+              },
+              "roadName":"Kehä III",
+              "alertCLocation":{
+                "locationCode":2795,
+                "name":"Sundsbergin liittymä",
+                "distance":4503
+              }
+            },
+            "direction":"both",
+            "directionDescription":"länteen"
+          }
+        },
+        "features":[
+          {
+            "name":"Nopeusrajoitus",
+            "quantity":50,
+            "unit":"km/h"
+          },
+          {
+            "name":"Ajokaistoja on kavennettu"
+          }
+        ],
+        "roadWorkPhases":[
+          {
+            "id":"GUID50448561",
+            "location":{
+              "countryCode":6,
+              "locationTableNumber":17,
+              "locationTableVersion":"1.11.44",
+              "description":"Tie 50, eli Kehä III, Espoo.\nTarkempi paikka: Paikasta Kauklahden liittymä 1,4 km, vaikutusalue 600 m, suuntaan Sundsbergin liittymä."
+            },
+            "locationDetails":{
+              "roadAddressLocation":{
+                "primaryPoint":{
+                  "municipality":"Espoo",
+                  "province":"Uusimaa",
+                  "country":"Suomi",
+                  "roadAddress":{
+                    "road":50,
+                    "roadSection":1,
+                    "distance":6931
+                  },
+                  "roadName":"Kehä III",
+                  "alertCLocation":{
+                    "locationCode":2797,
+                    "name":"Kauklahden liittymä",
+                    "distance":1426
+                  }
+                },
+                "secondaryPoint":{
+                  "municipality":"Espoo",
+                  "province":"Uusimaa",
+                  "country":"Suomi",
+                  "roadAddress":{
+                    "road":50,
+                    "roadSection":1,
+                    "distance":6362
+                  },
+                  "roadName":"Kehä III",
+                  "alertCLocation":{
+                    "locationCode":2795,
+                    "name":"Sundsbergin liittymä",
+                    "distance":4503
+                  }
+                },
+                "direction":"both",
+                "directionDescription":"länteen"
+              }
+            },
+            "worktypes":[
+              {
+                "type":"bridge",
+                "description":"Siltatyö"
+              },
+              {
+                "type":"other",
+                "description":""
+              }
+            ],
+            "restrictions":[
+              {
+                "type":"narrow lanes",
+                "restriction":{
+                  "name":"Ajokaista kavennettu työmaan kohdalla"
+                }
+              },
+              {
+                "type":"speed limit",
+                "restriction":{
+                  "name":"Nopeusrajoitus",
+                  "quantity":50,
+                  "unit":"km/h"
+                }
+              },
+              {
+                "type":"speed limit length",
+                "restriction":{
+                  "name":"Matka, jolla nopeusrajoitus voimassa",
+                  "quantity":600,
+                  "unit":"m"
+                }
+              }
+            ],
+            "restrictionsLiftable":false,
+            "severity":"high",
+            "workingHours":[
+              {
+                "weekday":"Tuesday",
+                "startTime":"07:00",
+                "endTime":"20:00"
+              },
+              {
+                "weekday":"Monday",
+                "startTime":"07:00",
+                "endTime":"20:00"
+              },
+              {
+                "weekday":"Thursday",
+                "startTime":"07:00",
+                "endTime":"20:00"
+              },
+              {
+                "weekday":"Friday",
+                "startTime":"07:00",
+                "endTime":"20:00"
+              },
+              {
+                "weekday":"Wednesday",
+                "startTime":"07:00",
+                "endTime":"20:00"
+              }
+            ],
+            "slowTrafficTimes":[
+
+            ],
+            "queuingTrafficTimes":[
+
+            ],
+            "timeAndDuration":{
+              "startTime":"2025-05-14T21:00:00Z",
+              "endTime":"2025-12-31T21:59:59.999Z"
+            }
+          },
+          {
+            "id":"GUID50460145",
+            "location":{
+              "countryCode":6,
+              "locationTableNumber":17,
+              "locationTableVersion":"1.11.44",
+              "description":"Tie 50, eli Kehä III, Espoo.\nTarkempi paikka: Paikasta Kauklahden liittymä 1,5 km, vaikutusalue 400 m, suuntaan Sundsbergin liittymä."
+            },
+            "locationDetails":{
+              "roadAddressLocation":{
+                "primaryPoint":{
+                  "municipality":"Espoo",
+                  "province":"Uusimaa",
+                  "country":"Suomi",
+                  "roadAddress":{
+                    "road":50,
+                    "roadSection":1,
+                    "distance":6891
+                  },
+                  "roadName":"Kehä III",
+                  "alertCLocation":{
+                    "locationCode":2797,
+                    "name":"Kauklahden liittymä",
+                    "distance":1466
+                  }
+                },
+                "secondaryPoint":{
+                  "municipality":"Espoo",
+                  "province":"Uusimaa",
+                  "country":"Suomi",
+                  "roadAddress":{
+                    "road":50,
+                    "roadSection":1,
+                    "distance":6465
+                  },
+                  "roadName":"Kehä III",
+                  "alertCLocation":{
+                    "locationCode":2795,
+                    "name":"Sundsbergin liittymä",
+                    "distance":4606
+                  }
+                },
+                "direction":"both",
+                "directionDescription":"länteen"
+              }
+            },
+            "worktypes":[
+              {
+                "type":"bridge",
+                "description":"Siltatyö"
+              }
+            ],
+            "restrictions":[
+              {
+                "type":"road closed",
+                "restriction":{
+                  "name":"Tie on suljettu liikenteeltä"
+                }
+              },
+              {
+                "type":"detour",
+                "restriction":{
+                  "name":"Kiertotie käytössä"
+                }
+              },
+              {
+                "type":"detour using roadways",
+                "restriction":{
+                  "name":"Katuverkkoa käyttävä kiertotie",
+                  "description":"Kiertotie ramppien kautta"
+                }
+              }
+            ],
+            "restrictionsLiftable":false,
+            "severity":"highest",
+            "workingHours":[
+
+            ],
+            "slowTrafficTimes":[
+
+            ],
+            "queuingTrafficTimes":[
+
+            ],
+            "timeAndDuration":{
+              "startTime":"2025-11-09T22:00:00Z",
+              "endTime":"2025-11-12T15:18:00Z"
+            }
+          }
+        ],
+        "comment":"Tie 50, eli Kehä III, Espoo. Tietyö. \n\nTie 50, eli Kehä III, Espoo.\nTarkempi paikka: Paikasta Kauklahden liittymä 1,4 km, vaikutusalue 600 m, suuntaan Sundsbergin liittymä. Haittaa molempiin ajosuuntiin.\n\nSiltatyö\n\nAjokaista kavennettu työmaan kohdalla\nNopeusrajoitus: 50 km/h\nMatka, jolla nopeusrajoitus voimassa: 600 m\n\nAjankohta: 15.05.2025 - 31.12.2025. \nTyöaika: ma-pe 07:00-20:00\n\nLiikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/\n\nFintraffic Tieliikennekeskus Helsinki\nPuh: 02002100\nSähköposti: helsinki.liikennekeskus@fintraffic.fi\nTie 50, eli Kehä III, Espoo. Tietyövaihe. \n\nTie 50, eli Kehä III, Espoo.\nTarkempi paikka: Paikasta Kauklahden liittymä 1,5 km, vaikutusalue 400 m, suuntaan Sundsbergin liittymä. Merkittävää haittaa molempiin ajosuuntiin.\n\nSiltatyö\n\nTie on suljettu liikenteeltä\nKiertotie käytössä\nKatuverkkoa käyttävä kiertotie: Kiertotie ramppien kautta\n\nAjankohta: 10.11.2025 00:00 - 12.11.2025 17:18. \n",
+        "timeAndDuration":{
+          "startTime":"2025-05-14T21:00:00Z",
+          "endTime":"2025-12-31T21:59:59.999Z"
+        },
+        "additionalInformation":"Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+        "sender":"Fintraffic Tieliikennekeskus Helsinki"
+      }
+    ],
+    "contact":{
+      "phone":"02002100",
+      "email":"helsinki.liikennekeskus@fintraffic.fi"
+    }
+  }
+}

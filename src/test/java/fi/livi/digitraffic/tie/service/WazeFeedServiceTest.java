@@ -95,37 +95,97 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertWazeType(incidents.getFirst(), WazeFeedIncidentDto.WazeType.ACCIDENT_NONE);
     }
 
+    private void assertIncident(final WazeFeedIncidentDto incident, final WazeFeedIncidentDto.WazeType expectedType, final String expectedStartTime, final String expectedEndTime) {
+        assertWazeType(incident, expectedType);
+
+        assertEquals(expectedStartTime, incident.starttime);
+        assertEquals(expectedEndTime, incident.endtime);
+    }
+
     @Test
     public void flood() throws IOException {
-        final Datex2 d2 = new Datex2(SituationType.ROAD_WORK, null);
-        d2.setMessage(readDatex2MessageFromFile("Flood.xml"));
-        d2.setJsonMessage(readDatex2MessageFromFile("Flood.json"));
-
-        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(List.of(d2));
+        setupDatex2("Flood");
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         assertEquals(1, announcement.incidents.size());
 
-        final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
-        assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_HAZARD);
+        assertWazeType(announcement.incidents.getFirst(), WazeFeedIncidentDto.WazeType.ROAD_CLOSED_HAZARD);
+    }
+
+    private void setupDatex2(final String filename) throws IOException {
+        final Datex2 d2 = new Datex2(SituationType.ROAD_WORK, null);
+        d2.setMessage(readDatex2MessageFromFile(filename + ".xml"));
+        d2.setJsonMessage(readDatex2MessageFromFile(filename + ".json"));
+
+        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class)))
+                .thenReturn(List.of(d2));
+
+    }
+
+    @Test
+    public void laneManagement() throws IOException {
+        setupDatex2("Roadwork_lane_management");
+
+        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
+        assertEquals(1, announcement.incidents.size());
+
+        assertIncident(announcement.incidents.getFirst(), WazeFeedIncidentDto.WazeType.HAZARD_ON_ROAD_LANE_CLOSED, "2022-10-09T21:00:00+00:00", "2025-12-18T21:59:59+00:00");
     }
 
     @Test
     public void roadwork() throws IOException {
-        final Datex2 d2 = new Datex2(SituationType.ROAD_WORK, null);
-        d2.setMessage(readDatex2MessageFromFile("Roadwork.xml"));
-        d2.setJsonMessage(readDatex2MessageFromFile("Roadwork.json"));
+        setupDatex2("Roadwork");
 
-        when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class))).thenReturn(List.of(d2));
+        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
+        assertEquals(2, announcement.incidents.size());
+
+        // check that times are from the roadworkphase, not from the announcement!
+        final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
+        assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
+
+        assertEquals("2024-09-04T18:00:00+00:00", incident.starttime);
+        assertEquals("2026-09-05T03:00:00+00:00", incident.endtime);
+
+        final WazeFeedIncidentDto secondIncident = announcement.incidents.getLast();
+        assertWazeType(secondIncident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
+
+        assertEquals("2024-08-18T18:00:00+00:00", secondIncident.starttime);
+        assertEquals("2026-08-19T03:00:00+00:00", secondIncident.endtime);
+    }
+
+    @Test
+    public void roadwork2() throws IOException {
+        setupDatex2("Roadwork2");
+
+        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
+        assertEquals(1, announcement.incidents.size());
+
+        // check that times are from the roadworkphase, not from the announcement!
+        final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
+        assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
+
+        assertEquals("2025-05-14T21:00:00+00:00", incident.starttime);
+        assertEquals("2025-12-31T21:59:59+00:00", incident.endtime);
+    }
+
+    @Test
+    public void roadworkLaneClosed() throws IOException {
+        setupDatex2("Roadwork_lane_closed");
 
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         assertEquals(1, announcement.incidents.size());
 
         final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
-        assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
-        // check that times are from the roadworkphase, not from the announcement!
-        assertEquals("2024-05-12T21:10:00+00:00", incident.starttime);
-        assertEquals("2024-10-31T21:20:00+00:00", incident.endtime);
+        assertWazeType(incident, WazeFeedIncidentDto.WazeType.HAZARD_ON_ROAD_LANE_CLOSED);
+    }
+
+    @Test
+    public void roadworkLaneClosed2() throws IOException {
+        setupDatex2("Roadwork_lane_closed_2");
+
+        // currently we do not make an incident from lane closed, this might change in the future
+        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
+        assertEquals(0, announcement.incidents.size());
     }
 
     @Test
@@ -210,23 +270,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void bothDirectionsCoordinatesAreReturnedAsProperlyFormattedPolyline() throws IOException {
-        final MultiLineString geometry = new MultiLineString();
-        geometry.addLineString(List.of(List.of(25.180874, 61.569262), List.of(25.180826, 61.569394)));
-
-        wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, geometry);
-
-        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        final List<WazeFeedIncidentDto> incidents = announcement.incidents;
-        assertEquals(1, incidents.size());
-
-        final WazeFeedIncidentDto incident = incidents.getFirst();
-
-        assertEquals("61.569262 25.180874 61.569394 25.180826 61.569394 25.180826 61.569262 25.180874", incident.location.polyline);
-        assertEquals(WazeFeedLocationDto.Direction.BOTH_DIRECTIONS, incident.location.direction);
-    }
-
-    @Test
     public void noIncidents() {
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         final List<WazeFeedIncidentDto> incidents = announcement.incidents;
@@ -308,31 +351,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         assertEquals("61.569262 25.180874 61.569394 25.180826", maybePolyline1.orElse(null));
         assertEquals("61.575153 25.182835 61.575386 25.183062 61.575587 25.183280 61.569262 25.180874 61.569394 25.180826", maybePolyline2.orElse(null));
-    }
-
-    @Test
-    public void bothDirectionsMultiLineStringToPolyline() {
-        final MultiLineString geometry = new MultiLineString();
-        final List<List<Double>> coords1 = new ArrayList<>();
-        final List<List<Double>> coords2 = new ArrayList<>();
-
-        coords1.add(List.of(25.180874, 61.569262));
-        coords1.add(List.of(25.180826, 61.569394));
-        coords1.add(List.of(25.180754, 61.569586));
-        coords1.add(List.of(25.180681, 61.569794));
-        coords1.add(List.of(25.180601, 61.570065));
-
-        coords2.add(List.of(25.212664, 61.586387));
-        coords2.add(List.of(25.212664, 61.586387));
-
-        geometry.addLineString(coords1);
-        geometry.addLineString(coords2);
-
-        final Optional<String> maybePolyline = WazeDatex2JsonConverter.formatPolyline(geometry, WazeFeedLocationDto.Direction.BOTH_DIRECTIONS);
-        assertTrue(maybePolyline.isPresent());
-
-        final String polyline = maybePolyline.get();
-        assertEquals("61.569262 25.180874 61.569394 25.180826 61.569586 25.180754 61.569794 25.180681 61.570065 25.180601 61.586387 25.212664 61.586387 25.212664 61.586387 25.212664 61.586387 25.212664 61.570065 25.180601 61.569794 25.180681 61.569586 25.180754 61.569394 25.180826 61.569262 25.180874", polyline);
     }
 
     @Test

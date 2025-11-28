@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie-test.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
     <exchange>
         <supplierIdentification>
             <country>fi</country>
@@ -7,21 +7,21 @@
         </supplierIdentification>
     </exchange>
     <payloadPublication xsi:type="SituationPublication" lang="fi">
-        <publicationTime>2024-05-14T10:02:07.810Z</publicationTime>
+        <publicationTime>2024-08-30T06:56:08.388Z</publicationTime>
         <publicationCreator>
             <country>fi</country>
             <nationalIdentifier>FTA</nationalIdentifier>
         </publicationCreator>
-        <situation id="GUID50428624" version="1">
+        <situation id="GUID50428775" version="24">
             <overallSeverity>highest</overallSeverity>
             <headerInformation>
                 <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
                 <informationStatus>real</informationStatus>
             </headerInformation>
-            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5043048901" version="1">
-                <situationRecordCreationTime>2024-05-14T10:02:08.018Z</situationRecordCreationTime>
-                <situationRecordVersionTime>2024-05-14T10:02:08.017Z</situationRecordVersionTime>
-                <situationRecordFirstSupplierVersionTime>2024-05-14T10:02:08.018Z</situationRecordFirstSupplierVersionTime>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5043065901" version="24">
+                <situationRecordCreationTime>2024-05-16T06:08:00.710Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-05-16T06:08:00.710Z</situationRecordFirstSupplierVersionTime>
                 <probabilityOfOccurrence>certain</probabilityOfOccurrence>
                 <severity>highest</severity>
                 <validity>
@@ -34,18 +34,111 @@
                 <generalPublicComment>
                     <comment>
                         <values>
-                            <value lang="fi">Tie 12603, eli Auvaistentie, Loimaa. Tietyö.
+                            <value lang="fi">Tie 3, Hämeenlinna. Tietyö.
 
-                                Tie 12603, eli Auvaistentie, Loimaa.
-                                Tarkempi paikka: Paikasta Kytömaantien risteys 400 m, suuntaan Ylhäinen. Mökköisten silta. Merkittävää haittaa liikenteelle.
+                                Tie 3 välillä Helsinki - Hämeenlinna, Hämeenlinna.
+                                Tarkempi paikka: Välillä Hattelmalan liittymä - Ojoisten liittymä. Merkittävää haittaa liikenteelle.
 
-                                Siltatyö
-                                Tienrakennus
-                                Tie on suljettu liikenteeltä
-                                Kiertotie käytössä
+                                Kaapelityö
+                                Valaistustyö
+                                Ajokaistoja suljettu liikenteeltä
+                                Nopeusrajoitus: 60 km/h
 
-                                Ajankohta: 13.05.2024 - 31.10.2024.
-                                Työaika: ma-su 00:00-00:00
+                                Lisätieto: Tunnelialueella poikkeavat ja muuttuvat kaistajärjestelyt työvaiheittain.
+
+
+                                Ajankohta: 19.05.2024 - 31.10.2024.
+                                Työaika: ke-to 21:00-06:00
+
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod2Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.44</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>971</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                        <alertCMethod2SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>973</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="SpeedManagement" id="GUID5043065902" version="24">
+                <situationRecordCreationTime>2024-05-16T06:08:00.710Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-05-16T06:08:00.710Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-05-18T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2024-10-31T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <complianceOption>mandatory</complianceOption>
+                <temporarySpeedLimit>60.0</temporarySpeedLimit>
+            </situationRecord>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5043065903" version="24">
+                <situationRecordCreationTime>2024-05-16T06:08:00.710Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-05-16T06:08:00.710Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-05-18T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2024-10-31T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <subjects>
+                    <subjectTypeOfWorks>buriedCables</subjectTypeOfWorks>
+                </subjects>
+                <roadMaintenanceType>other</roadMaintenanceType>
+            </situationRecord>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5043094901" version="24">
+                <situationRecordCreationTime>2024-05-20T10:49:34.594Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-05-20T10:49:34.524Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-05-21T21:00:00.000Z</overallStartTime>
+                        <overallEndTime>2024-05-23T20:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 3, Hämeenlinna. Tietyövaihe.
+
+                                Tie 3 välillä Helsinki - Tampere, Hämeenlinna.
+                                Tarkempi paikka: Paikasta Hattelmalan liittymä 2,3 km, vaikutusalue 1,1 km, suuntaan Ojoisten liittymä. Merkittävää haittaa molempiin ajosuuntiin.
+
+                                Kaapelityö
+                                Valaistustyö
+                                järjestelmä päivitys
+                                Ajankohta: 22.05.2024 - 23.05.2024.
+                                Työaika: ke-to 21:00-06:00
 
                             </value>
                         </values>
@@ -55,63 +148,166 @@
                     <alertCLinear xsi:type="AlertCMethod4Linear">
                         <alertCLocationCountryCode>6</alertCLocationCountryCode>
                         <alertCLocationTableNumber>17</alertCLocationTableNumber>
-                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCLocationTableVersion>1.11.44</alertCLocationTableVersion>
                         <alertCDirection>
-                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
                         </alertCDirection>
                         <alertCMethod4PrimaryPointLocation>
                             <alertCLocation>
-                                <specificLocation>24700</specificLocation>
+                                <specificLocation>971</specificLocation>
                             </alertCLocation>
                             <offsetDistance>
-                                <offsetDistance>413</offsetDistance>
+                                <offsetDistance>2275</offsetDistance>
                             </offsetDistance>
                         </alertCMethod4PrimaryPointLocation>
                         <alertCMethod4SecondaryPointLocation>
                             <alertCLocation>
-                                <specificLocation>24701</specificLocation>
+                                <specificLocation>973</specificLocation>
                             </alertCLocation>
                             <offsetDistance>
-                                <offsetDistance>455</offsetDistance>
+                                <offsetDistance>2304</offsetDistance>
                             </offsetDistance>
                         </alertCMethod4SecondaryPointLocation>
                     </alertCLinear>
                 </groupOfLocations>
+                <subjects>
+                    <subjectTypeOfWorks>buriedCables</subjectTypeOfWorks>
+                </subjects>
+                <roadMaintenanceType>other</roadMaintenanceType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5043728901" version="24">
+                <situationRecordCreationTime>2024-08-30T06:54:22.958Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-08-30T06:54:21.839Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-09-04T18:00:00.000Z</overallStartTime>
+                        <overallEndTime>2024-09-05T03:00:00.000Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 3, Hämeenlinna. Tietyövaihe.
+
+                                Tie 3 välillä Helsinki - Hämeenlinna, Hämeenlinna.
+                                Tarkempi paikka: Hämeenlinnan tunneli. Merkittävää haittaa molempiin ajosuuntiin.
+
+                                Työ tunnelin alueella
+                                Tie on suljettu liikenteeltä
+                                Kiertotie käytössä
+                                Katuverkkoa käyttävä kiertotie: Eureeninkadun ja Kaivokadun kautta.
+
+                                Ajankohta: 04.09.2024 21:00 - 05.09.2024 06:00.
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Point">
+                    <alertCPoint xsi:type="AlertCMethod2Point">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.44</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>972</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                    </alertCPoint>
+                </groupOfLocations>
                 <complianceOption>mandatory</complianceOption>
                 <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
             </situationRecord>
-            <situationRecord xsi:type="ConstructionWorks" id="GUID5043048902" version="1">
-                <situationRecordCreationTime>2024-05-14T10:02:08.018Z</situationRecordCreationTime>
-                <situationRecordVersionTime>2024-05-14T10:02:08.017Z</situationRecordVersionTime>
-                <situationRecordFirstSupplierVersionTime>2024-05-14T10:02:08.018Z</situationRecordFirstSupplierVersionTime>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5043728902" version="24">
+                <situationRecordCreationTime>2024-08-30T06:54:22.958Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-08-30T06:54:21.839Z</situationRecordFirstSupplierVersionTime>
                 <probabilityOfOccurrence>certain</probabilityOfOccurrence>
                 <severity>highest</severity>
                 <validity>
                     <validityStatus>definedByValidityTimeSpec</validityStatus>
                     <validityTimeSpecification>
-                        <overallStartTime>2024-05-12T21:00:00.000Z</overallStartTime>
-                        <overallEndTime>2024-10-31T21:59:59.999Z</overallEndTime>
-                    </validityTimeSpecification>
-                </validity>
-                <groupOfLocations xsi:type="Point"/>
-                <constructionWorkType>constructionWork</constructionWorkType>
-            </situationRecord>
-            <situationRecord xsi:type="MaintenanceWorks" id="GUID5043048903" version="1">
-                <situationRecordCreationTime>2024-05-14T10:02:08.018Z</situationRecordCreationTime>
-                <situationRecordVersionTime>2024-05-14T10:02:08.017Z</situationRecordVersionTime>
-                <situationRecordFirstSupplierVersionTime>2024-05-14T10:02:08.018Z</situationRecordFirstSupplierVersionTime>
-                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
-                <severity>highest</severity>
-                <validity>
-                    <validityStatus>definedByValidityTimeSpec</validityStatus>
-                    <validityTimeSpecification>
-                        <overallStartTime>2024-05-12T21:00:00.000Z</overallStartTime>
-                        <overallEndTime>2024-10-31T21:59:59.999Z</overallEndTime>
+                        <overallStartTime>2024-09-04T18:00:00.000Z</overallStartTime>
+                        <overallEndTime>2026-09-05T03:00:00.000Z</overallEndTime>
                     </validityTimeSpecification>
                 </validity>
                 <groupOfLocations xsi:type="Point"/>
                 <subjects>
-                    <subjectTypeOfWorks>bridge</subjectTypeOfWorks>
+                    <subjectTypeOfWorks>tunnel</subjectTypeOfWorks>
+                </subjects>
+                <roadMaintenanceType>other</roadMaintenanceType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5043651901" version="24">
+                <situationRecordCreationTime>2024-08-18T14:39:59.393Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-08-18T14:39:58.542Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-08-18T18:00:00.000Z</overallStartTime>
+                        <overallEndTime>2026-08-19T03:00:00.000Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 3, Hämeenlinna. Tietyövaihe.
+
+                                Tie 3 välillä Helsinki - Hämeenlinna, Hämeenlinna.
+                                Tarkempi paikka: Hämeenlinnan tunneli. Merkittävää haittaa molempiin ajosuuntiin.
+
+                                Työ tunnelin alueella
+                                Tie on suljettu liikenteeltä
+
+                                Lisätieto: Kiertotie Eureeninkadun ja Kaivokadun kautta.
+
+                                Ajankohta: 18.08.2024 21:00 - 19.08.2024 06:00.
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Point">
+                    <alertCPoint xsi:type="AlertCMethod2Point">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.44</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod2PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>972</specificLocation>
+                            </alertCLocation>
+                        </alertCMethod2PrimaryPointLocation>
+                    </alertCPoint>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>roadClosed</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5043651902" version="24">
+                <situationRecordCreationTime>2024-08-18T14:39:59.393Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2024-08-30T06:56:08.057Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2024-08-18T14:39:58.542Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2024-08-18T18:00:00.000Z</overallStartTime>
+                        <overallEndTime>2024-08-19T03:00:00.000Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <subjects>
+                    <subjectTypeOfWorks>tunnel</subjectTypeOfWorks>
                 </subjects>
                 <roadMaintenanceType>other</roadMaintenanceType>
             </situationRecord>

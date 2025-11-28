@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2LogicalModel xmlns="http://datex2.eu/schema/2/2_0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" modelBaseVersion="2" xsi:schemaLocation="http://datex2.eu/schema/2/2_0 https://tie.digitraffic.fi/schemas/datex2/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xsd">
+    <exchange>
+        <supplierIdentification>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </supplierIdentification>
+    </exchange>
+    <payloadPublication xsi:type="SituationPublication" lang="fi">
+        <publicationTime>2023-09-06T11:24:00.317Z</publicationTime>
+        <publicationCreator>
+            <country>fi</country>
+            <nationalIdentifier>FTA</nationalIdentifier>
+        </publicationCreator>
+        <situation id="GUID50404699" version="30">
+            <overallSeverity>high</overallSeverity>
+            <headerInformation>
+                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
+                <informationStatus>real</informationStatus>
+            </headerInformation>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5040578601" version="30">
+                <situationRecordCreationTime>2022-09-27T12:11:08.103Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-09-27T12:11:08.102Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-10-09T21:00:00Z</overallStartTime>
+                        <overallEndTime>2025-12-18T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 180, Parainen. Tietyö.
+
+                                Tie 180 välillä Kaarina - Korppoo, Parainen.
+                                Tarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä. Haittaa molempiin ajosuuntiin.
+
+                                Tienrakennus
+                                Siltatyö
+                                Kevyen liikenteen väylän rakennus
+                                Liikenne on pysäytetty ajoittain
+                                Pysäytykset ja sulut voimassa 09.12.2022 klo 06:00 - 18.12.2025 klo 12:00
+                                Työkoneita liikenteen seassa
+
+                                Lisätieto: Suoniityntietä käyttäen kiertotielle 8.9-2023 arviotu kesto n.1v
+
+                                Ajankohta: 10.10.2022 - 18.12.2025.
+                                Työaika: ma-pe 00:00-23:59
+
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>11110</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>1424</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>43216</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>12</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>intermittentShortTermClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="ConstructionWorks" id="GUID5040578602" version="30">
+                <situationRecordCreationTime>2022-09-27T12:11:08.103Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-09-27T12:11:08.102Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-10-09T21:00:00Z</overallStartTime>
+                        <overallEndTime>2025-12-18T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <constructionWorkType>constructionWork</constructionWorkType>
+            </situationRecord>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5040578603" version="30">
+                <situationRecordCreationTime>2022-09-27T12:11:08.103Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-09-27T12:11:08.102Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-10-09T21:00:00Z</overallStartTime>
+                        <overallEndTime>2025-12-18T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <subjects>
+                    <subjectTypeOfWorks>bridge</subjectTypeOfWorks>
+                </subjects>
+                <roadMaintenanceType>other</roadMaintenanceType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5040870901" version="30">
+                <situationRecordCreationTime>2022-12-09T08:04:34.253Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-12-09T08:04:34.185Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-12-08T22:00:00Z</overallStartTime>
+                        <overallEndTime>2022-12-09T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 180, Parainen. Tietyövaihe.
+
+                                Tie 180 välillä Kaarina - Korppoo, Parainen.
+                                Tarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä. Haittaa liikenteelle.
+
+                                Räjäytystyö
+                                Liikenne on pysäytetty ajoittain
+                                Pysäytykset ja sulut voimassa 09.12.2022 klo 06:00 - 31.12.2025 klo 20:00
+
+                                Ajankohta: 09.12.2022 - 09.12.2022.
+                                Työaika: pe 00:00-01:00
+
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>11110</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>1425</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>43216</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>1</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>intermittentShortTermClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="ConstructionWorks" id="GUID5040870902" version="30">
+                <situationRecordCreationTime>2022-12-09T08:04:34.253Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-12-09T08:04:34.185Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-12-08T22:00:00Z</overallStartTime>
+                        <overallEndTime>2022-12-09T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <constructionWorkType>blastingWork</constructionWorkType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5040871201" version="30">
+                <situationRecordCreationTime>2022-12-09T08:18:08.396Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-12-09T08:18:08.352Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-12-08T22:00:00Z</overallStartTime>
+                        <overallEndTime>2025-12-18T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 180, Parainen. Tietyövaihe.
+
+                                Tie 180 välillä Kaarina - Korppoo, Parainen.
+                                Tarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä. Haittaa molempiin ajosuuntiin.
+
+                                Räjäytystyö
+                                Liikenne on pysäytetty ajoittain
+                                Pysäytykset ja sulut voimassa 09.12.2022 klo 06:00 - 18.12.2025 klo 12:00
+
+                                Ajankohta: 09.12.2022 - 18.12.2025.
+                                Työaika: ma-pe 00:00-23:59
+
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>11110</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>1423</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>43216</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>12</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>intermittentShortTermClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="ConstructionWorks" id="GUID5040871202" version="30">
+                <situationRecordCreationTime>2022-12-09T08:18:08.396Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2022-12-09T08:18:08.352Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>high</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2022-12-08T22:00:00Z</overallStartTime>
+                        <overallEndTime>2025-12-18T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <constructionWorkType>blastingWork</constructionWorkType>
+            </situationRecord>
+            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5040993301" version="30">
+                <situationRecordCreationTime>2023-01-09T06:47:58.021Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2023-01-09T06:47:56.135Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2023-01-09T22:00:00Z</overallStartTime>
+                        <overallEndTime>2023-01-10T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <generalPublicComment>
+                    <comment>
+                        <values>
+                            <value lang="fi">Tie 180, Parainen. Tietyövaihe.
+
+                                Tie 180 välillä Kaarina - Korppoo, Parainen.
+                                Tarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä. Merkittävää haittaa molempiin ajosuuntiin.
+
+                                Kaapelityö
+                                Liikenne ohjataan vuorotellen tapahtumapaikan ohi
+                                Yksi ajokaista suljettu
+
+                                Ajankohta: 10.01.2023 - 10.01.2023.
+                                Työaika: ti 18:00-23:59
+
+                            </value>
+                        </values>
+                    </comment>
+                </generalPublicComment>
+                <groupOfLocations xsi:type="Linear">
+                    <alertCLinear xsi:type="AlertCMethod4Linear">
+                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
+                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
+                        <alertCLocationTableVersion>1.11.43</alertCLocationTableVersion>
+                        <alertCDirection>
+                            <alertCDirectionCoded>both</alertCDirectionCoded>
+                        </alertCDirection>
+                        <alertCMethod4PrimaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>11110</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>1424</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4PrimaryPointLocation>
+                        <alertCMethod4SecondaryPointLocation>
+                            <alertCLocation>
+                                <specificLocation>43216</specificLocation>
+                            </alertCLocation>
+                            <offsetDistance>
+                                <offsetDistance>12</offsetDistance>
+                            </offsetDistance>
+                        </alertCMethod4SecondaryPointLocation>
+                    </alertCLinear>
+                </groupOfLocations>
+                <complianceOption>mandatory</complianceOption>
+                <roadOrCarriagewayOrLaneManagementType>laneClosures</roadOrCarriagewayOrLaneManagementType>
+            </situationRecord>
+            <situationRecord xsi:type="MaintenanceWorks" id="GUID5040993302" version="30">
+                <situationRecordCreationTime>2023-01-09T06:47:58.021Z</situationRecordCreationTime>
+                <situationRecordVersionTime>2023-09-06T11:23:59.482Z</situationRecordVersionTime>
+                <situationRecordFirstSupplierVersionTime>2023-01-09T06:47:56.135Z</situationRecordFirstSupplierVersionTime>
+                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
+                <severity>highest</severity>
+                <validity>
+                    <validityStatus>definedByValidityTimeSpec</validityStatus>
+                    <validityTimeSpecification>
+                        <overallStartTime>2023-01-09T22:00:00Z</overallStartTime>
+                        <overallEndTime>2023-01-10T21:59:59.999Z</overallEndTime>
+                    </validityTimeSpecification>
+                </validity>
+                <groupOfLocations xsi:type="Point"/>
+                <subjects>
+                    <subjectTypeOfWorks>buriedCables</subjectTypeOfWorks>
+                </subjects>
+                <roadMaintenanceType>other</roadMaintenanceType>
+            </situationRecord>
+        </situation>
+    </payloadPublication>
+</d2LogicalModel>

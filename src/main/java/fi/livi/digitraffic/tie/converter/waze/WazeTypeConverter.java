@@ -63,7 +63,7 @@ public class WazeTypeConverter {
     /**
      * Check if any restriction is of type ROAD_CLOSED
      */
-    private boolean isRoadClosed(final Datex2 d2) {
+    public boolean isRoadClosed(final Datex2 d2) {
         return d2.getMessage().contains("<roadOrCarriagewayOrLaneManagementType>roadClosed");
     }
 

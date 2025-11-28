@@ -263,6 +263,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -715,26 +716,45 @@ public class WazeDatex2MessageConverter {
         return export(situationId, d2LogicalModel);
     }
 
+    public String exportPhase(final String situationId, final String phaseId, final D2LogicalModel d2logicalModel) {
+        return getDescriptions(situationId, d2logicalModel)
+                .filter(p -> isSamePhase(phaseId, p.getLeft()))
+                .findFirst()
+                .map(Pair::getRight)
+                .orElse("");
+    }
+
+    /// phase id is from simple json, and candidate is situationRecord id from datex2-xml
+    /// situationRecord id might have 01, 02... added to its end
+    private boolean isSamePhase(final String phaseId, final String candidate) {
+        return candidate.startsWith(phaseId);
+    }
+
     public String export(final String situationId, final D2LogicalModel d2LogicalModel) {
-        final SituationPublication situationPublication = (SituationPublication) d2LogicalModel.getPayloadPublication();
+        return getDescriptions(situationId, d2LogicalModel)
+                .map(Pair::getRight)
+                .collect(Collectors.joining(". ", "", "."));
+    }
+
+    private Stream<Pair<String, String>> getDescriptions(final String situationId, final D2LogicalModel d2logicalModel) {
+        final SituationPublication situationPublication = (SituationPublication) d2logicalModel.getPayloadPublication();
         if (situationPublication == null) {
             logger.info("method=export situation {} did not have a situation publication payload", situationId);
-            return "";
+            return Stream.empty();
         }
 
         final List<Situation> situations = situationPublication.getSituations();
         if (situations.isEmpty()) {
             logger.info("method=export situation {} did not have any situation records", situationId);
-            return "";
+            return Stream.empty();
         }
 
         return situations.stream()
-            .map(Situation::getSituationRecords)
-            .flatMap(Collection::stream)
-            .filter(WazeDatex2Converter::isActiveSituationRecord)
-            .flatMap(sr -> accept(situationId, sr).stream())
-            .distinct()
-            .collect(Collectors.joining(". ", "", "."));
+                .map(Situation::getSituationRecords)
+                .flatMap(Collection::stream)
+                .filter(WazeDatex2Converter::isActiveSituationRecord)
+                .flatMap(sr -> accept(situationId, sr).stream())
+                .distinct();
     }
 
     private Optional<String> accept(final AbnormalTraffic abnormalTraffic) {
@@ -898,7 +918,7 @@ public class WazeDatex2MessageConverter {
             .map(x -> maintenanceWorksTypeMap.getOrDefault(x, null));
     }
 
-    private Optional<String> accept(final String situationId, final SituationRecord situationRecord) {
+    private Optional<Pair<String, String>> accept(final String situationId, final SituationRecord situationRecord) {
         final Optional<String> result;
         final String situationRecordType;
 
@@ -965,9 +985,6 @@ public class WazeDatex2MessageConverter {
         } else if (situationRecord instanceof MaintenanceWorks) {
             result = accept((MaintenanceWorks) situationRecord);
             situationRecordType = "MaintenanceWorks";
-        } else if (situationRecord instanceof DisturbanceActivity) {
-            result = accept((DisturbanceActivity) situationRecord);
-            situationRecordType = "DisturbanceActivity";
         } else {
             logger.error("method=accept unknown class {} in {}", situationRecord.getClass().getSimpleName(), situationId);
             return Optional.empty();
@@ -979,6 +996,8 @@ public class WazeDatex2MessageConverter {
 
         // SKIP_SUBTYPE means, that we want to skip this event subtype, but it's ok and no need to log error
         // (for example OTHER subtype for MaintenanceWorks)
-        return result.filter(v -> v != SKIP_SUBTYPE);
+        return result
+                .filter(v -> !v.equals(SKIP_SUBTYPE))
+                .map(r -> Pair.of(situationRecord.getId(), r));
     }
 }

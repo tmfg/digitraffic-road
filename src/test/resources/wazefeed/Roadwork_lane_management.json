@@ -1,0 +1,423 @@
+{
+  "type" : "Feature",
+  "geometry" : {
+    "type" : "MultiLineString",
+    "coordinates" : [ [ [ 22.349803, 60.328812 ], [ 22.349665, 60.328727 ], [ 22.349530, 60.328633 ], [ 22.349066, 60.328309 ], [ 22.348426, 60.327777 ], [ 22.347803, 60.327145 ], [ 22.347040, 60.326269 ], [ 22.346586, 60.325773 ], [ 22.346208, 60.325391 ], [ 22.346033, 60.325249 ], [ 22.345897, 60.325133 ], [ 22.345753, 60.325020 ], [ 22.345328, 60.324685 ], [ 22.344628, 60.324187 ], [ 22.343959, 60.323709 ], [ 22.343006, 60.323043 ], [ 22.342822, 60.322916 ], [ 22.342138, 60.322438 ], [ 22.341466, 60.321962 ], [ 22.340715, 60.321397 ], [ 22.339964, 60.320790 ], [ 22.339340, 60.320294 ], [ 22.339236, 60.320214 ], [ 22.338684, 60.319791 ], [ 22.338526, 60.319660 ], [ 22.338215, 60.319401 ], [ 22.337886, 60.319109 ], [ 22.337289, 60.318610 ], [ 22.336370, 60.317928 ], [ 22.335479, 60.317408 ], [ 22.334491, 60.316863 ], [ 22.334004, 60.316607 ], [ 22.333678, 60.316437 ], [ 22.333537, 60.316363 ], [ 22.333279, 60.316237 ], [ 22.333035, 60.316131 ], [ 22.332985, 60.316117 ] ] ]
+  },
+  "properties" : {
+    "situationId" : "GUID50404699",
+    "situationType" : "ROAD_WORK",
+    "trafficAnnouncementType" : null,
+    "version" : 30,
+    "releaseTime" : "2022-09-27T12:11:08.103Z",
+    "versionTime" : "2023-09-06T11:23:59.482Z",
+    "announcements" : [ {
+      "language" : "FI",
+      "title" : "Tie 180, Parainen. Tietyö. ",
+      "location" : {
+        "countryCode" : 6,
+        "locationTableNumber" : 17,
+        "locationTableVersion" : "1.11.43",
+        "description" : "Tie 180 välillä Kaarina - Korppoo, Parainen.\nTarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä."
+      },
+      "locationDetails" : {
+        "roadAddressLocation" : {
+          "primaryPoint" : {
+            "municipality" : "Parainen",
+            "province" : "Varsinais-Suomi",
+            "country" : "Suomi",
+            "roadAddress" : {
+              "road" : 180,
+              "roadSection" : 3,
+              "distance" : 1425
+            },
+            "alertCLocation" : {
+              "locationCode" : 11110,
+              "name" : "Kirjala",
+              "distance" : 1424
+            }
+          },
+          "secondaryPoint" : {
+            "municipality" : "Parainen",
+            "province" : "Varsinais-Suomi",
+            "country" : "Suomi",
+            "roadAddress" : {
+              "road" : 180,
+              "roadSection" : 3,
+              "distance" : 3125
+            },
+            "alertCLocation" : {
+              "locationCode" : 43216,
+              "name" : "Kalkkitien kiertoliittymä",
+              "distance" : 12
+            }
+          },
+          "direction" : "BOTH"
+        }
+      },
+      "features" : [ ],
+      "roadWorkPhases" : [ {
+        "id" : "GUID50405786",
+        "location" : {
+          "countryCode" : 6,
+          "locationTableNumber" : 17,
+          "locationTableVersion" : "1.11.43",
+          "description" : "Tie 180 välillä Kaarina - Korppoo, Parainen.\nTarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä."
+        },
+        "locationDetails" : {
+          "roadAddressLocation" : {
+            "primaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 1425
+              },
+              "alertCLocation" : {
+                "locationCode" : 11110,
+                "name" : "Kirjala",
+                "distance" : 1424
+              }
+            },
+            "secondaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 3125
+              },
+              "alertCLocation" : {
+                "locationCode" : 43216,
+                "name" : "Kalkkitien kiertoliittymä",
+                "distance" : 12
+              }
+            },
+            "direction" : "BOTH"
+          }
+        },
+        "workingHours" : [ {
+          "weekday" : "TUESDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "FRIDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "WEDNESDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "MONDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "THURSDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        } ],
+        "comment" : "Suoniityntietä käyttäen kiertotielle 8.9-2023 arviotu kesto n.1v",
+        "timeAndDuration" : {
+          "startTime" : "2022-10-09T21:00:00Z",
+          "endTime" : "2025-12-18T21:59:59.999Z"
+        },
+        "workTypes" : [ {
+          "type" : "ROAD_CONSTRUCTION",
+          "description" : "Tienrakennus"
+        }, {
+          "type" : "BRIDGE",
+          "description" : "Siltatyö"
+        }, {
+          "type" : "PEDESTRIAN_AND_BICYCLE_PATH",
+          "description" : "Kevyen liikenteen väylän rakennus"
+        }, {
+          "type" : "OTHER",
+          "description" : ""
+        } ],
+        "restrictions" : [ {
+          "type" : "INTERMITTENT_SHORT_TERM_STOPS",
+          "restriction" : {
+            "name" : "Liikenne on pysäytetty ajoittain"
+          }
+        }, {
+          "type" : "INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE",
+          "restriction" : {
+            "name" : "Pysäytykset ja sulut voimassa",
+            "timeAndDuration" : {
+              "startTime" : "2022-12-09T04:00:00Z",
+              "endTime" : "2025-12-18T10:00:00Z"
+            }
+          }
+        }, {
+          "type" : "SLOW_MOVING_MAINTENANCE_VEHICLE",
+          "restriction" : {
+            "name" : "Työkoneita liikenteen seassa"
+          }
+        } ],
+        "restrictionsLiftable" : false,
+        "severity" : "HIGH",
+        "slowTrafficTimes" : [ ],
+        "queuingTrafficTimes" : [ ]
+      }, {
+        "id" : "GUID50408709",
+        "location" : {
+          "countryCode" : 6,
+          "locationTableNumber" : 17,
+          "locationTableVersion" : "1.11.43",
+          "description" : "Tie 180 välillä Kaarina - Korppoo, Parainen.\nTarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä."
+        },
+        "locationDetails" : {
+          "roadAddressLocation" : {
+            "primaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 1426
+              },
+              "alertCLocation" : {
+                "locationCode" : 11110,
+                "name" : "Kirjala",
+                "distance" : 1425
+              }
+            },
+            "secondaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 3136
+              },
+              "alertCLocation" : {
+                "locationCode" : 43216,
+                "name" : "Kalkkitien kiertoliittymä",
+                "distance" : 1
+              }
+            },
+            "direction" : "UNKNOWN"
+          }
+        },
+        "workingHours" : [ {
+          "weekday" : "FRIDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "01:00:00"
+        } ],
+        "timeAndDuration" : {
+          "startTime" : "2022-12-08T22:00:00Z",
+          "endTime" : "2022-12-09T21:59:59.999Z"
+        },
+        "workTypes" : [ {
+          "type" : "BLASTING_WORK",
+          "description" : "Räjäytystyö"
+        }, {
+          "type" : "OTHER",
+          "description" : ""
+        } ],
+        "restrictions" : [ {
+          "type" : "INTERMITTENT_SHORT_TERM_STOPS",
+          "restriction" : {
+            "name" : "Liikenne on pysäytetty ajoittain"
+          }
+        }, {
+          "type" : "INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE",
+          "restriction" : {
+            "name" : "Pysäytykset ja sulut voimassa",
+            "timeAndDuration" : {
+              "startTime" : "2022-12-09T04:00:00Z",
+              "endTime" : "2025-12-31T18:00:00Z"
+            }
+          }
+        } ],
+        "restrictionsLiftable" : false,
+        "severity" : "HIGH",
+        "slowTrafficTimes" : [ ],
+        "queuingTrafficTimes" : [ ]
+      }, {
+        "id" : "GUID50408712",
+        "location" : {
+          "countryCode" : 6,
+          "locationTableNumber" : 17,
+          "locationTableVersion" : "1.11.43",
+          "description" : "Tie 180 välillä Kaarina - Korppoo, Parainen.\nTarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä."
+        },
+        "locationDetails" : {
+          "roadAddressLocation" : {
+            "primaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 1424
+              },
+              "alertCLocation" : {
+                "locationCode" : 11110,
+                "name" : "Kirjala",
+                "distance" : 1423
+              }
+            },
+            "secondaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 3125
+              },
+              "alertCLocation" : {
+                "locationCode" : 43216,
+                "name" : "Kalkkitien kiertoliittymä",
+                "distance" : 12
+              }
+            },
+            "direction" : "BOTH"
+          }
+        },
+        "workingHours" : [ {
+          "weekday" : "WEDNESDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "TUESDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "FRIDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "THURSDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        }, {
+          "weekday" : "MONDAY",
+          "startTime" : "00:00:00",
+          "endTime" : "23:59:00"
+        } ],
+        "timeAndDuration" : {
+          "startTime" : "2022-12-08T22:00:00Z",
+          "endTime" : "2025-12-18T21:59:59.999Z"
+        },
+        "workTypes" : [ {
+          "type" : "BLASTING_WORK",
+          "description" : "Räjäytystyö"
+        }, {
+          "type" : "OTHER",
+          "description" : ""
+        } ],
+        "restrictions" : [ {
+          "type" : "INTERMITTENT_SHORT_TERM_STOPS",
+          "restriction" : {
+            "name" : "Liikenne on pysäytetty ajoittain"
+          }
+        }, {
+          "type" : "INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE",
+          "restriction" : {
+            "name" : "Pysäytykset ja sulut voimassa",
+            "timeAndDuration" : {
+              "startTime" : "2022-12-09T04:00:00Z",
+              "endTime" : "2025-12-18T10:00:00Z"
+            }
+          }
+        } ],
+        "restrictionsLiftable" : false,
+        "severity" : "HIGH",
+        "slowTrafficTimes" : [ ],
+        "queuingTrafficTimes" : [ ]
+      }, {
+        "id" : "GUID50409933",
+        "location" : {
+          "countryCode" : 6,
+          "locationTableNumber" : 17,
+          "locationTableVersion" : "1.11.43",
+          "description" : "Tie 180 välillä Kaarina - Korppoo, Parainen.\nTarkempi paikka: Paikasta Kirjala 1,4 km, vaikutusalue 1,7 km, suuntaan Kalkkitien kiertoliittymä."
+        },
+        "locationDetails" : {
+          "roadAddressLocation" : {
+            "primaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 1425
+              },
+              "alertCLocation" : {
+                "locationCode" : 11110,
+                "name" : "Kirjala",
+                "distance" : 1424
+              }
+            },
+            "secondaryPoint" : {
+              "municipality" : "Parainen",
+              "province" : "Varsinais-Suomi",
+              "country" : "Suomi",
+              "roadAddress" : {
+                "road" : 180,
+                "roadSection" : 3,
+                "distance" : 3125
+              },
+              "alertCLocation" : {
+                "locationCode" : 43216,
+                "name" : "Kalkkitien kiertoliittymä",
+                "distance" : 12
+              }
+            },
+            "direction" : "BOTH"
+          }
+        },
+        "workingHours" : [ {
+          "weekday" : "TUESDAY",
+          "startTime" : "18:00:00",
+          "endTime" : "23:59:00"
+        } ],
+        "timeAndDuration" : {
+          "startTime" : "2023-01-09T22:00:00Z",
+          "endTime" : "2023-01-10T21:59:59.999Z"
+        },
+        "workTypes" : [ {
+          "type" : "BURIED_CABLES",
+          "description" : "Kaapelityö"
+        } ],
+        "restrictions" : [ {
+          "type" : "SINGLE_ALTERNATE_LINE_TRAFFIC",
+          "restriction" : {
+            "name" : "Liikenne ohjataan vuorotellen tapahtumapaikan ohi"
+          }
+        }, {
+          "type" : "SINGLE_LANE_CLOSED",
+          "restriction" : {
+            "name" : "Yksi ajokaista suljettu"
+          }
+        } ],
+        "restrictionsLiftable" : false,
+        "severity" : "HIGHEST",
+        "slowTrafficTimes" : [ ],
+        "queuingTrafficTimes" : [ ]
+      } ],
+      "comment" : "Suoniityntietä käyttäen kiertotielle 8.9-2023 arviotu kesto n.1v",
+      "timeAndDuration" : {
+        "startTime" : "2022-10-09T21:00:00Z",
+        "endTime" : "2025-12-18T21:59:59.999Z"
+      },
+      "additionalInformation" : "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender" : "Fintraffic Tieliikennekeskus Turku"
+    } ],
+    "contact" : {
+      "phone" : "02002100",
+      "email" : "turku.liikennekeskus@fintraffic.fi"
+    },
+    "dataUpdatedTime" : "2023-09-06T11:24:04Z"
+  }
+}

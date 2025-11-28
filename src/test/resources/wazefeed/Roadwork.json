@@ -1,176 +1,329 @@
 {
-    "geometry" : {
-        "type" : "Point",
-        "coordinates" : [ 22.85828, 60.898445 ]
-    },
     "type" : "Feature",
+    "geometry" : {
+        "type" : "MultiLineString",
+        "coordinates" : [ [ [ 24.473314, 60.971225 ], [ 24.473026, 60.971682 ], [ 24.472792, 60.972074 ], [ 24.472641, 60.972361 ], [ 24.472368, 60.972895 ], [ 24.472040, 60.973646 ], [ 24.471988, 60.973789 ], [ 24.471807, 60.974349 ], [ 24.471612, 60.974957 ], [ 24.471483, 60.975403 ], [ 24.471403, 60.975683 ], [ 24.471243, 60.976201 ], [ 24.471155, 60.976460 ], [ 24.471065, 60.976718 ], [ 24.470828, 60.977314 ], [ 24.470657, 60.977673 ], [ 24.470553, 60.977890 ], [ 24.470291, 60.978382 ], [ 24.470161, 60.978625 ], [ 24.470125, 60.978693 ], [ 24.470122, 60.978698 ], [ 24.469728, 60.979350 ], [ 24.469433, 60.979796 ], [ 24.469161, 60.980184 ], [ 24.468821, 60.980619 ], [ 24.468502, 60.981018 ], [ 24.468166, 60.981413 ], [ 24.467881, 60.981737 ], [ 24.467509, 60.982138 ], [ 24.467121, 60.982535 ], [ 24.466619, 60.983018 ], [ 24.466292, 60.983339 ], [ 24.465660, 60.983911 ], [ 24.465027, 60.984457 ], [ 24.464692, 60.984757 ], [ 24.463907, 60.985436 ], [ 24.462843, 60.986351 ], [ 24.462065, 60.987030 ], [ 24.461406, 60.987632 ], [ 24.460804, 60.988224 ], [ 24.460570, 60.988455 ], [ 24.459921, 60.989131 ], [ 24.459406, 60.989711 ], [ 24.458880, 60.990326 ], [ 24.458546, 60.990721 ], [ 24.458146, 60.991216 ], [ 24.457934, 60.991479 ], [ 24.457271, 60.992361 ], [ 24.456544, 60.993348 ], [ 24.456022, 60.994058 ], [ 24.455503, 60.994764 ], [ 24.454894, 60.995587 ], [ 24.454672, 60.995887 ], [ 24.454308, 60.996381 ], [ 24.454059, 60.996719 ], [ 24.453950, 60.996865 ], [ 24.453357, 60.997671 ], [ 24.453090, 60.998033 ], [ 24.452819, 60.998402 ], [ 24.452375, 60.999016 ], [ 24.452001, 60.999512 ], [ 24.451610, 61.000004 ], [ 24.451247, 61.000426 ], [ 24.450920, 61.000771 ], [ 24.450652, 61.001018 ], [ 24.450208, 61.001377 ], [ 24.449845, 61.001641 ], [ 24.449365, 61.001948 ], [ 24.449198, 61.002044 ], [ 24.448870, 61.002225 ], [ 24.448397, 61.002449 ], [ 24.447725, 61.002724 ], [ 24.447364, 61.002853 ], [ 24.447196, 61.002912 ], [ 24.446515, 61.003115 ], [ 24.445925, 61.003272 ], [ 24.445647, 61.003341 ], [ 24.445355, 61.003413 ], [ 24.445130, 61.003460 ], [ 24.444988, 61.003489 ], [ 24.443981, 61.003701 ], [ 24.442755, 61.003963 ], [ 24.441747, 61.004181 ], [ 24.440741, 61.004408 ], [ 24.439526, 61.004705 ], [ 24.438384, 61.005012 ], [ 24.437425, 61.005291 ], [ 24.436690, 61.005530 ], [ 24.434729, 61.006239 ], [ 24.434572, 61.006301 ], [ 24.434424, 61.006362 ], [ 24.434379, 61.006381 ], [ 24.434314, 61.006408 ], [ 24.434046, 61.006519 ], [ 24.433925, 61.006569 ], [ 24.433886, 61.006585 ], [ 24.433708, 61.006661 ], [ 24.433222, 61.006868 ], [ 24.432399, 61.007241 ], [ 24.431980, 61.007435 ], [ 24.431328, 61.007744 ], [ 24.430208, 61.008291 ], [ 24.429776, 61.008513 ], [ 24.429325, 61.008730 ], [ 24.428813, 61.008972 ], [ 24.428371, 61.009183 ], [ 24.427736, 61.009450 ], [ 24.427224, 61.009660 ], [ 24.426798, 61.009819 ], [ 24.426352, 61.009990 ], [ 24.425806, 61.010179 ], [ 24.425315, 61.010347 ], [ 24.424885, 61.010490 ], [ 24.424425, 61.010640 ], [ 24.423841, 61.010818 ], [ 24.422943, 61.011017 ], [ 24.422418, 61.011158 ], [ 24.421919, 61.011288 ], [ 24.421522, 61.011393 ], [ 24.420913, 61.011560 ], [ 24.420465, 61.011689 ], [ 24.420041, 61.011817 ], [ 24.419585, 61.011955 ], [ 24.419090, 61.012115 ], [ 24.418677, 61.012254 ] ], [ [ 24.473001, 60.971186 ], [ 24.472742, 60.971607 ], [ 24.472326, 60.972360 ], [ 24.471975, 60.973143 ], [ 24.471784, 60.973618 ], [ 24.471731, 60.973770 ], [ 24.471553, 60.974284 ], [ 24.471368, 60.974901 ], [ 24.471222, 60.975394 ], [ 24.471128, 60.975722 ], [ 24.471050, 60.975973 ], [ 24.470802, 60.976703 ], [ 24.470704, 60.976966 ], [ 24.470561, 60.977310 ], [ 24.470466, 60.977533 ], [ 24.470409, 60.977666 ], [ 24.470247, 60.977991 ], [ 24.470078, 60.978309 ], [ 24.470062, 60.978335 ], [ 24.469944, 60.978531 ], [ 24.469866, 60.978659 ], [ 24.469708, 60.978931 ], [ 24.469457, 60.979337 ], [ 24.469183, 60.979748 ], [ 24.468976, 60.980051 ], [ 24.468756, 60.980350 ], [ 24.468525, 60.980643 ], [ 24.468279, 60.980951 ], [ 24.467947, 60.981345 ], [ 24.467592, 60.981742 ], [ 24.467143, 60.982221 ], [ 24.466759, 60.982610 ], [ 24.466220, 60.983142 ], [ 24.465793, 60.983527 ], [ 24.465371, 60.983914 ], [ 24.464709, 60.984487 ], [ 24.464381, 60.984762 ], [ 24.463741, 60.985315 ], [ 24.462360, 60.986511 ], [ 24.461620, 60.987170 ], [ 24.460662, 60.988068 ], [ 24.460379, 60.988357 ], [ 24.460092, 60.988649 ], [ 24.459337, 60.989462 ], [ 24.458971, 60.989880 ], [ 24.458270, 60.990718 ], [ 24.457907, 60.991166 ], [ 24.457719, 60.991399 ], [ 24.457021, 60.992311 ], [ 24.456016, 60.993670 ], [ 24.455251, 60.994710 ], [ 24.454473, 60.995777 ], [ 24.453816, 60.996673 ], [ 24.453700, 60.996818 ], [ 24.453204, 60.997493 ], [ 24.452843, 60.997987 ], [ 24.452534, 60.998408 ], [ 24.452017, 60.999117 ], [ 24.451724, 60.999514 ], [ 24.451457, 60.999845 ], [ 24.451264, 61.000065 ], [ 24.451131, 61.000233 ], [ 24.450961, 61.000425 ], [ 24.450747, 61.000635 ], [ 24.450670, 61.000711 ], [ 24.450407, 61.000966 ], [ 24.450128, 61.001205 ], [ 24.449645, 61.001567 ], [ 24.449253, 61.001822 ], [ 24.448823, 61.002062 ], [ 24.448362, 61.002290 ], [ 24.447853, 61.002513 ], [ 24.447341, 61.002713 ], [ 24.446792, 61.002889 ], [ 24.446219, 61.003051 ], [ 24.445796, 61.003158 ], [ 24.445551, 61.003216 ], [ 24.445151, 61.003310 ], [ 24.444631, 61.003427 ], [ 24.443395, 61.003690 ], [ 24.442233, 61.003939 ], [ 24.440994, 61.004211 ], [ 24.439992, 61.004444 ], [ 24.439030, 61.004686 ], [ 24.438252, 61.004896 ], [ 24.437503, 61.005120 ], [ 24.436959, 61.005290 ], [ 24.436240, 61.005527 ], [ 24.434125, 61.006318 ], [ 24.434028, 61.006359 ], [ 24.433836, 61.006441 ], [ 24.433678, 61.006508 ], [ 24.433308, 61.006672 ], [ 24.431993, 61.007253 ], [ 24.431790, 61.007349 ], [ 24.431140, 61.007652 ], [ 24.430005, 61.008203 ], [ 24.428621, 61.008875 ], [ 24.427554, 61.009348 ], [ 24.426890, 61.009613 ], [ 24.426284, 61.009840 ], [ 24.425794, 61.010011 ], [ 24.425124, 61.010241 ], [ 24.424424, 61.010452 ], [ 24.423783, 61.010633 ], [ 24.422656, 61.010932 ], [ 24.422490, 61.010975 ], [ 24.421906, 61.011121 ], [ 24.420454, 61.011516 ], [ 24.419832, 61.011711 ], [ 24.419512, 61.011801 ], [ 24.419067, 61.011947 ], [ 24.418602, 61.012111 ] ] ]
+    },
     "properties" : {
-        "situationId" : "GUID50428624",
-        "version" : 1,
-        "situationType" : "road work",
-        "releaseTime" : "2024-05-14T10:02:08.018Z",
-        "versionTime" : "2024-05-14T10:02:08.017Z",
+        "situationId" : "GUID50428775",
+        "situationType" : "ROAD_WORK",
+        "trafficAnnouncementType" : null,
+        "version" : 24,
+        "releaseTime" : "2024-05-16T06:08:00.71Z",
+        "versionTime" : "2024-08-30T06:56:08.057Z",
         "announcements" : [ {
-            "language" : "fi",
-            "title" : "Tie 12603, eli Auvaistentie, Loimaa. Tietyö. ",
+            "language" : "FI",
+            "title" : "Tie 3, Hämeenlinna. Tietyö. ",
             "location" : {
                 "countryCode" : 6,
                 "locationTableNumber" : 17,
-                "locationTableVersion" : "1.11.43",
-                "description" : "Tie 12603, eli Auvaistentie, Loimaa.\nTarkempi paikka: Paikasta Kytömaantien risteys 400 m, suuntaan Ylhäinen. Mökköisten silta."
+                "locationTableVersion" : "1.11.44",
+                "description" : "Tie 3 välillä Helsinki - Hämeenlinna, Hämeenlinna.\nTarkempi paikka: Välillä Hattelmalan liittymä - Ojoisten liittymä."
             },
             "locationDetails" : {
                 "roadAddressLocation" : {
                     "primaryPoint" : {
-                        "municipality" : "Loimaa",
-                        "province" : "Varsinais-Suomi",
+                        "municipality" : "Hämeenlinna",
+                        "province" : "Kanta-Häme",
                         "country" : "Suomi",
                         "roadAddress" : {
-                            "road" : 12603,
-                            "roadSection" : 1,
-                            "distance" : 3697
+                            "road" : 3,
+                            "roadSection" : 116,
+                            "distance" : 0
                         },
-                        "roadName" : "Auvaistentie",
                         "alertCLocation" : {
-                            "locationCode" : 24700,
-                            "name" : "Kytömaantien risteys",
-                            "distance" : 413
+                            "locationCode" : 971,
+                            "name" : "Hattelmalan liittymä"
                         }
                     },
                     "secondaryPoint" : {
-                        "municipality" : "Loimaa",
-                        "province" : "Varsinais-Suomi",
+                        "municipality" : "Hämeenlinna",
+                        "province" : "Kanta-Häme",
                         "country" : "Suomi",
                         "roadAddress" : {
-                            "road" : 12603,
-                            "roadSection" : 1,
-                            "distance" : 3697
+                            "road" : 3,
+                            "roadSection" : 117,
+                            "distance" : 0
                         },
-                        "roadName" : "Auvaistentie",
                         "alertCLocation" : {
-                            "locationCode" : 24701,
-                            "name" : "Ylhäinen",
-                            "distance" : 455
+                            "locationCode" : 973,
+                            "name" : "Ojoisten liittymä"
                         }
                     },
-                    "direction" : "unknown"
+                    "direction" : "UNKNOWN"
                 }
             },
             "features" : [ ],
             "roadWorkPhases" : [ {
-                "id" : "GUID50430489",
+                "id" : "GUID50430659",
                 "location" : {
                     "countryCode" : 6,
                     "locationTableNumber" : 17,
-                    "locationTableVersion" : "1.11.43",
-                    "description" : "Tie 12603, eli Auvaistentie, Loimaa.\nTarkempi paikka: Paikasta Kytömaantien risteys 400 m, suuntaan Ylhäinen. Mökköisten silta."
+                    "locationTableVersion" : "1.11.44",
+                    "description" : "Tie 3 välillä Helsinki - Hämeenlinna, Hämeenlinna.\nTarkempi paikka: Välillä Hattelmalan liittymä - Ojoisten liittymä."
                 },
                 "locationDetails" : {
                     "roadAddressLocation" : {
                         "primaryPoint" : {
-                            "municipality" : "Loimaa",
-                            "province" : "Varsinais-Suomi",
+                            "municipality" : "Hämeenlinna",
+                            "province" : "Kanta-Häme",
                             "country" : "Suomi",
                             "roadAddress" : {
-                                "road" : 12603,
-                                "roadSection" : 1,
-                                "distance" : 3697
+                                "road" : 3,
+                                "roadSection" : 116,
+                                "distance" : 0
                             },
-                            "roadName" : "Auvaistentie",
                             "alertCLocation" : {
-                                "locationCode" : 24700,
-                                "name" : "Kytömaantien risteys",
-                                "distance" : 413
+                                "locationCode" : 971,
+                                "name" : "Hattelmalan liittymä"
                             }
                         },
                         "secondaryPoint" : {
-                            "municipality" : "Loimaa",
-                            "province" : "Varsinais-Suomi",
+                            "municipality" : "Hämeenlinna",
+                            "province" : "Kanta-Häme",
                             "country" : "Suomi",
                             "roadAddress" : {
-                                "road" : 12603,
-                                "roadSection" : 1,
-                                "distance" : 3697
+                                "road" : 3,
+                                "roadSection" : 117,
+                                "distance" : 0
                             },
-                            "roadName" : "Auvaistentie",
                             "alertCLocation" : {
-                                "locationCode" : 24701,
-                                "name" : "Ylhäinen",
-                                "distance" : 455
+                                "locationCode" : 973,
+                                "name" : "Ojoisten liittymä"
                             }
                         },
-                        "direction" : "unknown"
+                        "direction" : "UNKNOWN"
                     }
                 },
-                "worktypes" : [ {
-                    "type" : "bridge",
-                    "description" : "Siltatyö"
+                "workingHours" : [ {
+                    "weekday" : "WEDNESDAY",
+                    "startTime" : "21:00:00",
+                    "endTime" : "06:00:00"
                 }, {
-                    "type" : "road construction",
-                    "description" : "Tienrakennus"
+                    "weekday" : "THURSDAY",
+                    "startTime" : "21:00:00",
+                    "endTime" : "06:00:00"
+                } ],
+                "comment" : "Tunnelialueella poikkeavat ja muuttuvat kaistajärjestelyt työvaiheittain.\n",
+                "timeAndDuration" : {
+                    "startTime" : "2024-05-18T21:00:00Z",
+                    "endTime" : "2026-10-31T21:59:59.999Z"
+                },
+                "workTypes" : [ {
+                    "type" : "BURIED_CABLES",
+                    "description" : "Kaapelityö"
                 }, {
-                    "type" : "other",
+                    "type" : "LIGHTING",
+                    "description" : "Valaistustyö"
+                }, {
+                    "type" : "OTHER",
                     "description" : ""
                 } ],
                 "restrictions" : [ {
-                    "type" : "road closed",
+                    "type" : "MULTIPLE_LANES_CLOSED",
+                    "restriction" : {
+                        "name" : "Ajokaistoja suljettu liikenteeltä"
+                    }
+                }, {
+                    "type" : "SPEED_LIMIT",
+                    "restriction" : {
+                        "name" : "Nopeusrajoitus",
+                        "quantity" : 60.0,
+                        "unit" : "km/h"
+                    }
+                } ],
+                "restrictionsLiftable" : false,
+                "severity" : "HIGHEST",
+                "slowTrafficTimes" : [ ],
+                "queuingTrafficTimes" : [ ]
+            }, {
+                "id" : "GUID50430949",
+                "location" : {
+                    "countryCode" : 6,
+                    "locationTableNumber" : 17,
+                    "locationTableVersion" : "1.11.44",
+                    "description" : "Tie 3 välillä Helsinki - Tampere, Hämeenlinna.\nTarkempi paikka: Paikasta Hattelmalan liittymä 2,3 km, vaikutusalue 1,1 km, suuntaan Ojoisten liittymä."
+                },
+                "locationDetails" : {
+                    "roadAddressLocation" : {
+                        "primaryPoint" : {
+                            "municipality" : "Hämeenlinna",
+                            "province" : "Kanta-Häme",
+                            "country" : "Suomi",
+                            "roadAddress" : {
+                                "road" : 3,
+                                "roadSection" : 116,
+                                "distance" : 2275
+                            },
+                            "alertCLocation" : {
+                                "locationCode" : 971,
+                                "name" : "Hattelmalan liittymä",
+                                "distance" : 2275
+                            }
+                        },
+                        "secondaryPoint" : {
+                            "municipality" : "Hämeenlinna",
+                            "province" : "Kanta-Häme",
+                            "country" : "Suomi",
+                            "roadAddress" : {
+                                "road" : 3,
+                                "roadSection" : 116,
+                                "distance" : 3406
+                            },
+                            "alertCLocation" : {
+                                "locationCode" : 973,
+                                "name" : "Ojoisten liittymä",
+                                "distance" : 2304
+                            }
+                        },
+                        "direction" : "BOTH"
+                    }
+                },
+                "workingHours" : [ {
+                    "weekday" : "THURSDAY",
+                    "startTime" : "21:00:00",
+                    "endTime" : "06:00:00"
+                }, {
+                    "weekday" : "WEDNESDAY",
+                    "startTime" : "21:00:00",
+                    "endTime" : "06:00:00"
+                } ],
+                "timeAndDuration" : {
+                    "startTime" : "2024-05-21T21:00:00Z",
+                    "endTime" : "2026-05-23T20:59:59.999Z"
+                },
+                "workTypes" : [ {
+                    "type" : "BURIED_CABLES",
+                    "description" : "Kaapelityö"
+                }, {
+                    "type" : "LIGHTING",
+                    "description" : "Valaistustyö"
+                }, {
+                    "type" : "OTHER",
+                    "description" : "järjestelmä päivitys"
+                } ],
+                "restrictions" : [ ],
+                "restrictionsLiftable" : false,
+                "severity" : "HIGHEST",
+                "slowTrafficTimes" : [ ],
+                "queuingTrafficTimes" : [ ]
+            }, {
+                "id" : "GUID50437289",
+                "location" : {
+                    "countryCode" : 6,
+                    "locationTableNumber" : 17,
+                    "locationTableVersion" : "1.11.44",
+                    "description" : "Tie 3 välillä Helsinki - Hämeenlinna, Hämeenlinna.\nTarkempi paikka: Hämeenlinnan tunneli."
+                },
+                "locationDetails" : {
+                    "roadAddressLocation" : {
+                        "primaryPoint" : {
+                            "municipality" : "Hämeenlinna",
+                            "province" : "Kanta-Häme",
+                            "country" : "Suomi",
+                            "roadAddress" : {
+                                "road" : 3,
+                                "roadSection" : 116,
+                                "distance" : 2789
+                            },
+                            "alertCLocation" : {
+                                "locationCode" : 972,
+                                "name" : "Hämeenlinnan tunneli"
+                            }
+                        },
+                        "direction" : "BOTH"
+                    }
+                },
+                "workingHours" : [ ],
+                "timeAndDuration" : {
+                    "startTime" : "2024-09-04T18:00:00Z",
+                    "endTime" : "2026-09-05T03:00:00Z"
+                },
+                "workTypes" : [ {
+                    "type" : "OTHER",
+                    "description" : "Työ tunnelin alueella"
+                } ],
+                "restrictions" : [ {
+                    "type" : "ROAD_CLOSED",
                     "restriction" : {
                         "name" : "Tie on suljettu liikenteeltä"
                     }
                 }, {
-                    "type" : "detour",
+                    "type" : "DETOUR",
                     "restriction" : {
                         "name" : "Kiertotie käytössä"
                     }
+                }, {
+                    "type" : "DETOUR_USING_ROADWAYS",
+                    "restriction" : {
+                        "name" : "Katuverkkoa käyttävä kiertotie",
+                        "description" : "Eureeninkadun ja Kaivokadun kautta."
+                    }
                 } ],
                 "restrictionsLiftable" : false,
-                "severity" : "highest",
-                "workingHours" : [ {
-                    "weekday" : "Thursday",
-                    "startTime" : "00:00",
-                    "endTime" : "00:00"
-                }, {
-                    "weekday" : "Saturday",
-                    "startTime" : "00:00",
-                    "endTime" : "00:00"
-                }, {
-                    "weekday" : "Wednesday",
-                    "startTime" : "00:00",
-                    "endTime" : "00:00"
-                }, {
-                    "weekday" : "Sunday",
-                    "startTime" : "00:00",
-                    "endTime" : "00:00"
-                }, {
-                    "weekday" : "Friday",
-                    "startTime" : "00:00",
-                    "endTime" : "00:00"
-                }, {
-                    "weekday" : "Monday",
-                    "startTime" : "00:00",
-                    "endTime" : "00:00"
-                }, {
-                    "weekday" : "Tuesday",
-                    "startTime" : "00:00",
-                    "endTime" : "00:00"
-                } ],
+                "severity" : "HIGHEST",
                 "slowTrafficTimes" : [ ],
-                "queuingTrafficTimes" : [ ],
+                "queuingTrafficTimes" : [ ]
+            }, {
+                "id" : "GUID50436519",
+                "location" : {
+                    "countryCode" : 6,
+                    "locationTableNumber" : 17,
+                    "locationTableVersion" : "1.11.44",
+                    "description" : "Tie 3 välillä Helsinki - Hämeenlinna, Hämeenlinna.\nTarkempi paikka: Hämeenlinnan tunneli."
+                },
+                "locationDetails" : {
+                    "roadAddressLocation" : {
+                        "primaryPoint" : {
+                            "municipality" : "Hämeenlinna",
+                            "province" : "Kanta-Häme",
+                            "country" : "Suomi",
+                            "roadAddress" : {
+                                "road" : 3,
+                                "roadSection" : 116,
+                                "distance" : 2789
+                            },
+                            "alertCLocation" : {
+                                "locationCode" : 972,
+                                "name" : "Hämeenlinnan tunneli"
+                            }
+                        },
+                        "direction" : "BOTH"
+                    }
+                },
+                "workingHours" : [ ],
+                "comment" : "Kiertotie Eureeninkadun ja Kaivokadun kautta.",
                 "timeAndDuration" : {
-                    "startTime" : "2024-05-12T21:10:00.000Z",
-                    "endTime" : "2024-10-31T21:20:00.000Z"
-                }
+                    "startTime" : "2024-08-18T18:00:00Z",
+                    "endTime" : "2026-08-19T03:00:00Z"
+                },
+                "workTypes" : [ {
+                    "type" : "OTHER",
+                    "description" : "Työ tunnelin alueella"
+                } ],
+                "restrictions" : [ {
+                    "type" : "ROAD_CLOSED",
+                    "restriction" : {
+                        "name" : "Tie on suljettu liikenteeltä"
+                    }
+                } ],
+                "restrictionsLiftable" : false,
+                "severity" : "HIGHEST",
+                "slowTrafficTimes" : [ ],
+                "queuingTrafficTimes" : [ ]
             } ],
+            "comment" : "Tunnelialueella poikkeavat ja muuttuvat kaistajärjestelyt työvaiheittain.\n",
             "timeAndDuration" : {
                 "startTime" : "2024-05-12T21:00:00.000Z",
                 "endTime" : "2124-10-31T00:00:00Z"
             },
             "additionalInformation" : "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
-            "sender" : "Fintraffic Tieliikennekeskus Turku"
+            "sender" : "Fintraffic Tieliikennekeskus Tampere"
         } ],
         "contact" : {
             "phone" : "02002100",
-            "email" : "turku.liikennekeskus@fintraffic.fi"
-        }
+            "email" : "tampere.liikennekeskus@fintraffic.fi"
+        },
+        "dataUpdatedTime" : "2024-08-30T06:56:10Z"
     }
 }
