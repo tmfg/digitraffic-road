@@ -36,7 +36,7 @@ import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
@@ -51,7 +51,7 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServi
              showSql = false)
 @Import({// configurations
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,
-         Datex223XmlMarshaller.class, XmlMarshallerConfiguration.class, RetryTemplate.class,
+         DatexII223XmlMarshaller.class, XmlMarshallerConfiguration.class, RetryTemplate.class,
          RoadCacheConfiguration.class,
 
          // Services V1

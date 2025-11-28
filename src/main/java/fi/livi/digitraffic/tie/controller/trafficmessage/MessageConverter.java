@@ -32,7 +32,7 @@ public class MessageConverter {
         try {
             return removeAreaGeometry(message);
         } catch (final JsonProcessingException e) {
-            log.error("Error removing geometry", e);
+            log.error("method=removeAreaGeometrySafe Error removing geometry", e);
 
             return message;
         }

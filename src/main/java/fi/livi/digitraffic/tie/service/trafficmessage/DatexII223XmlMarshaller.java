@@ -12,17 +12,17 @@ import org.springframework.xml.transform.StringSource;
 import jakarta.xml.bind.JAXBElement;
 
 @Component
-public class Datex223XmlMarshaller {
-    private final Jaxb2Marshaller datex2Jaxb2Marshaller;
+public class DatexII223XmlMarshaller {
+    private final Jaxb2Marshaller marshaller;
 
-    public Datex223XmlMarshaller(@Qualifier("datex2v2_2_3_fiJaxb2Marshaller")
-                                             final Jaxb2Marshaller datex2Jaxb2Marshaller) {
-        this.datex2Jaxb2Marshaller = datex2Jaxb2Marshaller;
+    public DatexII223XmlMarshaller(@Qualifier("datexII_2_2_3_fiJaxb2Marshaller")
+                                             final Jaxb2Marshaller marshaller) {
+        this.marshaller = marshaller;
     }
 
     public D2LogicalModel convertToObject(final String xmlString) {
         // Trim empty control before and after xml-declaration as they are not allowed
-        final Object object = datex2Jaxb2Marshaller.unmarshal(new StringSource(StringUtils.trim(xmlString)));
+        final Object object = marshaller.unmarshal(new StringSource(StringUtils.trim(xmlString)));
         if (object instanceof JAXBElement) {
             return ((JAXBElement<D2LogicalModel>) object).getValue();
         }
@@ -32,7 +32,7 @@ public class Datex223XmlMarshaller {
     public String convertToString(final D2LogicalModel object) {
         final StringResult result = new StringResult();
 
-        datex2Jaxb2Marshaller.marshal(object, result);
+        marshaller.marshal(object, result);
 
         return result.toString();
     }

@@ -29,7 +29,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 
 @ConditionalOnWebApplication
@@ -37,9 +37,9 @@ import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConve
 public class WazeDatex2Converter {
     private static final Logger logger = LoggerFactory.getLogger(WazeDatex2Converter.class);
     private final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1;
-    private final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller;
+    private final DatexII223XmlMarshaller datex2XmlStringToObjectMarshaller;
 
-    public WazeDatex2Converter(final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1, final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller) {
+    public WazeDatex2Converter(final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1, final DatexII223XmlMarshaller datex2XmlStringToObjectMarshaller) {
         this.datex2JsonConverterV1 = datex2JsonConverterV1;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
     }

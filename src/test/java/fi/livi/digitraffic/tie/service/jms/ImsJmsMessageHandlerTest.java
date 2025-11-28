@@ -134,7 +134,7 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
     private JMSMessageHandler<ExternalIMSMessage> createImsJMSMessageHandler() {
         final JMSMessageHandler.JMSDataUpdater<ExternalIMSMessage> dataUpdater =
-                (data) -> trafficMessageTestHelper.getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(data);
+                (data) -> trafficMessageTestHelper.getImsUpdateService().handleImsMessages(data);
         return new JMSMessageHandler<>(JMSMessageHandler.JMSMessageType.TRAFFIC_MESSAGE, dataUpdater,
                 new ImsJMSMessageMarshaller(jaxb2MarshallerimsJaxb2Marshaller), lockingService.getInstanceId());
     }

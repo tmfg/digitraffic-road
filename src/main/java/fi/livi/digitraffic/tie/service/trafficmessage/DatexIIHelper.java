@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +17,8 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 
-public class Datex2Helper {
-    private static final Logger log = LoggerFactory.getLogger(Datex2Helper.class);
+public class DatexIIHelper {
+    private static final Logger log = LoggerFactory.getLogger(DatexIIHelper.class);
 
     public static boolean isNewOrUpdatedSituation(final Instant latestVersionTime, final Situation situation) {
         // does any record have new version time?
@@ -65,7 +66,7 @@ public class Datex2Helper {
     private static boolean contains(final String[] values, final String...matchTo) {
         return Arrays.stream(values)
             .anyMatch(text -> Arrays.stream(matchTo)
-                                .anyMatch(match -> StringUtils.contains(text, match)));
+                                .anyMatch(match -> Strings.CS.contains(text, match)));
     }
 
     public static TrafficAnnouncementType resolveTrafficAnnouncementTypeFromText(final String text) {
@@ -73,17 +74,17 @@ public class Datex2Helper {
         if (st != SituationType.TRAFFIC_ANNOUNCEMENT) {
             return null;
         }
-        if (StringUtils.contains(text, "Tilanne ohi.")) {
+        if (Strings.CS.contains(text, "Tilanne ohi.")) {
             return TrafficAnnouncementType.ENDED;
-        } else if (StringUtils.contains(text, "Ensitiedote ")) {
+        } else if (Strings.CS.contains(text, "Ensitiedote ")) {
             return TrafficAnnouncementType.PRELIMINARY_ACCIDENT_REPORT;
-        } else if (StringUtils.contains(text,"peruttu.")) {
+        } else if (Strings.CS.contains(text,"peruttu.")) {
             return TrafficAnnouncementType.RETRACTED;
-        } else if (StringUtils.contains(text, "Liikennetiedote onnettomuudesta")) {
+        } else if (Strings.CS.contains(text, "Liikennetiedote onnettomuudesta")) {
             return TrafficAnnouncementType.ACCIDENT_REPORT;
-        } else if (StringUtils.contains(text, "Vahvistamaton havainto.")) {
+        } else if (Strings.CS.contains(text, "Vahvistamaton havainto.")) {
             return TrafficAnnouncementType.UNCONFIRMED_OBSERVATION;
-        } else // else if (StringUtils.contains(text, "Liikennetiedote.", "Liikennetiedote ")) {
+        } else // else if (Strings.CS.contains(text, "Liikennetiedote.", "Liikennetiedote ")) {
         return TrafficAnnouncementType.GENERAL;
     }
 

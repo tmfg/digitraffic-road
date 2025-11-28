@@ -28,8 +28,8 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 @Service
 public class Datex2Service {
     private final DataDatex2SituationRepository dataDatex2SituationRepository;
-    private final DatexConverter35 datexConverter35;
-    private final DatexConverter223 datexConverter223;
+    private final DatexII35Converter datexII35Converter;
+    private final DatexII223Converter datexII223Converter;
 
     private final MessageConverter messageConverter;
 
@@ -47,11 +47,11 @@ public class Datex2Service {
     }""";
 
     public Datex2Service(final DataDatex2SituationRepository dataDatex2SituationRepository,
-                         final DatexConverter35 datexConverter35, final DatexConverter223 datexConverter223,
+                         final DatexII35Converter datexII35Converter, final DatexII223Converter datexII223Converter,
                          final MessageConverter messageConverter) {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
-        this.datexConverter35 = datexConverter35;
-        this.datexConverter223 = datexConverter223;
+        this.datexII35Converter = datexII35Converter;
+        this.datexII223Converter = datexII223Converter;
         this.messageConverter = messageConverter;
     }
 
@@ -135,7 +135,7 @@ public class Datex2Service {
                 .filter(m -> m.getMessageVersion().equals(Datex2Version.V_2_2_3.version))
                 .toList();
 
-        final var lModel = datexConverter223.createD2LogicalModel(messages);
+        final var lModel = datexII223Converter.createD2LogicalModel(messages);
 
         return Pair.of(lModel, Instant.now());
     }
@@ -149,7 +149,7 @@ public class Datex2Service {
                 .toList();
 
         try {
-            return datexConverter35.createPublication(messages);
+            return datexII35Converter.createPublication(messages);
         } catch(final Exception e) {
             log.error("Error creating publication", e);
 

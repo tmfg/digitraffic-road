@@ -10,10 +10,13 @@ import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesC
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties;
+
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,7 +40,6 @@ import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
 import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 
 public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     @Autowired
@@ -227,7 +229,7 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
                 """);
 
         final var situation = new DataDatex2Situation("id1", 1L, situationType,
-                geometry, ZonedDateTime.now(), ZonedDateTime.now().minusMinutes(30), ZonedDateTime.now().plusMinutes(20));
+                geometry, Instant.now(), Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20));
 
         final var situationMessage = new DataDatex2SituationMessage(version, messageType.value(), message);
         situation.addMessage(situationMessage);

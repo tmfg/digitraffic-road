@@ -49,18 +49,18 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class Datex223UpdateService {
-    private static final Logger log = LoggerFactory.getLogger(Datex223UpdateService.class);
+public class DatexII223UpdateService {
+    private static final Logger log = LoggerFactory.getLogger(DatexII223UpdateService.class);
 
-    private final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller;
+    private final DatexII223XmlMarshaller marshaller;
     private final ImsJsonConverter imsJsonConverter;
     private final Datex2Repository datex2Repository;
     private final DataStatusService dataStatusService;
 
-    public Datex223UpdateService(final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller,
-                                 final ImsJsonConverter imsJsonConverter, final Datex2Repository datex2Repository,
-                                 final DataStatusService dataStatusService) {
-        this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
+    public DatexII223UpdateService(final DatexII223XmlMarshaller marshaller,
+                                   final ImsJsonConverter imsJsonConverter, final Datex2Repository datex2Repository,
+                                   final DataStatusService dataStatusService) {
+        this.marshaller = marshaller;
         this.imsJsonConverter = imsJsonConverter;
         this.datex2Repository = datex2Repository;
         this.dataStatusService = dataStatusService;
@@ -77,8 +77,8 @@ public class Datex223UpdateService {
     @NotTransactionalServiceMethod
     public List<Datex2UpdateValues> createModels(final String d23Message, final String simpleMessage, final Instant importTime) {
         final D2LogicalModel d2 =
-                datex2XmlStringToObjectMarshaller.convertToObject(d23Message);
-        final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
+                marshaller.convertToObject(d23Message);
+        final SituationPublication sp = DatexIIHelper.getSituationPublication(d2);
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> situationIdJsonMap =
                 imsJsonConverter.parseFeatureJsonsFromImsJson(simpleMessage);
         final Map<String, Situation> situationIdSituationMap = parseDatex2Situations(sp);
@@ -121,7 +121,7 @@ public class Datex223UpdateService {
         d2.setExchange(sourceD2.getExchange());
         d2.setPayloadPublication(newSp);
 
-        final String messageValue = datex2XmlStringToObjectMarshaller.convertToString(d2);
+        final String messageValue = marshaller.convertToString(d2);
 
         final String fixedJson = createJsonWithValidGeometryIfInvalid(jsonValue);
         if (fixedJson == null) {
@@ -146,7 +146,7 @@ public class Datex223UpdateService {
      */
     @Transactional
     public boolean updateDatex2Data(final Datex2UpdateValues message) {
-        Datex2Helper.checkD2HasOnlyOneSituation(message.model);
+        DatexIIHelper.checkD2HasOnlyOneSituation(message.model);
 
         if (isNewOrUpdatedSituation(message.model, message.situationType)) {
             final Datex2 datex2 = new Datex2(message.situationType, message.trafficAnnouncementType);
@@ -165,7 +165,7 @@ public class Datex223UpdateService {
             datex2Repository.save(datex2);
             dataStatusService.updateDataUpdated(DataType.TRAFFIC_MESSAGES_DATA);
 
-            final String situationId = Datex2Helper.getSituationPublication(d2).getSituations().getFirst().getId();
+            final String situationId = DatexIIHelper.getSituationPublication(d2).getSituations().getFirst().getId();
             log.info(
                     "Update Datex2 situationId={}messageType situationType={} trafficAnnouncementType: {} with importTime={}",
                     situationId, message.situationType, message.trafficAnnouncementType, datex2.getImportTime());
@@ -179,7 +179,7 @@ public class Datex223UpdateService {
     }
 
     private Instant getLatestSituationRecordVersionTime(final D2LogicalModel d2) {
-        return Datex2Helper.getSituationPublication(d2).getSituations().stream()
+        return DatexIIHelper.getSituationPublication(d2).getSituations().stream()
                 .map(s -> s.getSituationRecords().stream()
                         .map(SituationRecord::getSituationRecordVersionTime).max(Comparator.naturalOrder())
                         .orElseThrow())
@@ -304,10 +304,10 @@ public class Datex223UpdateService {
     }
 
     private boolean isNewOrUpdatedSituation(final D2LogicalModel d2, final SituationType situationType) {
-        final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
+        final SituationPublication sp = DatexIIHelper.getSituationPublication(d2);
         final Situation situation = sp.getSituations().getFirst();
         final Instant versionTime = findSituationLatestVersionTime(situation.getId(), situationType);
-        return Datex2Helper.isNewOrUpdatedSituation(versionTime, situation);
+        return DatexIIHelper.isNewOrUpdatedSituation(versionTime, situation);
     }
 
     private Instant findSituationLatestVersionTime(final String situationId, final SituationType situationType) {

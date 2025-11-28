@@ -48,15 +48,15 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
 
         for(final DataIncoming data : allData) {
             switch (data.getStatus()) {
-                case "NEW": newCount++; break;
-                case "FAILED": failedCount++; break;
-                case "PROCESSED": processedCount++; break;
+                case NEW: newCount++; break;
+                case FAILED: failedCount++; break;
+                case PROCESSED: processedCount++; break;
             }
         }
 
-        Assertions.assertEquals(expectedNew, newCount);
-        Assertions.assertEquals(expectedFailed, failedCount);
-        Assertions.assertEquals(expectedProcessed, processedCount);
+        Assertions.assertEquals(expectedNew, newCount, "New count should be " + expectedNew);
+        Assertions.assertEquals(expectedFailed, failedCount, "Failed count should be " + expectedFailed);
+        Assertions.assertEquals(expectedProcessed, processedCount, "Processed count should be " + expectedProcessed);
     }
 
     private void assertDataDatex2(final int expectedCount, final String version) {
@@ -69,7 +69,7 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
     }
 
     private void insertNewData(final String data) {
-        final var incoming = new DataIncoming("1234", "1.2.2", "IMS", data);
+        final var incoming = DataIncoming.ims122("1234", data);
 
         dataIncomingRepository.save(incoming);
     }

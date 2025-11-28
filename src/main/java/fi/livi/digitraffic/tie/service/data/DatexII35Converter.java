@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.data;
 
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex235XmlMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII35XmlMarshaller;
 
 import org.springframework.stereotype.Component;
 
@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class DatexConverter35 {
-    private final Datex235XmlMarshaller datex35XmlMarshaller;
+public class DatexII35Converter {
+    private final DatexII35XmlMarshaller datex35XmlMarshaller;
 
-    public DatexConverter35(final Datex235XmlMarshaller datex35XmlMarshaller) {
+    public DatexII35Converter(final DatexII35XmlMarshaller datex35XmlMarshaller) {
         this.datex35XmlMarshaller = datex35XmlMarshaller;
     }
 

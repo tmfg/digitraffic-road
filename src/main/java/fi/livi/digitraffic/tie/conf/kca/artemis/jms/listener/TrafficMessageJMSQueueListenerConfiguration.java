@@ -16,7 +16,7 @@ import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.ArtemisJMSConfiguration;
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsJMSMessageMarshaller;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
+import fi.livi.digitraffic.tie.service.trafficmessage.ImsUpdateService;
 import jakarta.jms.JMSException;
 
 @ConditionalOnPropertyNotBlank("kca.artemis.jms.traffic-message.queue")
@@ -29,9 +29,9 @@ public class TrafficMessageJMSQueueListenerConfiguration extends JMSListenerConf
     public TrafficMessageJMSQueueListenerConfiguration(
             @Qualifier("imsJaxb2Marshaller")
             final Jaxb2Marshaller imsJaxb2Marshaller,
-            final Datex2UpdateService v2Datex2UpdateService,
+            final ImsUpdateService imsUpdateService,
             final LockingService lockingService) {
-        super(TRAFFIC_MESSAGE, v2Datex2UpdateService::handleTrafficDatex2ImsMessages,
+        super(TRAFFIC_MESSAGE, imsUpdateService::handleImsMessages,
                 new ImsJMSMessageMarshaller(imsJaxb2Marshaller), lockingService.getInstanceId());
     }
 

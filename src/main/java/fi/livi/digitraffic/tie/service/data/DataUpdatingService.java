@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.service.data;
 import fi.livi.digitraffic.tie.dao.data.DataIncomingRepository;
 import fi.livi.digitraffic.tie.model.data.DataIncoming;
 
+import fi.livi.digitraffic.tie.model.data.IncomingDataTypes;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,7 @@ public class DataUpdatingService {
         try {
             unhandled.forEach(data -> {
                 try {
-                    if (data.getType().equals("IMS")) {
+                    if (data.getType().equals(IncomingDataTypes.DataType.IMS)) {
                         imsUpdatingService.handleIms(data);
                         // handle datex2, with version
                         data.setProcessed();

@@ -24,7 +24,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 
 @ConditionalOnWebApplication
@@ -33,12 +33,12 @@ public class TrafficMessageDataServiceV1 {
     private static final Logger log = LoggerFactory.getLogger(TrafficMessageDataServiceV1.class);
 
     private final Datex2Repository datex2Repository;
-    private final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller;
+    private final DatexII223XmlMarshaller datex2XmlStringToObjectMarshaller;
     private final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1;
 
     @Autowired
     public TrafficMessageDataServiceV1(final Datex2Repository datex2Repository,
-                                       final Datex223XmlMarshaller datex2XmlStringToObjectMarshaller,
+                                       final DatexII223XmlMarshaller datex2XmlStringToObjectMarshaller,
                                        final TrafficMessageImsJsonConverterV1 datex2JsonConverterV1) {
         this.datex2Repository = datex2Repository;
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;

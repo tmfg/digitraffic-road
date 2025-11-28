@@ -50,12 +50,12 @@ public class XmlMarshallerConfiguration {
     }
 
     @Bean
-    public Jaxb2Marshaller datex2v2_3_5_jaxb2Marshaller() {
+    public Jaxb2Marshaller datexII_3_5_jaxb2Marshaller() {
         return createMarshaller("fi.livi.digitraffic.tie.datex2.v3_5");
     }
 
     @Bean
-    public Jaxb2Marshaller datex2v2_2_3_fiJaxb2Marshaller() {
+    public Jaxb2Marshaller datexII_2_2_3_fiJaxb2Marshaller() {
         return createMarshaller("fi.livi.digitraffic.tie.datex2.v2_2_3_fi");
     }
 

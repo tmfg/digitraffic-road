@@ -1,15 +1,11 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
-import static fi.livi.digitraffic.tie.TestUtils.readResourceContent;
-import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.D2_MESSAGE_PLACEHOLDER;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
-import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.JSON_MESSAGE_PLACEHOLDER;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Disabled;
@@ -18,11 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
-import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
@@ -37,7 +31,7 @@ public class Datex2DataInternalTest extends AbstractServiceTest {
     private Jaxb2Marshaller imsJaxb2Marshaller;
 
     @Autowired
-    private Datex2UpdateService v2Datex2UpdateService;
+    private ImsUpdateService v2Datex2UpdateService;
 
     @Disabled("Just for internal testing")
     @Rollback(value = false)

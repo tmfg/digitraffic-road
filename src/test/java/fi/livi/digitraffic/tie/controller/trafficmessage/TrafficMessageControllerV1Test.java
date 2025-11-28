@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.service.data.ImsUpdatingService;
-
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -81,7 +79,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatur
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexIIHelper;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 
 @Disabled("TODO: needs rewriting")
@@ -374,7 +372,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         final TrafficAnnouncementFeatureCollection fc = parseSimpleJson(simpleJsonFeatureCollection);
         final TrafficAnnouncementFeature feature = fc.getFeatures().getFirst();
 
-        final SituationPublication sp = Datex2Helper.getSituationPublication(d2);
+        final SituationPublication sp = DatexIIHelper.getSituationPublication(d2);
         final Situation situation = sp.getSituations().getFirst();
         final TrafficAnnouncementProperties jsonProperties = feature.getProperties();
 

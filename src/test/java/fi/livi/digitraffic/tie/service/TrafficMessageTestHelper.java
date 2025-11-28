@@ -9,8 +9,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
-import fi.livi.digitraffic.tie.service.data.ImsUpdatingService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +20,8 @@ import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.ImsUpdateService;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
 import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
@@ -86,7 +84,7 @@ public class TrafficMessageTestHelper {
     @Autowired
     protected GenericApplicationContext applicationContext;
 
-    private Datex2UpdateService v2Datex2UpdateService;
+    private ImsUpdateService imsUpdateService;
     private TrafficMessageDataServiceV1 trafficMessageDataServiceV1;
 
     @Autowired
@@ -100,11 +98,11 @@ public class TrafficMessageTestHelper {
         datex2Repository.deleteAll();
     }
 
-    public Datex2UpdateService getV2Datex2UpdateService() {
-        if (v2Datex2UpdateService == null) {
-            v2Datex2UpdateService = applicationContext.getAutowireCapableBeanFactory().createBean(Datex2UpdateService.class);
+    public ImsUpdateService getImsUpdateService() {
+        if (imsUpdateService == null) {
+            imsUpdateService = applicationContext.getAutowireCapableBeanFactory().createBean(ImsUpdateService.class);
         }
-        return v2Datex2UpdateService;
+        return imsUpdateService;
     }
 
     public TrafficMessageDataServiceV1 getTrafficMessageDataServiceV1() {
@@ -116,7 +114,7 @@ public class TrafficMessageTestHelper {
 
             trafficMessageDataServiceV1 = new TrafficMessageDataServiceV1(
                 applicationContext.getBean(Datex2Repository.class),
-                applicationContext.getBean(Datex223XmlMarshaller.class),
+                applicationContext.getBean(DatexII223XmlMarshaller.class),
                 applicationContext.getBean(TrafficMessageImsJsonConverterV1.class)
             );
         }
@@ -140,14 +138,14 @@ public class TrafficMessageTestHelper {
         final String rawWithJsonOk = replaceSimpleJsonPlaceholders(raw, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final String rawWithJsonAndDatexOk = replaceDatex2Placeholders(rawWithJsonOk, startTime, endTime, jsonVersion.intVersion, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(rawWithJsonAndDatexOk));
-        getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        getImsUpdateService().handleImsMessages(Collections.singletonList(ims));
         entityManagerFlushAndClear(entityManager);
     }
 
     public void initDataFromFile(final String file) throws IOException {
         final String xmlImsMessage = readResourceContent("classpath:tloik/ims/" + file);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
-        getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
+        getImsUpdateService().handleImsMessages(Collections.singletonList(ims));
         entityManagerFlushAndClear(entityManager);
     }
 
@@ -182,7 +180,7 @@ public class TrafficMessageTestHelper {
         final String xmlImsMessage = readImsMessageResourceContent(xmlVersion, situationTypeName, jsonVersion, startTime, endTime, lifeCycleCanceled);
         final ExternalIMSMessage ims = (ExternalIMSMessage) imsJaxb2Marshaller.unmarshal(new StringSource(xmlImsMessage));
         try {
-            getV2Datex2UpdateService().handleTrafficDatex2ImsMessages(Collections.singletonList(ims));
+            getImsUpdateService().handleImsMessages(Collections.singletonList(ims));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }

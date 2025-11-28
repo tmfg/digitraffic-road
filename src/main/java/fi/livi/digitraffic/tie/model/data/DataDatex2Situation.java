@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.model.data;
 
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,10 +14,9 @@ import jakarta.persistence.Table;
 
 import org.locationtech.jts.geom.Geometry;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "data_datex2_situation")
@@ -30,12 +28,12 @@ public class DataDatex2Situation {
 
     private String situationId;
     @Enumerated(EnumType.STRING)
-    private SituationType situationType;
+    private TrafficAnnouncementProperties.SituationType situationType;
     private long situationVersion;
 
-    private ZonedDateTime publicationTime;
-    private ZonedDateTime startTime;
-    private ZonedDateTime endTime;
+    private Instant publicationTime;
+    private Instant startTime;
+    private Instant endTime;
 
     private Geometry geometry;
 
@@ -44,11 +42,11 @@ public class DataDatex2Situation {
 
     public DataDatex2Situation(final String situationId,
                                final long situationVersion,
-                               final SituationType situationType,
+                               final TrafficAnnouncementProperties.SituationType situationType,
                                final Geometry geometry,
-                               final ZonedDateTime publicationTime,
-                               final ZonedDateTime startTime,
-                               final ZonedDateTime endTime) {
+                               final Instant publicationTime,
+                               final Instant startTime,
+                               final Instant endTime) {
         this.situationId = situationId;
         this.situationVersion = situationVersion;
         this.situationType = situationType;

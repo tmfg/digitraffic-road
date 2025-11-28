@@ -8,7 +8,7 @@ import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.GUID_WITH
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getSituationIdForSituationType;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.getVersionTime;
-import static fi.livi.digitraffic.tie.service.trafficmessage.Datex2Helper.getSituationPublication;
+import static fi.livi.digitraffic.tie.service.trafficmessage.DatexIIHelper.getSituationPublication;
 import static fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper.createNewRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

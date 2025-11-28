@@ -119,7 +119,7 @@ public class ImsJsonConverter {
     }
 
     private static SituationType resolveSituationTypeFromTextWithError(final JsonNode featureNode) {
-        final SituationType resolvedType = Datex2Helper.resolveSituationTypeFromText(featureNode.toString());
+        final SituationType resolvedType = DatexIIHelper.resolveSituationTypeFromText(featureNode.toString());
         try {
             final String situationInfo =
                 StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 27);
@@ -152,7 +152,7 @@ public class ImsJsonConverter {
     }
 
     private static TrafficAnnouncementType resolveTrafficAnnouncementTypeTypeFromTextWithError(final JsonNode featureNode) {
-        final TrafficAnnouncementType resolvedType = Datex2Helper.resolveTrafficAnnouncementTypeFromText(featureNode.toString());
+        final TrafficAnnouncementType resolvedType = DatexIIHelper.resolveTrafficAnnouncementTypeFromText(featureNode.toString());
         try {
             final String situationInfo =
                 StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 27);

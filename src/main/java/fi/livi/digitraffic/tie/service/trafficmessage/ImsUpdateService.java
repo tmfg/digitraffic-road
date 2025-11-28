@@ -22,15 +22,15 @@ import fi.livi.digitraffic.tie.service.data.DataUpdatingService;
 
 @ConditionalOnNotWebApplication
 @Service
-public class Datex2UpdateService {
-    private static final Logger log = LoggerFactory.getLogger(Datex2UpdateService.class);
+public class ImsUpdateService {
+    private static final Logger log = LoggerFactory.getLogger(ImsUpdateService.class);
 
     private final DataUpdatingService dataUpdatingService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public Datex2UpdateService(final DataUpdatingService dataUpdatingService) {
+    public ImsUpdateService(final DataUpdatingService dataUpdatingService) {
         this.dataUpdatingService = dataUpdatingService;
 
         // this is needed to handle Instant
@@ -38,7 +38,7 @@ public class Datex2UpdateService {
     }
 
     @Transactional
-    public int handleTrafficDatex2ImsMessages(final List<ExternalIMSMessage> imsMessages) {
+    public int handleImsMessages(final List<ExternalIMSMessage> imsMessages) {
         final StopWatch sw = StopWatch.createStarted();
         final int newAndUpdated = imsMessages.stream().mapToInt(imsMessage -> {
             if (log.isDebugEnabled()) {
@@ -48,8 +48,7 @@ public class Datex2UpdateService {
 
             try {
                 final var messageAsString = objectMapper.writeValueAsString(imsMessage);
-                final var data = new DataIncoming(String.valueOf(imsMessage.getMessageId()), "1.2.2",
-                        "IMS", messageAsString);
+                final var data = DataIncoming.ims122(String.valueOf(imsMessage.getMessageId()), messageAsString);
 
                 if(validate(imsMessage)) {
                     dataUpdatingService.insertData(data);

@@ -37,8 +37,8 @@ import fi.livi.digitraffic.tie.service.tms.TmsStationSensorConstantService;
 import fi.livi.digitraffic.tie.service.tms.TmsStationService;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex2UpdateService;
-import fi.livi.digitraffic.tie.service.trafficmessage.Datex223XmlMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.ImsUpdateService;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryGitClient;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateService;
@@ -63,7 +63,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          //RetryTemplate.class,
          // Own configs
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class,
-         Datex223XmlMarshaller.class, XmlMarshallerConfiguration.class,
+         DatexII223XmlMarshaller.class, XmlMarshallerConfiguration.class,
 
          // Services
          CameraPresetService.class, TmsStationService.class, DataStatusService.class,
@@ -71,7 +71,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          CameraImageUpdateHandler.class, CameraImageReader.class, CameraImageS3Writer.class,
          CameraPresetHistoryUpdateService.class, FlywayService.class,
          SensorDataUpdateService.class, S3Service.class,
-         ImsJsonConverter.class, Datex2UpdateService.class,
+         ImsJsonConverter.class, ImsUpdateService.class,
          RegionGeometryUpdateService.class,
          MaintenanceTrackingUpdateServiceV1.class,
          LocationTypeUpdater.class, LocationMetadataUpdater.class, LocationUpdater.class, LocationSubtypeUpdater.class,
