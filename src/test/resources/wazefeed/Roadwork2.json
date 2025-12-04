@@ -297,7 +297,7 @@
             ],
             "timeAndDuration":{
               "startTime":"2025-05-14T21:00:00Z",
-              "endTime":"2025-12-31T21:59:59.999Z"
+              "endTime":"2026-12-31T21:59:59.999Z"
             }
           },
           {
@@ -386,14 +386,14 @@
             ],
             "timeAndDuration":{
               "startTime":"2025-11-09T22:00:00Z",
-              "endTime":"2025-11-12T15:18:00Z"
+              "endTime":"2026-11-12T15:18:00Z"
             }
           }
         ],
         "comment":"Tie 50, eli Kehä III, Espoo. Tietyö. \n\nTie 50, eli Kehä III, Espoo.\nTarkempi paikka: Paikasta Kauklahden liittymä 1,4 km, vaikutusalue 600 m, suuntaan Sundsbergin liittymä. Haittaa molempiin ajosuuntiin.\n\nSiltatyö\n\nAjokaista kavennettu työmaan kohdalla\nNopeusrajoitus: 50 km/h\nMatka, jolla nopeusrajoitus voimassa: 600 m\n\nAjankohta: 15.05.2025 - 31.12.2025. \nTyöaika: ma-pe 07:00-20:00\n\nLiikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/\n\nFintraffic Tieliikennekeskus Helsinki\nPuh: 02002100\nSähköposti: helsinki.liikennekeskus@fintraffic.fi\nTie 50, eli Kehä III, Espoo. Tietyövaihe. \n\nTie 50, eli Kehä III, Espoo.\nTarkempi paikka: Paikasta Kauklahden liittymä 1,5 km, vaikutusalue 400 m, suuntaan Sundsbergin liittymä. Merkittävää haittaa molempiin ajosuuntiin.\n\nSiltatyö\n\nTie on suljettu liikenteeltä\nKiertotie käytössä\nKatuverkkoa käyttävä kiertotie: Kiertotie ramppien kautta\n\nAjankohta: 10.11.2025 00:00 - 12.11.2025 17:18. \n",
         "timeAndDuration":{
           "startTime":"2025-05-14T21:00:00Z",
-          "endTime":"2025-12-31T21:59:59.999Z"
+          "endTime":"2026-12-31T21:59:59.999Z"
         },
         "additionalInformation":"Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
         "sender":"Fintraffic Tieliikennekeskus Helsinki"

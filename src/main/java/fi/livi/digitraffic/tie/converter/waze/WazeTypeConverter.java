@@ -1,6 +1,9 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.Restriction;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.RoadWorkPhase;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementProperties;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeDatex2FeatureDto;
 import fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto;
@@ -9,8 +12,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static fi.livi.digitraffic.tie.dto.wazefeed.WazeFeedIncidentDto.WazeType.*;
 
@@ -24,7 +29,7 @@ public class WazeTypeConverter {
             return Optional.empty();
         }
 
-        if (isRoadClosed(dto.datex2)) {
+        if (isRoadClosed(dto.feature)) {
             if (properties.getSituationType() == SituationType.TRAFFIC_ANNOUNCEMENT) {
                 return Optional.of(ROAD_CLOSED_HAZARD);
             } else {
@@ -63,8 +68,16 @@ public class WazeTypeConverter {
     /**
      * Check if any restriction is of type ROAD_CLOSED
      */
-    public boolean isRoadClosed(final Datex2 d2) {
-        return d2.getMessage().contains("<roadOrCarriagewayOrLaneManagementType>roadClosed");
+    public static boolean isRoadClosed(final TrafficAnnouncementFeature feature) {
+        return !feature.getProperties().announcements.isEmpty() && feature.getProperties().announcements.getFirst().roadWorkPhases.stream()
+                .filter(WazeTypeConverter::hasRoadClosedRestriction)
+                .anyMatch(WazeAnnouncementDurationConverter::isActive);
+    }
+
+    private static final Set<Restriction.Type> INCLUDED_TYPES = EnumSet.of(Restriction.Type.ROAD_CLOSED);
+
+    public static boolean hasRoadClosedRestriction(final RoadWorkPhase phase) {
+        return phase.restrictions.stream().anyMatch(r -> INCLUDED_TYPES.contains(r.type));
     }
 
     // note, this is also a priority listing

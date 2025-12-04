@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.converter.waze;
 
-import java.time.Instant;
-import java.util.*;
 import static fi.livi.digitraffic.tie.converter.waze.WazeAnnouncementDurationConverter.getAnnouncementDuration;
 
 import java.util.Collection;
@@ -93,7 +91,7 @@ public class WazeDatex2JsonConverter {
                                                               final String street,
                                                               final WazeFeedLocationDto.Direction direction) {
         return announcement.roadWorkPhases.stream()
-                .filter(this::includeWorkPhase)
+                .filter(WazeTypeConverter::hasRoadClosedRestriction)
                 .filter(WazeAnnouncementDurationConverter::isActive)
                 .map(p -> {
                     final var duration = createDuration(p.timeAndDuration.startTime, p.timeAndDuration.endTime);
@@ -103,12 +101,6 @@ public class WazeDatex2JsonConverter {
                     return new WazeFeedIncidentDto(id, street, description, direction, polyline, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION, duration.getLeft(), duration.getRight());
                 })
                 .toList();
-    }
-
-    private static final Set<Restriction.Type> INCLUDED_TYPES = EnumSet.of(Restriction.Type.ROAD_CLOSED);
-    /// only include phases that we are interested in(currently only ROAD_CLOSED)
-    private boolean includeWorkPhase(final RoadWorkPhase phase) {
-        return phase.restrictions.stream().anyMatch(r -> INCLUDED_TYPES.contains(r.type));
     }
 
     private Optional<WazeFeedLocationDto.Direction> convertDirection(final RoadAddressLocation.Direction direction, final Geometry<?> geometry) {

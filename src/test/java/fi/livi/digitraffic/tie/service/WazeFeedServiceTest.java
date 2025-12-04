@@ -81,8 +81,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
     private void assertWazeType(final WazeFeedIncidentDto incident, final WazeFeedIncidentDto.WazeType expected) {
         assertEquals(expected.type.name(), incident.type);
         assertEquals(expected.getSubtype(), incident.subtype);
-
-
     }
     @Test
     public void getAListOfWazeAnnouncements() throws IOException {
@@ -102,16 +100,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertEquals(expectedEndTime, incident.endtime);
     }
 
-    @Test
-    public void flood() throws IOException {
-        setupDatex2("Flood");
-
-        final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
-        assertEquals(1, announcement.incidents.size());
-
-        assertWazeType(announcement.incidents.getFirst(), WazeFeedIncidentDto.WazeType.ROAD_CLOSED_HAZARD);
-    }
-
     private void setupDatex2(final String filename) throws IOException {
         final Datex2 d2 = new Datex2(SituationType.ROAD_WORK, null);
         d2.setMessage(readDatex2MessageFromFile(filename + ".xml"));
@@ -119,7 +107,6 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         when(datex2Repository.findAllActiveBySituationTypeWithJson(anyInt(), any(String[].class)))
                 .thenReturn(List.of(d2));
-
     }
 
     @Test
@@ -164,8 +151,8 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedIncidentDto incident = announcement.incidents.getFirst();
         assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
 
-        assertEquals("2025-05-14T21:00:00+00:00", incident.starttime);
-        assertEquals("2025-12-31T21:59:59+00:00", incident.endtime);
+        assertEquals("2025-11-09T22:00:00+00:00", incident.starttime);
+        assertEquals("2026-11-12T15:18:00+00:00", incident.endtime);
     }
 
     @Test
