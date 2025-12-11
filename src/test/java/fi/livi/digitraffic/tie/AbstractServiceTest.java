@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.service.aws.S3Service;
 
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII35XmlMarshaller;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -63,7 +65,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
          //RetryTemplate.class,
          // Own configs
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class,
-         DatexII223XmlMarshaller.class, XmlMarshallerConfiguration.class,
+         DatexII223XmlMarshaller.class, XmlMarshallerConfiguration.class, DatexII35XmlMarshaller.class,
 
          // Services
          CameraPresetService.class, TmsStationService.class, DataStatusService.class,

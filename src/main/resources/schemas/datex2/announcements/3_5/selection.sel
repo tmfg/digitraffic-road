@@ -288,7 +288,7 @@
         <definition>The type of road conditions which are not related to the weather.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
+        <newLowerBound>1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <definition>Road surface conditions that are not related to the weather but which may affect driving conditions.</definition>
@@ -466,6 +466,83 @@
         <newUpperBound>-1</newUpperBound>
       </relations>
       <definition>A linear section along a road defined by reference to a linear section in a pre-defined ALERT-C location table.</definition>
+    </D2Component>
+    <D2Component>
+      <name>RoadOperatorServiceDisruption</name>
+      <ID>EAID_10EAC039_0C9D_452b_BC20_618D260F6638</ID>
+      <package>
+        <name>ServiceInformation</name>
+        <ID>EAPK_D37D2FB6_C169_46a6_A2B9_7676375B9878</ID>
+        <generate>true</generate>
+        <definition>A collection of information about events related to services, not traffic on the road, but which may influence the behaviour of drivers and hence the characteristics of traffic flow.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <generate>true</generate>
+      <isGenerated>true</isGenerated>
+      <SuperD2Component>EAID_BB116C17_05FD_4fb1_BB1F_AF75AE49BDFC</SuperD2Component>
+      <NamespaceName>Situation</NamespaceName>
+      <isAbstract>false</isAbstract>
+      <isExtension>false</isExtension>
+      <attributes>
+        <ID>EAID_B1DCE4FD_281B_472a_AE04_D6566F49C6A9</ID>
+        <name>roadOperatorServiceDisruptionType</name>
+        <type>EAID_2802EC6F_D629_4e24_8E69_26D903BF3EBE</type>
+        <order>0</order>
+        <lowerBound>1</lowerBound>
+        <upperBound>-1</upperBound>
+        <upperBoundUnlimited>true</upperBoundUnlimited>
+        <definition>The type of road operator service which is disrupted.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <definition>Details of disruption to normal road operator services</definition>
+    </D2Component>
+    <D2Component>
+      <name>MaintenanceVehicles</name>
+      <ID>EAID_122F8FEB_E126_4de9_A52B_5E096B134B2F</ID>
+      <package>
+        <name>Roadworks</name>
+        <ID>EAPK_C9DC2813_12E4_4c00_8706_5350B97B3576</ID>
+        <generate>true</generate>
+        <definition>Road maintenance, installation and construction activities, works in the road, or other construction or maintenance actions that may affect normal operation of a road.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <generate>true</generate>
+      <isGenerated>true</isGenerated>
+      <NamespaceName>Situation</NamespaceName>
+      <isAbstract>false</isAbstract>
+      <isExtension>false</isExtension>
+      <attributes>
+        <ID>EAID_4CB77CAB_E9A2_432a_BF93_9DEA0E3EE4AA</ID>
+        <name>maintenanceVehicleActions</name>
+        <type>EAID_7A8518A0_C806_4325_AB28_E9E08EB3EFF1</type>
+        <order>1</order>
+        <lowerBound>0</lowerBound>
+        <upperBound>-1</upperBound>
+        <upperBoundUnlimited>true</upperBoundUnlimited>
+        <definition>The actions of the maintenance vehicles associated with the roadworks activities.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <attributes>
+        <ID>EAID_2FFEE55D_9A47_4651_A1E2_F1A3400A5C95</ID>
+        <name>numberOfMaintenanceVehicles</name>
+        <type>EAID_FBC8547A_BFDA_44df_B881_4F6BF8DA58EF</type>
+        <order>0</order>
+        <lowerBound>0</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>The number of maintenance vehicles associated with the roadworks activities at the specified location.</definition>
+        <generate>false</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <definition>Details of the maintenance vehicles involved in the roadworks activity.</definition>
     </D2Component>
     <D2Component>
       <name>TpegNonJunctionPoint</name>
@@ -765,10 +842,10 @@
         <upperBound>1</upperBound>
         <upperBoundUnlimited>false</upperBoundUnlimited>
         <definition>Indicates whether this SituationRecord specifies a safety-related traffic situation. At least all traffic situations governed by Commission Delegated Regulation (EU) No 886/2013 shall be indicated.</definition>
-        <generate>false</generate>
+        <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
-        <newUpperBound>-1</newUpperBound>
+        <newLowerBound>1</newLowerBound>
+        <newUpperBound>1</newUpperBound>
       </attributes>
       <definition>An identifiable versioned instance of a single record/element within a situation.</definition>
     </D2VersionedIdentifiable>
@@ -1184,8 +1261,8 @@
         <definition>Characterization of an obstruction on the road resulting from an environmental cause.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
-        <newUpperBound>-1</newUpperBound>
+        <newLowerBound>1</newLowerBound>
+        <newUpperBound>1</newUpperBound>
       </attributes>
       <definition>An obstruction on the road resulting from an environmental cause.</definition>
     </D2Component>
@@ -3376,7 +3453,7 @@ The boundary always consists of road segments</definition>
         <upperBound>1</upperBound>
         <upperBoundUnlimited>false</upperBoundUnlimited>
         <definition>General message that is issued by the network/road operator which is applicable to drivers and sometimes passengers, e.g. details about an amber alert (missing or abducted child alert).</definition>
-        <generate>false</generate>
+        <generate>true</generate>
         <attribute>false</attribute>
         <newLowerBound>-1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
@@ -3441,6 +3518,38 @@ The boundary always consists of road segments</definition>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <definition>A single point on the road network defined by reference to a pre-defined ALERT-C location table and which has an associated direction of traffic flow.</definition>
+    </D2Component>
+    <D2Component>
+      <name>ServiceDisruption</name>
+      <ID>EAID_60019D11_93E8_4cda_BB25_8D1CECFA0846</ID>
+      <package>
+        <name>ServiceInformation</name>
+        <ID>EAPK_D37D2FB6_C169_46a6_A2B9_7676375B9878</ID>
+        <generate>true</generate>
+        <definition>A collection of information about events related to services, not traffic on the road, but which may influence the behaviour of drivers and hence the characteristics of traffic flow.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <generate>true</generate>
+      <isGenerated>true</isGenerated>
+      <SuperD2Component>EAID_BB116C17_05FD_4fb1_BB1F_AF75AE49BDFC</SuperD2Component>
+      <NamespaceName>Situation</NamespaceName>
+      <isAbstract>false</isAbstract>
+      <isExtension>false</isExtension>
+      <attributes>
+        <ID>EAID_5400C0F0_EE50_4fd2_881C_6B1B03861C7F</ID>
+        <name>serviceDisruptionType</name>
+        <type>EAID_A5D45882_2346_433c_9444_415689FC888E</type>
+        <order>0</order>
+        <lowerBound>1</lowerBound>
+        <upperBound>-1</upperBound>
+        <upperBoundUnlimited>true</upperBoundUnlimited>
+        <definition>The type of service which is disrupted.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <definition>Details of disruption to normal services which may include roadside services such as those available at designated service areas, or any other relevant services such as nearby parking.</definition>
     </D2Component>
     <D2Component>
       <name>PointLocation</name>
@@ -3757,8 +3866,8 @@ The boundary always consists of road segments</definition>
         <definition>Indicates the nature of animals present on or near the roadway.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
-        <newUpperBound>-1</newUpperBound>
+        <newLowerBound>1</newLowerBound>
+        <newUpperBound>1</newUpperBound>
       </attributes>
       <definition>An obstruction on the road resulting from the presence of animals.</definition>
     </D2Component>
@@ -3866,7 +3975,7 @@ The boundary always consists of road segments</definition>
         <definition>The type of environment condition which is affecting driving conditions.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
+        <newLowerBound>1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <definition>Any environmental conditions which may be affecting the driving conditions on the road.</definition>
@@ -3944,7 +4053,7 @@ The boundary always consists of road segments</definition>
         <definition>The type of road maintenance or installation work at the specified location.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
+        <newLowerBound>1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <definition>Roadworks involving the maintenance or installation of infrastructure.</definition>
@@ -4039,6 +4148,52 @@ The boundary always consists of road segments</definition>
       <definition>A collection of information providing descriptive references to locations using the TPEG-Loc location referencing approach.</definition>
     </D2Component>
     <D2Component>
+      <name>EquipmentOrSystemFault</name>
+      <ID>EAID_7CF5610D_3B26_4693_A396_FCF05E7FFD80</ID>
+      <package>
+        <name>TrafficElement</name>
+        <ID>EAPK_5A6E8EB0_9157_45af_8259_B755CCAE73F0</ID>
+        <generate>true</generate>
+        <definition>A collection of data providing information on an occurrence on the network on the network which is not planned by a traffic operator.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <generate>true</generate>
+      <isGenerated>true</isGenerated>
+      <SuperD2Component>EAID_A962FB42_54A3_4b15_AF47_C882AEBCF109</SuperD2Component>
+      <NamespaceName>Situation</NamespaceName>
+      <isAbstract>false</isAbstract>
+      <isExtension>false</isExtension>
+      <attributes>
+        <ID>EAID_EB821CD9_B7D3_4490_99AC_50374CE93C4E</ID>
+        <name>equipmentOrSystemFaultType</name>
+        <type>EAID_DE4E0BE5_6E80_4cf8_A0F4_BEF93A05BDD0</type>
+        <order>0</order>
+        <lowerBound>1</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>Failure, malfunction or non operational condition of equipment or system.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <attributes>
+        <ID>EAID_9EB8802B_BEB6_49e4_AF41_F3F389FDA44C</ID>
+        <name>faultyEquipmentOrSystemType</name>
+        <type>EAID_B77B0A3E_B8B3_4f41_BC6B_338086E5E995</type>
+        <order>1</order>
+        <lowerBound>1</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>The type of equipment or system which is faulty, malfunctioning or not in a fully operational state.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <definition>Equipment or system which is faulty, malfunctioning or not in a fully operational state that may be of interest or concern to road operators and road users.</definition>
+    </D2Component>
+    <D2Component>
       <name>TpegJunctionPointDescriptor</name>
       <ID>EAID_819A3BDE_6FA1_4d7e_ABF3_F3F3B28C325D</ID>
       <package>
@@ -4108,7 +4263,7 @@ The boundary always consists of road segments</definition>
         <definition>The type of road surface condition that is related to the weather which is affecting the driving conditions.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
+        <newLowerBound>1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <definition>Road surface conditions that are related to the weather which may affect the driving conditions, such as ice, snow or water.</definition>
@@ -4718,7 +4873,7 @@ The boundary always consists of road segments</definition>
         <definition>A characterization of the nature of the accident.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
+        <newLowerBound>1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <attributes>
@@ -5018,10 +5173,10 @@ The boundary always consists of road segments</definition>
         <upperBound>1</upperBound>
         <upperBoundUnlimited>false</upperBoundUnlimited>
         <definition>The type of constriction to which traffic is subjected as a result of an unplanned event</definition>
-        <generate>false</generate>
+        <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
-        <newUpperBound>-1</newUpperBound>
+        <newLowerBound>1</newLowerBound>
+        <newUpperBound>1</newUpperBound>
       </attributes>
       <definition>An event which is not planned by the traffic operator, which is affecting, or has the potential to affect traffic flow.</definition>
     </D2Component>
@@ -5066,6 +5221,38 @@ The boundary always consists of road segments</definition>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <definition>A geographic or geometric area defined by a TPEG-Loc structure which may include height information for additional geospatial discrimination.</definition>
+    </D2Component>
+    <D2Component>
+      <name>DisturbanceActivity</name>
+      <ID>EAID_B0C2BA72_1523_4b45_B726_A225B90C720A</ID>
+      <package>
+        <name>Activity</name>
+        <ID>EAPK_A24B4CB8_7D40_46a9_B9E6_11FB5F33C573</ID>
+        <generate>true</generate>
+        <definition>A collection of information relating to human activities external to the traffic stream or roadway which could disrupt traffic.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <generate>true</generate>
+      <isGenerated>true</isGenerated>
+      <SuperD2Component>EAID_2C96B423_AA20_44eb_A401_ACA82D096651</SuperD2Component>
+      <NamespaceName>Situation</NamespaceName>
+      <isAbstract>false</isAbstract>
+      <isExtension>false</isExtension>
+      <attributes>
+        <ID>EAID_7FED6F84_20B9_461f_89E0_24669725DFFE</ID>
+        <name>disturbanceActivityType</name>
+        <type>EAID_997A4339_FD4A_4e5a_8307_2E5F6BF17FE4</type>
+        <order>0</order>
+        <lowerBound>1</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>Includes all situations of a public disorder type or of an alert type, with potential to disrupt traffic.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>1</newLowerBound>
+        <newUpperBound>1</newUpperBound>
+      </attributes>
+      <definition>Deliberate human action of either a public disorder nature or of a situation alert type which could disrupt traffic.</definition>
     </D2Component>
     <D2Component>
       <name>OpenlrAreaLocationReference</name>
@@ -5227,7 +5414,7 @@ The boundary always consists of road segments</definition>
         <lowerBound>0</lowerBound>
         <upperBound>1</upperBound>
         <upperBoundUnlimited>false</upperBoundUnlimited>
-        <generate>false</generate>
+        <generate>true</generate>
         <newLowerBound>-1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
       </relations>
@@ -5329,6 +5516,24 @@ The boundary always consists of road segments</definition>
       <definition>Road maintenance, installation and construction activities, works in the road, or other construction or maintenance actions that may affect normal operation of a road.</definition>
     </D2Component>
     <D2Component>
+      <name>ServiceInformation</name>
+      <ID>EAID_BB116C17_05FD_4fb1_BB1F_AF75AE49BDFC</ID>
+      <package>
+        <name>ServiceInformation</name>
+        <ID>EAPK_D37D2FB6_C169_46a6_A2B9_7676375B9878</ID>
+        <generate>true</generate>
+        <definition>A collection of information about events related to services, not traffic on the road, but which may influence the behaviour of drivers and hence the characteristics of traffic flow.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <generate>true</generate>
+      <isGenerated>true</isGenerated>
+      <SuperD2Component>EAID_14358B9A_22CA_463c_ADA7_092CBB3D3E14</SuperD2Component>
+      <NamespaceName>Situation</NamespaceName>
+      <isAbstract>true</isAbstract>
+      <isExtension>false</isExtension>
+      <definition>Information about a service which may influence the behaviour of drivers and hence the characteristics of the traffic flow.</definition>
+    </D2Component>
+    <D2Component>
       <name>SituationPublication</name>
       <ID>EAID_BD02A0FE_482D_4bc0_ADA1_B01FBC4C0BD8</ID>
       <package>
@@ -5395,7 +5600,7 @@ The boundary always consists of road segments</definition>
         <definition>Characterization of the type of general obstruction.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
+        <newLowerBound>1</newLowerBound>
         <newUpperBound>-1</newUpperBound>
       </attributes>
       <definition>Any stationary or moving obstacle of a physical nature, other than of an animal, vehicle, environmental, or damaged equipment nature.</definition>
@@ -5454,8 +5659,8 @@ The boundary always consists of road segments</definition>
         <definition>Characterization of an obstruction on the road caused by one or more vehicles.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
-        <newUpperBound>-1</newUpperBound>
+        <newLowerBound>1</newLowerBound>
+        <newUpperBound>1</newUpperBound>
       </attributes>
       <attributes>
         <ID>EAID_4E6C24D3_5E13_4d71_AE26_9CE33C280244</ID>
@@ -6743,10 +6948,10 @@ The boundary always consists of road segments</definition>
         <upperBound>1</upperBound>
         <upperBoundUnlimited>false</upperBoundUnlimited>
         <definition>Descriptor which identifies infrastructure to help identify the specific location.</definition>
-        <generate>false</generate>
+        <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
-        <newUpperBound>-1</newUpperBound>
+        <newLowerBound>0</newLowerBound>
+        <newUpperBound>1</newUpperBound>
       </attributes>
       <attributes>
         <ID>EAID_CC5D9DFB_B046_4fcb_AC4F_493542F20E37</ID>
@@ -6897,8 +7102,8 @@ The boundary always consists of road segments</definition>
         <definition>Indicates the section of carriageway to which the location relates.</definition>
         <generate>true</generate>
         <attribute>false</attribute>
-        <newLowerBound>-1</newLowerBound>
-        <newUpperBound>-1</newUpperBound>
+        <newLowerBound>1</newLowerBound>
+        <newUpperBound>1</newUpperBound>
       </attributes>
       <attributes>
         <ID>EAID_E78A4FBE_EB01_4e68_93D4_38671C992281</ID>
@@ -7590,6 +7795,108 @@ The boundary always consists of road segments</definition>
       <definition>A linear element along a single linear object defined by its identifier or code in a road network reference model (specified in LinearElement class) which segments the road network according to specific business rules.</definition>
     </D2Component>
     <D2Component>
+      <name>TransitInformation</name>
+      <ID>EAID_FBF6F3D5_3AB8_4215_A1E3_CB7318FE3CEE</ID>
+      <package>
+        <name>ServiceInformation</name>
+        <ID>EAPK_D37D2FB6_C169_46a6_A2B9_7676375B9878</ID>
+        <generate>true</generate>
+        <definition>A collection of information about events related to services, not traffic on the road, but which may influence the behaviour of drivers and hence the characteristics of traffic flow.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <generate>true</generate>
+      <isGenerated>true</isGenerated>
+      <SuperD2Component>EAID_BB116C17_05FD_4fb1_BB1F_AF75AE49BDFC</SuperD2Component>
+      <NamespaceName>Situation</NamespaceName>
+      <isAbstract>false</isAbstract>
+      <isExtension>false</isExtension>
+      <attributes>
+        <ID>EAID_3F092969_989C_42ab_BDAC_24EDAA640399</ID>
+        <name>journeyDestination</name>
+        <type>EAID_E9FD7AF8_362B_4b36_899F_2F827A73E908</type>
+        <order>0</order>
+        <lowerBound>0</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>Indicates the stated termination point of the transit journey.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <attributes>
+        <ID>EAID_1890EE4A_AB7F_4dcc_9DE8_F12CA5A87D61</ID>
+        <name>journeyOrigin</name>
+        <type>EAID_E9FD7AF8_362B_4b36_899F_2F827A73E908</type>
+        <order>1</order>
+        <lowerBound>0</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>Indicates the stated starting point of the transit journey.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <attributes>
+        <ID>EAID_7F2E33B5_A4A7_433e_8A88_185F07DAD1A6</ID>
+        <name>journeyReference</name>
+        <type>EAID_DD0FAA46_EDB3_4ba6_A191_377D87F4D303</type>
+        <order>2</order>
+        <lowerBound>0</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>Indicates a transit service journey number.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <attributes>
+        <ID>EAID_76DE1720_CB50_4139_8BB3_11504BCCFA6D</ID>
+        <name>scheduledDepartureTime</name>
+        <type>EAID_B3DA3E42_F3EC_426b_BE80_37FF4BCB6CBA</type>
+        <order>5</order>
+        <lowerBound>0</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>Indicates the timetabled departure time of a transit service for a specified location.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <attributes>
+        <ID>EAID_F5E3C600_475A_4a7c_92E5_9F4D18AE0580</ID>
+        <name>transitServiceInformation</name>
+        <type>EAID_4E0A980A_61AD_4dea_812C_F7D464E0854D</type>
+        <order>3</order>
+        <lowerBound>1</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>Information about transit services.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <attributes>
+        <ID>EAID_FE51AFFF_9CB0_44cc_9997_76999B7EBE5A</ID>
+        <name>transitServiceType</name>
+        <type>EAID_AD08E672_AB4B_4d5c_B12F_365C0EB5B156</type>
+        <order>4</order>
+        <lowerBound>1</lowerBound>
+        <upperBound>1</upperBound>
+        <upperBoundUnlimited>false</upperBoundUnlimited>
+        <definition>The type of transit service to which the information relates.</definition>
+        <generate>true</generate>
+        <attribute>false</attribute>
+        <newLowerBound>-1</newLowerBound>
+        <newUpperBound>-1</newUpperBound>
+      </attributes>
+      <definition>The availability of transit services and information relating to their departures. This is limited to those transit services which are of direct relevance to road users, e.g. connecting rail or ferry services.</definition>
+    </D2Component>
+    <D2Component>
       <name>AlertCDirection</name>
       <ID>EAID_FBFB44B6_4562_436a_99A2_8D6215A51D68</ID>
       <package>
@@ -7750,7 +8057,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -7837,7 +8144,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
           <NamespaceName>Situation</NamespaceName>
         </package>
@@ -7961,7 +8268,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -7993,7 +8300,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -8032,7 +8339,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -8197,7 +8504,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -8243,7 +8550,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -8387,7 +8694,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -8426,7 +8733,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -8738,7 +9045,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -8980,7 +9287,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -9033,7 +9340,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -9293,7 +9600,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
           <NamespaceName>Common</NamespaceName>
         </package>
@@ -9382,7 +9689,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -9428,7 +9735,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -9502,7 +9809,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -9534,7 +9841,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -9636,6 +9943,45 @@ The boundary always consists of road segments</definition>
       <isExtended>true</isExtended>
     </D2Enumeration>
     <D2Enumeration>
+      <name>RoadOperatorServiceDisruptionTypeEnum</name>
+      <definition>Types of disruption to road operator services relevant to road users.</definition>
+      <id>EAID_2802EC6F_D629_4e24_8E69_26D903BF3EBE</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>emergencyTelephoneNumberOutOfService</name>
+          <definition>Emergency telephone number for use by public to report incidents is out of service.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_C08DD1B7_F4BB_4203_BAB0_67F4CEC36276</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>informationServiceTelephoneNumberOutOfService</name>
+          <definition>Road information service telephone number is out of service.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_816A6661_C1C9_4486_9CFD_BB85B4162B44</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>noTrafficOfficerPatrolService</name>
+          <definition>No traffic officer patrol service is operating.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_ABE3520B_6872_4173_B779_A5B39306E4EF</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>false</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>SpeedManagementTypeEnum</name>
       <definition>Management actions relating to speed.</definition>
       <id>EAID_2832B76B_8083_4766_BC98_32897AC63360</id>
@@ -9643,7 +9989,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -9703,6 +10049,255 @@ The boundary always consists of road segments</definition>
       <isExtended>false</isExtended>
     </D2Enumeration>
     <D2Enumeration>
+      <name>EquipmentOrSystemTypeEnumExtendedUrban</name>
+      <definition>Urban extensions for equipment and system.</definition>
+      <id>EAID_295F7BBE_9669_4c26_A8B5_02390299C45B</id>
+      <isGenerated>true</isGenerated>
+      <package xsi:type="D2Namespace">
+        <name>UrbanExtensions</name>
+        <ID>EAPK_C0F61B42_B9B1_4795_90CD_E748A4EA7B84</ID>
+        <generate>false</generate>
+        <definition>Urban extensions</definition>
+        <NamespaceName>UrbanExtensions</NamespaceName>
+        <prefix>ubx</prefix>
+        <version>02-00-00</version>
+      </package>
+      <NamespaceName>UrbanExtensions</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>accessControlSystem</name>
+          <definition>A system to control the access (e.g. barriers, bollards, gates, …) typically for vehicles.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_DA0EFE6F_E7A1_4898_B382_BA57EBB0DF89</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>parkingSensors</name>
+          <definition>Sensors to measure the occupancy of parking spaces.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_89431E98_DBFD_499a_A90E_D074F0E53F69</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>trafficSensors</name>
+          <definition>Sensors to measure traffic (motorized and non-motorized vehicles and/or pedestrians).</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_3A37B452_0708_4794_A8AA_5DC1F9518131</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>true</isExtension>
+      <isExtended>false</isExtended>
+      <SuperD2Enum>EAID_B77B0A3E_B8B3_4f41_BC6B_338086E5E995</SuperD2Enum>
+      <superD2EnumObject>
+        <name>EquipmentOrSystemTypeEnum</name>
+        <definition>Types of equipment and systems used to support the operation of the road network.</definition>
+        <id>EAID_B77B0A3E_B8B3_4f41_BC6B_338086E5E995</id>
+        <isGenerated>true</isGenerated>
+        <package>
+          <name>Enumerations</name>
+          <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+          <generate>true</generate>
+          <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+          <NamespaceName>Situation</NamespaceName>
+        </package>
+        <NamespaceName>Situation</NamespaceName>
+        <d2Litteral>
+          <D2Litteral>
+            <name>anprCameras</name>
+            <definition>Automatic number plate recognition cameras.</definition>
+            <order>0</order>
+            <generate>true</generate>
+            <ID>EAID_A3050B88_F0A7_4a6a_81BA_A1FD3D11AFF9</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>automatedTollSystem</name>
+            <definition>Automated toll system.</definition>
+            <order>1</order>
+            <generate>true</generate>
+            <ID>EAID_2C572611_658B_4116_8BB1_AA11D879D9BC</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>cctvCameras</name>
+            <definition>Closed-circuit television cameras.</definition>
+            <order>2</order>
+            <generate>true</generate>
+            <ID>EAID_FB270B3C_6A6E_4fea_9F16_FFCE63A41E51</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>emergencyRoadsideTelephones</name>
+            <definition>Emergency roadside telephones.</definition>
+            <order>3</order>
+            <generate>true</generate>
+            <ID>EAID_8DCEF17E_A14F_4a4b_9EFA_5B73EEBD2CD3</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>fireDetectionEquipment</name>
+            <definition>Fire detection equipment</definition>
+            <order>4</order>
+            <generate>true</generate>
+            <ID>EAID_5EBE0BDB_E58A_4fb5_915E_E00E83AEB627</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>galleryLights</name>
+            <definition>Gallery lights.</definition>
+            <order>5</order>
+            <generate>true</generate>
+            <ID>EAID_01EED4C9_BEA3_4a42_831D_25D25F034B56</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>laneControlSigns</name>
+            <definition>Signs used to control lane usage (e.g. in tidal flow systems or hard shoulder running).</definition>
+            <order>6</order>
+            <generate>true</generate>
+            <ID>EAID_4D849749_C853_4559_9004_B3029A376E00</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>levelCrossing</name>
+            <definition>Level crossing (barriers and signals).</definition>
+            <order>7</order>
+            <generate>true</generate>
+            <ID>EAID_58D0D776_F691_4193_8426_B1EC4ABEB4C8</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>matrixSigns</name>
+            <definition>Matrix signs. These normally comprise a symbol display area surrounded by four lights (usually amber) which flash when a symbol is displayed. </definition>
+            <order>8</order>
+            <generate>true</generate>
+            <ID>EAID_D8FD3DC5_F2E0_4c5d_9D4D_0816ACEE2E3F</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>rampControls</name>
+            <definition>Ramp control equipment.</definition>
+            <order>9</order>
+            <generate>true</generate>
+            <ID>EAID_FE334687_CCC9_4e24_B81A_4F6A7C1BBDE4</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>roadsideCommunicationsSystem</name>
+            <definition>Roadside communications system which is used by one or more roadside equipments or systems.</definition>
+            <order>10</order>
+            <generate>true</generate>
+            <ID>EAID_9B16EA6E_4E09_4216_8C34_896032C22F09</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>roadsidePowerSystem</name>
+            <definition>Roadside power system which is used by one or more roadside equipments or systems.</definition>
+            <order>11</order>
+            <generate>true</generate>
+            <ID>EAID_39AF8235_82DA_47a1_9BD6_AB6C684BC5D3</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>speedControlSigns</name>
+            <definition>Signs used to control traffic speed.</definition>
+            <order>12</order>
+            <generate>true</generate>
+            <ID>EAID_D69632F0_B48A_4fd3_B33F_977C97B0009D</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>streetLighting</name>
+            <definition>Street or road lighting.</definition>
+            <order>13</order>
+            <generate>true</generate>
+            <ID>EAID_31D532E9_5982_4c87_AF46_D70C3E57C584</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>temporaryTrafficLights</name>
+            <definition>Temporary traffic lights.</definition>
+            <order>14</order>
+            <generate>true</generate>
+            <ID>EAID_B5987B74_F9B4_4c4e_B01E_71A676153322</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tollGates</name>
+            <definition>Toll gates.</definition>
+            <order>15</order>
+            <generate>true</generate>
+            <ID>EAID_D7F31615_4659_4a11_8186_72CA818620E4</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>trafficLightSets</name>
+            <definition>Sets of traffic lights.</definition>
+            <order>16</order>
+            <generate>true</generate>
+            <ID>EAID_6A621A1E_9505_4a88_AB4F_C9E671C857B1</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>trafficSignals</name>
+            <definition>Traffic signals.</definition>
+            <order>17</order>
+            <generate>true</generate>
+            <ID>EAID_63ED2D63_4326_49b1_8D7F_A35BCDCA5BB3</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tunnelEmergencyPhones</name>
+            <definition>Tunnel emergency telephones</definition>
+            <order>18</order>
+            <generate>true</generate>
+            <ID>EAID_A28AC6DD_5D4D_4bb9_B87B_3F079D7BAC98</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tunnelFireFightingEquipment</name>
+            <definition>Tunnel fire fighting equipment</definition>
+            <order>19</order>
+            <generate>true</generate>
+            <ID>EAID_906BD104_D545_485a_995E_59C348296031</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tunnelLights</name>
+            <definition>Tunnel lights.</definition>
+            <order>20</order>
+            <generate>true</generate>
+            <ID>EAID_B8D81027_9BB6_45d4_8B1F_72332E8EB59D</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tunnelMobileCommunication</name>
+            <definition>Tunnel mobile coverage communication equipment</definition>
+            <order>21</order>
+            <generate>true</generate>
+            <ID>EAID_2CD850EE_0692_4c99_B6D0_42C096A64D16</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tunnelRadioCommunication</name>
+            <definition>Tunnel radio communication equipment</definition>
+            <order>22</order>
+            <generate>true</generate>
+            <ID>EAID_84EF43D8_F497_4dfc_A5C1_E71C3590B2D8</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tunnelSafetySystem</name>
+            <definition>Any tunnel safety system</definition>
+            <order>23</order>
+            <generate>true</generate>
+            <ID>EAID_92829315_C4F8_45d6_B80E_444CB0FB4960</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>tunnelVentilation</name>
+            <definition>Tunnel ventilation system.</definition>
+            <order>24</order>
+            <generate>true</generate>
+            <ID>EAID_A065E31A_0B71_41da_8669_0F7641F767AB</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>variableMessageSigns</name>
+            <definition>Variable message signs.</definition>
+            <order>25</order>
+            <generate>true</generate>
+            <ID>EAID_A9FF4107_CA07_4b9e_B55C_D840BFEE1E4D</ID>
+          </D2Litteral>
+          <D2Litteral>
+            <name>other</name>
+            <definition>Other than as defined in this enumeration.</definition>
+            <order>26</order>
+            <generate>true</generate>
+            <ID>EAID_C6B8C455_23D2_4311_99E6_08368CDD0A83</ID>
+          </D2Litteral>
+        </d2Litteral>
+        <isExtension>false</isExtension>
+        <isExtended>true</isExtended>
+      </superD2EnumObject>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>InstanceOfDayEnum</name>
       <definition>Instances of a day of the week in a month</definition>
       <id>EAID_2B78ACF2_3D68_4ca3_B4F7_D20C62921618</id>
@@ -9710,7 +10305,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -9770,7 +10365,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -9914,7 +10509,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -9960,7 +10555,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -10006,7 +10601,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -10143,7 +10738,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -10168,7 +10763,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -10221,7 +10816,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -10336,7 +10931,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
           <NamespaceName>LocationReferencing</NamespaceName>
         </package>
@@ -10537,6 +11132,178 @@ The boundary always consists of road segments</definition>
       </superD2EnumObject>
     </D2Enumeration>
     <D2Enumeration>
+      <name>TransitServiceInformationEnum</name>
+      <definition>Types of public transport information.</definition>
+      <id>EAID_4E0A980A_61AD_4dea_812C_F7D464E0854D</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>cancellations</name>
+          <definition>Public transport, park-and-ride, rail or bus services are cancelled.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_4D3DAAB6_7D96_4293_903E_6955118E0363</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>delayDueToBadWeather</name>
+          <definition>The specified service is delayed due to bad weather.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_4CF89FCF_E7C5_4753_9F7B_85D67DDFB7C1</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>delayDueToRepairs</name>
+          <definition>The specified service is delayed due to the need for repairs.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_52875D82_5833_4438_81CC_9E2DD02C3842</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>delayedUntilFurtherNotice</name>
+          <definition>The specified public transport service will be delayed until further notice.</definition>
+          <order>3</order>
+          <generate>true</generate>
+          <ID>EAID_54F73B97_E32E_4468_B243_69CBA6EBCB62</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>delaysDueToFlotsam</name>
+          <definition>The departure of the specified ferry service is delayed due to flotsam.</definition>
+          <order>4</order>
+          <generate>true</generate>
+          <ID>EAID_865BD0C6_84E1_4a04_85AE_DE4D0F5ADA0C</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>departureOnSchedule</name>
+          <definition>The departure of the specified service is on schedule.</definition>
+          <order>5</order>
+          <generate>true</generate>
+          <ID>EAID_93F265D1_4DFF_407b_8EA7_D4E27136708E</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>ferryReplacedByIceRoad</name>
+          <definition>The ferry service has been replaced by an ice road.</definition>
+          <order>6</order>
+          <generate>true</generate>
+          <ID>EAID_1D0127FF_6D33_46b0_9223_5FF295C5337A</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>freeShuttleServiceOperating</name>
+          <definition>A shuttle service is operating at no charge between specified locations.</definition>
+          <order>7</order>
+          <generate>true</generate>
+          <ID>EAID_DE502738_3932_47ef_8831_3FF60005D965</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>informationServiceNotAvailable</name>
+          <definition>The information service relating to the specified transport system is not currently available.</definition>
+          <order>8</order>
+          <generate>true</generate>
+          <ID>EAID_0BE013B6_ECAC_448d_8D1E_F91E8A3FEFA8</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>irregularServiceDelays</name>
+          <definition>The specified service is subject to irregular delays.</definition>
+          <order>9</order>
+          <generate>true</generate>
+          <ID>EAID_F2B4A206_F303_4d7e_9BF9_A26F8D80818F</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>loadCapacityChanged</name>
+          <definition>The load capacity for the specified service has been changed.</definition>
+          <order>10</order>
+          <generate>true</generate>
+          <ID>EAID_23586DDF_A1E9_4ece_AC0D_D24CE2BD11D6</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>restrictionsForLongerVehicles</name>
+          <definition>Long vehicles are subject to restrictions on the specified service.</definition>
+          <order>11</order>
+          <generate>true</generate>
+          <ID>EAID_46A8CBC1_29CC_4bf2_B854_87444CCAD80E</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceDelays</name>
+          <definition>The specified service is subject to delays.</definition>
+          <order>12</order>
+          <generate>true</generate>
+          <ID>EAID_010DB483_7F1F_4067_868A_6F1D8F91C731</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceDelaysOfUncertainDuration</name>
+          <definition>The specified service is subject to delays whose predicted duration cannot be estimated accurately.</definition>
+          <order>13</order>
+          <generate>true</generate>
+          <ID>EAID_E7814373_49AF_48e4_968F_E8DC6331B729</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceFullyBooked</name>
+          <definition>The departure of the specified service is fully booked.</definition>
+          <order>14</order>
+          <generate>true</generate>
+          <ID>EAID_646D176E_2ACD_4ae1_99E1_187A5A899ABA</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceNotOperating</name>
+          <definition>The specified service is not operating.</definition>
+          <order>15</order>
+          <generate>true</generate>
+          <ID>EAID_6A63A43E_CE71_44a7_81A1_865998DCD949</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceNotOperatingSubstituteServiceAvailable</name>
+          <definition>The specified service is not operating but an alternative service is available.</definition>
+          <order>16</order>
+          <generate>true</generate>
+          <ID>EAID_D02FC4E8_3F00_472c_8867_0BFA3CA377E4</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceSuspended</name>
+          <definition>The specified service has been suspended.</definition>
+          <order>17</order>
+          <generate>true</generate>
+          <ID>EAID_B54329C5_0565_4bb7_AD73_6BE6FD65847F</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceWithdrawn</name>
+          <definition>The specified service has been cancelled.</definition>
+          <order>18</order>
+          <generate>true</generate>
+          <ID>EAID_7C5E9DBD_1BE2_4847_9520_C21AB0E5DE87</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>shuttleServiceOperating</name>
+          <definition>A shuttle service is operating between the specified locations.</definition>
+          <order>19</order>
+          <generate>true</generate>
+          <ID>EAID_382B9949_3698_4f40_A1DF_44F01D1470AE</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>temporaryChangesToTimetables</name>
+          <definition>The timetable for the specified service is subject to temporary changes.</definition>
+          <order>20</order>
+          <generate>true</generate>
+          <ID>EAID_08E03111_946B_4a3c_8998_898F976D9F50</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>other</name>
+          <definition>Other than as defined in this enumeration.</definition>
+          <order>21</order>
+          <generate>true</generate>
+          <ID>EAID_8D99579B_3D3D_4faf_9911_CFBB588E4294</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>false</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>AbnormalTrafficTypeEnum</name>
       <definition>Descriptive terms for abnormal traffic conditions specifically relating to the nature of the traffic movement, implying levels of service.</definition>
       <id>EAID_5171B7C7_4F55_4526_B4C2_F173BF203431</id>
@@ -10544,7 +11311,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -10604,7 +11371,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -10811,7 +11578,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -10846,7 +11613,7 @@ The boundary always consists of road segments</definition>
       <name>InfrastructureDescriptorEnumExtendedUrban</name>
       <definition>Urban extensions for infrastructure description.</definition>
       <id>EAID_590F644B_31AF_4742_9836_DEED208F170C</id>
-      <isGenerated>false</isGenerated>
+      <isGenerated>true</isGenerated>
       <package xsi:type="D2Namespace">
         <name>UrbanExtensions</name>
         <ID>EAPK_C0F61B42_B9B1_4795_90CD_E748A4EA7B84</ID>
@@ -10957,11 +11724,11 @@ The boundary always consists of road segments</definition>
         <name>InfrastructureDescriptorEnum</name>
         <definition>Descriptor identifying infrastructure to help to identify a specific location.</definition>
         <id>EAID_F070917E_B59F_4a5a_9149_65A8B936DF20</id>
-        <isGenerated>false</isGenerated>
+        <isGenerated>true</isGenerated>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
           <NamespaceName>LocationReferencing</NamespaceName>
         </package>
@@ -11113,7 +11880,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -11145,7 +11912,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -11219,7 +11986,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -11580,7 +12347,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -11619,7 +12386,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -11665,7 +12432,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -11879,7 +12646,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -11980,7 +12747,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
           <NamespaceName>Situation</NamespaceName>
         </package>
@@ -12293,7 +13060,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -12618,7 +13385,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
           <NamespaceName>Situation</NamespaceName>
         </package>
@@ -12847,7 +13614,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -12914,7 +13681,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -12946,7 +13713,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_CF04F591_EA7A_4fb1_9D26_8201FD21C6CF</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>Enumerations</definition>
         <NamespaceName>ReroutingManagementEnhanced</NamespaceName>
       </package>
@@ -12978,7 +13745,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
           <NamespaceName>Situation</NamespaceName>
         </package>
@@ -13011,7 +13778,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -13036,7 +13803,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -13082,7 +13849,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_CF04F591_EA7A_4fb1_9D26_8201FD21C6CF</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>Enumerations</definition>
         <NamespaceName>ReroutingManagementEnhanced</NamespaceName>
       </package>
@@ -13142,7 +13909,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
           <NamespaceName>Situation</NamespaceName>
         </package>
@@ -13293,7 +14060,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
           <NamespaceName>Situation</NamespaceName>
         </package>
@@ -13473,6 +14240,52 @@ The boundary always consists of road segments</definition>
       </superD2EnumObject>
     </D2Enumeration>
     <D2Enumeration>
+      <name>MaintenanceVehicleActionsEnum</name>
+      <definition>Types of maintenance vehicle actions associated with roadworks.</definition>
+      <id>EAID_7A8518A0_C806_4325_AB28_E9E08EB3EFF1</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>maintenanceAction</name>
+          <definition>Maintenance vehicles are performing maintenance action</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_57DD47A3_E0C2_45cc_BB21_5555E306559E</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>maintenanceVehiclesMergingIntoTrafficFlow</name>
+          <definition>Maintenance vehicles are merging into the traffic flow creating a potential hazard for road users.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_AEFEEA10_8FC4_4afc_8410_2EA474E71FFA</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>slowMoving</name>
+          <definition>Maintenance vehicles are slow moving.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_F3B7D91F_8D70_4892_AD7B_006EA84A704F</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>stoppingToServiceEquipments</name>
+          <definition>Maintenance vehicles are stopping to service equipments on or next to the roadway.</definition>
+          <order>3</order>
+          <generate>true</generate>
+          <ID>EAID_A4AAA0DB_659F_4053_A484_BB43D84E00C2</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>false</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>ReferentTypeEnum</name>
       <definition>A set of types of known points along a linear object such as a road.</definition>
       <id>EAID_7E595C98_61A9_40e0_9EB9_1A84CCBF4AE2</id>
@@ -13480,7 +14293,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -13533,7 +14346,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -13649,7 +14462,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -13722,7 +14535,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
           <NamespaceName>Common</NamespaceName>
         </package>
@@ -14084,7 +14897,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -14137,7 +14950,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -14253,7 +15066,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -14467,7 +15280,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -14506,7 +15319,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -14650,7 +15463,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -14752,7 +15565,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -14784,7 +15597,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -14823,6 +15636,234 @@ The boundary always consists of road segments</definition>
       <isExtended>false</isExtended>
     </D2Enumeration>
     <D2Enumeration>
+      <name>DisturbanceActivityTypeEnum</name>
+      <definition>Types of disturbance activities.</definition>
+      <id>EAID_997A4339_FD4A_4e5a_8307_2E5F6BF17FE4</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>airRaid</name>
+          <definition>A situation relating to any threat from foreign air power.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_067328EF_E9B5_4d8b_A68E_3AE0D661FA76</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>altercationOfVehicleOccupants</name>
+          <definition>An altercation (argument, dispute or fight) between two or more vehicle occupants.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_CAB0A77C_6A06_4735_AE0F_AF9999E09D02</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>assault</name>
+          <definition>A situation where an assault has taken place on one or more persons.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_44706418_DE06_4c74_A0A6_41CC2D79F0AC</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>assetDestruction</name>
+          <definition>A situation where assets of one or more persons or authorities have been destroyed.</definition>
+          <order>3</order>
+          <generate>true</generate>
+          <ID>EAID_1A6F6A1C_5DA2_4b48_A43F_043A0B23C691</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>attack</name>
+          <definition>A situation where an attack on a group of people or properties has taken place.</definition>
+          <order>4</order>
+          <generate>true</generate>
+          <ID>EAID_5D584026_026C_4549_A477_A8A5B300D8C9</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>attackOnVehicle</name>
+          <definition>A situation where an attack on a vehicle or its occupants has taken place.</definition>
+          <order>5</order>
+          <generate>true</generate>
+          <ID>EAID_588C7CD3_1C81_4620_95F2_A0AAC9D13EC4</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>blockadeOrBarrier</name>
+          <definition>A manned blockade or barrier across a road stopping vehicles passing.</definition>
+          <order>6</order>
+          <generate>true</generate>
+          <ID>EAID_17C761C3_B91C_4d21_AB85_B72B318630B2</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>bombAlert</name>
+          <definition>An alert to a situation where suspected or actual explosive or incendiary devices may cause disruption to traffic.</definition>
+          <order>7</order>
+          <generate>true</generate>
+          <ID>EAID_261E559D_8430_43ba_8C5C_82BC3EB2DD08</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>crowd</name>
+          <definition>A major gathering of people that could disrupt traffic.</definition>
+          <order>8</order>
+          <generate>true</generate>
+          <ID>EAID_BBDD95BB_B71A_481c_B851_2A5798907B9E</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>demonstration</name>
+          <definition>A public protest with the potential to disrupt traffic.</definition>
+          <order>9</order>
+          <generate>true</generate>
+          <ID>EAID_FD0125DD_DC54_41c8_B6F4_ED8AC0B498C7</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>evacuation</name>
+          <definition>A situation where a definite area is being cleared due to dangerous conditions or for security reasons.</definition>
+          <order>10</order>
+          <generate>true</generate>
+          <ID>EAID_DFF20A01_A8C7_433a_8873_AFD00E1F5285</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>filterBlockade</name>
+          <definition>A manned blockade of a road where only certain vehicles are allowed through.</definition>
+          <order>11</order>
+          <generate>true</generate>
+          <ID>EAID_6D3880F0_5E75_4445_B7DC_A755E77D9B62</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>goSlowOperation</name>
+          <definition>As a form of protest, several vehicles are driving in a convoy at a low speed which is affecting the normal traffic flow.</definition>
+          <order>12</order>
+          <generate>true</generate>
+          <ID>EAID_96B91280_E4EA_4557_85DA_7CA80C37D678</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>gunfireOnRoadway</name>
+          <definition>A situation involving gunfire, perceived or actual, on or near the roadway through an act of terrorism or crime, which could disrupt traffic.</definition>
+          <order>13</order>
+          <generate>true</generate>
+          <ID>EAID_297D1D67_0894_4a26_B2D4_867F21B90061</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>illVehicleOccupants</name>
+          <definition>One or more occupants of a vehicle are seriously ill, possibly requiring specialist services or assistance. This may disrupt normal traffic flow.</definition>
+          <order>14</order>
+          <generate>true</generate>
+          <ID>EAID_093AEF90_4D5B_4e94_BB2C_3F3B2D6B78D4</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>march</name>
+          <definition>A situation where people are walking together in large groups for a common purpose, with potential to disrupt traffic.</definition>
+          <order>15</order>
+          <generate>true</generate>
+          <ID>EAID_B50B012B_A9A2_46c1_8099_132F800A766D</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>peopleThrowingObjectsOnTheRoad</name>
+          <definition>People throwing objects on the road</definition>
+          <order>16</order>
+          <generate>true</generate>
+          <ID>EAID_FB2B0D91_16D9_4fcb_BFE0_5A041BAD8264</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>publicDisturbance</name>
+          <definition>A situation of public disorder, with potential to disrupt traffic.</definition>
+          <order>17</order>
+          <generate>true</generate>
+          <ID>EAID_C376F882_767C_45c1_A640_F292E24A8931</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>radioactiveLeakAlert</name>
+          <definition>An alert to a radioactive leak which may endanger the public and hence may cause traffic disruption.</definition>
+          <order>18</order>
+          <generate>true</generate>
+          <ID>EAID_3C9748E1_E11E_4ef5_A349_C81E85E43672</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>riot</name>
+          <definition>A situation of public disorder involving violent behaviour and/or destruction of property with the potential to disrupt traffic.</definition>
+          <order>19</order>
+          <generate>true</generate>
+          <ID>EAID_D7254655_264F_4a9c_BD1A_6A4693512C03</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>sabotage</name>
+          <definition>A situation resulting from any act of sabotage.</definition>
+          <order>20</order>
+          <generate>true</generate>
+          <ID>EAID_D5434917_D7F8_44b2_9782_6AC49A6B322B</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>securityAlert</name>
+          <definition>An official alert to a perceived or actual threat of crime or terrorism, which could disrupt traffic.</definition>
+          <order>21</order>
+          <generate>true</generate>
+          <ID>EAID_47D80129_83D9_4479_BAFF_359A3ED99360</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>securityIncident</name>
+          <definition>A situation related to a perceived or actual threat of crime or terrorism, which could disrupt traffic.</definition>
+          <order>22</order>
+          <generate>true</generate>
+          <ID>EAID_F40AD2B9_D4F4_4207_BC85_579F90A4E8C2</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>sightseersObstructingAccess</name>
+          <definition>Attendees or sightseers to reported event(s) causing obstruction to access.</definition>
+          <order>23</order>
+          <generate>true</generate>
+          <ID>EAID_EE3110F5_7F45_4a6a_A151_F77AC3E65550</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>strike</name>
+          <definition>A situation resulting from industrial action that could disrupt traffic.</definition>
+          <order>24</order>
+          <generate>true</generate>
+          <ID>EAID_448C701C_8F3B_4ac9_9172_0B65B8857A65</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>terroristIncident</name>
+          <definition>A situation related to a perceived or actual threat of terrorism, which could disrupt traffic.</definition>
+          <order>25</order>
+          <generate>true</generate>
+          <ID>EAID_83F821D5_2A99_4c13_A5F8_21FBA1650031</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>theft</name>
+          <definition>A situation where assets of one or more persons or authorities have been stolen.</definition>
+          <order>26</order>
+          <generate>true</generate>
+          <ID>EAID_0E29309B_EA32_4ceb_A345_43A21159EB23</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>toxicCloudAlert</name>
+          <definition>An alert to a toxic release of gases and/or particulates into the environment which may endanger the public and hence may cause traffic disruption.</definition>
+          <order>27</order>
+          <generate>true</generate>
+          <ID>EAID_C508C689_D19E_4f3b_A37E_45B88E562739</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>unspecifiedAlert</name>
+          <definition>An alert to a perceived or actual threat of an unspecified nature, which could disrupt traffic.</definition>
+          <order>28</order>
+          <generate>true</generate>
+          <ID>EAID_6E68F2F4_9BD9_4303_AD6F_D84FF50DC812</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>other</name>
+          <definition>Other than as defined in this enumeration.</definition>
+          <order>29</order>
+          <generate>true</generate>
+          <ID>EAID_A9E87F88_C8A2_483d_8610_97812F37FE32</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>false</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>ConstructionWorkTypeEnum</name>
       <definition>Types of works relating to construction.</definition>
       <id>EAID_9D6F08AF_E84C_4ea2_B541_A2F0FA565FD4</id>
@@ -14830,7 +15871,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -14883,7 +15924,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -15146,6 +16187,178 @@ The boundary always consists of road segments</definition>
       <isExtended>false</isExtended>
     </D2Enumeration>
     <D2Enumeration>
+      <name>ServiceDisruptionTypeEnum</name>
+      <definition>Types of disruption to services relevant to road users.</definition>
+      <id>EAID_A5D45882_2346_433c_9444_415689FC888E</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>barClosed</name>
+          <definition>Bar closed.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_26AB9625_C7C4_43eb_AFCB_6BE564D16BB2</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>dieselShortage</name>
+          <definition>There is a shortage of diesel at the specified location.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_05042EE4_559A_4139_8194_B7ED3ED114A6</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>fuelShortage</name>
+          <definition>There is a shortage of fuel (of one or more types) at the specified location.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_B8599F69_6F39_42cd_A8B5_852D91E667B3</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>lpgShortage</name>
+          <definition>There is a shortage of liquid petroleum gas at the specified location.</definition>
+          <order>3</order>
+          <generate>true</generate>
+          <ID>EAID_73F195D7_4CC2_4260_885A_DD368F41E718</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>methaneShortage</name>
+          <definition>There is a shortage of methane at the specified location.</definition>
+          <order>4</order>
+          <generate>true</generate>
+          <ID>EAID_B460C65A_F885_4e07_A3EC_3B41D6CF3B1F</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>noDieselForHeavyVehicles</name>
+          <definition>There is no diesel available for heavy goods vehicles at the specified location.</definition>
+          <order>5</order>
+          <generate>true</generate>
+          <ID>EAID_9D03287A_BE1A_4672_A974_7660F6071BC0</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>noDieselForLightVehicles</name>
+          <definition>There is no diesel available for light vehicles at the specified location.</definition>
+          <order>6</order>
+          <generate>true</generate>
+          <ID>EAID_D3EA2DE6_FA2A_4e28_A394_FE19E7B6E664</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>noParkingAvailability</name>
+          <definition>There is little or no availbility of parking</definition>
+          <order>7</order>
+          <generate>true</generate>
+          <ID>EAID_336F84FD_A03F_470f_ACA6_F64E8619BE6C</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>noPublicTelephones</name>
+          <definition>There are no available public telephones at the specified location.</definition>
+          <order>8</order>
+          <generate>true</generate>
+          <ID>EAID_F9F2E2C5_51BA_4731_B2EA_7E620CE26637</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>noToiletFacilities</name>
+          <definition>There are no available public toilet facilities at the specified location.</definition>
+          <order>9</order>
+          <generate>true</generate>
+          <ID>EAID_902077FF_A3BC_484f_A322_8B29BC3C67A7</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>noVehicleRepairFacilities</name>
+          <definition>There are no available vehicle repair facilities at the specified location.</definition>
+          <order>10</order>
+          <generate>true</generate>
+          <ID>EAID_BD47583E_E84A_4c97_BD3C_8A546B10E729</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>petrolShortage</name>
+          <definition>There is a shortage of petrol at the specified location.</definition>
+          <order>11</order>
+          <generate>true</generate>
+          <ID>EAID_517D69AC_417B_43a6_8905_11FE79F0F6EA</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>restAreaBusy</name>
+          <definition>The rest area at the specified location is busy.</definition>
+          <order>12</order>
+          <generate>true</generate>
+          <ID>EAID_4E68ADDB_A5DE_4096_B6D6_FE84517C2EB4</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>restAreaClosed</name>
+          <definition>The rest area at the specified location is closed.</definition>
+          <order>13</order>
+          <generate>true</generate>
+          <ID>EAID_D40CEC8C_A710_4295_A24B_C61C506827B5</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>restAreaOvercrowdedDriveToAnotherRestArea</name>
+          <definition>The rest area at the specified location is close to capacity and motorists are advised to seek an alternative.</definition>
+          <order>14</order>
+          <generate>true</generate>
+          <ID>EAID_FB891108_EEB3_441d_BC5E_34931178CFBF</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceAreaBusy</name>
+          <definition>The service area at the specified location is close to capacity.</definition>
+          <order>15</order>
+          <generate>true</generate>
+          <ID>EAID_497DE3A0_E0F9_4802_801E_C90392AD1DF4</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceAreaClosed</name>
+          <definition>The service area at the specified location is closed.</definition>
+          <order>16</order>
+          <generate>true</generate>
+          <ID>EAID_69DE44FE_E4A6_420a_8F67_20E160DD64B5</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceAreaFuelStationClosed</name>
+          <definition>The fuel station at the specified service area is closed.</definition>
+          <order>17</order>
+          <generate>true</generate>
+          <ID>EAID_EEBAF11D_18B4_4f85_BEA6_8CBA847721CA</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceAreaOvercrowdedDriveToAnotherServiceArea</name>
+          <definition>The service area at the specified location is close to capacity and motorists are advised to seek an alternative.</definition>
+          <order>18</order>
+          <generate>true</generate>
+          <ID>EAID_B6179F71_3906_41b0_BE45_3B6984DCB07C</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>serviceAreaRestaurantClosed</name>
+          <definition>The restaurant at the specified service area is closed.</definition>
+          <order>19</order>
+          <generate>true</generate>
+          <ID>EAID_DC12722E_0F9E_4021_AB84_3761854AEB1C</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>someCommercialServicesClosed</name>
+          <definition>Some commercial services are closed at the specified location.</definition>
+          <order>20</order>
+          <generate>true</generate>
+          <ID>EAID_04E2B356_C684_4d9c_9356_B4F299200706</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>waterShortage</name>
+          <definition>There is a shortage of water at the specified location.</definition>
+          <order>21</order>
+          <generate>true</generate>
+          <ID>EAID_806C278B_D297_473c_97D9_2D5C9547966F</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>false</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>TpegLoc04HeightTypeEnum</name>
       <definition>Types of height.</definition>
       <id>EAID_A8604D3B_5E14_429e_B51C_723A3410C52A</id>
@@ -15153,7 +16366,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -15296,7 +16509,7 @@ The boundary always consists of road segments</definition>
         <package>
           <name>Enumerations</name>
           <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-          <generate>false</generate>
+          <generate>true</generate>
           <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
           <NamespaceName>Situation</NamespaceName>
         </package>
@@ -15378,7 +16591,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -15410,6 +16623,73 @@ The boundary always consists of road segments</definition>
       <isExtended>false</isExtended>
     </D2Enumeration>
     <D2Enumeration>
+      <name>TransitServiceTypeEnum</name>
+      <definition>Types of transport services available to the general public.</definition>
+      <id>EAID_AD08E672_AB4B_4d5c_B12F_365C0EB5B156</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>air</name>
+          <definition>Air service.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_B1CA65D4_7E79_4cfa_BE55_352C9FFB2844</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>bus</name>
+          <definition>Bus service.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_EA4FB404_F05E_4307_B2A2_14C15261B4DF</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>ferry</name>
+          <definition>Ferry service.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_33F88F1D_0521_4989_B461_31EC655B28E8</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>hydrofoil</name>
+          <definition>Hydrofoil service.</definition>
+          <order>3</order>
+          <generate>true</generate>
+          <ID>EAID_A91921D9_3CA8_4958_B71F_FB463D2F9515</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>rail</name>
+          <definition>Rail service.</definition>
+          <order>4</order>
+          <generate>true</generate>
+          <ID>EAID_BA074A9A_B4BC_4795_A5EF_5838E055EB3F</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tram</name>
+          <definition>Tram service.</definition>
+          <order>5</order>
+          <generate>true</generate>
+          <ID>EAID_290BC555_BF9C_45b6_8890_02EE9F6BE489</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>undergroundMetro</name>
+          <definition>Underground or metro service.</definition>
+          <order>6</order>
+          <generate>true</generate>
+          <ID>EAID_3562FCE3_02E4_49e2_9541_40718C1C9EF8</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>false</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>RelativeTrafficFlowEnum</name>
       <definition>Levels of assessment of the traffic flow conditions relative to normally expected conditions at this date/time.</definition>
       <id>EAID_AD279047_414C_45a6_B184_68D3B1FC275D</id>
@@ -15417,7 +16697,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -15466,11 +16746,11 @@ The boundary always consists of road segments</definition>
       <name>TrafficConstrictionTypeEnum</name>
       <definition>Types of constriction to which traffic is subjected as a result of an event.</definition>
       <id>EAID_AEEB7BF9_9838_4c71_9655_C8AA50BC0845</id>
-      <isGenerated>false</isGenerated>
+      <isGenerated>true</isGenerated>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -15530,7 +16810,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -15569,7 +16849,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -15615,7 +16895,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -15682,7 +16962,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -15826,7 +17106,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -15865,6 +17145,213 @@ The boundary always consists of road segments</definition>
       <isExtended>false</isExtended>
     </D2Enumeration>
     <D2Enumeration>
+      <name>EquipmentOrSystemTypeEnum</name>
+      <definition>Types of equipment and systems used to support the operation of the road network.</definition>
+      <id>EAID_B77B0A3E_B8B3_4f41_BC6B_338086E5E995</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>anprCameras</name>
+          <definition>Automatic number plate recognition cameras.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_A3050B88_F0A7_4a6a_81BA_A1FD3D11AFF9</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>automatedTollSystem</name>
+          <definition>Automated toll system.</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_2C572611_658B_4116_8BB1_AA11D879D9BC</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>cctvCameras</name>
+          <definition>Closed-circuit television cameras.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_FB270B3C_6A6E_4fea_9F16_FFCE63A41E51</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>emergencyRoadsideTelephones</name>
+          <definition>Emergency roadside telephones.</definition>
+          <order>3</order>
+          <generate>true</generate>
+          <ID>EAID_8DCEF17E_A14F_4a4b_9EFA_5B73EEBD2CD3</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>fireDetectionEquipment</name>
+          <definition>Fire detection equipment</definition>
+          <order>4</order>
+          <generate>true</generate>
+          <ID>EAID_5EBE0BDB_E58A_4fb5_915E_E00E83AEB627</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>galleryLights</name>
+          <definition>Gallery lights.</definition>
+          <order>5</order>
+          <generate>true</generate>
+          <ID>EAID_01EED4C9_BEA3_4a42_831D_25D25F034B56</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>laneControlSigns</name>
+          <definition>Signs used to control lane usage (e.g. in tidal flow systems or hard shoulder running).</definition>
+          <order>6</order>
+          <generate>true</generate>
+          <ID>EAID_4D849749_C853_4559_9004_B3029A376E00</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>levelCrossing</name>
+          <definition>Level crossing (barriers and signals).</definition>
+          <order>7</order>
+          <generate>true</generate>
+          <ID>EAID_58D0D776_F691_4193_8426_B1EC4ABEB4C8</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>matrixSigns</name>
+          <definition>Matrix signs. These normally comprise a symbol display area surrounded by four lights (usually amber) which flash when a symbol is displayed. </definition>
+          <order>8</order>
+          <generate>true</generate>
+          <ID>EAID_D8FD3DC5_F2E0_4c5d_9D4D_0816ACEE2E3F</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>rampControls</name>
+          <definition>Ramp control equipment.</definition>
+          <order>9</order>
+          <generate>true</generate>
+          <ID>EAID_FE334687_CCC9_4e24_B81A_4F6A7C1BBDE4</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>roadsideCommunicationsSystem</name>
+          <definition>Roadside communications system which is used by one or more roadside equipments or systems.</definition>
+          <order>10</order>
+          <generate>true</generate>
+          <ID>EAID_9B16EA6E_4E09_4216_8C34_896032C22F09</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>roadsidePowerSystem</name>
+          <definition>Roadside power system which is used by one or more roadside equipments or systems.</definition>
+          <order>11</order>
+          <generate>true</generate>
+          <ID>EAID_39AF8235_82DA_47a1_9BD6_AB6C684BC5D3</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>speedControlSigns</name>
+          <definition>Signs used to control traffic speed.</definition>
+          <order>12</order>
+          <generate>true</generate>
+          <ID>EAID_D69632F0_B48A_4fd3_B33F_977C97B0009D</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>streetLighting</name>
+          <definition>Street or road lighting.</definition>
+          <order>13</order>
+          <generate>true</generate>
+          <ID>EAID_31D532E9_5982_4c87_AF46_D70C3E57C584</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>temporaryTrafficLights</name>
+          <definition>Temporary traffic lights.</definition>
+          <order>14</order>
+          <generate>true</generate>
+          <ID>EAID_B5987B74_F9B4_4c4e_B01E_71A676153322</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tollGates</name>
+          <definition>Toll gates.</definition>
+          <order>15</order>
+          <generate>true</generate>
+          <ID>EAID_D7F31615_4659_4a11_8186_72CA818620E4</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>trafficLightSets</name>
+          <definition>Sets of traffic lights.</definition>
+          <order>16</order>
+          <generate>true</generate>
+          <ID>EAID_6A621A1E_9505_4a88_AB4F_C9E671C857B1</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>trafficSignals</name>
+          <definition>Traffic signals.</definition>
+          <order>17</order>
+          <generate>true</generate>
+          <ID>EAID_63ED2D63_4326_49b1_8D7F_A35BCDCA5BB3</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tunnelEmergencyPhones</name>
+          <definition>Tunnel emergency telephones</definition>
+          <order>18</order>
+          <generate>true</generate>
+          <ID>EAID_A28AC6DD_5D4D_4bb9_B87B_3F079D7BAC98</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tunnelFireFightingEquipment</name>
+          <definition>Tunnel fire fighting equipment</definition>
+          <order>19</order>
+          <generate>true</generate>
+          <ID>EAID_906BD104_D545_485a_995E_59C348296031</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tunnelLights</name>
+          <definition>Tunnel lights.</definition>
+          <order>20</order>
+          <generate>true</generate>
+          <ID>EAID_B8D81027_9BB6_45d4_8B1F_72332E8EB59D</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tunnelMobileCommunication</name>
+          <definition>Tunnel mobile coverage communication equipment</definition>
+          <order>21</order>
+          <generate>true</generate>
+          <ID>EAID_2CD850EE_0692_4c99_B6D0_42C096A64D16</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tunnelRadioCommunication</name>
+          <definition>Tunnel radio communication equipment</definition>
+          <order>22</order>
+          <generate>true</generate>
+          <ID>EAID_84EF43D8_F497_4dfc_A5C1_E71C3590B2D8</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tunnelSafetySystem</name>
+          <definition>Any tunnel safety system</definition>
+          <order>23</order>
+          <generate>true</generate>
+          <ID>EAID_92829315_C4F8_45d6_B80E_444CB0FB4960</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>tunnelVentilation</name>
+          <definition>Tunnel ventilation system.</definition>
+          <order>24</order>
+          <generate>true</generate>
+          <ID>EAID_A065E31A_0B71_41da_8669_0F7641F767AB</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>variableMessageSigns</name>
+          <definition>Variable message signs.</definition>
+          <order>25</order>
+          <generate>true</generate>
+          <ID>EAID_A9FF4107_CA07_4b9e_B55C_D840BFEE1E4D</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>other</name>
+          <definition>Other than as defined in this enumeration.</definition>
+          <order>26</order>
+          <generate>true</generate>
+          <ID>EAID_C6B8C455_23D2_4311_99E6_08368CDD0A83</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>true</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>DayEnum</name>
       <definition>Days of the week.</definition>
       <id>EAID_B988FF79_9C45_4448_9527_A7C652DD1B16</id>
@@ -15872,7 +17359,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -15939,7 +17426,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -15971,7 +17458,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -16052,7 +17539,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -16238,7 +17725,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -16277,7 +17764,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -16505,7 +17992,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -16628,7 +18115,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -16765,7 +18252,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -16874,7 +18361,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -17263,7 +18750,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -17309,7 +18796,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -17502,6 +18989,52 @@ The boundary always consists of road segments</definition>
       <isExtended>false</isExtended>
     </D2Enumeration>
     <D2Enumeration>
+      <name>EquipmentOrSystemFaultTypeEnum</name>
+      <definition>Types of fault, malfunctioning or non operational conditions of equipment or systems.</definition>
+      <id>EAID_DE4E0BE5_6E80_4cf8_A0F4_BEF93A05BDD0</id>
+      <isGenerated>true</isGenerated>
+      <package>
+        <name>Enumerations</name>
+        <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
+        <generate>true</generate>
+        <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
+        <NamespaceName>Situation</NamespaceName>
+      </package>
+      <NamespaceName>Situation</NamespaceName>
+      <d2Litteral>
+        <D2Litteral>
+          <name>notWorking</name>
+          <definition>Not working or functioning.</definition>
+          <order>0</order>
+          <generate>true</generate>
+          <ID>EAID_B99FF8FD_3516_4f3c_9417_57AFEE2B8E33</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>outOfService</name>
+          <definition>Out of service (usually for operational reasons).</definition>
+          <order>1</order>
+          <generate>true</generate>
+          <ID>EAID_FA0A2CD7_8C61_42f2_B7F3_F90C25BD061B</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>workingIncorrectly</name>
+          <definition>Working incorrectly.</definition>
+          <order>2</order>
+          <generate>true</generate>
+          <ID>EAID_0DDD8C69_9FAF_4267_9E64_0AF799A1F334</ID>
+        </D2Litteral>
+        <D2Litteral>
+          <name>workingIntermittently</name>
+          <definition>Working intermittently.</definition>
+          <order>3</order>
+          <generate>true</generate>
+          <ID>EAID_83A46BB4_1DA7_423c_A35B_5269BC7D3AE5</ID>
+        </D2Litteral>
+      </d2Litteral>
+      <isExtension>false</isExtension>
+      <isExtended>false</isExtended>
+    </D2Enumeration>
+    <D2Enumeration>
       <name>EmissionClassificationEuroEnum</name>
       <definition>Classification of emission according to the Euro emission classification (based on serveral amendments on 1970 Directive 70/220/EEC). Note htat vehicleType as well as fuelType are mandatory to provide to make this classification explicit.</definition>
       <id>EAID_DEEE3710_D194_4573_A36B_676555AE1B03</id>
@@ -17509,7 +19042,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -17597,7 +19130,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -17972,7 +19505,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -18046,7 +19579,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -18099,7 +19632,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -18253,11 +19786,11 @@ The boundary always consists of road segments</definition>
       <name>InfrastructureDescriptorEnum</name>
       <definition>Descriptor identifying infrastructure to help to identify a specific location.</definition>
       <id>EAID_F070917E_B59F_4a5a_9149_65A8B936DF20</id>
-      <isGenerated>false</isGenerated>
+      <isGenerated>true</isGenerated>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -18408,7 +19941,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -18524,7 +20057,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -18570,7 +20103,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -18602,7 +20135,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -18676,7 +20209,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_9E2307F1_3590_4d2f_9EAA_0904DFD104E6</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used only in the Situation package of the DATEX II model.</definition>
         <NamespaceName>Situation</NamespaceName>
       </package>
@@ -18771,7 +20304,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_B491E67F_A42E_44a8_AC75_A17AC2E6D898</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of lists of enumeration values used throughout the DATEX II model.</definition>
         <NamespaceName>Common</NamespaceName>
       </package>
@@ -18873,7 +20406,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>
@@ -18898,7 +20431,7 @@ The boundary always consists of road segments</definition>
       <package>
         <name>Enumerations</name>
         <ID>EAPK_1FC76BEE_DA3B_4218_8202_40BD7A4D6445</ID>
-        <generate>false</generate>
+        <generate>true</generate>
         <definition>A collection of enumerations that are used LocationReferencing package of the DATEX II model.</definition>
         <NamespaceName>LocationReferencing</NamespaceName>
       </package>

@@ -1,18 +1,16 @@
 package fi.livi.digitraffic.tie.dao.data;
 
-import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
+import java.time.Instant;
+import java.util.List;
 
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.data.MessageAndModified;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
 
 @Repository
 public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2Situation, Long> {
@@ -21,7 +19,13 @@ public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2S
         from data_datex2_situation
         where situation_id = :situationId
         order by situation_id, situation_version desc""", nativeQuery = true)
-    Optional<Long> findLatestSituation(final String situationId);
+    List<Long> findLatestSituationBySituationId(final String situationId);
+    @Query(value = """
+        select datex2_id
+        from data_datex2_situation
+        where situation_id = :situationId
+        order by situation_id, situation_version desc""", nativeQuery = true)
+    List<Long> findAllBySituationId(final String situationId);
 
     @Query(value = """
         select distinct on (situation_id) datex2_id
@@ -44,5 +48,28 @@ public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2S
         ) order by situation_id, situation_version desc""", nativeQuery = true)
     List<Long> findLatestByType(final String situationType, final Instant from, final Instant to);
 
-    List<DataDatex2Situation> findBySituationId(final String situationId);
+    @Query(value = """
+        select distinct on (situation_id) message, modified_at
+            from datex2_rtti
+            where start_time < :to
+            and (end_time is null or end_time > :from)
+            and (:srtiOnly = false or is_srti = true)
+            order by situation_id, publication_time desc""", nativeQuery = true)
+    List<MessageAndModified> findAllTrafficData(final Instant from, final Instant to, final boolean srtiOnly);
+
+    @Query(value = """
+    select distinct on (situation_id) message, modified_at
+    from datex2_rtti
+    where situation_id = :situationId
+    order by situation_id, publication_time desc
+""", nativeQuery = true)
+    List<MessageAndModified> findLatestTrafficDataMessageBySituationId(final String situationId);
+
+    @Query(value = """
+    select message, modified_at
+    from datex2_rtti
+    where situation_id = :situationId
+    order by publication_time desc
+""", nativeQuery = true)
+    List<MessageAndModified> findTrafficDataMessagesBySituationId(final String situationId);
 }

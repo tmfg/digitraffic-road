@@ -6,7 +6,10 @@ import java.util.List;
 import fi.livi.digitraffic.tie.controller.trafficmessage.MessageConverter;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
 
+import fi.livi.digitraffic.tie.model.ModifiedAt;
 import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
+
+import fi.livi.digitraffic.tie.model.data.MessageAndModified;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,7 +26,6 @@ import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-
 
 @Service
 public class Datex2Service {
@@ -57,7 +59,7 @@ public class Datex2Service {
 
     @Transactional(readOnly = true)
     public Pair<D2LogicalModel, Instant> findRoadworks223(final Instant from, final Instant to) {
-        return findDatex223(SituationType.ROAD_WORK, from, to);
+        return findDatexII223(SituationType.ROAD_WORK, from, to);
     }
 
     @Transactional(readOnly = true)
@@ -82,74 +84,109 @@ public class Datex2Service {
 
     @Transactional(readOnly = true)
     public Pair<D2LogicalModel, Instant> findTrafficAnnouncements223(final Instant from, final Instant to) {
-        return findDatex223(SituationType.TRAFFIC_ANNOUNCEMENT, from, to);
+        return findDatexII223(SituationType.TRAFFIC_ANNOUNCEMENT, from, to);
     }
 
     @Transactional(readOnly = true)
     public Pair<D2LogicalModel, Instant> findWeightRestrictions223(final Instant from, final Instant to) {
-        return findDatex223(SituationType.WEIGHT_RESTRICTION, from, to);
+        return findDatexII223(SituationType.WEIGHT_RESTRICTION, from, to);
     }
 
     @Transactional(readOnly = true)
     public Pair<D2LogicalModel, Instant> findExemptedTransports223(final Instant from, final Instant to) {
-        return findDatex223(SituationType.EXEMPTED_TRANSPORT, from, to);
+        return findDatexII223(SituationType.EXEMPTED_TRANSPORT, from, to);
     }
 
     @Transactional(readOnly = true)
-    public SituationPublication findRoadworks35(final Instant from, final Instant to) {
-        return findDatex35(SituationType.ROAD_WORK, from, to);
+    public Pair<SituationPublication, Instant> findRoadworks35(final Instant from, final Instant to) {
+        return findDatexII35(SituationType.ROAD_WORK, from, to);
     }
 
     @Transactional(readOnly = true)
-    public SituationPublication findTrafficAnnouncements35(final Instant from, final Instant to) {
-        return findDatex35(SituationType.TRAFFIC_ANNOUNCEMENT, from, to);
+    public Pair<SituationPublication, Instant> findTrafficAnnouncements35(final Instant from, final Instant to) {
+        return findDatexII35(SituationType.TRAFFIC_ANNOUNCEMENT, from, to);
     }
 
     @Transactional(readOnly = true)
-    public SituationPublication findWeightRestrictions35(final Instant from, final Instant to) {
-        return findDatex35(SituationType.WEIGHT_RESTRICTION, from, to);
+    public Pair<SituationPublication, Instant> findWeightRestrictions35(final Instant from, final Instant to) {
+        return findDatexII35(SituationType.WEIGHT_RESTRICTION, from, to);
     }
 
     @Transactional(readOnly = true)
-    public SituationPublication findExemptedTransports35(final Instant from, final Instant to) {
-        return findDatex35(SituationType.EXEMPTED_TRANSPORT, from, to);
+    public Pair<SituationPublication, Instant> findExemptedTransports35(final Instant from, final Instant to) {
+        return findDatexII35(SituationType.EXEMPTED_TRANSPORT, from, to);
     }
 
-    private Pair<String, Instant> convertSimppeli(final List<DataDatex2Situation> situations, final boolean createFeatureCollection) {
+    @Transactional(readOnly = true)
+    public Pair<SituationPublication, Instant> findTrafficData35(final Instant fromParameter, final Instant toParameter, final boolean srtiOnly) {
+        final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
+        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+
+        final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
+        final var messageData = messages.stream().map(MessageAndModified::getMessage).toList();
+        final var maxModified = getMaxModified(messages);
+
+        try {
+            return Pair.of(datexII35Converter.createPublication(messageData), maxModified);
+        } catch(final Exception e) {
+            log.error("Error creating publication", e);
+
+            throw e;
+        }
+    }
+
+    private Instant getMaxModified(final List<? extends ModifiedAt> messages) {
+        final var maxModifiedAt = messages.stream()
+                .map(ModifiedAt::getModifiedAt)
+                .max(Instant::compareTo);
+
+        return maxModifiedAt.orElse(Instant.now());
+    }
+
+    private Pair<String, Instant> convertSimppeli(final List<DataDatex2Situation> situations, final boolean createFeatureCollection, final boolean includeAreaGeometry) {
         final var messages = situations.stream()
                 .flatMap(s -> s.getMessages().stream())
                 .filter(m -> m.getMessageType().equals(MessageTypeEnum.SIMPPELI.value()))
-                .map(DataDatex2SituationMessage::getMessage)
                 .toList();
 
-        final var template = createFeatureCollection ? FEATURE_COLLECTION_TEMPLATE : HISTORY_JSON_TEMPLATE;
-        final var response = String.format(template, String.join(",", messages));
+        final var messageData = messages.stream()
+                .map(DataDatex2SituationMessage::getMessage)
+                .map(m -> includeAreaGeometry ? m : messageConverter.removeAreaGeometrySafe(m))
+                .toList();
 
-        return Pair.of(response, Instant.now());
+        final var maxModifiedAt = getMaxModified(messages);
+        final var template = createFeatureCollection ? FEATURE_COLLECTION_TEMPLATE : HISTORY_JSON_TEMPLATE;
+
+        return Pair.of(String.format(template, String.join(",", messageData)),  maxModifiedAt);
     }
 
-    private Pair<D2LogicalModel, Instant> convertDatex223(final List<DataDatex2Situation> situations) {
+    private Pair<D2LogicalModel, Instant> convertDatexII223(final List<DataDatex2Situation> situations) {
         final var messages = situations.stream()
                 .flatMap(s -> s.getMessages().stream())
                 .filter(m -> m.getMessageType().equals(MessageTypeEnum.DATEX_2.value()))
                 .filter(m -> m.getMessageVersion().equals(Datex2Version.V_2_2_3.version))
                 .toList();
 
-        final var lModel = datexII223Converter.createD2LogicalModel(messages);
+        final var maxModifiedAt = getMaxModified(messages);
 
-        return Pair.of(lModel, Instant.now());
+        return Pair.of(datexII223Converter.createD2LogicalModel(messages), maxModifiedAt);
     }
 
-    private SituationPublication convertDatex35(final List<DataDatex2Situation> situations) {
+    private Pair<SituationPublication, Instant> convertDatexII35(final List<DataDatex2Situation> situations) {
         final var messages = situations.stream()
                 .flatMap(s -> s.getMessages().stream())
                 .filter(m -> m.getMessageType().equals(MessageTypeEnum.DATEX_2.value()))
                 .filter(m -> m.getMessageVersion().equals(Datex2Version.V_3_5.version))
+                .toList();
+
+        final var messageData = messages.stream()
                 .map(DataDatex2SituationMessage::getMessage)
                 .toList();
 
+        final var maxModifiedAt = getMaxModified(messages);
+
         try {
-            return datexII35Converter.createPublication(messages);
+            return Pair.of(datexII35Converter.createPublication(messageData), maxModifiedAt);
         } catch(final Exception e) {
             log.error("Error creating publication", e);
 
@@ -164,77 +201,93 @@ public class Datex2Service {
         final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, bbox);
         final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
 
-        return convertSimppeli(situations, true);
+        return convertSimppeli(situations, true, true);
     }
 
-    private Pair<D2LogicalModel, Instant> findDatex223(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
+    private Pair<D2LogicalModel, Instant> findDatexII223(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
         final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
         final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to);
         final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
 
-        return convertDatex223(situations);
+        return convertDatexII223(situations);
     }
 
-    private SituationPublication findDatex35(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
+    private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
         final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
         final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to);
         final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
 
-        return convertDatex35(situations);
+        return convertDatexII35(situations);
     }
 
     @Transactional(readOnly = true)
-    public Pair<String, Instant> findSituationHistory(final String situationId) {
-        final var situations = dataDatex2SituationRepository.findBySituationId(situationId);
+    public Pair<SituationPublication, Instant> findLatestTrafficDataMessage(final String situationId, final boolean latestOnly) {
+        final var messages = latestOnly
+                           ? dataDatex2SituationRepository.findLatestTrafficDataMessageBySituationId(situationId)
+                           : dataDatex2SituationRepository.findTrafficDataMessagesBySituationId(situationId);
+
+        if(messages.isEmpty()) {
+            throw new ObjectNotFoundException("Traffic data message", situationId);
+        }
+
+        final var messageData = messages.stream()
+                .map(MessageAndModified::getMessage)
+                .toList();
+
+        final var maxModifiedAt = getMaxModified(messages);
+
+        return Pair.of(datexII35Converter.createPublication(messageData), maxModifiedAt);
+    }
+
+    @Transactional(readOnly = true)
+    public Pair<String, Instant> findSimppeliSituations(final String situationId, final boolean latestOnly, final boolean includeAreaGeometry) {
+        final var situations = getSituations(situationId, latestOnly);
+
+        return convertSimppeli(situations, latestOnly, includeAreaGeometry);
+    }
+
+    private List<DataDatex2Situation> getSituations(final String situationId, final boolean latestOnly) {
+        final var datex2Ids = latestOnly ? dataDatex2SituationRepository.findLatestSituationBySituationId(situationId)
+                                         : dataDatex2SituationRepository.findAllBySituationId(situationId);
+
+        if(datex2Ids.isEmpty()) {
+            throw new ObjectNotFoundException("Traffic message", situationId);
+        }
+
+        final var situations = dataDatex2SituationRepository.findAllById(datex2Ids);
 
         if(situations.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
         }
 
-        return convertSimppeli(situations, false);
+        return situations;
     }
 
     @Transactional(readOnly = true)
-    public Pair<String, Instant> findLatestSimppeli(final String situationId, final boolean includeAreaGeometry) {
-        final var pair = findLatestSituation(situationId, MessageTypeEnum.SIMPPELI, "0.2.17");
+    public Pair<D2LogicalModel, Instant> findDatexII223Situations(final String situationId, final boolean latestOnly) {
+        final var situations = getSituations(situationId, latestOnly);
+        final var model = convertDatexII223(situations);
 
-        if(!includeAreaGeometry) {
-            // ok, remove area geometry
-
-            final var feature = messageConverter.removeAreaGeometrySafe(pair.getLeft().getMessage());
-            return Pair.of(feature, pair.getRight());
+        if(((fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication)model.getLeft().getPayloadPublication()).getSituations().isEmpty()) {
+            throw new ObjectNotFoundException("Traffic message", situationId);
         }
 
-        return Pair.of(pair.getLeft().getMessage(), pair.getRight());
+        return model;
     }
 
     @Transactional(readOnly = true)
-    public Pair<DataDatex2SituationMessage, Instant> findLatestSituation(final String situationId, final MessageTypeEnum messageType, final String messageVersion) {
-        final var datex2Id = dataDatex2SituationRepository.findLatestSituation(situationId);
+    public Pair<SituationPublication, Instant> findDatexII35Situations(final String situationId, final boolean latestOnly) {
+        final var situations = getSituations(situationId, latestOnly);
+        final var model = convertDatexII35(situations);
 
-        if(datex2Id.isEmpty()) {
+        if(model.getLeft().getSituations().isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
         }
 
-        final var situation = dataDatex2SituationRepository.findById(datex2Id.get());
-
-        if(situation.isEmpty()) {
-            throw new ObjectNotFoundException("Traffic message", situationId);
-        }
-
-        final var datex2Message = situation.get().getMessages().stream()
-            .filter(m -> m.getMessageType().equals(messageType.value()))
-            .filter(m -> m.getMessageVersion().equals(messageVersion))
-            .findFirst();
-
-        if(datex2Message.isEmpty()) {
-            throw new ObjectNotFoundException(String.format("Traffic message %s %s", messageType.value(), messageVersion), situationId);
-        }
-
-        return Pair.of(datex2Message.get(), Instant.now());
+        return model;
     }
 }

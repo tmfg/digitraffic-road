@@ -1,12 +1,15 @@
 package fi.livi.digitraffic.tie.service.data;
 
+import fi.livi.digitraffic.tie.datex2.v3_5.InternationalIdentifier;
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
 import fi.livi.digitraffic.tie.service.trafficmessage.DatexII35XmlMarshaller;
 
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,12 +23,14 @@ public class DatexII35Converter {
     public SituationPublication createPublication(final List<String> datex2Messages) {
         final var publications = datex2Messages.stream()
                 .map(datex35XmlMarshaller::convertToObject)
+                .filter(Objects::nonNull)
                 .sorted(Comparator.comparing((SituationPublication p) -> p.getPublicationTime()).reversed())
                 .collect(Collectors.toList());
 
         if(publications.isEmpty()) {
-            // this is missing all metadata...
-            return new SituationPublication();
+            return new SituationPublication()
+                    .withPublicationTime(Instant.now())
+                    .withPublicationCreator(new InternationalIdentifier("FI", "FTA", null));
         }
 
         final var publication = publications.removeFirst();

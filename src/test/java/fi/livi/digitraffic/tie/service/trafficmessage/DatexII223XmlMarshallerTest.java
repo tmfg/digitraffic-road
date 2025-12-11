@@ -17,12 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 
-public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
+public class DatexII223XmlMarshallerTest extends AbstractServiceTest {
 
-    private static final Logger log = LoggerFactory.getLogger(Datex2XmlStringToObjectMarshallerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(DatexII223XmlMarshallerTest.class);
 
     @Autowired
-    private DatexII223XmlMarshaller datex2XmlStringToObjectMarshaller;
+    private DatexII223XmlMarshaller datexII223XmlMarshaller;
 
     // match values tags ending with name Time
     private final static Pattern timesPattern = Pattern.compile("<[^>]*Time>(.+?)</");
@@ -32,13 +32,12 @@ public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
     @Test
     public void allDatesInUtc() throws IOException {
         final String fromXml = readResourceContent("classpath:lotju/datex2/Datex2_2017-08-10-15-59-34-896.xml");
-        final D2LogicalModel object = datex2XmlStringToObjectMarshaller.convertToObject(fromXml);
-        final String toXml = datex2XmlStringToObjectMarshaller.convertToString(object);
+        final D2LogicalModel object = datexII223XmlMarshaller.convertToObject(fromXml);
+        final String toXml = datexII223XmlMarshaller.convertToString(object);
         log.info("Check source xml not having Zulu times");
         checkIsoDateFormats(fromXml, false, 13);
         log.info("Check created xml having Zulu times");
         checkIsoDateFormats(toXml, true, 13);
-
     }
 
     private void checkIsoDateFormats(final String xml, final boolean shouldMatchIsoFormat, final int timesCount) {
@@ -56,7 +55,7 @@ public class Datex2XmlStringToObjectMarshallerTest extends AbstractServiceTest {
             }
             found++;
         }
-        assertEquals(timesCount, found);
 
+        assertEquals(timesCount, found);
     }
 }

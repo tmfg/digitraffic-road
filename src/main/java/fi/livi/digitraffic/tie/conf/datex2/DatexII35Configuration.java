@@ -12,14 +12,14 @@ import org.springframework.http.converter.HttpMessageConverter;
 
 @ConditionalOnWebApplication
 @Configuration
-public class Datex2_3_5_Configuration {
+public class DatexII35Configuration {
     @Bean
     public HttpMessageConverter<Object> xmlHttpMessageConverterForD2SituationPublication() {
         return new Jaxb2RootElementHttpMessageConverter<>(
                     SituationPublication.class, PayloadPublication.class, "payload")
             .withJaxbSchemaLocations("https://datex2.eu/schema/3/situation")
-//            .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
-            .withNamespaceURI("http://datex2.eu/schema/3/situation");
+            .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+            .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
 }

@@ -57,6 +57,13 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:complexType name="_DisturbanceActivityTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:DisturbanceActivityTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <xs:complexType name="_EnvironmentalObstructionTypeEnum">
     <xs:simpleContent>
       <xs:extension base="sit:EnvironmentalObstructionTypeEnum">
@@ -64,6 +71,27 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:complexType name="_EquipmentOrSystemFaultTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:EquipmentOrSystemFaultTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_EquipmentOrSystemTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:EquipmentOrSystemTypeEnum">
+        <xs:attribute name="_extendedValue" type="sit:_EquipmentOrSystemTypeEnumExtensionType" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="_EquipmentOrSystemTypeEnumExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="accessControlSystem" />
+      <xs:enumeration value="parkingSensors" />
+      <xs:enumeration value="trafficSensors" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="_GeneralInstructionToRoadUsersTypeEnum">
     <xs:simpleContent>
       <xs:extension base="sit:GeneralInstructionToRoadUsersTypeEnum">
@@ -103,6 +131,13 @@
       <xs:enumeration value="collapsedRoadSurface" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="_MaintenanceVehicleActionsEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:MaintenanceVehicleActionsEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <xs:complexType name="_NonWeatherRelatedRoadConditionTypeEnum">
     <xs:simpleContent>
       <xs:extension base="sit:NonWeatherRelatedRoadConditionTypeEnum">
@@ -145,6 +180,13 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:complexType name="_RoadOperatorServiceDisruptionTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:RoadOperatorServiceDisruptionTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <xs:complexType name="_RoadOrCarriagewayOrLaneManagementTypeEnum">
     <xs:simpleContent>
       <xs:extension base="sit:RoadOrCarriagewayOrLaneManagementTypeEnum">
@@ -165,9 +207,37 @@
       <xs:enumeration value="waitingProhibitionInOperation" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="_ServiceDisruptionTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:ServiceDisruptionTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <xs:complexType name="_SpeedManagementTypeEnum">
     <xs:simpleContent>
       <xs:extension base="sit:SpeedManagementTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_TrafficConstrictionTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:TrafficConstrictionTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_TransitServiceInformationEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:TransitServiceInformationEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_TransitServiceTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:TransitServiceTypeEnum">
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
@@ -652,6 +722,181 @@
       <xs:element name="_delaysExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="DisturbanceActivity">
+    <xs:annotation>
+      <xs:documentation>Deliberate human action of either a public disorder nature or of a situation alert type which could disrupt traffic.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="sit:Activity">
+        <xs:sequence>
+          <xs:element name="disturbanceActivityType" type="sit:_DisturbanceActivityTypeEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Includes all situations of a public disorder type or of an alert type, with potential to disrupt traffic.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_disturbanceActivityExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="DisturbanceActivityTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of disturbance activities.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="airRaid">
+        <xs:annotation>
+          <xs:documentation>A situation relating to any threat from foreign air power.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="altercationOfVehicleOccupants">
+        <xs:annotation>
+          <xs:documentation>An altercation (argument, dispute or fight) between two or more vehicle occupants.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="assault">
+        <xs:annotation>
+          <xs:documentation>A situation where an assault has taken place on one or more persons.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="assetDestruction">
+        <xs:annotation>
+          <xs:documentation>A situation where assets of one or more persons or authorities have been destroyed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="attack">
+        <xs:annotation>
+          <xs:documentation>A situation where an attack on a group of people or properties has taken place.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="attackOnVehicle">
+        <xs:annotation>
+          <xs:documentation>A situation where an attack on a vehicle or its occupants has taken place.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="blockadeOrBarrier">
+        <xs:annotation>
+          <xs:documentation>A manned blockade or barrier across a road stopping vehicles passing.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="bombAlert">
+        <xs:annotation>
+          <xs:documentation>An alert to a situation where suspected or actual explosive or incendiary devices may cause disruption to traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="crowd">
+        <xs:annotation>
+          <xs:documentation>A major gathering of people that could disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="demonstration">
+        <xs:annotation>
+          <xs:documentation>A public protest with the potential to disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="evacuation">
+        <xs:annotation>
+          <xs:documentation>A situation where a definite area is being cleared due to dangerous conditions or for security reasons.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="filterBlockade">
+        <xs:annotation>
+          <xs:documentation>A manned blockade of a road where only certain vehicles are allowed through.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="goSlowOperation">
+        <xs:annotation>
+          <xs:documentation>As a form of protest, several vehicles are driving in a convoy at a low speed which is affecting the normal traffic flow.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="gunfireOnRoadway">
+        <xs:annotation>
+          <xs:documentation>A situation involving gunfire, perceived or actual, on or near the roadway through an act of terrorism or crime, which could disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="illVehicleOccupants">
+        <xs:annotation>
+          <xs:documentation>One or more occupants of a vehicle are seriously ill, possibly requiring specialist services or assistance. This may disrupt normal traffic flow.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="march">
+        <xs:annotation>
+          <xs:documentation>A situation where people are walking together in large groups for a common purpose, with potential to disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="peopleThrowingObjectsOnTheRoad">
+        <xs:annotation>
+          <xs:documentation>People throwing objects on the road</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="publicDisturbance">
+        <xs:annotation>
+          <xs:documentation>A situation of public disorder, with potential to disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="radioactiveLeakAlert">
+        <xs:annotation>
+          <xs:documentation>An alert to a radioactive leak which may endanger the public and hence may cause traffic disruption.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="riot">
+        <xs:annotation>
+          <xs:documentation>A situation of public disorder involving violent behaviour and/or destruction of property with the potential to disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sabotage">
+        <xs:annotation>
+          <xs:documentation>A situation resulting from any act of sabotage.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="securityAlert">
+        <xs:annotation>
+          <xs:documentation>An official alert to a perceived or actual threat of crime or terrorism, which could disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="securityIncident">
+        <xs:annotation>
+          <xs:documentation>A situation related to a perceived or actual threat of crime or terrorism, which could disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sightseersObstructingAccess">
+        <xs:annotation>
+          <xs:documentation>Attendees or sightseers to reported event(s) causing obstruction to access.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="strike">
+        <xs:annotation>
+          <xs:documentation>A situation resulting from industrial action that could disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="terroristIncident">
+        <xs:annotation>
+          <xs:documentation>A situation related to a perceived or actual threat of terrorism, which could disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="theft">
+        <xs:annotation>
+          <xs:documentation>A situation where assets of one or more persons or authorities have been stolen.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="toxicCloudAlert">
+        <xs:annotation>
+          <xs:documentation>An alert to a toxic release of gases and/or particulates into the environment which may endanger the public and hence may cause traffic disruption.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unspecifiedAlert">
+        <xs:annotation>
+          <xs:documentation>An alert to a perceived or actual threat of an unspecified nature, which could disrupt traffic.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other than as defined in this enumeration.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="EnvironmentalObstruction">
     <xs:annotation>
       <xs:documentation>An obstruction on the road resulting from an environmental cause.</xs:documentation>
@@ -767,6 +1012,199 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="EquipmentOrSystemFault">
+    <xs:annotation>
+      <xs:documentation>Equipment or system which is faulty, malfunctioning or not in a fully operational state that may be of interest or concern to road operators and road users.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="sit:TrafficElement">
+        <xs:sequence>
+          <xs:element name="equipmentOrSystemFaultType" type="sit:_EquipmentOrSystemFaultTypeEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Failure, malfunction or non operational condition of equipment or system.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="faultyEquipmentOrSystemType" type="sit:_EquipmentOrSystemTypeEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The type of equipment or system which is faulty, malfunctioning or not in a fully operational state.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_equipmentOrSystemFaultExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="EquipmentOrSystemFaultTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of fault, malfunctioning or non operational conditions of equipment or systems.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="notWorking">
+        <xs:annotation>
+          <xs:documentation>Not working or functioning.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="outOfService">
+        <xs:annotation>
+          <xs:documentation>Out of service (usually for operational reasons).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="workingIncorrectly">
+        <xs:annotation>
+          <xs:documentation>Working incorrectly.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="workingIntermittently">
+        <xs:annotation>
+          <xs:documentation>Working intermittently.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="EquipmentOrSystemTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of equipment and systems used to support the operation of the road network.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="anprCameras">
+        <xs:annotation>
+          <xs:documentation>Automatic number plate recognition cameras.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="automatedTollSystem">
+        <xs:annotation>
+          <xs:documentation>Automated toll system.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="cctvCameras">
+        <xs:annotation>
+          <xs:documentation>Closed-circuit television cameras.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="emergencyRoadsideTelephones">
+        <xs:annotation>
+          <xs:documentation>Emergency roadside telephones.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fireDetectionEquipment">
+        <xs:annotation>
+          <xs:documentation>Fire detection equipment</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="galleryLights">
+        <xs:annotation>
+          <xs:documentation>Gallery lights.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="laneControlSigns">
+        <xs:annotation>
+          <xs:documentation>Signs used to control lane usage (e.g. in tidal flow systems or hard shoulder running).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="levelCrossing">
+        <xs:annotation>
+          <xs:documentation>Level crossing (barriers and signals).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="matrixSigns">
+        <xs:annotation>
+          <xs:documentation>Matrix signs. These normally comprise a symbol display area surrounded by four lights (usually amber) which flash when a symbol is displayed. </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="rampControls">
+        <xs:annotation>
+          <xs:documentation>Ramp control equipment.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="roadsideCommunicationsSystem">
+        <xs:annotation>
+          <xs:documentation>Roadside communications system which is used by one or more roadside equipments or systems.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="roadsidePowerSystem">
+        <xs:annotation>
+          <xs:documentation>Roadside power system which is used by one or more roadside equipments or systems.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="speedControlSigns">
+        <xs:annotation>
+          <xs:documentation>Signs used to control traffic speed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="streetLighting">
+        <xs:annotation>
+          <xs:documentation>Street or road lighting.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="temporaryTrafficLights">
+        <xs:annotation>
+          <xs:documentation>Temporary traffic lights.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tollGates">
+        <xs:annotation>
+          <xs:documentation>Toll gates.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="trafficLightSets">
+        <xs:annotation>
+          <xs:documentation>Sets of traffic lights.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="trafficSignals">
+        <xs:annotation>
+          <xs:documentation>Traffic signals.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tunnelEmergencyPhones">
+        <xs:annotation>
+          <xs:documentation>Tunnel emergency telephones</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tunnelFireFightingEquipment">
+        <xs:annotation>
+          <xs:documentation>Tunnel fire fighting equipment</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tunnelLights">
+        <xs:annotation>
+          <xs:documentation>Tunnel lights.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tunnelMobileCommunication">
+        <xs:annotation>
+          <xs:documentation>Tunnel mobile coverage communication equipment</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tunnelRadioCommunication">
+        <xs:annotation>
+          <xs:documentation>Tunnel radio communication equipment</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tunnelSafetySystem">
+        <xs:annotation>
+          <xs:documentation>Any tunnel safety system</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tunnelVentilation">
+        <xs:annotation>
+          <xs:documentation>Tunnel ventilation system.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="variableMessageSigns">
+        <xs:annotation>
+          <xs:documentation>Variable message signs.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other than as defined in this enumeration.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="GeneralInstructionOrMessageToRoadUsers">
     <xs:annotation>
       <xs:documentation>General instruction and/or message that is issued by the network/road operator which is applicable to drivers and sometimes passengers.</xs:documentation>
@@ -777,6 +1215,11 @@
           <xs:element name="generalInstructionToRoadUsersType" type="sit:_GeneralInstructionToRoadUsersTypeEnum" minOccurs="0" maxOccurs="1">
             <xs:annotation>
               <xs:documentation>General instruction that is issued by the network/road operator which is applicable to drivers and sometimes passengers.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="generalMessageToRoadUsers" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>General message that is issued by the network/road operator which is applicable to drivers and sometimes passengers, e.g. details about an amber alert (missing or abducted child alert).</xs:documentation>
             </xs:annotation>
           </xs:element>
           <xs:element name="_generalInstructionOrMessageToRoadUsersExtension" type="com:_ExtensionType" minOccurs="0" />
@@ -1198,6 +1641,47 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="MaintenanceVehicleActionsEnum">
+    <xs:annotation>
+      <xs:documentation>Types of maintenance vehicle actions associated with roadworks.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="maintenanceAction">
+        <xs:annotation>
+          <xs:documentation>Maintenance vehicles are performing maintenance action</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="maintenanceVehiclesMergingIntoTrafficFlow">
+        <xs:annotation>
+          <xs:documentation>Maintenance vehicles are merging into the traffic flow creating a potential hazard for road users.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="slowMoving">
+        <xs:annotation>
+          <xs:documentation>Maintenance vehicles are slow moving.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="stoppingToServiceEquipments">
+        <xs:annotation>
+          <xs:documentation>Maintenance vehicles are stopping to service equipments on or next to the roadway.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="MaintenanceVehicles">
+    <xs:annotation>
+      <xs:documentation>Details of the maintenance vehicles involved in the roadworks activity.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="maintenanceVehicleActions" type="sit:_MaintenanceVehicleActionsEnum" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>The actions of the maintenance vehicles associated with the roadworks activities.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_maintenanceVehiclesExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="MaintenanceWorks">
     <xs:annotation>
       <xs:documentation>Roadworks involving the maintenance or installation of infrastructure.</xs:documentation>
@@ -1885,6 +2369,46 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="RoadOperatorServiceDisruption">
+    <xs:annotation>
+      <xs:documentation>Details of disruption to normal road operator services</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="sit:ServiceInformation">
+        <xs:sequence>
+          <xs:element name="roadOperatorServiceDisruptionType" type="sit:_RoadOperatorServiceDisruptionTypeEnum" minOccurs="1" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>The type of road operator service which is disrupted.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_roadOperatorServiceDisruptionExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="RoadOperatorServiceDisruptionTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of disruption to road operator services relevant to road users.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="emergencyTelephoneNumberOutOfService">
+        <xs:annotation>
+          <xs:documentation>Emergency telephone number for use by public to report incidents is out of service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="informationServiceTelephoneNumberOutOfService">
+        <xs:annotation>
+          <xs:documentation>Road information service telephone number is out of service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="noTrafficOfficerPatrolService">
+        <xs:annotation>
+          <xs:documentation>No traffic officer patrol service is operating.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="RoadOrCarriagewayOrLaneManagement">
     <xs:annotation>
       <xs:documentation>Road, carriageway or lane management action that is instigated by the network/road operator.</xs:documentation>
@@ -2084,7 +2608,155 @@
               <xs:documentation>Indication of whether the roadworks are considered to be urgent whereby emergency work is being, or needs to be, undertaken to mitigate safety concerns. 'True' indicates they are urgent.</xs:documentation>
             </xs:annotation>
           </xs:element>
+          <xs:element name="maintenanceVehicles" type="sit:MaintenanceVehicles" minOccurs="0" />
           <xs:element name="_roadworksExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ServiceDisruption">
+    <xs:annotation>
+      <xs:documentation>Details of disruption to normal services which may include roadside services such as those available at designated service areas, or any other relevant services such as nearby parking.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="sit:ServiceInformation">
+        <xs:sequence>
+          <xs:element name="serviceDisruptionType" type="sit:_ServiceDisruptionTypeEnum" minOccurs="1" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>The type of service which is disrupted.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_serviceDisruptionExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="ServiceDisruptionTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of disruption to services relevant to road users.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="barClosed">
+        <xs:annotation>
+          <xs:documentation>Bar closed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="dieselShortage">
+        <xs:annotation>
+          <xs:documentation>There is a shortage of diesel at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fuelShortage">
+        <xs:annotation>
+          <xs:documentation>There is a shortage of fuel (of one or more types) at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="lpgShortage">
+        <xs:annotation>
+          <xs:documentation>There is a shortage of liquid petroleum gas at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="methaneShortage">
+        <xs:annotation>
+          <xs:documentation>There is a shortage of methane at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="noDieselForHeavyVehicles">
+        <xs:annotation>
+          <xs:documentation>There is no diesel available for heavy goods vehicles at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="noDieselForLightVehicles">
+        <xs:annotation>
+          <xs:documentation>There is no diesel available for light vehicles at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="noParkingAvailability">
+        <xs:annotation>
+          <xs:documentation>There is little or no availbility of parking</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="noPublicTelephones">
+        <xs:annotation>
+          <xs:documentation>There are no available public telephones at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="noToiletFacilities">
+        <xs:annotation>
+          <xs:documentation>There are no available public toilet facilities at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="noVehicleRepairFacilities">
+        <xs:annotation>
+          <xs:documentation>There are no available vehicle repair facilities at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="petrolShortage">
+        <xs:annotation>
+          <xs:documentation>There is a shortage of petrol at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="restAreaBusy">
+        <xs:annotation>
+          <xs:documentation>The rest area at the specified location is busy.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="restAreaClosed">
+        <xs:annotation>
+          <xs:documentation>The rest area at the specified location is closed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="restAreaOvercrowdedDriveToAnotherRestArea">
+        <xs:annotation>
+          <xs:documentation>The rest area at the specified location is close to capacity and motorists are advised to seek an alternative.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceAreaBusy">
+        <xs:annotation>
+          <xs:documentation>The service area at the specified location is close to capacity.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceAreaClosed">
+        <xs:annotation>
+          <xs:documentation>The service area at the specified location is closed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceAreaFuelStationClosed">
+        <xs:annotation>
+          <xs:documentation>The fuel station at the specified service area is closed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceAreaOvercrowdedDriveToAnotherServiceArea">
+        <xs:annotation>
+          <xs:documentation>The service area at the specified location is close to capacity and motorists are advised to seek an alternative.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceAreaRestaurantClosed">
+        <xs:annotation>
+          <xs:documentation>The restaurant at the specified service area is closed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="someCommercialServicesClosed">
+        <xs:annotation>
+          <xs:documentation>Some commercial services are closed at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="waterShortage">
+        <xs:annotation>
+          <xs:documentation>There is a shortage of water at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ServiceInformation" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Information about a service which may influence the behaviour of drivers and hence the characteristics of the traffic flow.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="sit:SituationRecord">
+        <xs:sequence>
+          <xs:element name="_serviceInformationExtension" type="com:_ExtensionType" minOccurs="0" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -2135,6 +2807,11 @@
       <xs:element name="probabilityOfOccurrence" type="sit:_ProbabilityOfOccurrenceEnum" minOccurs="1" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>An assessment of the degree of likelihood that the reported event will occur.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="safetyRelatedMessage" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates whether this SituationRecord specifies a safety-related traffic situation. At least all traffic situations governed by Commission Delegated Regulation (EU) No 886/2013 shall be indicated.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="validity" type="com:Validity" />
@@ -2214,6 +2891,44 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="TrafficConstrictionTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of constriction to which traffic is subjected as a result of an event.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="carriagewayBlocked">
+        <xs:annotation>
+          <xs:documentation>The carriageway is totally obstructed in the specified direction due to an unplanned event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="carriagewayPartiallyObstructed">
+        <xs:annotation>
+          <xs:documentation>The carriageway is partially obstructed in the specified direction due to an unplanned event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="lanesBlocked">
+        <xs:annotation>
+          <xs:documentation>One or more lanes is totally obstructed in the specified direction due to an unplanned event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="lanesPartiallyObstructed">
+        <xs:annotation>
+          <xs:documentation>One or more lanes is partially obstructed in the specified direction due to an unplanned event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="roadBlocked">
+        <xs:annotation>
+          <xs:documentation>The road is totally obstructed, for all vehicles in both directions, due to an unplanned event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="roadPartiallyObstructed">
+        <xs:annotation>
+          <xs:documentation>The road is partially obstructed in both directions due to an unplanned event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="TrafficElement" abstract="true">
     <xs:annotation>
       <xs:documentation>An event which is not planned by the traffic operator, which is affecting, or has the potential to affect traffic flow.</xs:documentation>
@@ -2221,11 +2936,219 @@
     <xs:complexContent>
       <xs:extension base="sit:SituationRecord">
         <xs:sequence>
+          <xs:element name="trafficConstrictionType" type="sit:_TrafficConstrictionTypeEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The type of constriction to which traffic is subjected as a result of an unplanned event</xs:documentation>
+            </xs:annotation>
+          </xs:element>
           <xs:element name="_trafficElementExtension" type="com:_ExtensionType" minOccurs="0" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="TransitInformation">
+    <xs:annotation>
+      <xs:documentation>The availability of transit services and information relating to their departures. This is limited to those transit services which are of direct relevance to road users, e.g. connecting rail or ferry services.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="sit:ServiceInformation">
+        <xs:sequence>
+          <xs:element name="journeyDestination" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Indicates the stated termination point of the transit journey.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="journeyOrigin" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Indicates the stated starting point of the transit journey.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="journeyReference" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Indicates a transit service journey number.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="transitServiceInformation" type="sit:_TransitServiceInformationEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Information about transit services.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="transitServiceType" type="sit:_TransitServiceTypeEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The type of transit service to which the information relates.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="scheduledDepartureTime" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Indicates the timetabled departure time of a transit service for a specified location.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_transitInformationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="TransitServiceInformationEnum">
+    <xs:annotation>
+      <xs:documentation>Types of public transport information.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="cancellations">
+        <xs:annotation>
+          <xs:documentation>Public transport, park-and-ride, rail or bus services are cancelled.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="delayDueToBadWeather">
+        <xs:annotation>
+          <xs:documentation>The specified service is delayed due to bad weather.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="delayDueToRepairs">
+        <xs:annotation>
+          <xs:documentation>The specified service is delayed due to the need for repairs.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="delayedUntilFurtherNotice">
+        <xs:annotation>
+          <xs:documentation>The specified public transport service will be delayed until further notice.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="delaysDueToFlotsam">
+        <xs:annotation>
+          <xs:documentation>The departure of the specified ferry service is delayed due to flotsam.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="departureOnSchedule">
+        <xs:annotation>
+          <xs:documentation>The departure of the specified service is on schedule.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ferryReplacedByIceRoad">
+        <xs:annotation>
+          <xs:documentation>The ferry service has been replaced by an ice road.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="freeShuttleServiceOperating">
+        <xs:annotation>
+          <xs:documentation>A shuttle service is operating at no charge between specified locations.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="informationServiceNotAvailable">
+        <xs:annotation>
+          <xs:documentation>The information service relating to the specified transport system is not currently available.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="irregularServiceDelays">
+        <xs:annotation>
+          <xs:documentation>The specified service is subject to irregular delays.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="loadCapacityChanged">
+        <xs:annotation>
+          <xs:documentation>The load capacity for the specified service has been changed.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="restrictionsForLongerVehicles">
+        <xs:annotation>
+          <xs:documentation>Long vehicles are subject to restrictions on the specified service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceDelays">
+        <xs:annotation>
+          <xs:documentation>The specified service is subject to delays.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceDelaysOfUncertainDuration">
+        <xs:annotation>
+          <xs:documentation>The specified service is subject to delays whose predicted duration cannot be estimated accurately.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceFullyBooked">
+        <xs:annotation>
+          <xs:documentation>The departure of the specified service is fully booked.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceNotOperating">
+        <xs:annotation>
+          <xs:documentation>The specified service is not operating.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceNotOperatingSubstituteServiceAvailable">
+        <xs:annotation>
+          <xs:documentation>The specified service is not operating but an alternative service is available.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceSuspended">
+        <xs:annotation>
+          <xs:documentation>The specified service has been suspended.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="serviceWithdrawn">
+        <xs:annotation>
+          <xs:documentation>The specified service has been cancelled.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="shuttleServiceOperating">
+        <xs:annotation>
+          <xs:documentation>A shuttle service is operating between the specified locations.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="temporaryChangesToTimetables">
+        <xs:annotation>
+          <xs:documentation>The timetable for the specified service is subject to temporary changes.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other than as defined in this enumeration.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TransitServiceTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of transport services available to the general public.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="air">
+        <xs:annotation>
+          <xs:documentation>Air service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="bus">
+        <xs:annotation>
+          <xs:documentation>Bus service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ferry">
+        <xs:annotation>
+          <xs:documentation>Ferry service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hydrofoil">
+        <xs:annotation>
+          <xs:documentation>Hydrofoil service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="rail">
+        <xs:annotation>
+          <xs:documentation>Rail service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tram">
+        <xs:annotation>
+          <xs:documentation>Tram service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="undergroundMetro">
+        <xs:annotation>
+          <xs:documentation>Underground or metro service.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="VehicleObstruction">
     <xs:annotation>
       <xs:documentation>An obstruction on the road caused by one or more vehicles.</xs:documentation>

@@ -50,6 +50,30 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:complexType name="_InfrastructureDescriptorEnum">
+    <xs:simpleContent>
+      <xs:extension base="loc:InfrastructureDescriptorEnum">
+        <xs:attribute name="_extendedValue" type="loc:_InfrastructureDescriptorEnumExtensionType" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="_InfrastructureDescriptorEnumExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="inBicycleUnderpass" />
+      <xs:enumeration value="inNonVehicularUnderpass" />
+      <xs:enumeration value="inPedestrianUnderpass" />
+      <xs:enumeration value="onBicycleBridge" />
+      <xs:enumeration value="onBicycleCrossing" />
+      <xs:enumeration value="onFootBridge" />
+      <xs:enumeration value="onGuidedBusWayCrossing" />
+      <xs:enumeration value="onHorseCrossing" />
+      <xs:enumeration value="onLightRailCrossing" />
+      <xs:enumeration value="onNonVehicularBridge" />
+      <xs:enumeration value="onMixedUseCrossing" />
+      <xs:enumeration value="onPedestrianCrossing" />
+      <xs:enumeration value="onTramCrossing" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="_IntermediatePointOnLinearElement">
     <xs:sequence>
       <xs:element name="referent" type="loc:Referent" minOccurs="1" maxOccurs="1" />
@@ -1057,6 +1081,109 @@
       <xs:enumeration value="relativeHeight">
         <xs:annotation>
           <xs:documentation>Height type corresponding to value masured vertically above the ground level at this point.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="InfrastructureDescriptorEnum">
+    <xs:annotation>
+      <xs:documentation>Descriptor identifying infrastructure to help to identify a specific location.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="atMotorwayInterchange">
+        <xs:annotation>
+          <xs:documentation>At a motorway interchange.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="atRestArea">
+        <xs:annotation>
+          <xs:documentation>At rest area off the carriageway.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="atServiceArea">
+        <xs:annotation>
+          <xs:documentation>At service area.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="atTollPlaza">
+        <xs:annotation>
+          <xs:documentation>At toll plaza.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="atTunnelEntryOrExit">
+        <xs:annotation>
+          <xs:documentation>At entry or exit of tunnel.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="inGallery">
+        <xs:annotation>
+          <xs:documentation>In gallery.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="inTunnel">
+        <xs:annotation>
+          <xs:documentation>In tunnel.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onBridge">
+        <xs:annotation>
+          <xs:documentation>On bridge.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onConnector">
+        <xs:annotation>
+          <xs:documentation>On connecting carriageway between two different roads or road sections.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onElevatedSection">
+        <xs:annotation>
+          <xs:documentation>On elevated section of road.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onFlyover">
+        <xs:annotation>
+          <xs:documentation>On flyover, i.e. on section of road over another road.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onIceRoad">
+        <xs:annotation>
+          <xs:documentation>On ice road.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onLevelCrossing">
+        <xs:annotation>
+          <xs:documentation>On level-crossing.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onLinkRoad">
+        <xs:annotation>
+          <xs:documentation>On road section linking two different roads.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onRoundabout">
+        <xs:annotation>
+          <xs:documentation>On roundabout.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onTheRoadway">
+        <xs:annotation>
+          <xs:documentation>On the roadway.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onUndergroundSection">
+        <xs:annotation>
+          <xs:documentation>On underground section of road.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="onUnderpass">
+        <xs:annotation>
+          <xs:documentation>On underpass, i.e. section of road which passes under another road.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="withinJunction">
+        <xs:annotation>
+          <xs:documentation>On the main carriageway within a junction between exit slip road and entry slip road.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
       <xs:enumeration value="_extended" />
@@ -2850,6 +2977,11 @@ The boundary always consists of road segments</xs:documentation>
       <xs:element name="geographicDescriptor" type="loc:_GeographicCharacteristicEnum" minOccurs="1" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>Descriptor which identifies a geographic characteristic to help identify the specific location</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="infrastructureDescriptor" type="loc:_InfrastructureDescriptorEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Descriptor which identifies infrastructure to help identify the specific location.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="lengthAffected" type="com:MetresAsFloat" minOccurs="0" maxOccurs="1">

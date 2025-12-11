@@ -4,19 +4,22 @@ import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesC
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.DATEX2_2_2_3;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.DATEX2_3_5;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.EXEMPTED_TRANSPORTS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.HISTORY;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.MESSAGES;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.ROADWORKS;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.TRAFFIC_ANNOUNCEMENTS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.TRAFFIC_DATA;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.WEIGHT_RESTRICTIONS;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.function.Consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties;
-
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -145,59 +148,10 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
             """;
 
     private static final String ROADWORK_DATEXII_3_5 = """
-            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-            <ns2:payload xmlns="http://datex2.eu/schema/3/common" xmlns:ns2="http://datex2.eu/schema/3/situation" xmlns:ns3="http://datex2.eu/schema/3/locationReferencing" xmlns:ns4="http://datex2.eu/schema/3/d2Payload" xmlns:ns5="http://datex2.eu/schema/3/roadTrafficData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:SituationPublication" lang="fi" modelBaseVersion="3" xsi:schemaLocation="https://datex2.eu/schema/3/situation">
-                <publicationTime>2025-09-26T13:19:46.460Z</publicationTime>
-                <publicationCreator>
-                    <country>FI</country>
-                    <nationalIdentifier>FTA</nationalIdentifier>
-                </publicationCreator>
-                <ns2:situation id="GUID50442306">
-                    <ns2:headerInformation>
-                        <informationStatus>real</informationStatus>
-                    </ns2:headerInformation>
-                    <ns2:situationRecord xsi:type="ns2:AuthorityOperation" id="GUID5044547601" version="1">
-                        <ns2:situationRecordCreationTime>2025-09-26T13:18:47.686Z</ns2:situationRecordCreationTime>
-                        <ns2:situationRecordVersionTime>2025-09-26T13:19:45.455Z</ns2:situationRecordVersionTime>
-                        <ns2:probabilityOfOccurrence>certain</ns2:probabilityOfOccurrence>
-                        <ns2:validity>
-                            <validityStatus>active</validityStatus>
-                            <validityTimeSpecification>
-                                <overallStartTime>2025-09-26T13:18:00.000Z</overallStartTime>
-                                <overallEndTime>ENDTIME</overallEndTime>
-                            </validityTimeSpecification>
-                        </ns2:validity>
-                        <ns2:locationReference xsi:type="ns3:SingleRoadLinearLocation">
-                            <ns3:alertCLinear xsi:type="ns3:AlertCMethod4Linear">
-                                <ns3:alertCLocationCountryCode>6</ns3:alertCLocationCountryCode>
-                                <ns3:alertCLocationTableNumber>17</ns3:alertCLocationTableNumber>
-                                <ns3:alertCLocationTableVersion>1.11.44</ns3:alertCLocationTableVersion>
-                                <ns3:alertCDirection>
-                                    <ns3:alertCDirectionCoded>positive</ns3:alertCDirectionCoded>
-                                    <ns3:alertCAffectedDirection>unknown</ns3:alertCAffectedDirection>
-                                </ns3:alertCDirection>
-                                <ns3:alertCMethod4PrimaryPointLocation>
-                                    <ns3:alertCLocation>
-                                        <ns3:specificLocation>19060</ns3:specificLocation>
-                                    </ns3:alertCLocation>
-                                    <ns3:offsetDistance>
-                                        <ns3:offsetDistance>228</ns3:offsetDistance>
-                                    </ns3:offsetDistance>
-                                </ns3:alertCMethod4PrimaryPointLocation>
-                                <ns3:alertCMethod4SecondaryPointLocation>
-                                    <ns3:alertCLocation>
-                                        <ns3:specificLocation>19061</ns3:specificLocation>
-                                    </ns3:alertCLocation>
-                                    <ns3:offsetDistance>
-                                        <ns3:offsetDistance>139</ns3:offsetDistance>
-                                    </ns3:offsetDistance>
-                                </ns3:alertCMethod4SecondaryPointLocation>
-                            </ns3:alertCLinear>
-                        </ns2:locationReference>
-                        <ns2:authorityOperationType>survey</ns2:authorityOperationType>
-                    </ns2:situationRecord>
-                </ns2:situation>
-            </ns2:payload>
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?><d2:payload xsi:type="sit:SituationPublication" lang="fi" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" xmlns:fst="http://datex2.eu/schema/3/faultAndStatus" xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" xmlns:prk="http://datex2.eu/schema/3/parking" xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:ubx="http://datex2.eu/schema/3/urbanExtensions" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:d2="http://datex2.eu/schema/3/d2Payload" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan" xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:vms="http://datex2.eu/schema/3/vms" xmlns:rer="http://datex2.eu/schema/3/reroutingManagementEnhanced" xmlns:sit="http://datex2.eu/schema/3/situation"><com:publicationTime>2025-11-27T12:34:16.807Z</com:publicationTime><com:publicationCreator><com:country>FI</com:country><com:nationalIdentifier>FTA</com:nationalIdentifier></com:publicationCreator><sit:situation id="GUID50444616"><sit:overallSeverity>low</sit:overallSeverity><sit:headerInformation><com:confidentiality>restrictedToAuthoritiesAndTrafficOperators</com:confidentiality><com:informationStatus>real</com:informationStatus></sit:headerInformation><sit:situationRecord xsi:type="sit:ConstructionWorks" id="GUID5044798501" version="20"><sit:situationRecordCreationTime>2025-04-11T06:08:25.349Z</sit:situationRecordCreationTime><sit:situationRecordVersionTime>2025-11-27T12:34:15.897Z</sit:situationRecordVersionTime><sit:situationRecordFirstSupplierVersionTime>2025-04-11T06:08:25.349Z</sit:situationRecordFirstSupplierVersionTime><sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence><sit:severity>low</sit:severity><sit:validity><com:validityStatus>definedByValidityTimeSpec</com:validityStatus><com:validityTimeSpecification><com:overallStartTime>2025-05-04T21:00:00.000Z</com:overallStartTime><com:overallEndTime>2025-11-28T21:59:59.999Z</com:overallEndTime></com:validityTimeSpecification></sit:validity><sit:generalPublicComment><sit:comment><com:values><com:value lang="fi">Tie 644, Jyväskylä. Tietyö.\s
+                                       Tie 644 välillä Viisarimäki - Kanavuori, Jyväskylä.
+                                       Tarkempi paikka: Paikasta Kanavuori 8,8 km, vaikutusalue 300 m, suuntaan Koriseva. Ei haittaa liikenteelle.
+                                       </com:value></com:values></sit:comment></sit:generalPublicComment><sit:locationReference xsi:type="loc:SingleRoadLinearLocation"><loc:alertCLinear xsi:type="loc:AlertCMethod4Linear"><loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode><loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber><loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion><loc:alertCDirection><loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded><loc:alertCAffectedDirection>both</loc:alertCAffectedDirection></loc:alertCDirection><loc:alertCMethod4PrimaryPointLocation><loc:alertCLocation><loc:specificLocation>5775</loc:specificLocation></loc:alertCLocation><loc:offsetDistance><loc:offsetDistance>8807</loc:offsetDistance></loc:offsetDistance></loc:alertCMethod4PrimaryPointLocation><loc:alertCMethod4SecondaryPointLocation><loc:alertCLocation><loc:specificLocation>5769</loc:specificLocation></loc:alertCLocation><loc:offsetDistance><loc:offsetDistance>7009</loc:offsetDistance></loc:offsetDistance></loc:alertCMethod4SecondaryPointLocation></loc:alertCLinear></sit:locationReference><sit:constructionWorkType>constructionWork</sit:constructionWorkType></sit:situationRecord></sit:situation></d2:payload>
             """;
 
     private static final String ROADWORK_DATEXII_2_2_3 = """
@@ -205,6 +159,81 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
 
     private static final String EXEMPTED_TRANSPORT_3_5 = """
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><ns15:payload xsi:type="ns6:SituationPublication" lang="fi" xmlns="http://datex2.eu/schema/3/trafficManagementPlan" xmlns:ns2="http://datex2.eu/schema/3/common" xmlns:ns4="http://datex2.eu/schema/3/facilities" xmlns:ns3="http://datex2.eu/schema/3/roadTrafficData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns6="http://datex2.eu/schema/3/situation" xmlns:ns5="http://datex2.eu/schema/3/parking" xmlns:ns8="http://datex2.eu/schema/3/commonExtension" xmlns:ns7="http://datex2.eu/schema/3/urbanExtensions" xmlns:ns13="http://datex2.eu/schema/3/energyInfrastructure" xmlns:ns9="http://datex2.eu/schema/3/locationExtension" xmlns:ns12="http://datex2.eu/schema/3/vms" xmlns:ns11="http://datex2.eu/schema/3/reroutingManagementEnhanced" xmlns:ns10="http://datex2.eu/schema/3/locationReferencing" xmlns:ns15="http://datex2.eu/schema/3/d2Payload" xmlns:ns14="http://datex2.eu/schema/3/faultAndStatus"><ns2:publicationTime>2025-09-30T04:46:31.999Z</ns2:publicationTime><ns2:publicationCreator><ns2:country>FI</ns2:country><ns2:nationalIdentifier>FTA</ns2:nationalIdentifier></ns2:publicationCreator><ns6:situation id="GUID50442308"><ns6:headerInformation><ns2:confidentiality>restrictedToAuthoritiesAndTrafficOperators</ns2:confidentiality><ns2:informationStatus>real</ns2:informationStatus></ns6:headerInformation><ns6:situationRecord xsi:type="ns6:VehicleObstruction" id="GUID5044547801" version="1"><ns6:situationRecordCreationTime>2025-09-30T04:46:31.010Z</ns6:situationRecordCreationTime><ns6:situationRecordVersionTime>2025-09-30T04:46:31.012Z</ns6:situationRecordVersionTime><ns6:situationRecordFirstSupplierVersionTime>2025-09-30T04:46:31.010Z</ns6:situationRecordFirstSupplierVersionTime><ns6:probabilityOfOccurrence>certain</ns6:probabilityOfOccurrence><ns6:validity><ns2:validityStatus>definedByValidityTimeSpec</ns2:validityStatus><ns2:validityTimeSpecification><ns2:overallStartTime>2025-09-30T07:00:00.000Z</ns2:overallStartTime><ns2:overallEndTime>2025-10-01T09:00:00.000Z</ns2:overallEndTime></ns2:validityTimeSpecification></ns6:validity><ns6:locationReference xsi:type="ns10:LocationGroupByList"><ns10:locationContainedInGroup xsi:type="ns10:AreaLocation"><ns10:alertCArea><ns10:alertCLocationCountryCode>6</ns10:alertCLocationCountryCode><ns10:alertCLocationTableNumber>17</ns10:alertCLocationTableNumber><ns10:alertCLocationTableVersion>1.11.44</ns10:alertCLocationTableVersion><ns10:areaLocation><ns10:specificLocation>119</ns10:specificLocation></ns10:areaLocation></ns10:alertCArea></ns10:locationContainedInGroup><ns10:locationContainedInGroup xsi:type="ns10:AreaLocation"><ns10:alertCArea><ns10:alertCLocationCountryCode>6</ns10:alertCLocationCountryCode><ns10:alertCLocationTableNumber>17</ns10:alertCLocationTableNumber><ns10:alertCLocationTableVersion>1.11.44</ns10:alertCLocationTableVersion><ns10:areaLocation><ns10:specificLocation>83</ns10:specificLocation></ns10:areaLocation></ns10:alertCArea></ns10:locationContainedInGroup></ns6:locationReference><ns6:vehicleObstructionType>other</ns6:vehicleObstructionType></ns6:situationRecord><ns6:situationRecord xsi:type="ns6:RoadOrCarriagewayOrLaneManagement" id="GUID5044547802" version="1"><ns6:situationRecordCreationTime>2025-09-30T04:46:31.010Z</ns6:situationRecordCreationTime><ns6:situationRecordVersionTime>2025-09-30T04:46:31.012Z</ns6:situationRecordVersionTime><ns6:situationRecordFirstSupplierVersionTime>2025-09-30T04:46:31.010Z</ns6:situationRecordFirstSupplierVersionTime><ns6:probabilityOfOccurrence>certain</ns6:probabilityOfOccurrence><ns6:validity><ns2:validityStatus>definedByValidityTimeSpec</ns2:validityStatus><ns2:validityTimeSpecification><ns2:overallStartTime>2025-09-30T07:00:00.000Z</ns2:overallStartTime><ns2:overallEndTime>2025-10-01T09:00:00.000Z</ns2:overallEndTime></ns2:validityTimeSpecification></ns6:validity><ns6:locationReference xsi:type="ns10:LocationGroupByList"><ns10:locationContainedInGroup xsi:type="ns10:AreaLocation"><ns10:alertCArea><ns10:alertCLocationCountryCode>6</ns10:alertCLocationCountryCode><ns10:alertCLocationTableNumber>17</ns10:alertCLocationTableNumber><ns10:alertCLocationTableVersion>1.11.44</ns10:alertCLocationTableVersion><ns10:areaLocation><ns10:specificLocation>119</ns10:specificLocation></ns10:areaLocation></ns10:alertCArea></ns10:locationContainedInGroup><ns10:locationContainedInGroup xsi:type="ns10:AreaLocation"><ns10:alertCArea><ns10:alertCLocationCountryCode>6</ns10:alertCLocationCountryCode><ns10:alertCLocationTableNumber>17</ns10:alertCLocationTableNumber><ns10:alertCLocationTableVersion>1.11.44</ns10:alertCLocationTableVersion><ns10:areaLocation><ns10:specificLocation>83</ns10:specificLocation></ns10:areaLocation></ns10:alertCArea></ns10:locationContainedInGroup></ns6:locationReference><ns6:complianceOption>mandatory</ns6:complianceOption><ns6:roadOrCarriagewayOrLaneManagementType>intermittentShortTermClosures</ns6:roadOrCarriagewayOrLaneManagementType></ns6:situationRecord><ns6:situationRecord xsi:type="ns6:VehicleObstruction" id="GUID5044547803" version="1"><ns6:situationRecordCreationTime>2025-09-30T04:46:31.010Z</ns6:situationRecordCreationTime><ns6:situationRecordVersionTime>2025-09-30T04:46:31.012Z</ns6:situationRecordVersionTime><ns6:situationRecordFirstSupplierVersionTime>2025-09-30T04:46:31.010Z</ns6:situationRecordFirstSupplierVersionTime><ns6:probabilityOfOccurrence>certain</ns6:probabilityOfOccurrence><ns6:validity><ns2:validityStatus>definedByValidityTimeSpec</ns2:validityStatus><ns2:validityTimeSpecification><ns2:overallStartTime>2025-09-30T07:00:00.000Z</ns2:overallStartTime><ns2:overallEndTime>2025-10-01T09:00:00.000Z</ns2:overallEndTime></ns2:validityTimeSpecification></ns6:validity><ns6:locationReference xsi:type="ns10:LocationGroupByList"><ns10:locationContainedInGroup xsi:type="ns10:AreaLocation"><ns10:alertCArea><ns10:alertCLocationCountryCode>6</ns10:alertCLocationCountryCode><ns10:alertCLocationTableNumber>17</ns10:alertCLocationTableNumber><ns10:alertCLocationTableVersion>1.11.44</ns10:alertCLocationTableVersion><ns10:areaLocation><ns10:specificLocation>119</ns10:specificLocation></ns10:areaLocation></ns10:alertCArea></ns10:locationContainedInGroup><ns10:locationContainedInGroup xsi:type="ns10:AreaLocation"><ns10:alertCArea><ns10:alertCLocationCountryCode>6</ns10:alertCLocationCountryCode><ns10:alertCLocationTableNumber>17</ns10:alertCLocationTableNumber><ns10:alertCLocationTableVersion>1.11.44</ns10:alertCLocationTableVersion><ns10:areaLocation><ns10:specificLocation>83</ns10:specificLocation></ns10:areaLocation></ns10:alertCArea></ns10:locationContainedInGroup></ns6:locationReference><ns6:vehicleObstructionType>abnormalLoad</ns6:vehicleObstructionType></ns6:situationRecord></ns6:situation></ns15:payload>""";
+
+    private static final String SRTI_3_5 = """
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <d2:payload xsi:type="sit:SituationPublication" lang="fi"
+                          	xmlns:com="http://datex2.eu/schema/3/common"
+                          	xmlns:loc="http://datex2.eu/schema/3/locationReferencing"
+                          	xmlns:roa="http://datex2.eu/schema/3/roadTrafficData"
+                          	xmlns:fst="http://datex2.eu/schema/3/faultAndStatus"
+                          	xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure"
+                          	xmlns:prk="http://datex2.eu/schema/3/parking"
+                          	xmlns:fac="http://datex2.eu/schema/3/facilities"
+                          	xmlns:ubx="http://datex2.eu/schema/3/urbanExtensions"
+                          	xmlns:locx="http://datex2.eu/schema/3/locationExtension"
+                          	xmlns:d2="http://datex2.eu/schema/3/d2Payload"
+                          	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          	xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan"
+                          	xmlns:comx="http://datex2.eu/schema/3/commonExtension"
+                          	xmlns:vms="http://datex2.eu/schema/3/vms"
+                          	xmlns:rer="http://datex2.eu/schema/3/reroutingManagementEnhanced"
+                          	xmlns:sit="http://datex2.eu/schema/3/situation">
+                          	<com:publicationTime>2025-11-05T11:08:04.239Z</com:publicationTime>
+                          	<publicationCreator>
+                          		<country>FI</country>
+                          		<nationalIdentifier>FTA</nationalIdentifier>
+                          	</publicationCreator>
+            <sit:situation id="GUID1000003780">
+              <sit:headerInformation>
+                <com:confidentiality>restrictedToAuthoritiesAndTrafficOperators</com:confidentiality>
+                <com:informationStatus>real</com:informationStatus>
+              </sit:headerInformation>
+              <sit:situationRecord xsi:type="sit:GeneralObstruction" id="GUID100000378001" version="1">
+                <sit:situationRecordCreationTime>2025-11-27T13:34:04.411Z</sit:situationRecordCreationTime>
+                <sit:situationRecordVersionTime>2025-11-27T13:34:04.411Z</sit:situationRecordVersionTime>
+                <sit:situationRecordFirstSupplierVersionTime>2025-11-27T13:34:04.411Z</sit:situationRecordFirstSupplierVersionTime>
+                <sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence>
+                <sit:safetyRelatedMessage>true</sit:safetyRelatedMessage>
+                <sit:validity>
+                  <com:validityStatus>definedByValidityTimeSpec</com:validityStatus>
+                  <com:validityTimeSpecification>
+                    <com:overallStartTime>2025-11-27T13:34:04.411Z</com:overallStartTime>
+                    <com:overallEndTime>2025-11-27T14:04:04.411Z</com:overallEndTime>
+                  </com:validityTimeSpecification>
+                </sit:validity>
+                <sit:locationReference xsi:type="loc:SingleRoadLinearLocation">
+                  <loc:alertCLinear xsi:type="loc:AlertCMethod4Linear">
+                    <loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode>
+                    <loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber>
+                    <loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion>
+                    <loc:alertCDirection>
+                      <loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded>
+                      <loc:alertCAffectedDirection>unknown</loc:alertCAffectedDirection>
+                    </loc:alertCDirection>
+                    <loc:alertCMethod4PrimaryPointLocation>
+                      <loc:alertCLocation>
+                        <loc:specificLocation>865</loc:specificLocation>
+                      </loc:alertCLocation>
+                      <loc:offsetDistance>
+                        <loc:offsetDistance>20</loc:offsetDistance>
+                      </loc:offsetDistance>
+                    </loc:alertCMethod4PrimaryPointLocation>
+                    <loc:alertCMethod4SecondaryPointLocation>
+                      <loc:alertCLocation>
+                        <loc:specificLocation>2159</loc:specificLocation>
+                      </loc:alertCLocation>
+                      <loc:offsetDistance>
+                        <loc:offsetDistance>5565</loc:offsetDistance>
+                      </loc:offsetDistance>
+                    </loc:alertCMethod4SecondaryPointLocation>
+                  </loc:alertCLinear>
+                </sit:locationReference>
+                <sit:obstructionType>unprotectedAccidentArea</sit:obstructionType>
+              </sit:situationRecord>
+            </sit:situation>
+        </d2:payload>
+            """;
 
     private MockHttpServletResponse getResponse(final String url) throws Exception {
         final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
@@ -217,6 +246,13 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
         final ResultActions result = mockMvc.perform(get);
 
         return result.andReturn().getResponse();
+    }
+
+    private void insertTrafficData() {
+        entityManager.createNativeQuery("""
+insert into datex2_rtti(situation_id,type,publication_time,geometry,start_time,is_srti,message)
+values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
+""".replace("MESSAGE", SRTI_3_5)).executeUpdate();
     }
 
     private void insertSituation(final SituationType situationType, final MessageTypeEnum messageType,
@@ -273,13 +309,36 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
     }
 
     @Test
+    public void message223HistoryEmpty() throws Exception {
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_2_2_3);
+
+        ResponseAsserter.notFound(response).run();
+    }
+
+    @Test
+    public void message223History() throws Exception {
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version, ROADWORK_DATEXII_2_2_3);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_2_2_3);
+
+        XmlAsserter.ok(response).expectContent(objectNode -> {
+            final var publication = objectNode.get("payloadPublication");
+            Assertions.assertNotNull(publication);
+
+            final var situation = publication.get("situation");
+            Assertions.assertNotNull(situation);
+            Assertions.assertEquals("GUID50442306", situation.get("id").textValue());
+        });
+    }
+
+    @Test
     public void messageWithoutGeometry() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1?includeAreaGeometry=false");
-        Assertions.assertFalse(response.getContentAsString().contains("coordinates"));
 
         JsonAsserter.ok(response).run();
+        Assertions.assertFalse(response.getContentAsString().contains("coordinates"));
     }
 
     @Test
@@ -299,11 +358,11 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
-            Assertions.assertEquals("ns2:SituationPublication", xmlNode.get("type").textValue());
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
 
             final var situation = xmlNode.get("situation");
             Assertions.assertNotNull(situation);
-            Assertions.assertEquals("GUID50442306", situation.get("id").textValue());
+            Assertions.assertEquals("GUID50444616", situation.get("id").textValue());
         });
     }
 
@@ -390,7 +449,7 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?from=%s", TIME_NOW));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
-            Assertions.assertEquals("ns2:SituationPublication", xmlNode.get("type").textValue());
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
 
             final var situation = xmlNode.get("situation");
             Assertions.assertNotNull(situation);
@@ -404,7 +463,7 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?from=%s", TIME_FUTURE));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
-            Assertions.assertEquals("ns2:SituationPublication", xmlNode.get("type").textValue());
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
 
             final var situation = xmlNode.get("situation");
             Assertions.assertNull(situation);
@@ -418,7 +477,7 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?to=%s", TIME_NOW));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
-            Assertions.assertEquals("ns2:SituationPublication", xmlNode.get("type").textValue());
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
 
             final var situation = xmlNode.get("situation");
             Assertions.assertNotNull(situation);
@@ -432,7 +491,7 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?from=%s&to=%s", TIME_PAST, TIME_PAST));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
-            Assertions.assertEquals("ns2:SituationPublication", xmlNode.get("type").textValue());
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
 
             final var situation = xmlNode.get("situation");
             Assertions.assertNull(situation);
@@ -493,7 +552,7 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
     private void assertValid35(final MockHttpServletResponse response, final String expectedGuid)
             throws UnsupportedEncodingException, JsonProcessingException {
         XmlAsserter.ok(response).expectContent(xmlNode -> {
-            Assertions.assertEquals("ns2:SituationPublication", xmlNode.get("type").textValue());
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
 
             final var situation = xmlNode.get("situation");
             Assertions.assertNotNull(situation);
@@ -507,9 +566,8 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_3_5);
 
-        assertValid35(response, "GUID50442306");
+        assertValid35(response, "GUID50444616");
     }
-
 
     @Test
     public void exemptedTransports35() throws Exception {
@@ -526,21 +584,78 @@ public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithReg
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5);
 
-        assertValid35(response, "GUID50442306");
+        assertValid35(response, "GUID50444616");
     }
 
     @Test
-    public void messageHistoryEmpty() throws Exception {
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1/history");
+    public void message35HistoryEmpty() throws Exception {
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_3_5);
 
         ResponseAsserter.notFound(response).run();
     }
 
     @Test
-    public void messageHistory() throws Exception {
+    public void message35History() throws Exception {
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_3_5);
+
+        XmlAsserter.ok(response).expectContent(objectNode -> {
+            Assertions.assertEquals("sit:SituationPublication", objectNode.get("type").textValue());
+
+            final var situation = objectNode.get("situation");
+            Assertions.assertNotNull(situation);
+            Assertions.assertEquals("GUID50444616", situation.get("id").textValue());
+        });
+    }
+
+    @Test
+    public void trafficData35() throws Exception {
+        insertTrafficData();
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + DATEX2_3_5);
+
+        XmlAsserter.ok(response).expectContent((Consumer<ObjectNode>) xmlNode -> {
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
+
+            // no situations
+            final var situation = xmlNode.get("situation");
+            Assertions.assertNotNull(situation);
+        });
+    }
+
+    @Test
+    public void trafficDataMessageHistory35Empty() throws Exception {
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5);
+
+        JsonAsserter.notFound(response).run();
+    }
+
+    @Test
+    public void trafficDataMessageHistory35() throws Exception {
+        insertTrafficData();
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5);
+
+        XmlAsserter.ok(response).expectContent((Consumer<ObjectNode>) xmlNode -> {
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
+
+            // no situations
+            final var situation = xmlNode.get("situation");
+            Assertions.assertNotNull(situation);
+        });
+    }
+
+    @Test
+    public void messageSimppeliHistoryEmpty() throws Exception {
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY);
+
+        ResponseAsserter.notFound(response).run();
+    }
+
+    @Test
+    public void messageSimppeliHistory() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1/history");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY);
 
         JsonAsserter.ok(response).expectContent(jsonNode -> Assertions.assertEquals(1, jsonNode.size())
         );
