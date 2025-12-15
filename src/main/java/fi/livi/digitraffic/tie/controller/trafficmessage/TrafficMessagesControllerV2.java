@@ -2,7 +2,8 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_BETA_TAG;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG_V2;
+import static fi.livi.digitraffic.tie.controller.ApiConstants.V2;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
@@ -13,7 +14,6 @@ import java.time.Instant;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.locationtech.jts.geom.Polygon;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -35,16 +35,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = TRAFFIC_MESSAGE_BETA_TAG,
+@Tag(name = TRAFFIC_MESSAGE_TAG_V2,
      description = "Traffic messages",
      externalDocs = @ExternalDocumentation(description = "Documentation",
                                            url = "https://www.digitraffic.fi/en/road-traffic/#traffic-messages"))
 @RestController
 @Validated
-@ConditionalOnBooleanProperty(name = "dt.datex2_35.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication
-public class TrafficMessagesControllerBeta {
-    public static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
+public class TrafficMessagesControllerV2 {
+    public static final String API_TRAFFIC_MESSAGE_V2 = API_TRAFFIC_MESSAGE + V2;
 
     public static final String MESSAGES = "/messages";
     public static final String ROADWORKS = "/roadworks";
@@ -59,14 +58,14 @@ public class TrafficMessagesControllerBeta {
 
     private final DatexIIService datexIIService;
 
-    public TrafficMessagesControllerBeta(final DatexIIService datexIIService) {
+    public TrafficMessagesControllerV2(final DatexIIService datexIIService) {
         this.datexIIService = datexIIService;
     }
 
     @Operation(summary = "Traffic message by situationId as DatexII 2.2.3")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/{situationId}" + DATEX2_2_2_3})
+                    path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic message"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -79,13 +78,13 @@ public class TrafficMessagesControllerBeta {
             final String situationId) {
         final Pair<D2LogicalModel, Instant> situation = datexIIService.findDatexII223Situations(situationId, true);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + DATEX2_2_2_3);
+                API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + DATEX2_2_2_3);
     }
 
     @Operation(summary = "Traffic message history by situationId as DatexII 2.2.3")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/{situationId}" + HISTORY + DATEX2_2_2_3 })
+                    path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + HISTORY + DATEX2_2_2_3 })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic message"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -98,13 +97,13 @@ public class TrafficMessagesControllerBeta {
             final String situationId) {
         final Pair<D2LogicalModel, Instant> situation = datexIIService.findDatexII223Situations(situationId, false);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + HISTORY + DATEX2_2_2_3);
+                API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + HISTORY + DATEX2_2_2_3);
     }
 
     @Operation(summary = "Traffic message by situationId as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/{situationId}" + DATEX2_3_5 })
+                    path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + DATEX2_3_5 })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic message"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -118,13 +117,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<SituationPublication, Instant> response =
                 datexIIService.findDatexII35Situations(situationId, true);
         return ResponseEntityWithLastModifiedHeader.of(response.getLeft(), response.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + DATEX2_3_5);
     }
 
     @Operation(summary = "Traffic message history by situationId as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/{situationId}" + HISTORY + DATEX2_3_5 })
+                    path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + HISTORY + DATEX2_3_5 })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic message"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -138,13 +137,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<SituationPublication, Instant> response =
                 datexIIService.findDatexII35Situations(situationId, false);
         return ResponseEntityWithLastModifiedHeader.of(response.getLeft(), response.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + HISTORY + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + HISTORY + DATEX2_3_5);
     }
 
     @Operation(summary = "Traffic message by situationId as json")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_JSON_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/{situationId}"})
+            path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}"})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of traffic message"),
             @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -162,13 +161,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<String, Instant> situation = datexIIService.findSimppeliSituations(situationId, true, includeAreaGeometry);
 
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId);
+                API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId);
     }
 
     @Operation(summary = "Traffic data message by situationId as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/{situationId}" + DATEX2_3_5 })
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/{situationId}" + DATEX2_3_5 })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic data message"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -181,13 +180,13 @@ public class TrafficMessagesControllerBeta {
             final String situationId) {
         final Pair<SituationPublication, Instant> situation = datexIIService.findLatestTrafficDataMessage(situationId, true);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/" + situationId + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/" + situationId + DATEX2_3_5);
     }
 
     @Operation(summary = "Traffic data message history by situationId as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/{situationId}" + HISTORY + DATEX2_3_5 })
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/{situationId}" + HISTORY + DATEX2_3_5 })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic data message history"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -200,13 +199,13 @@ public class TrafficMessagesControllerBeta {
             final String situationId) {
         final Pair<SituationPublication, Instant> situation = datexIIService.findLatestTrafficDataMessage(situationId, false);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/" + situationId + HISTORY + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/" + situationId + HISTORY + DATEX2_3_5);
     }
 
     @Operation(summary = "Traffic message history by situationId as json")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_JSON_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/{situationId}" + HISTORY})
+                    path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + HISTORY})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic messages"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
@@ -219,13 +218,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<String, Instant> situation = datexIIService.findSimppeliSituations(situationId, false, true);
 
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + HISTORY);
+                API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + HISTORY);
     }
 
     @Operation(summary = "Roadworks as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5})
+                    path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of road works") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> roadworks_35(
@@ -240,13 +239,13 @@ public class TrafficMessagesControllerBeta {
         final var publication = datexIIService.findRoadworks35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5);
     }
 
     @Operation(summary = "Traffic announcements as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_XML_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5})
+            path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of traffic announcements") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficAnnouncements_35(
@@ -261,13 +260,13 @@ public class TrafficMessagesControllerBeta {
         final var publication = datexIIService.findTrafficAnnouncements35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
     }
 
     @Operation(summary = "Weight restrictions as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_XML_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_3_5})
+            path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of weight restrictions") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> weightRestrictions_35(
@@ -282,13 +281,13 @@ public class TrafficMessagesControllerBeta {
         final var publication = datexIIService.findWeightRestrictions35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5);
     }
 
     @Operation(summary = "Exempted transports as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_XML_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_3_5})
+            path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of exempted transports") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> exemptedTransports_35(
@@ -303,13 +302,13 @@ public class TrafficMessagesControllerBeta {
         final var publication = datexIIService.findExemptedTransports35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5);
     }
 
     @Operation(summary = "RTTI/SRTI messages as DatexII 3.5")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + DATEX2_3_5})
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of RTTI/SRTI messages") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficData_35(
@@ -327,14 +326,14 @@ public class TrafficMessagesControllerBeta {
         final var publication = datexIIService.findTrafficData35(from, to, srti);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + DATEX2_3_5);
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5);
     }
 
 
     @Operation(summary = "Roadworks as json")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_JSON_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + ROADWORKS })
+            path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of road works") })
     public ResponseEntityWithLastModifiedHeader<String> roadworks(
@@ -363,13 +362,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<String, Instant> model = datexIIService.findRoadworks(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + ROADWORKS);
+                API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
     }
 
     @Operation(summary = "Traffic announcements as json")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_JSON_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS })
+            path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of traffic announcements") })
     public ResponseEntityWithLastModifiedHeader<String> trafficAnnouncements(
@@ -397,13 +396,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<String, Instant> model = datexIIService.findTrafficAnnouncements(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS);
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS);
     }
 
     @Operation(summary = "Weight restrictions as json")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_JSON_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS })
+            path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of weight restrictions") })
     public ResponseEntityWithLastModifiedHeader<String> weightRestrictions(
@@ -431,13 +430,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<String, Instant> model = datexIIService.findWeightRestrictions(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS);
+                API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS);
     }
 
     @Operation(summary = "Exempted transports as json")
     @RequestMapping(method = RequestMethod.GET,
             produces = { APPLICATION_JSON_VALUE },
-            path = { API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS })
+            path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of exempted transports") })
     public ResponseEntityWithLastModifiedHeader<String> exemptedTransports(
@@ -465,13 +464,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<String, Instant> model = datexIIService.findExemptedTransports(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS);
+                API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS);
     }
 
     @Operation(summary = "Roadworks as DatexII 2.2.3")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_2_2_3})
+                    path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of road works") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> roadworks_223(
@@ -486,13 +485,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<D2LogicalModel, Instant> model = datexIIService.findRoadworks223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_2_2_3);
+                API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_2_2_3);
     }
 
     @Operation(summary = "Traffic announcements as DatexII 2.2.3")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3})
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of traffic announcements") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficAnnouncements_223(
@@ -507,13 +506,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<D2LogicalModel, Instant> model = datexIIService.findTrafficAnnouncements223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3);
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3);
     }
 
     @Operation(summary = "Weight restrictions as DatexII 2.2.3")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_2_2_3})
+                    path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of weight restrictions") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> weightRestrictions_223(
@@ -528,13 +527,13 @@ public class TrafficMessagesControllerBeta {
         final Pair<D2LogicalModel, Instant> model = datexIIService.findWeightRestrictions223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_2_2_3);
+                API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3);
     }
 
     @Operation(summary = "Exempted transports as DatexII 2.2.3")
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_2_2_3})
+                    path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of exempted transports") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> exemptedTransports_223(
@@ -549,6 +548,6 @@ public class TrafficMessagesControllerBeta {
         final Pair<D2LogicalModel, Instant> model = datexIIService.findExemptedTransports223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_2_2_3);
+                API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3);
     }
 }

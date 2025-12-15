@@ -1,15 +1,15 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.API_TRAFFIC_MESSAGE_BETA;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.DATEX2_2_2_3;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.DATEX2_3_5;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.EXEMPTED_TRANSPORTS;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.HISTORY;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.MESSAGES;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.ROADWORKS;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.TRAFFIC_ANNOUNCEMENTS;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.TRAFFIC_DATA;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerBeta.WEIGHT_RESTRICTIONS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.DATEX2_2_2_3;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.DATEX2_3_5;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.EXEMPTED_TRANSPORTS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.HISTORY;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.MESSAGES;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.ROADWORKS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.TRAFFIC_ANNOUNCEMENTS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.TRAFFIC_DATA;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.WEIGHT_RESTRICTIONS;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
@@ -44,7 +44,7 @@ import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
 import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 
-public class TrafficMessageControllerBetaTest extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
+public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     @Autowired
     private DataDatex2SituationRepository dataDatex2SituationRepository;
 
@@ -275,7 +275,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
 
     @Test
     public void noMessages_35() throws Exception {
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1/datex2-3.5.xml");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-3.5.xml");
 
         ResponseAsserter.notFound(response).expectJson();
     }
@@ -284,7 +284,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void withMessages_35() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1/datex2-3.5.xml");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-3.5.xml");
 
         XmlAsserter.ok(response).run();
     }
@@ -293,7 +293,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void message223() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version, ROADWORK_DATEXII_2_2_3);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1/datex2-2.2.3.xml");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-2.2.3.xml");
 
         XmlAsserter.ok(response).run();
         assertValidXml223(response);
@@ -303,14 +303,14 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void message223NotFound() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1/datex2-2.2.3.xml");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-2.2.3.xml");
 
         ResponseAsserter.notFound(response).run();
     }
 
     @Test
     public void message223HistoryEmpty() throws Exception {
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_2_2_3);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY + DATEX2_2_2_3);
 
         ResponseAsserter.notFound(response).run();
     }
@@ -319,7 +319,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void message223History() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version, ROADWORK_DATEXII_2_2_3);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_2_2_3);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY + DATEX2_2_2_3);
 
         XmlAsserter.ok(response).expectContent(objectNode -> {
             final var publication = objectNode.get("payloadPublication");
@@ -335,7 +335,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void messageWithoutGeometry() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1?includeAreaGeometry=false");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1?includeAreaGeometry=false");
 
         JsonAsserter.ok(response).run();
         Assertions.assertFalse(response.getContentAsString().contains("coordinates"));
@@ -345,7 +345,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void messageWithGeometry() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + "/messages/id1?includeAreaGeometry=true");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1?includeAreaGeometry=true");
         Assertions.assertTrue(response.getContentAsString().contains("coordinates"));
 
         JsonAsserter.ok(response).run();
@@ -355,7 +355,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void trafficAnnouncement35() throws Exception {
         insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
@@ -368,7 +368,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
 
     @Test
     public void roadWorks35NoData() throws Exception {
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5);
 
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatus());
         Assertions.assertTrue(response.getContentAsString().contains("http://datex2.eu"));
@@ -381,7 +381,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorksJson() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
 
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")
@@ -393,7 +393,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorksJsonWithBrokenBoundingBox() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + "?xMin=22&xMax=23");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + "?xMin=22&xMax=23");
 
         JsonAsserter.bad(response).run();
     }
@@ -401,7 +401,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorksJsonWithInvalidBoundingBox() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + "?xMin=22&xMax=23&yMin=1&yMax=4");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + "?xMin=22&xMax=23&yMin=1&yMax=4");
 
         JsonAsserter.bad(response).run();
     }
@@ -410,7 +410,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorksJsonWithBoundingBox() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + "?xMin=22&xMax=31&yMin=60&yMax=70");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + "?xMin=22&xMax=31&yMin=60&yMax=70");
 
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")
@@ -422,7 +422,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorksJsonWithWarpedBoundingBox() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + "?xMin=31&xMax=22&yMin=60&yMax=70");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + "?xMin=31&xMax=22&yMin=60&yMax=70");
 
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")
@@ -434,7 +434,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorksJsonWithBoundingBoxNoHits() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + "?xMin=21&xMax=22&yMin=60&yMax=61");
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + "?xMin=21&xMax=22&yMin=60&yMax=61");
 
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")
@@ -446,7 +446,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorks35LimitFromHits() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?from=%s", TIME_NOW));
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + String.format("?from=%s", TIME_NOW));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
@@ -460,7 +460,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorks35LimitFromMisses() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?from=%s", TIME_FUTURE));
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + String.format("?from=%s", TIME_FUTURE));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
@@ -474,7 +474,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorks35LimitToHits() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?to=%s", TIME_NOW));
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + String.format("?to=%s", TIME_NOW));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
@@ -488,7 +488,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorks35LimitToMisses() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5 + String.format("?from=%s&to=%s", TIME_PAST, TIME_PAST));
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + String.format("?from=%s&to=%s", TIME_PAST, TIME_PAST));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
@@ -517,7 +517,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorks223() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version, ROADWORK_DATEXII_2_2_3);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_2_2_3);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_2_2_3);
 
         assertValidXml223(response);
     }
@@ -526,7 +526,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void trafficAnnouncement223() throws Exception {
         insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version, ROADWORK_DATEXII_2_2_3);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3);
 
         assertValidXml223(response);
     }
@@ -535,7 +535,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void weightRestriction223() throws Exception {
         insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version, ROADWORK_DATEXII_2_2_3);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_2_2_3);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3);
 
         assertValidXml223(response);
     }
@@ -544,7 +544,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void exemptedTransport223() throws Exception {
         insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version, ROADWORK_DATEXII_2_2_3);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_2_2_3);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3);
 
         assertValidXml223(response);
     }
@@ -564,7 +564,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void weightRestrictionsWorks35() throws Exception {
         insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5);
 
         assertValid35(response, "GUID50444616");
     }
@@ -573,7 +573,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void exemptedTransports35() throws Exception {
         insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, EXEMPTED_TRANSPORT_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5);
 
         assertValid35(response, "GUID50442308");
     }
@@ -582,14 +582,14 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void roadWorks35() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5);
 
         assertValid35(response, "GUID50444616");
     }
 
     @Test
     public void message35HistoryEmpty() throws Exception {
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY + DATEX2_3_5);
 
         ResponseAsserter.notFound(response).run();
     }
@@ -598,7 +598,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void message35History() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version, ROADWORK_DATEXII_3_5);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY + DATEX2_3_5);
 
         XmlAsserter.ok(response).expectContent(objectNode -> {
             Assertions.assertEquals("sit:SituationPublication", objectNode.get("type").textValue());
@@ -612,7 +612,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     @Test
     public void trafficData35() throws Exception {
         insertTrafficData();
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5);
 
         XmlAsserter.ok(response).expectContent((Consumer<ObjectNode>) xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
@@ -625,7 +625,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
 
     @Test
     public void trafficDataMessageHistory35Empty() throws Exception {
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5);
 
         JsonAsserter.notFound(response).run();
     }
@@ -633,7 +633,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     @Test
     public void trafficDataMessageHistory35() throws Exception {
         insertTrafficData();
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5);
 
         XmlAsserter.ok(response).expectContent((Consumer<ObjectNode>) xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
@@ -646,7 +646,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
 
     @Test
     public void messageSimppeliHistoryEmpty() throws Exception {
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY);
 
         ResponseAsserter.notFound(response).run();
     }
@@ -655,7 +655,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void messageSimppeliHistory() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/id1" + HISTORY);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY);
 
         JsonAsserter.ok(response).expectContent(jsonNode -> Assertions.assertEquals(1, jsonNode.size())
         );
@@ -665,7 +665,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void trafficAnnouncementJson() throws Exception {
         insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS);
 
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")
@@ -677,7 +677,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void weightRestrictionsJson() throws Exception {
         insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS);
 
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")
@@ -689,7 +689,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     public void exemptedTransportsJson() throws Exception {
         insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
-        final var response = getResponse(API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS);
 
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")

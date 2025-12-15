@@ -75,7 +75,7 @@ public class TrafficMessageControllerV1 {
      * /api/traffic-message/v/locations/types
      * /api/traffic-message/v/locations/versions
      */
-    // private static final String API_TRAFFIC_MESSAGE_BETA = API_TRAFFIC_MESSAGE + BETA;
+
     public static final String API_TRAFFIC_MESSAGE_V1 = API_TRAFFIC_MESSAGE + V1;
 
     private static final String MESSAGES = "/messages";

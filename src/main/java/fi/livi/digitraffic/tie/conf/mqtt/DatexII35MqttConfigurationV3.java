@@ -93,7 +93,7 @@ public class DatexII35MqttConfigurationV3 {
         if(mqttMessage.getMessageType().equals(MessageTypeEnum.SIMPPELI.value())) {
             return GZipUtils.compressToBase64String(mqttMessage.getMessage());
         }
-        
+
         return mqttMessage.getMessage();
     }
 

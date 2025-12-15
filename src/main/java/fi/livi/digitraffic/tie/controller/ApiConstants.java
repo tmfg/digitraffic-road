@@ -6,6 +6,7 @@ public final class ApiConstants {
     public static final String API = "/api";
     /** API versions */
     public static final String V1 = "/v1";
+    public static final String V2 = "/v2";
     public static final String BETA = "/beta";
     public static final String INTEGRATION = API + "/integration";
 
@@ -24,6 +25,7 @@ public final class ApiConstants {
 
     /** Traffic messages */
     public static final String TRAFFIC_MESSAGE_TAG_V1 = "Traffic message V1";
+    public static final String TRAFFIC_MESSAGE_TAG_V2 = "Traffic message V2";
     public static final String TRAFFIC_MESSAGE_BETA_TAG = "Traffic message (BETA)";
     public static final String API_TRAFFIC_MESSAGE = API + "/traffic-message";
 
