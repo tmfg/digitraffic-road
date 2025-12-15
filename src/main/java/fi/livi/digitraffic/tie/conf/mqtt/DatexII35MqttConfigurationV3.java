@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.conf.mqtt;
 
 import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.TRAFFIC_MESSAGE;
-import static fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue.StatisticsType.TRAFFIC_MESSAGE_DATEX;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.Instant;
@@ -31,8 +30,8 @@ import fi.livi.digitraffic.tie.mqtt.MqttMessageSenderV2;
 import fi.livi.digitraffic.tie.service.data.MqttService;
 import fi.livi.digitraffic.tie.service.mqtt.MqttRelayQueue;
 
-@ConditionalOnBooleanProperty(name = "dt.datex2_35.enabled", matchIfMissing = true)
 @ConditionalOnNotWebApplication
+@ConditionalOnProperty("mqtt.trafficMessage.datex2.v2.enabled")
 @Component
 public class DatexII35MqttConfigurationV3 {
     private final MqttMessageSenderV2 mqttMessageSender;
