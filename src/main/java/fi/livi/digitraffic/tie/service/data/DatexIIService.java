@@ -28,14 +28,14 @@ import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service
-public class Datex2Service {
+public class DatexIIService {
     private final DataDatex2SituationRepository dataDatex2SituationRepository;
     private final DatexII35Converter datexII35Converter;
     private final DatexII223Converter datexII223Converter;
 
     private final MessageConverter messageConverter;
 
-    private static final Logger log = LoggerFactory.getLogger(Datex2Service.class);
+    private static final Logger log = LoggerFactory.getLogger(DatexIIService.class);
 
     private static final Instant TIME_END = Instant.ofEpochMilli(32503683600000L);
 
@@ -48,9 +48,9 @@ public class Datex2Service {
         ]
     }""";
 
-    public Datex2Service(final DataDatex2SituationRepository dataDatex2SituationRepository,
-                         final DatexII35Converter datexII35Converter, final DatexII223Converter datexII223Converter,
-                         final MessageConverter messageConverter) {
+    public DatexIIService(final DataDatex2SituationRepository dataDatex2SituationRepository,
+                          final DatexII35Converter datexII35Converter, final DatexII223Converter datexII223Converter,
+                          final MessageConverter messageConverter) {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
         this.datexII35Converter = datexII35Converter;
         this.datexII223Converter = datexII223Converter;

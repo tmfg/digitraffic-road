@@ -27,6 +27,7 @@ public class DataDatex2Situation {
     private Long datex2Id;
 
     private String situationId;
+
     @Enumerated(EnumType.STRING)
     private TrafficAnnouncementProperties.SituationType situationType;
     private long situationVersion;
@@ -66,5 +67,9 @@ public class DataDatex2Situation {
 
     public List<DataDatex2SituationMessage> getMessages() {
         return messages;
+    }
+
+    public TrafficAnnouncementProperties.SituationType getSituationType() {
+        return situationType;
     }
 }

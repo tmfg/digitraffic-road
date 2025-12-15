@@ -45,6 +45,10 @@ public class DataDatex2SituationMessage implements ModifiedAt {
     public DataDatex2SituationMessage() {
     }
 
+    public Long getMessageId() {
+        return messageId;
+    }
+
     public String getMessageVersion() {
         return messageVersion;
     }
@@ -67,5 +71,9 @@ public class DataDatex2SituationMessage implements ModifiedAt {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public DataDatex2Situation getSituation() {
+        return situation;
     }
 }

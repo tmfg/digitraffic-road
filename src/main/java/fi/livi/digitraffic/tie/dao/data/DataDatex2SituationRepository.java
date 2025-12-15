@@ -3,7 +3,10 @@ package fi.livi.digitraffic.tie.dao.data;
 import java.time.Instant;
 import java.util.List;
 
+import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.data.MessageAndModified;
+
+import fi.livi.digitraffic.tie.model.data.SituationMqttMessage;
 
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -72,4 +75,13 @@ public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2S
     order by publication_time desc
 """, nativeQuery = true)
     List<MessageAndModified> findTrafficDataMessagesBySituationId(final String situationId);
+
+    @Query(value = """
+    select message, m.modified_at, situation_type, message_type, message_version
+    from data_datex2_situation_message m
+    left join data_datex2_situation on m.datex2_id = data_datex2_situation.datex2_id
+    where m.modified_at > :lastUpdated
+    order by m.modified_at desc
+""", nativeQuery = true)
+    List<SituationMqttMessage> findMessagesForMqtt(final Instant lastUpdated);
 }

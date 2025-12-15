@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
-import fi.livi.digitraffic.tie.service.data.Datex2Service;
+import fi.livi.digitraffic.tie.service.data.DatexIIService;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,10 +57,10 @@ public class TrafficMessagesControllerBeta {
     public static final String DATEX2_2_2_3 = "/datex2-2.2.3.xml";
     public static final String HISTORY = "/history";
 
-    private final Datex2Service datex2Service;
+    private final DatexIIService datexIIService;
 
-    public TrafficMessagesControllerBeta(final Datex2Service datex2Service) {
-        this.datex2Service = datex2Service;
+    public TrafficMessagesControllerBeta(final DatexIIService datexIIService) {
+        this.datexIIService = datexIIService;
     }
 
     @Operation(summary = "Traffic message by situationId as DatexII 2.2.3")
@@ -77,7 +77,7 @@ public class TrafficMessagesControllerBeta {
                        required = true)
             @PathVariable
             final String situationId) {
-        final Pair<D2LogicalModel, Instant> situation = datex2Service.findDatexII223Situations(situationId, true);
+        final Pair<D2LogicalModel, Instant> situation = datexIIService.findDatexII223Situations(situationId, true);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + DATEX2_2_2_3);
     }
@@ -96,7 +96,7 @@ public class TrafficMessagesControllerBeta {
                        required = true)
             @PathVariable
             final String situationId) {
-        final Pair<D2LogicalModel, Instant> situation = datex2Service.findDatexII223Situations(situationId, false);
+        final Pair<D2LogicalModel, Instant> situation = datexIIService.findDatexII223Situations(situationId, false);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + HISTORY + DATEX2_2_2_3);
     }
@@ -116,7 +116,7 @@ public class TrafficMessagesControllerBeta {
             @PathVariable
             final String situationId) {
         final Pair<SituationPublication, Instant> response =
-                datex2Service.findDatexII35Situations(situationId, true);
+                datexIIService.findDatexII35Situations(situationId, true);
         return ResponseEntityWithLastModifiedHeader.of(response.getLeft(), response.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + DATEX2_3_5);
     }
@@ -136,7 +136,7 @@ public class TrafficMessagesControllerBeta {
             @PathVariable
             final String situationId) {
         final Pair<SituationPublication, Instant> response =
-                datex2Service.findDatexII35Situations(situationId, false);
+                datexIIService.findDatexII35Situations(situationId, false);
         return ResponseEntityWithLastModifiedHeader.of(response.getLeft(), response.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + HISTORY + DATEX2_3_5);
     }
@@ -159,7 +159,7 @@ public class TrafficMessagesControllerBeta {
                             "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
             @RequestParam(defaultValue = "true")
             final boolean includeAreaGeometry) {
-        final Pair<String, Instant> situation = datex2Service.findSimppeliSituations(situationId, true, includeAreaGeometry);
+        final Pair<String, Instant> situation = datexIIService.findSimppeliSituations(situationId, true, includeAreaGeometry);
 
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId);
@@ -179,7 +179,7 @@ public class TrafficMessagesControllerBeta {
                        required = true)
             @PathVariable
             final String situationId) {
-        final Pair<SituationPublication, Instant> situation = datex2Service.findLatestTrafficDataMessage(situationId, true);
+        final Pair<SituationPublication, Instant> situation = datexIIService.findLatestTrafficDataMessage(situationId, true);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/" + situationId + DATEX2_3_5);
     }
@@ -198,7 +198,7 @@ public class TrafficMessagesControllerBeta {
                        required = true)
             @PathVariable
             final String situationId) {
-        final Pair<SituationPublication, Instant> situation = datex2Service.findLatestTrafficDataMessage(situationId, false);
+        final Pair<SituationPublication, Instant> situation = datexIIService.findLatestTrafficDataMessage(situationId, false);
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + "/" + situationId + HISTORY + DATEX2_3_5);
     }
@@ -216,7 +216,7 @@ public class TrafficMessagesControllerBeta {
             @Parameter(description = "Situation id", required = true)
             @PathVariable
             final String situationId) {
-        final Pair<String, Instant> situation = datex2Service.findSimppeliSituations(situationId, false, true);
+        final Pair<String, Instant> situation = datexIIService.findSimppeliSituations(situationId, false, true);
 
         return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + MESSAGES + "/" + situationId + HISTORY);
@@ -237,7 +237,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final var publication = datex2Service.findRoadworks35(from, to);
+        final var publication = datexIIService.findRoadworks35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_3_5);
@@ -258,7 +258,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final var publication = datex2Service.findTrafficAnnouncements35(from, to);
+        final var publication = datexIIService.findTrafficAnnouncements35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
@@ -279,7 +279,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final var publication = datex2Service.findWeightRestrictions35(from, to);
+        final var publication = datexIIService.findWeightRestrictions35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_3_5);
@@ -300,7 +300,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final var publication = datex2Service.findExemptedTransports35(from, to);
+        final var publication = datexIIService.findExemptedTransports35(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_3_5);
@@ -324,7 +324,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final var publication = datex2Service.findTrafficData35(from, to, srti);
+        final var publication = datexIIService.findTrafficData35(from, to, srti);
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + TRAFFIC_DATA + DATEX2_3_5);
@@ -360,7 +360,7 @@ public class TrafficMessagesControllerBeta {
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
 
-        final Pair<String, Instant> model = datex2Service.findRoadworks(from, to, bbox);
+        final Pair<String, Instant> model = datexIIService.findRoadworks(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + ROADWORKS);
@@ -394,7 +394,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
-        final Pair<String, Instant> model = datex2Service.findTrafficAnnouncements(from, to, bbox);
+        final Pair<String, Instant> model = datexIIService.findTrafficAnnouncements(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS);
@@ -428,7 +428,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
-        final Pair<String, Instant> model = datex2Service.findWeightRestrictions(from, to, bbox);
+        final Pair<String, Instant> model = datexIIService.findWeightRestrictions(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS);
@@ -462,7 +462,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
-        final Pair<String, Instant> model = datex2Service.findExemptedTransports(from, to, bbox);
+        final Pair<String, Instant> model = datexIIService.findExemptedTransports(from, to, bbox);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS);
@@ -483,7 +483,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final Pair<D2LogicalModel, Instant> model = datex2Service.findRoadworks223(from, to);
+        final Pair<D2LogicalModel, Instant> model = datexIIService.findRoadworks223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + ROADWORKS + DATEX2_2_2_3);
@@ -504,7 +504,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final Pair<D2LogicalModel, Instant> model = datex2Service.findTrafficAnnouncements223(from, to);
+        final Pair<D2LogicalModel, Instant> model = datexIIService.findTrafficAnnouncements223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3);
@@ -525,7 +525,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final Pair<D2LogicalModel, Instant> model = datex2Service.findWeightRestrictions223(from, to);
+        final Pair<D2LogicalModel, Instant> model = datexIIService.findWeightRestrictions223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + WEIGHT_RESTRICTIONS + DATEX2_2_2_3);
@@ -546,7 +546,7 @@ public class TrafficMessagesControllerBeta {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant to) {
-        final Pair<D2LogicalModel, Instant> model = datex2Service.findExemptedTransports223(from, to);
+        final Pair<D2LogicalModel, Instant> model = datexIIService.findExemptedTransports223(from, to);
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_BETA + EXEMPTED_TRANSPORTS + DATEX2_2_2_3);

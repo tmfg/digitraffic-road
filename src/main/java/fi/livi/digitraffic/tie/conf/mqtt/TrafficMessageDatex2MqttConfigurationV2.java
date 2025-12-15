@@ -41,7 +41,6 @@ public class TrafficMessageDatex2MqttConfigurationV2 {
     private final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1;
     private final MqttMessageSenderV2 mqttMessageSender;
 
-    @Autowired
     public TrafficMessageDatex2MqttConfigurationV2(final TrafficMessageMqttDataServiceV1 trafficMessageMqttDataServiceV1,
                                                    final MqttRelayQueue mqttRelay,
                                                    final ObjectMapper objectMapper,
@@ -75,20 +74,10 @@ public class TrafficMessageDatex2MqttConfigurationV2 {
         }
     }
 
-    /**
-     * @param trafficMessage to convert
-     * @return message or null if failed
-     */
     private MqttDataMessageV2 createMqttDataMessage(final Datex2 trafficMessage) {
         final String topic = MqttUtil.getTopicForMessage(TRAFFIC_MESSAGE_V2_TOPIC, trafficMessage.getSituationType());
-        try {
-            final String datex2 = trafficMessage.getMessage();
-            return new MqttDataMessageV2(topic, datex2);
-        } catch (final Exception e) {
-            LOGGER.error(String.format("method=createMqttDataMessage failed situationId=%s versionTime: %s", trafficMessage.getSituations().getFirst().getSituationId(), trafficMessage.getSituations().getFirst().getVersionTime()), e);
-            return null;
-        }
 
+        return new MqttDataMessageV2(topic, trafficMessage.getMessage());
     }
 
     @Scheduled(fixedDelayString = "${mqtt.status.intervalMs}")
