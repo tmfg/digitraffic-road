@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:com="http://datex2.eu/schema/3/common" version="3.5" targetNamespace="http://datex2.eu/schema/3/common" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:com="http://datex2.eu/schema/3/common" version="3.6" targetNamespace="http://datex2.eu/schema/3/common" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:complexType name="_ComparisonOperatorEnum">
     <xs:simpleContent>
       <xs:extension base="com:ComparisonOperatorEnum">
@@ -30,18 +30,18 @@
   </xs:complexType>
   <xs:simpleType name="_EmissionClassificationEuroEnumExtensionType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="euroUnknown" />
-      <xs:enumeration value="euroI" />
-      <xs:enumeration value="euroII" />
-      <xs:enumeration value="euroIII" />
       <xs:enumeration value="euro0" />
+      <xs:enumeration value="euro1" />
+      <xs:enumeration value="euro2" />
+      <xs:enumeration value="euro3" />
       <xs:enumeration value="euro4" />
       <xs:enumeration value="euro6d" />
       <xs:enumeration value="euro6dTemp" />
       <xs:enumeration value="euroIV" />
-      <xs:enumeration value="euro1" />
-      <xs:enumeration value="euro2" />
-      <xs:enumeration value="euro3" />
+      <xs:enumeration value="euroUnknown" />
+      <xs:enumeration value="euroI" />
+      <xs:enumeration value="euroII" />
+      <xs:enumeration value="euroIII" />
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="_ExtensionType">
@@ -52,10 +52,19 @@
   <xs:complexType name="_FuelTypeEnum">
     <xs:simpleContent>
       <xs:extension base="com:FuelTypeEnum">
-        <xs:attribute name="_extendedValue" type="xs:string" />
+        <xs:attribute name="_extendedValue" type="com:_FuelTypeEnumExtensionType" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:simpleType name="_FuelTypeEnumExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="cng" />
+      <xs:enumeration value="fuelCell" />
+      <xs:enumeration value="ng" />
+      <xs:enumeration value="phev" />
+      <xs:enumeration value="reev" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="_InformationStatusEnum">
     <xs:simpleContent>
       <xs:extension base="com:InformationStatusEnum">
@@ -73,10 +82,20 @@
   <xs:complexType name="_LoadTypeEnum">
     <xs:simpleContent>
       <xs:extension base="com:LoadTypeEnum">
-        <xs:attribute name="_extendedValue" type="xs:string" />
+        <xs:attribute name="_extendedValue" type="com:_LoadTypeEnumExtensionType" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:simpleType name="_LoadTypeEnumExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="dangerousGoods" />
+      <xs:enumeration value="mail" />
+      <xs:enumeration value="medicalSupplies" />
+      <xs:enumeration value="moneyAndValuables" />
+      <xs:enumeration value="passenger" />
+      <xs:enumeration value="personWithDisability" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="_LowEmissionLevelEnum">
     <xs:simpleContent>
       <xs:extension base="com:LowEmissionLevelEnum">
@@ -101,10 +120,20 @@
   <xs:complexType name="_VehicleEquipmentEnum">
     <xs:simpleContent>
       <xs:extension base="com:VehicleEquipmentEnum">
-        <xs:attribute name="_extendedValue" type="xs:string" />
+        <xs:attribute name="_extendedValue" type="com:_VehicleEquipmentEnumExtensionType" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:simpleType name="_VehicleEquipmentEnumExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="dippedHeadlightsInUse" />
+      <xs:enumeration value="electronicTollEquipment" />
+      <xs:enumeration value="filterInUse" />
+      <xs:enumeration value="speedLimiterInUse" />
+      <xs:enumeration value="studdedTyresInUse" />
+      <xs:enumeration value="weelchairSystem" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="_VehicleTypeEnum">
     <xs:simpleContent>
       <xs:extension base="com:VehicleTypeEnum">
@@ -117,15 +146,61 @@
       <xs:enumeration value="electricBike" />
       <xs:enumeration value="electricScooter" />
       <xs:enumeration value="personalLightElectricVehicle" />
+      <xs:enumeration value="agriculturalAndForestryVehicle" />
+      <xs:enumeration value="animalDrawnVehicles" />
+      <xs:enumeration value="coach" />
+      <xs:enumeration value="electricVehicles" />
+      <xs:enumeration value="extendedCabDualPurposePickup" />
+      <xs:enumeration value="fireEngine" />
+      <xs:enumeration value="forestryVehicle" />
+      <xs:enumeration value="fourStrokeEngineVehicle" />
+      <xs:enumeration value="fourWheeledVehicle" />
+      <xs:enumeration value="goodsVehicles" />
+      <xs:enumeration value="gritter" />
+      <xs:enumeration value="handcarts" />
+      <xs:enumeration value="lowspeedDisabledVehicle" />
+      <xs:enumeration value="lowSpeedMotorisedVehicle" />
+      <xs:enumeration value="microcar" />
+      <xs:enumeration value="mobileMachines" />
+      <xs:enumeration value="motorisedHorseBox" />
+      <xs:enumeration value="motorisedPersonalTransportDevices" />
+      <xs:enumeration value="motorizedVehicles" />
+      <xs:enumeration value="motorizedVehiclesWithoutNumberPlate" />
+      <xs:enumeration value="motorQuadricycles" />
+      <xs:enumeration value="nonMotorizedVehicles" />
+      <xs:enumeration value="passengerCarWithTrailer" />
+      <xs:enumeration value="pickup" />
+      <xs:enumeration value="quadricycle" />
+      <xs:enumeration value="snowPlough" />
+      <xs:enumeration value="soloMotorcycle" />
+      <xs:enumeration value="tipper" />
+      <xs:enumeration value="tractor" />
+      <xs:enumeration value="twoStrokeEngineVehicle" />
+      <xs:enumeration value="withEvenFirstNumberRegistrationPlate" />
+      <xs:enumeration value="withOddFirstNumberRegistrationPlate" />
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="_VehicleUsageEnum">
     <xs:simpleContent>
       <xs:extension base="com:VehicleUsageEnum">
-        <xs:attribute name="_extendedValue" type="xs:string" />
+        <xs:attribute name="_extendedValue" type="com:_VehicleUsageEnumExtensionType" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:simpleType name="_VehicleUsageEnumExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="deliveryServices" />
+      <xs:enumeration value="funeralProcession" />
+      <xs:enumeration value="government" />
+      <xs:enumeration value="marketVehicle" />
+      <xs:enumeration value="nightlySurveillance" />
+      <xs:enumeration value="publicTransportation" />
+      <xs:enumeration value="removals" />
+      <xs:enumeration value="transportOfPeopleWithDisabilities" />
+      <xs:enumeration value="entertainment" />
+      <xs:enumeration value="schoolBus" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="_WeatherRelatedRoadConditionTypeEnum">
     <xs:simpleContent>
       <xs:extension base="com:WeatherRelatedRoadConditionTypeEnum">
@@ -136,10 +211,16 @@
   <xs:complexType name="_WeightTypeEnum">
     <xs:simpleContent>
       <xs:extension base="com:WeightTypeEnum">
-        <xs:attribute name="_extendedValue" type="xs:string" />
+        <xs:attribute name="_extendedValue" type="com:_WeightTypeEnumExtensionType" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:simpleType name="_WeightTypeEnumExtensionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="combinedMaximumPermitted" />
+      <xs:enumeration value="unladen" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="AngleInDegrees">
     <xs:annotation>
       <xs:documentation>An integer number representing an angle in whole degrees between 0 and 359.</xs:documentation>

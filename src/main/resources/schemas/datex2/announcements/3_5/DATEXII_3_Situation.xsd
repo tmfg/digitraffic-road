@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:sit="http://datex2.eu/schema/3/situation" version="3.5" targetNamespace="http://datex2.eu/schema/3/situation" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:sit="http://datex2.eu/schema/3/situation" version="3.6" targetNamespace="http://datex2.eu/schema/3/situation" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
   <xs:complexType name="_AbnormalTrafficTypeEnum">
@@ -169,6 +169,13 @@
   <xs:complexType name="_ProbabilityOfOccurrenceEnum">
     <xs:simpleContent>
       <xs:extension base="sit:ProbabilityOfOccurrenceEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_ReroutingManagementTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="sit:ReroutingManagementTypeEnum">
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
@@ -2251,6 +2258,121 @@
       <xs:enumeration value="riskOf">
         <xs:annotation>
           <xs:documentation>The source has a moderate level of confidence of the occurrence of the situation record version content.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ReroutingManagement">
+    <xs:annotation>
+      <xs:documentation>Rerouting management action that is issued by the network/road operator.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="sit:NetworkManagement">
+        <xs:sequence>
+          <xs:element name="reroutingManagementType" type="sit:_ReroutingManagementTypeEnum" minOccurs="1" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>Type of rerouting management action instigated by operator.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="reroutingItineraryDescription" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A description of the rerouting itinerary.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="signedRerouting" type="com:Boolean" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Indication of whether the rerouting is signed.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="alternativeRouteIdentifier" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Identity used on signs to identify the alternative route, typically a very short sequence of letters and/or digits</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="entry" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The specified entry on to another road at which the alternative route commences.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="exit" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The specified exit from the normal route/road at which the alternative route commences.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="roadOrJunctionNumber" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The intersecting road or the junction at which the alternative route commences.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="alternativeRoute" type="loc:Itinerary" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>The definition of the alternative route (rerouting) specified as an ordered set of locations (itinerary) which may be specific to one or more defined destinations.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="destination" type="loc:Destination" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>The destination of the rerouting. Use this direct property when there is no detailed Itinerary available.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_reroutingManagementExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="ReroutingManagementTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Management actions relating to rerouting.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="doNotFollowDiversionSigns">
+        <xs:annotation>
+          <xs:documentation>Do not follow diversion signs.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="doNotUseEntry">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is not to use the specified entry onto the identified road to commence the alternative route.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="doNotUseExit">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is not to use the specified exit from the identified road to commence the alternative route.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="doNotUseIntersectionOrJunction">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is not to use the specified intersection or junction.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="followDiversionSigns">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is to follow the diversion signs.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="followLocalDiversion">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is to follow local diversion.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="followSpecialMarkers">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is to follow the special diversion markers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="useEntry">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is to use the specified entry onto the identified road to commence the alternative route.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="useExit">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is to use the specified exit from the identified road to commence the alternative route.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="useIntersectionOrJunction">
+        <xs:annotation>
+          <xs:documentation>Rerouted traffic is to use the specified intersection or junction to commence the alternative route.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
       <xs:enumeration value="_extended" />

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:locx="http://datex2.eu/schema/3/locationExtension" version="3.6" targetNamespace="http://datex2.eu/schema/3/locationExtension" xmlns:com="http://datex2.eu/schema/3/common" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:complexType name="_HouseNumberSideEnum">
+    <xs:simpleContent>
+      <xs:extension base="locx:HouseNumberSideEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="HouseNumberSideEnum">
+    <xs:annotation>
+      <xs:documentation>Specifies the side of the house number (even, odd).</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="odd">
+        <xs:annotation>
+          <xs:documentation>Correspond to the street side with odd house numbers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="even">
+        <xs:annotation>
+          <xs:documentation>Correspond to the street side with even house numbers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="NamedAreaCode">
+    <xs:annotation>
+      <xs:documentation>Type for a short numeric or alphanumeric code identifying an area.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:String">
+      <xs:maxLength value="8" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="NamedAreaExtended">
+    <xs:annotation>
+      <xs:documentation>A named area with an additional code (that is not an ISO subdivision code)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="namedAreaCode" type="locx:NamedAreaCode" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Code for the named area, such a postal code or other code assigned for administration.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SupplementaryPositionalDescriptionExtended">
+    <xs:annotation>
+      <xs:documentation>Extension of class SupplementaryPositionalDescription.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="houseNumberSide" type="locx:_HouseNumberSideEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Side of the street corresponding of the type of number address.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
