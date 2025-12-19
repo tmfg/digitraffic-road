@@ -116,7 +116,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();
         assertEquals(1, announcement.incidents.size());
 
-        assertIncident(announcement.incidents.getFirst(), WazeFeedIncidentDto.WazeType.HAZARD_ON_ROAD_LANE_CLOSED, "2022-10-09T21:00:00+00:00", "2025-12-18T21:59:59+00:00");
+        assertIncident(announcement.incidents.getFirst(), WazeFeedIncidentDto.WazeType.HAZARD_ON_ROAD_LANE_CLOSED, "2022-10-09T21:00:00+00:00", "2125-12-18T21:59:59+00:00");
     }
 
     @Test

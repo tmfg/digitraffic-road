@@ -123,7 +123,7 @@
         "comment" : "Suoniityntietä käyttäen kiertotielle 8.9-2023 arviotu kesto n.1v",
         "timeAndDuration" : {
           "startTime" : "2022-10-09T21:00:00Z",
-          "endTime" : "2025-12-18T21:59:59.999Z"
+          "endTime" : "2125-12-18T21:59:59.999Z"
         },
         "workTypes" : [ {
           "type" : "ROAD_CONSTRUCTION",
@@ -149,7 +149,7 @@
             "name" : "Pysäytykset ja sulut voimassa",
             "timeAndDuration" : {
               "startTime" : "2022-12-09T04:00:00Z",
-              "endTime" : "2025-12-18T10:00:00Z"
+              "endTime" : "2125-12-18T10:00:00Z"
             }
           }
         }, {
@@ -212,7 +212,7 @@
         } ],
         "timeAndDuration" : {
           "startTime" : "2022-12-08T22:00:00Z",
-          "endTime" : "2022-12-09T21:59:59.999Z"
+          "endTime" : "2122-12-09T21:59:59.999Z"
         },
         "workTypes" : [ {
           "type" : "BLASTING_WORK",
@@ -232,7 +232,7 @@
             "name" : "Pysäytykset ja sulut voimassa",
             "timeAndDuration" : {
               "startTime" : "2022-12-09T04:00:00Z",
-              "endTime" : "2025-12-31T18:00:00Z"
+              "endTime" : "2125-12-31T18:00:00Z"
             }
           }
         } ],
@@ -306,7 +306,7 @@
         } ],
         "timeAndDuration" : {
           "startTime" : "2022-12-08T22:00:00Z",
-          "endTime" : "2025-12-18T21:59:59.999Z"
+          "endTime" : "2125-12-18T21:59:59.999Z"
         },
         "workTypes" : [ {
           "type" : "BLASTING_WORK",
@@ -326,7 +326,7 @@
             "name" : "Pysäytykset ja sulut voimassa",
             "timeAndDuration" : {
               "startTime" : "2022-12-09T04:00:00Z",
-              "endTime" : "2025-12-18T10:00:00Z"
+              "endTime" : "2125-12-18T10:00:00Z"
             }
           }
         } ],
@@ -384,7 +384,7 @@
         } ],
         "timeAndDuration" : {
           "startTime" : "2023-01-09T22:00:00Z",
-          "endTime" : "2023-01-10T21:59:59.999Z"
+          "endTime" : "2123-01-10T21:59:59.999Z"
         },
         "workTypes" : [ {
           "type" : "BURIED_CABLES",
@@ -409,7 +409,7 @@
       "comment" : "Suoniityntietä käyttäen kiertotielle 8.9-2023 arviotu kesto n.1v",
       "timeAndDuration" : {
         "startTime" : "2022-10-09T21:00:00Z",
-        "endTime" : "2025-12-18T21:59:59.999Z"
+        "endTime" : "2125-12-18T21:59:59.999Z"
       },
       "additionalInformation" : "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
       "sender" : "Fintraffic Tieliikennekeskus Turku"
