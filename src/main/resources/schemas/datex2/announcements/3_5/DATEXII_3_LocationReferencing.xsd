@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" version="3.6" targetNamespace="http://datex2.eu/schema/3/locationReferencing" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:com="http://datex2.eu/schema/3/common" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" version="3.5" targetNamespace="http://datex2.eu/schema/3/locationReferencing" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:com="http://datex2.eu/schema/3/common" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/locationExtension" schemaLocation="DATEXII_3_LocationExtension.xsd" />
   <xs:complexType name="_AlertCDirectionEnum">
@@ -135,6 +135,12 @@
     </xs:sequence>
     <xs:attribute name="index" type="xs:int" use="required" />
   </xs:complexType>
+  <xs:complexType name="_LocationReferenceExtensionType">
+    <xs:sequence>
+      <xs:element name="facilityLocation" type="locx:FacilityLocation" minOccurs="0" />
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="_NamedAreaExtensionType">
     <xs:sequence>
       <xs:element name="namedAreaExtended" type="locx:NamedAreaExtended" minOccurs="0" />
@@ -231,12 +237,6 @@
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
-  </xs:complexType>
-  <xs:complexType name="_SupplementaryPositionalDescriptionExtensionType">
-    <xs:sequence>
-      <xs:element name="supplementaryPositionalDescriptionExtended" type="locx:SupplementaryPositionalDescriptionExtended" minOccurs="0" />
-      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
-    </xs:sequence>
   </xs:complexType>
   <xs:complexType name="_TpegLoc01AreaLocationSubtypeEnum">
     <xs:simpleContent>
@@ -794,6 +794,11 @@
       <xs:element name="carriageway" type="loc:_CarriagewayEnum" minOccurs="1" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>Indicates the section of carriageway to which the location relates.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="originalNumberOfLanes" type="com:Integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Normal number of lanes, potentially available for moving traffic, before reduction due to situations. Hard shoulder should not be counted unless it is sometimes used operationally for moving traffic.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="lane" type="loc:Lane" minOccurs="0" maxOccurs="unbounded" />
@@ -1902,7 +1907,7 @@
       <xs:documentation>Represents one or more physically separate locations. Multiple locations may be related, as in an itinerary or route, or may be unrelated. One LocationReference should not use multiple Location objects to represent the same physical location.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="_locationReferenceExtension" type="com:_ExtensionType" minOccurs="0" />
+      <xs:element name="_locationReferenceExtension" type="loc:_LocationReferenceExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="NamedArea">
@@ -2243,7 +2248,8 @@
   </xs:complexType>
   <xs:complexType name="OpenlrClosedLineLocationReference">
     <xs:annotation>
-      <xs:documentation>The OpenLR method of area definition by providing a closed path (i.e. a circuit) in the road network.  The boundary always consists of road segments</xs:documentation>
+      <xs:documentation>The OpenLR method of area definition by providing a closed path (i.e. a circuit) in the road network.
+The boundary always consists of road segments</xs:documentation>
     </xs:annotation>
     <xs:complexContent>
       <xs:extension base="loc:OpenlrAreaLocationReference">
@@ -3283,7 +3289,7 @@
           <xs:documentation>Identifies the main purpose of the road at the location</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="geographicDescriptor" type="loc:_GeographicCharacteristicEnum" minOccurs="1" maxOccurs="1">
+      <xs:element name="geographicDescriptor" type="loc:_GeographicCharacteristicEnum" minOccurs="0" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>Descriptor which identifies a geographic characteristic to help identify the specific location</xs:documentation>
         </xs:annotation>
@@ -3320,7 +3326,7 @@
           <xs:documentation>Information on a set of one or more roads. The location could correspond to a part of the road identified, the whole stretch of road identified, or a combination of multiple road sections.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="_supplementaryPositionalDescriptionExtension" type="loc:_SupplementaryPositionalDescriptionExtensionType" minOccurs="0" />
+      <xs:element name="_supplementaryPositionalDescriptionExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
     <xs:attribute name="locationPrecision" type="com:MetresAsNonNegativeInteger" use="optional">
       <xs:annotation>

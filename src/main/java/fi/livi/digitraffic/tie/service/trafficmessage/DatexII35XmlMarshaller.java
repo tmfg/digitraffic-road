@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
-
+import jakarta.xml.bind.JAXBElement;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.xml.transform.StringResult;
 import org.springframework.xml.transform.StringSource;
 
-import jakarta.xml.bind.JAXBElement;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class DatexII35XmlMarshaller {
@@ -27,7 +30,9 @@ public class DatexII35XmlMarshaller {
             // Trim empty control before and after xml-declaration as they are not allowed
             final Object object = marshaller.unmarshal(new StringSource(StringUtils.trim(xmlSting)));
             if (object instanceof JAXBElement) {
-                return ((JAXBElement<SituationPublication>) object).getValue();
+                @SuppressWarnings("unchecked")
+                final JAXBElement<SituationPublication> element = (JAXBElement<SituationPublication>) object;
+                return element.getValue();
             }
             return (SituationPublication) object;
         } catch (final Exception e) {
@@ -46,14 +51,29 @@ public class DatexII35XmlMarshaller {
         return result.toString();
     }
 
+    private static final Pattern XSI_TYPE_PATTERN =
+            Pattern.compile(
+                    "<sit:situationRecord\\b[^>]*\\bxsi:type\\s*=\\s*\"([^\"]+)\"",
+                    Pattern.DOTALL
+            );
+
     private void safeDebugMessage(final String message) {
+        if (message == null) {
+            log.error("Message is null!");
+            return;
+        }
         final var afterSituation = StringUtils.substringAfter(message, "situation id");
 
-        if(afterSituation.equals(StringUtils.EMPTY)) {
-            log.error("no situation text found!");
-            log.error(StringUtils.substring(message, 1100, 1400));
+        final Set<String> uniqueSituationRecordTypes = new HashSet<>();
+        final Matcher matcher = XSI_TYPE_PATTERN.matcher(message);
+        while (matcher.find()) {
+            uniqueSituationRecordTypes.add(matcher.group(1));
+        }
+
+        if (afterSituation.equals(StringUtils.EMPTY)) {
+            log.error("No situation text found! Datex II: {} with situationRecordTypes: {}", StringUtils.substring(message, 1100, 1400), String.join(", ", uniqueSituationRecordTypes));
         } else {
-            log.error(StringUtils.substring(afterSituation, 0, 400));
+            log.error("Failed to convert Datex II: {} with situationRecordTypes: {} ", StringUtils.substring(afterSituation, 0, 400), String.join(", ", uniqueSituationRecordTypes));
         }
     }
 }

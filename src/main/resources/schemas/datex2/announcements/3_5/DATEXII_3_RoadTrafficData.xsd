@@ -1,22 +1,237 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" version="3.6" targetNamespace="http://datex2.eu/schema/3/roadTrafficData" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified"
+           xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" version="3.5"
+           targetNamespace="http://datex2.eu/schema/3/roadTrafficData" xmlns:com="http://datex2.eu/schema/3/common"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
-  <xs:complexType name="DateTimeValue">
+  <xs:complexType name="_TrafficStatusEnum">
+    <xs:simpleContent>
+      <xs:extension base="roa:TrafficStatusEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_TravelTimeTrendTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="roa:TravelTimeTrendTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_TravelTimeTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="roa:TravelTimeTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="BasicData" abstract="true">
     <xs:annotation>
-      <xs:documentation>A measured or calculated value of an instant in time.</xs:documentation>
+      <xs:documentation>Data that are either measured or calculated at the same time or over the same time period.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="_basicDataExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="DurationValue">
+    <xs:annotation>
+      <xs:documentation>A measured or calculated value of a period of time.</xs:documentation>
     </xs:annotation>
     <xs:complexContent>
       <xs:extension base="com:DataValue">
         <xs:sequence>
-          <xs:element name="dateTime" type="com:DateTime" minOccurs="1" maxOccurs="1">
+          <xs:element name="duration" type="com:Seconds" minOccurs="1" maxOccurs="1">
             <xs:annotation>
-              <xs:documentation>A time stamp defining an instant in time.</xs:documentation>
+              <xs:documentation>A period of time expressed in seconds.</xs:documentation>
             </xs:annotation>
           </xs:element>
-          <xs:element name="_dateTimeValueExtension" type="com:_ExtensionType" minOccurs="0" />
+          <xs:element name="_durationValueExtension" type="com:_ExtensionType" minOccurs="0" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:simpleType name="TrafficStatusEnum">
+    <xs:annotation>
+      <xs:documentation>List of terms used to describe traffic conditions.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="stationary">
+        <xs:annotation>
+          <xs:documentation>Traffic is stationary, or very near stationary, at the specified location (i.e. average speed is less than 10% of its free-flow level).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="queuing">
+        <xs:annotation>
+          <xs:documentation>Traffic is queuing at the specified location, although there is still some traffic movement (i.e. average speed is between 10% and 25% of its free-flow level).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="slow">
+        <xs:annotation>
+          <xs:documentation>Traffic is slow moving at the specified location, but not yet forming queues (i.e. average speed is between 25% and 75% of its free-flow level).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="heavy">
+        <xs:annotation>
+          <xs:documentation>Traffic in the specified direction is heavier than usual making driving conditions more difficult than normal.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unspecifiedAbnormal">
+        <xs:annotation>
+          <xs:documentation>There are abnormal traffic conditions of an unspecified nature at the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="freeFlow">
+        <xs:annotation>
+          <xs:documentation>Traffic at the specified location is free-flowing.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unknown">
+        <xs:annotation>
+          <xs:documentation>Traffic conditions are unknown.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other than as defined in this enumeration.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="TrafficStatusValue">
+    <xs:annotation>
+      <xs:documentation>A measured or calculated value of the status of traffic conditions on a section of road in a specified direction.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:DataValue">
+        <xs:sequence>
+          <xs:element name="trafficStatusValue" type="roa:_TrafficStatusEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A status value of traffic conditions on the identified section of road in the specified direction.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_trafficStatusValueExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TravelTimeData">
+    <xs:annotation>
+      <xs:documentation>Derived/computed travel time information relating to a linear section of the road network; forecast = true means a forecast for a vehicle at the start of the specified location, forecast = false means calculation/measurement at the end.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="roa:BasicData">
+        <xs:sequence>
+          <xs:element name="travelTimeTrendType" type="roa:_TravelTimeTrendTypeEnum" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The current trend in the travel time between the defined locations in the specified direction.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="travelTimeType" type="roa:_TravelTimeTypeEnum" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Indication of the way in which the travel time is derived.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="vehicleType" type="com:_VehicleTypeEnum" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>Vehicle type.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="travelTime" type="roa:DurationValue" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Derived/computed travel time information relating to a specific group of locations.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="freeFlowTravelTime" type="roa:DurationValue" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>The travel time which would be expected under ideal free flow conditions.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="normallyExpectedTravelTime" type="roa:DurationValue" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>The travel time which is expected for the given period (e.g. date/time, holiday status etc.) and any known quasi-static conditions (e.g. long-term roadworks). This value is derived from historical analysis.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="travelTimeDelay" type="roa:DurationValue" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>Delay in travel time compared to free-flow conditions</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="freeFlowSpeed" type="com:SpeedValue" minOccurs="0">
+            <xs:annotation>
+              <xs:documentation>The free flow speed expected under ideal conditions, corresponding to the freeFlowTravelTime.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_travelTimeDataExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="TravelTimeTrendTypeEnum">
+    <xs:annotation>
+      <xs:documentation>List of terms used to describe the trend in travel times.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="decreasing">
+        <xs:annotation>
+          <xs:documentation>Travel times are decreasing.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="increasing">
+        <xs:annotation>
+          <xs:documentation>Travel times are increasing.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="stable">
+        <xs:annotation>
+          <xs:documentation>Travel times are stable.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TravelTimeTypeEnum">
+    <xs:annotation>
+      <xs:documentation>List of ways in which travel times are derived.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="best">
+        <xs:annotation>
+          <xs:documentation>Travel time is derived from the best out of a monitored sample.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="estimated">
+        <xs:annotation>
+          <xs:documentation>Travel time is an automated estimate.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="instantaneous">
+        <xs:annotation>
+          <xs:documentation>Travel time is derived from instantaneous measurements.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="reconstituted">
+        <xs:annotation>
+          <xs:documentation>Travel time is reconstituted from other measurements.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="predictor">
+        <xs:annotation>
+          <xs:documentation>Travel time is the output of a predictor, for example a blend of current and historical data, or a traffic flow model using current measurements.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="profile">
+        <xs:annotation>
+          <xs:documentation>Travel time is based on past observations, without use of current measurements.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sum">
+        <xs:annotation>
+          <xs:documentation>Travel time is the sum of current travel times on subsections of the specified location.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>

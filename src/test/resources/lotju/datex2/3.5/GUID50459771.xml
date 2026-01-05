@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2:payload xsi:type="sit:SituationPublication" lang="fi" xmlns:com="http://datex2.eu/schema/3/common"
+            xmlns:loc="http://datex2.eu/schema/3/locationReferencing"
+            xmlns:d2="http://datex2.eu/schema/3/d2Payload"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:sit="http://datex2.eu/schema/3/situation">
+    <com:publicationTime>2025-12-31T22:59:56.206Z</com:publicationTime>
+    <com:publicationCreator>
+        <com:country>FI</com:country>
+        <com:nationalIdentifier>FTA</com:nationalIdentifier>
+    </com:publicationCreator>
+    <sit:situation id="GUID50459771">
+        <sit:headerInformation>
+            <com:confidentiality>restrictedToAuthoritiesAndTrafficOperators</com:confidentiality>
+            <com:informationStatus>real</com:informationStatus>
+        </sit:headerInformation>
+        <sit:situationRecord xsi:type="sit:PublicEvent" id="GUID5046248001" version="11">
+            <sit:situationRecordCreationTime>2025-12-31T21:43:14.976Z</sit:situationRecordCreationTime>
+            <sit:situationRecordVersionTime>2025-12-31T22:59:52.937Z</sit:situationRecordVersionTime>
+            <sit:situationRecordFirstSupplierVersionTime>2025-12-31T21:43:14.976Z
+            </sit:situationRecordFirstSupplierVersionTime>
+            <sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence>
+            <sit:severity>high</sit:severity>
+            <sit:validity>
+                <com:validityStatus>definedByValidityTimeSpec</com:validityStatus>
+                <com:validityTimeSpecification>
+                    <com:overallStartTime>2025-12-31T21:30:00.000Z</com:overallStartTime>
+                    <com:overallEndTime>2025-12-31T22:59:56.206Z</com:overallEndTime>
+                </com:validityTimeSpecification>
+            </sit:validity>
+            <sit:generalPublicComment>
+                <sit:comment>
+                    <com:values>
+                        <com:value lang="fi">Mannerheimintie, Helsinki. Liikennetiedote. Tilanne ohi.
+
+                            Mannerheimintie, Helsinki.
+                            Tarkempi paikka: Eduskuntatalo. Mannerheimintie välillä Hesperian puisto - Arkadiankatu.
+
+
+                            Lisätieto: Mannerheimintie on avattu liikenteelle ja liikenne on palautumassa normaaliksi.
+
+                            Ajankohta: 31.12.2025 klo 23:30 - 01.01.2026 klo 00:59.
+
+                            Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                            Fintraffic Tieliikennekeskus Helsinki
+                            Puh: 02002100
+                            Sähköposti: helsinki.liikennekeskus@fintraffic.fi
+                        </com:value>
+                    </com:values>
+                </sit:comment>
+            </sit:generalPublicComment>
+            <sit:locationReference xsi:type="loc:PointLocation">
+                <loc:alertCPoint xsi:type="loc:AlertCMethod2Point">
+                    <loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode>
+                    <loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber>
+                    <loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion>
+                    <loc:alertCDirection>
+                        <loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded>
+                        <loc:alertCAffectedDirection>both</loc:alertCAffectedDirection>
+                    </loc:alertCDirection>
+                    <loc:alertCMethod2PrimaryPointLocation>
+                        <loc:alertCLocation>
+                            <loc:specificLocation>5176</loc:specificLocation>
+                        </loc:alertCLocation>
+                    </loc:alertCMethod2PrimaryPointLocation>
+                </loc:alertCPoint>
+            </sit:locationReference>
+            <sit:publicEventType>majorEvent</sit:publicEventType>
+        </sit:situationRecord>
+    </sit:situation>
+</d2:payload>

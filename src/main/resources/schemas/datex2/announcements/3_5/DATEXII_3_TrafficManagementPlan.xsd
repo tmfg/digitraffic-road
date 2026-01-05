@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified"
+           xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan" version="02-00-00"
+           targetNamespace="http://datex2.eu/schema/3/trafficManagementPlan" xmlns:vms="http://datex2.eu/schema/3/vms"
+           xmlns:com="http://datex2.eu/schema/3/common" xmlns:sit="http://datex2.eu/schema/3/situation"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/reroutingManagementEnhanced" schemaLocation="DATEXII_3_ReroutingManagementEnhanced.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/situation" schemaLocation="DATEXII_3_Situation.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/vms" schemaLocation="DATEXII_3_Vms.xsd" />
+  <xs:complexType name="_ActionDefinitionVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="tmp:ActionDefinition" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_MeasureDefinitionVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="tmp:MeasureDefinition" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_StrategyDefinitionVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="tmp:StrategyDefinition" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="NetworkManagementDefinition" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Definition of a kind of network management action</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tmp:OperatorActionDefinition">
+        <xs:sequence>
+          <xs:element name="complianceOption" type="sit:_ComplianceOptionEnum" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Defines whether the network management instruction or the control resulting from a network management action is advisory or mandatory.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_networkManagementDefinitionExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="OperatorActionDefinition" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Definition of a kind of action affecting road operation, which can be taken by an authorised operator.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="_operatorActionDefinitionExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OperatorActionExtendedTmplan">
+    <xs:annotation>
+      <xs:documentation>Extension class for OperatorAction.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="tmplanImplementingAction" type="tmp:TmplanImplementingAction" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SignSetting">
+    <xs:annotation>
+      <xs:documentation>An operator action that sets the status of a VMS unit.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="signSettingDefinition" type="tmp:SignSettingDefinition" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SignSettingDefinition">
+    <xs:annotation>
+      <xs:documentation>Definition of a sign setting action</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="tmp:NetworkManagementDefinition">
+        <xs:sequence>
+          <xs:element name="setting" type="vms:VmsControllerStatus" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>The setting to be made</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_signSettingDefinitionExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TmplanImplementingAction">
+    <xs:annotation>
+      <xs:documentation>Represents the information of an OperatorAction which has been implemented or is planned based on a Traffic Management Plan activation request.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="nonPredefinedActionIdReference" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The common reference to an external identifier for a non-predefined action, shared between data supplier and recepient, defined during the Traffic Management Plan design phase.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="predefinedActionReference" type="tmp:_ActionDefinitionVersionedReference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The reference to the specific action defined in a predefined Traffic Management Plan for which the SituationRecord is an implementation.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="predefinedMeasureReference" type="tmp:_MeasureDefinitionVersionedReference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The reference to the specific measure chosen to be implemented.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="predefinedStrategyReference" type="tmp:_StrategyDefinitionVersionedReference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Reference to a strategy chosen to be implemented.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_tmplanImplementingActionExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

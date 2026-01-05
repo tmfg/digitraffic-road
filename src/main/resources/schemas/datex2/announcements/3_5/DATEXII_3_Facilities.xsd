@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified"
+           xmlns:fac="http://datex2.eu/schema/3/facilities" version="3.5"
+           targetNamespace="http://datex2.eu/schema/3/facilities" xmlns:com="http://datex2.eu/schema/3/common"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:complexType name="_UserTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:UserTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="Facility" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Provides information about a facility, which may represent any kind of site, building, or structure, and may be a composite facility that includes supplemental facilities.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:FacilityObject">
+        <xs:sequence>
+          <xs:element name="_facilityExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="FacilityObject" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Provides information about a facility object, which may represent any kind of site, building, or structure, including those which supplement a main facility.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="_facilityObjectExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="version" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:simpleType name="TimeZone">
+    <xs:annotation>
+      <xs:documentation>Identifies a time zone by specifying the difference to UTC in hours and minutes, as defined in ISO 8601.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:String">
+      <xs:pattern value="[-+][0-9][0-9]:[0-9][0-9]|Z" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="UserTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of different users, for example used in the context of parking.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="allUsers">
+        <xs:annotation>
+          <xs:documentation>All users.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="commuters">
+        <xs:annotation>
+          <xs:documentation>Commuters.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="customers">
+        <xs:annotation>
+          <xs:documentation>Customers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="elderlyUsers">
+        <xs:annotation>
+          <xs:documentation>Elderly users.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="employees">
+        <xs:annotation>
+          <xs:documentation>Employees.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="families">
+        <xs:annotation>
+          <xs:documentation>Families.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="personsWithDisabilities">
+        <xs:annotation>
+          <xs:documentation>Persons with disabilities</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hearingImpaired">
+        <xs:annotation>
+          <xs:documentation>People with hearing loss</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hotelGuests">
+        <xs:annotation>
+          <xs:documentation>Hotel guests.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="longTermParkers">
+        <xs:annotation>
+          <xs:documentation>Long-term parker.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="members">
+        <xs:annotation>
+          <xs:documentation>Members.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="men">
+        <xs:annotation>
+          <xs:documentation>Men.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="overnightParkers">
+        <xs:annotation>
+          <xs:documentation>Overnight parker.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="parkAndCycleUser">
+        <xs:annotation>
+          <xs:documentation>Park and cycle user.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="parkAndRideUsers">
+        <xs:annotation>
+          <xs:documentation>Users that are exchanging into public transport at a park and ride station.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="parkAndWalkUser">
+        <xs:annotation>
+          <xs:documentation>Park and walk user.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="pensioners">
+        <xs:annotation>
+          <xs:documentation>Pensioners.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="pregnantWomen">
+        <xs:annotation>
+          <xs:documentation>Pregnant women.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="registeredDisabledUsers">
+        <xs:annotation>
+          <xs:documentation>Registered disabled persons.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="reservationHolders">
+        <xs:annotation>
+          <xs:documentation>Those who have a valid reservation, e.g. for the duration of parking.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="residents">
+        <xs:annotation>
+          <xs:documentation>Local residents.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="seasonTicketHolders">
+        <xs:annotation>
+          <xs:documentation>Season ticket holders.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="shoppers">
+        <xs:annotation>
+          <xs:documentation>Shoppers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="shortTermParkers">
+        <xs:annotation>
+          <xs:documentation>Short-term parker.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sportEventAwaySupporters">
+        <xs:annotation>
+          <xs:documentation>Sport event away supporters.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sportEventHomeSupporters">
+        <xs:annotation>
+          <xs:documentation>Sport event home supporters.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="students">
+        <xs:annotation>
+          <xs:documentation>Students.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="staff">
+        <xs:annotation>
+          <xs:documentation>Staff.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="subscribers">
+        <xs:annotation>
+          <xs:documentation>Subscribers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="visitors">
+        <xs:annotation>
+          <xs:documentation>Visitors.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="visuallyImpaired">
+        <xs:annotation>
+          <xs:documentation>People with vision impairment</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="wheelchairUsers">
+        <xs:annotation>
+          <xs:documentation>Wheelchair users.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="women">
+        <xs:annotation>
+          <xs:documentation>Women.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unknown">
+        <xs:annotation>
+          <xs:documentation>Unknown.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
