@@ -81,11 +81,19 @@ jobs:
           ls -la target/*.jar
 
           cp target/*.jar road.jar
+      - name: Generate SBOM
+        run: |
+          mvn -DoutputName=sbom cyclonedx:makeBom
       - name: Upload jar
         uses: actions/upload-artifact@v6
         with:
           name: road.jar
           path: road.jar
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v5
+        with:
+          name: sbom.json
+          path: target/sbom.json
       - name: Upload sql
         uses: actions/upload-artifact@v6
         with:
@@ -297,3 +305,16 @@ jobs:
           cluster-name: ${{ secrets.CLUSTER_NAME }}
           task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}:${{ steps.revision.outputs.revision }}
           desired-count: 1
+      - name: Download SBOM
+        uses: actions/download-artifact@v6
+        with:
+          name: sbom.json
+      - name: Configure AWS credentials for ${{ matrix.app }}
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.SBOM_AWS_ROLE }}
+          role-session-name: gh-actions-upload-sbom-road-${{ matrix.app }}-${{ github.event.inputs.env }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Upload SBOM
+        run: |
+          aws s3 cp sbom.json s3://${{ secrets.SBOM_BUCKET }}/${{ fromJson(secrets.SBOM_PROJECT_KEYS)[github.event.inputs.env][matrix.app] }}/${{ github.run_id }}-${{ github.sha }}.json
