@@ -1,11 +1,9 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
-import java.text.DecimalFormat;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.github.benmanes.caffeine.cache.AsyncCache;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +12,11 @@ import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.github.benmanes.caffeine.cache.stats.CacheStats;
-
-import fi.livi.digitraffic.common.annotation.NoJobLogging;
+import java.text.DecimalFormat;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 public class CacheStatisticsLoggerConfiguration {
@@ -45,7 +45,15 @@ public class CacheStatisticsLoggerConfiguration {
             return;
         }
         try {
-            cacheManager.getCacheNames().forEach(cn -> updateStatsAndLog(cn, ((CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cn))).getNativeCache().stats()));
+            cacheManager.getCacheNames().forEach(cn -> {
+                final CaffeineCache caffeineCache = (CaffeineCache) Objects.requireNonNull(cacheManager.getCache(cn));
+                final Cache<Object, Object> nativeCache = caffeineCache.getNativeCache();
+                final CacheStats stats =
+                    nativeCache instanceof AsyncCache<?,?>
+                            ? ((AsyncCache<?,?>) nativeCache).synchronous().stats()
+                            : nativeCache.stats();
+                updateStatsAndLog(cn, stats);
+            });
         } catch (final Exception e) {
             log.error("method=cacheStats Failed to log cache stats", e);
         }

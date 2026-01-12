@@ -1,14 +1,16 @@
 package fi.livi.digitraffic.tie.conf;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
+import fi.livi.digitraffic.common.config.DeprecationInterceptor;
+import fi.livi.digitraffic.common.config.resolvers.NullFilteringVarargsResolver;
+import fi.livi.digitraffic.common.util.StringUtil;
+import fi.livi.digitraffic.tie.conf.jaxb2.DatexII_3_NamespacePrefixMapper;
+import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2RootElementHttpMessageConverter;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
+import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PayloadPublication;
+import jakarta.servlet.Filter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.lang.NonNull;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
@@ -31,24 +32,17 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.resource.TransformedResource;
 
-import fi.livi.digitraffic.common.config.DeprecationInterceptor;
-import fi.livi.digitraffic.common.config.resolvers.NullFilteringVarargsResolver;
-import fi.livi.digitraffic.common.util.StringUtil;
-import fi.livi.digitraffic.tie.conf.jaxb2.DatexII_3_NamespacePrefixMapper;
-import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2RootElementHttpMessageConverter;
-import fi.livi.digitraffic.tie.controller.DtMediaType;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.PayloadPublication;
-import jakarta.servlet.Filter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 @ConditionalOnWebApplication
 @Configuration
@@ -69,8 +63,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
             // For some reason @Value is not working on test
             final String schemaDomainUrl =
                     StringUtils.isNotBlank(domainUrl) && StringUtils.containsNone(domainUrl, "${") ?
-                    domainUrl :
-                    applicationContext.getEnvironment().getProperty("dt.domain.url");
+                            domainUrl :
+                            applicationContext.getEnvironment().getProperty("dt.domain.url");
 
             this.dtDomain =
                     Objects.requireNonNull(schemaDomainUrl).replaceAll("https", "http"); // Schema is always http
@@ -86,7 +80,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
      * Support for etag and conditional HTTP-requests
      */
     @ConditionalOnProperty(value = "etags.enabled",
-                           havingValue = "true")
+            havingValue = "true")
     @Bean
     public Filter ShallowEtagHeaderFilter() {
         final ShallowEtagHeaderFilter shallowEtagHeaderFilter = new ShallowEtagHeaderFilter();
@@ -110,9 +104,9 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 MeasurementSiteTablePublication.class,
                 PayloadPublication.class,
                 "payload")
-            .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
-            .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
-            .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
+                .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
+                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
     @Bean
@@ -152,16 +146,6 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         ;
     }
 
-    /**
-     * Enables bean validation for controller parameters
-     *
-     * @return MethodValidationPostProcessor
-     */
-    @Bean
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
-        return new MethodValidationPostProcessor();
-    }
-
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(new AllowedParameterInterceptor());
@@ -198,8 +182,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         @Override
         @NonNull
         public List<MediaType> resolveMediaTypes(
-                @NonNull
-                final NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
+                @NonNull final NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
             final List<MediaType> fromHeaders = headerStragegy.resolveMediaTypes(webRequest);
             try {
                 // By default many client's sends long list of accepted types or */* etc.
@@ -214,8 +197,8 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                         log.info("method=resolveMediaTypes type=json for path={} mediaTypes: {}", path, fromHeaders);
                     }
                     return containsJson(fromHeaders) ?
-                           Collections.singletonList(DtMediaType.APPLICATION_JSON) :
-                           Collections.singletonList(DtMediaType.APPLICATION_XML);
+                            Collections.singletonList(DtMediaType.APPLICATION_JSON) :
+                            Collections.singletonList(DtMediaType.APPLICATION_XML);
                 }
             } catch (final Error e) {
                 log.error("method=resolveMediaTypes", e);

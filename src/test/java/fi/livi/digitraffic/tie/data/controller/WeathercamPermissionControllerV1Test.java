@@ -1,14 +1,11 @@
 package fi.livi.digitraffic.tie.data.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import java.net.URI;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-
+import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
+import fi.livi.digitraffic.tie.controller.weathercam.WeathercamPermissionControllerV1;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -17,14 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import fi.livi.digitraffic.tie.AbstractRestWebTest;
-import fi.livi.digitraffic.tie.conf.amazon.WeathercamS3Properties;
-import fi.livi.digitraffic.tie.controller.weathercam.WeathercamPermissionControllerV1;
-import fi.livi.digitraffic.tie.model.weathercam.CameraPresetHistory;
-import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
-import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
+import java.net.URI;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
 
@@ -116,7 +117,12 @@ public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
         log.info("Request uri: {}", uri);
         final MockHttpServletRequestBuilder get = get(uri);
 
-        return mockMvc.perform(get).andReturn().getResponse();
+        //final MockHttpServletResponse mvcResult = mockMvc.perform(get).andReturn().getResponse();
+
+        final MvcResult mvcResult = mockMvc.perform(get(uri))
+                .andReturn();
+        return mockMvc.perform(asyncDispatch(mvcResult))
+                .andReturn().getResponse();
     }
 
     private static String getPresetId(final String imageName) {

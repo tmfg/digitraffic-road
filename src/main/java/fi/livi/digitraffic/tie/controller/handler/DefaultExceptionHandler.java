@@ -1,10 +1,15 @@
 package fi.livi.digitraffic.tie.controller.handler;
 
-import java.io.IOException;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Iterables;
+import fi.livi.digitraffic.common.util.StringUtil;
+import fi.livi.digitraffic.tie.controller.DtMediaType;
+import fi.livi.digitraffic.tie.helper.LoggerHelper;
+import fi.livi.digitraffic.tie.service.BadRequestException;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
+import jakarta.xml.bind.MarshalException;
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
@@ -28,16 +33,10 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import com.google.common.collect.Iterables;
-
-import fi.livi.digitraffic.tie.controller.DtMediaType;
-import fi.livi.digitraffic.tie.helper.LoggerHelper;
-import fi.livi.digitraffic.tie.service.BadRequestException;
-import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Path;
-import jakarta.xml.bind.MarshalException;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -190,7 +189,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(final HttpMediaTypeNotSupportedException exception, final ServletWebRequest request) {
-        final String errorMsg = String.format("Illegal %s: %s. Supported types: %s",
+        final String errorMsg = StringUtil.format("Illegal {}: {}. Supported types: {}",
                                               HttpHeaders.CONTENT_TYPE, request.getHeader(HttpHeaders.CONTENT_TYPE), exception.getSupportedMediaTypes());
         return getErrorResponseEntityAndLogException(request, errorMsg, HttpStatus.INTERNAL_SERVER_ERROR, exception);
     }
@@ -214,8 +213,9 @@ public class DefaultExceptionHandler {
         // Remove a=b from errorMessage as it can contain values like "1971"-H"accept:application/json;charset=UTF-8"
         // and that will be indexed with key "1971"-H"accept:application/json;charset and value UTF-8"
         final String logMessage =
-            String.format("httpStatus=%s reasonPhrase=%s requestURI=%s errorMessage: %s",
-                httpStatus.value(), httpStatus.getReasonPhrase(), request.getRequest().getRequestURI(),
+            StringUtil.format(
+            "httpStatus={} reasonPhrase={} requestURI={} requestQueryString={} errorMessage: {}",
+                httpStatus.value(), httpStatus.getReasonPhrase(), request.getRequest().getRequestURI(), request.getRequest().getQueryString(),
                 LoggerHelper.objectToStringLoggerSafe(errorMsg));
 
         if(isErrorLoggableException(exception)) {
@@ -231,7 +231,7 @@ public class DefaultExceptionHandler {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(DtMediaType.APPLICATION_JSON);
 
-        final ErrorResponse response = new ErrorResponse(httpStatus.value(), httpStatus.getReasonPhrase(), errorMsg, request.getRequest().getRequestURI());
+        final ErrorResponse response = new ErrorResponse(httpStatus.value(), httpStatus.getReasonPhrase(), errorMsg, request.getRequest().getRequestURI(), request.getRequest().getQueryString());
 
         return new ResponseEntity<>(response, headers, httpStatus);
     }
@@ -240,7 +240,7 @@ public class DefaultExceptionHandler {
     private static String getViolationMessage(final ConstraintViolation<?> violation) {
         final Path.Node paramPath = Iterables.getLast(violation.getPropertyPath());
         final String paramName = paramPath != null ? paramPath.toString() : null;
-        return String.format("violatingParameter=%s, parameterValue=%s, violationMessage=%s %s",
+        return StringUtil.format("violatingParameter={}, parameterValue={}, violationMessage={} {}",
                              paramName, violation.getInvalidValue(),
                              paramName, violation.getMessage());
     }

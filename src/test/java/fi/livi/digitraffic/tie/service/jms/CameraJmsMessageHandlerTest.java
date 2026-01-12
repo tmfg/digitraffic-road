@@ -1,33 +1,19 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.github.tomakehurst.wiremock.WireMockServer;
+import fi.ely.lotju.kamera.proto.KuvaProtos;
+import fi.livi.digitraffic.common.util.ThreadUtil;
+import fi.livi.digitraffic.tie.TestUtils;
+import fi.livi.digitraffic.tie.helper.CameraHelper;
+import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
+import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.aws.S3Service;
-
+import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamDataJMSMessageMarshaller;
+import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
+import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
+import jakarta.jms.JMSException;
+import jakarta.persistence.EntityManager;
 import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -47,20 +33,16 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.transaction.TestTransaction;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
+import java.io.File;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.*;
 
-import fi.ely.lotju.kamera.proto.KuvaProtos;
-import fi.livi.digitraffic.common.util.ThreadUtil;
-import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.helper.CameraHelper;
-import fi.livi.digitraffic.tie.model.DataType;
-import fi.livi.digitraffic.tie.model.weathercam.CameraPreset;
-import fi.livi.digitraffic.tie.service.DataStatusService;
-import fi.livi.digitraffic.tie.service.jms.marshaller.WeathercamDataJMSMessageMarshaller;
-import fi.livi.digitraffic.tie.service.weathercam.CameraImageUpdateManager;
-import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
-import jakarta.jms.JMSException;
-import jakarta.persistence.EntityManager;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @TestPropertySource(properties = {
         "metadata.server.addresses=http://localhost:8898" // Overlaps with another test port
@@ -260,8 +242,8 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     private void mockS3GetObjectWithImageKey(final KuvaProtos.Kuva kuva, final String key) throws IOException {
         final byte[] imageData = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
 
-        when(s3Service.readImage(anyString(), eq(key), anyString())).thenReturn(new S3Service.S3ImageObject(imageData, new Date()));
-        when(s3Service.readImage(anyString(), eq(key), isNull())).thenReturn(new S3Service.S3ImageObject(imageData, new Date()));
+        when(s3Service.readImage(anyString(), eq(key), anyString())).thenReturn(new S3Service.S3ImageObject(imageData, new Date(), key, null));
+        when(s3Service.readImage(anyString(), eq(key), isNull())).thenReturn(new S3Service.S3ImageObject(imageData, new Date(), key, null));
     }
 
     private void mockS3PutImageVersion(final String versionId, final String versionKey) {

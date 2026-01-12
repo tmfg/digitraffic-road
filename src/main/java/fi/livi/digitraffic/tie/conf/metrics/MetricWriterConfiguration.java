@@ -1,33 +1,23 @@
 package fi.livi.digitraffic.tie.conf.metrics;
 
-import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_ACTIVE;
-import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_MAX;
-import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_PENDING;
-import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.CONNECTIONS_TIMEOUT;
-import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.TAG_POOL;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.StreamSupport;
-
+import fi.livi.digitraffic.common.annotation.NoJobLogging;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.search.RequiredSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import fi.livi.digitraffic.common.annotation.NoJobLogging;
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.search.RequiredSearch;
+import java.util.*;
+import java.util.stream.StreamSupport;
+
+import static fi.livi.digitraffic.common.config.metrics.HikariCPMetrics.*;
 
 /**
+ * Measure metrics every 50 and log min and max once a minute.
  * Measure metrics every 50 ms and log min and max once a minute.
  */
 @ConditionalOnExpression("'${config.test}' != 'true'")
@@ -38,13 +28,13 @@ public class MetricWriterConfiguration implements MetricVisitor {
     private static final Logger LOG = LoggerFactory.getLogger(MetricWriterConfiguration.class);
 
     private final List<LoggableMetric> metricsToLog = Arrays.asList(
-        GaugeMetric.of("process.cpu.usage"),
-        GaugeMetric.of("system.cpu.count"),
-        GaugeMetric.of("jvm.memory.used").withTag("area"),
-        GaugeMetric.of(CONNECTIONS_MAX).withTag(TAG_POOL).noMin(),
-        CountMetric.of(CONNECTIONS_TIMEOUT).withTag(TAG_POOL),
-        GaugeMetric.of(CONNECTIONS_PENDING).withTag(TAG_POOL),
-        GaugeMetric.of(CONNECTIONS_ACTIVE).withTag(TAG_POOL)
+            GaugeMetric.of("process.cpu.usage"),
+            GaugeMetric.of("system.cpu.count"),
+            GaugeMetric.of("jvm.memory.used").withTag("area"),
+            GaugeMetric.of(CONNECTIONS_MAX).withTag(TAG_POOL).noMin(),
+            CountMetric.of(CONNECTIONS_TIMEOUT).withTag(TAG_POOL),
+            GaugeMetric.of(CONNECTIONS_PENDING).withTag(TAG_POOL),
+            GaugeMetric.of(CONNECTIONS_ACTIVE).withTag(TAG_POOL)
     );
 
     private static final Map<MetricKey, Double> metricMap = new HashMap<>();
@@ -68,7 +58,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
             }
             final MetricKey metricKey = (MetricKey) o;
             return Objects.equals(metric, metricKey.metric) &&
-                Objects.equals(tag, metricKey.tag);
+                    Objects.equals(tag, metricKey.tag);
         }
 
         @Override
@@ -81,13 +71,13 @@ public class MetricWriterConfiguration implements MetricVisitor {
         this.meterRegistry = meterRegistry;
     }
 
-    @Scheduled(fixedRate = 1000*60)
+    @Scheduled(fixedRate = 1000 * 60)
     @NoJobLogging
     void printMetrics() {
         final HashMap<MetricKey, Double> copyMetrics = new HashMap<>(metricMap);
         metricMap.clear();
 
-        copyMetrics.entrySet().forEach(e -> this.logMeasurement(e.getKey(), e.getValue()));
+        copyMetrics.forEach(this::logMeasurement);
     }
 
     @Scheduled(fixedRate = 50)
@@ -98,8 +88,8 @@ public class MetricWriterConfiguration implements MetricVisitor {
 
     private void logAllAvailableMetrics() {
         meterRegistry.forEachMeter(m ->
-            m.measure().forEach(measure ->
-                LOG.info("metric {} measure {}", m.getId(), measure.toString())));
+                m.measure().forEach(measure ->
+                        LOG.info("metric {} measure {}", m.getId(), measure.toString())));
     }
 
     private Collection<Meter> findMetrics(final LoggableMetric metric) {
@@ -107,7 +97,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
 
         try {
             return requiredSearch.meters();
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             return null;
         }
     }
@@ -115,7 +105,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
     private void updateMeasurement(final LoggableMetric metric) {
         final Collection<Meter> meters = findMetrics(metric);
 
-        if(meters == null) {
+        if (meters == null) {
             LOG.error("Could not find meter {}", metric.metricKey);
             return;
         }
@@ -125,10 +115,10 @@ public class MetricWriterConfiguration implements MetricVisitor {
 
     private void updateMeter(final Meter meter, final LoggableMetric metric) {
         final Measurement measurement = StreamSupport.stream(meter.measure().spliterator(), false)
-            .filter(m -> m.getStatistic() == metric.statistic)
-            .findFirst().orElse(null);
+                .filter(m -> m.getStatistic() == metric.statistic)
+                .findFirst().orElse(null);
 
-        if(measurement == null) {
+        if (measurement == null) {
             LOG.error("Could not find statistic {} for {}", metric.statistic, metric.metricKey);
             return;
         }
@@ -160,7 +150,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
         final String tagValue = metricVisitorData.tagValue();
         final Measurement measurement = metricVisitorData.measurement();
 
-        if(gaugeMetric.logMin) {
+        if (gaugeMetric.logMin) {
             final MetricKey metricKey = new MetricKey(gaugeMetric.metricKey + ".min", tagValue);
 
             final Double oldValue = metricMap.get(metricKey);
@@ -169,7 +159,7 @@ public class MetricWriterConfiguration implements MetricVisitor {
             metricMap.put(metricKey, newValue);
         }
 
-        if(gaugeMetric.logMax) {
+        if (gaugeMetric.logMax) {
             final MetricKey metricKey = new MetricKey(gaugeMetric.metricKey + ".max", tagValue);
 
             final Double oldValue = metricMap.get(metricKey);
@@ -180,9 +170,9 @@ public class MetricWriterConfiguration implements MetricVisitor {
     }
 
     private void logMeasurement(final MetricKey metricKey, final Double value) {
-        if(value != null) {
+        if (value != null) {
             // must set root-locale to use . as decimal separator
-            if(metricKey.tag != null) {
+            if (metricKey.tag != null) {
                 LOG.info(String.format(Locale.ROOT, "meterName=%s statisticValue=%.02f tagName=%s", metricKey.metric, value, metricKey.tag));
             } else {
                 LOG.info(String.format(Locale.ROOT, "meterName=%s statisticValue=%.02f", metricKey.metric, value));
