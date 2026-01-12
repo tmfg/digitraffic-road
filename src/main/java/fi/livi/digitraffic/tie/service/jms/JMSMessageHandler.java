@@ -1,5 +1,12 @@
 package fi.livi.digitraffic.tie.service.jms;
 
+import jakarta.jms.JMSException;
+import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -8,14 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.jms.JMSException;
 
 public class JMSMessageHandler<K> {
     private static final Logger log = LoggerFactory.getLogger(JMSMessageHandler.class);
@@ -203,16 +202,18 @@ public class JMSMessageHandler<K> {
 
     /**
      *
-     * @param messagesReceived how many messages have been received inside all JMS messages (one JMS message can have multiple messages in it)
-     * @param messagesDrained how many messages have been drained
-     * @param messagesDrainedTookMs how many has draining messages taken
-     * @param dbRowsUpdated how many db rows have been updated
-     * @param queueSize how many messages is in queue to be drained
-     * @param jmsMessagesReceivedCount how many JMS messages have been received
+     * @param messagesReceived          how many messages have been received inside all JMS messages (one JMS message can have multiple messages in it)
+     * @param messagesDrained           how many messages have been drained
+     * @param messagesDrainedTookMs     how many has draining messages taken
+     * @param dbRowsUpdated             how many db rows have been updated
+     * @param queueSize                 how many messages is in queue to be drained
+     * @param jmsMessagesReceivedCount  how many JMS messages have been received
      * @param jmsMessagesReceivedTimeMs how long has it taken to receive JMS messages before returning to caller
      * @param jmsMessagesTransferTimeMs how long it took to get the message from broker
      */
-    public record JmsStatistics(int messagesReceived, int messagesDrained, long messagesDrainedTookMs, int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount, long jmsMessagesReceivedTimeMs, long jmsMessagesTransferTimeMs) {
+    public record JmsStatistics(int messagesReceived, int messagesDrained, long messagesDrainedTookMs,
+                                int dbRowsUpdated, int queueSize, int jmsMessagesReceivedCount,
+                                long jmsMessagesReceivedTimeMs, long jmsMessagesTransferTimeMs) {
 
         public long getTimePerMessageMs() {
             return (jmsMessagesReceivedTimeMs() > 0) ? jmsMessagesReceivedTimeMs() / jmsMessagesReceivedCount() : 0;
@@ -229,11 +230,12 @@ public class JMSMessageHandler<K> {
     public void logStatistics() {
         try {
             final JmsStatistics jmsStats = getAndResetMessageCounter();
-            log.info("""
-                            method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsMessagesTransferTimePerMsgMs={} jmsSrc=KCA
-                            messagesReceivedCount={} messages, drained messagesDrainedCount={} messagesDrainedTookMs={} messages and updated dbRowsUpdatedCount={} db rows per minute.
-                            Current queueSize={} in memory. Lock instanceId={}""",
-                    STATISTICS_PREFIX, jmsMessageType, jmsStats.jmsMessagesReceivedCount, jmsStats.jmsMessagesReceivedTimeMs, jmsStats.getTimePerMessageMs(), jmsStats.getMessagesTransferTimePerMessageMs(),
+            log.info("method=logMessagesReceived prefix={} Received jmsMessageType={} jmsMessagesReceivedCount={} " +
+                     "jmsMessagesReceivedTimeMs={} jmsMessagesReceivedTimeMsPerMsg={} jmsMessagesTransferTimePerMsgMs={} " +
+                     "jmsSrc=KCA messagesReceivedCount={} messages, drained messagesDrainedCount={} messagesDrainedTookMs={} " +
+                     "messages and updated dbRowsUpdatedCount={} db rows per minute. Current queueSize={} in memory. Lock instanceId={}",
+                    STATISTICS_PREFIX, jmsMessageType, jmsStats.jmsMessagesReceivedCount,
+                    jmsStats.jmsMessagesReceivedTimeMs, jmsStats.getTimePerMessageMs(), jmsStats.getMessagesTransferTimePerMessageMs(),
                     jmsStats.messagesReceived, jmsStats.messagesDrained, jmsStats.messagesDrainedTookMs,
                     jmsStats.dbRowsUpdated, jmsStats.queueSize, instanceId);
         } catch (final Exception e) {
