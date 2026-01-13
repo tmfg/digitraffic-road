@@ -77,7 +77,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: image
-          image-ref: ${{ secrets.ECR_URL }}/dt-road-nginx-repository:latest \
+          image-ref: ${{ secrets.ECR_URL }}/dt-road-nginx-repository:latest
           format: cyclonedx
           output: nginx-sbom.json
       - name: Update nginx task-def
