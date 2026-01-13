@@ -90,7 +90,7 @@ jobs:
           name: road.jar
           path: road.jar
       - name: Upload SBOM
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: sbom.json
           path: target/sbom.json
@@ -306,7 +306,7 @@ jobs:
           task-definition: road-${{ github.event.inputs.env }}-${{ matrix.app }}:${{ steps.revision.outputs.revision }}
           desired-count: 1
       - name: Download SBOM
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: sbom.json
       - name: Configure AWS credentials for ${{ matrix.app }}
