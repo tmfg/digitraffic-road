@@ -93,3 +93,10 @@ Oneliner to run dependency check and open the report in default browser (MacOS):
 
     mvn -Pdepcheck; open target/dependency-check-report.html
 
+### Known warnings
+
+Running the daemon will produce the below warning on startup unless `logging.level.org.springframework.aop.framework.CglibAopProxy=ERROR` is configured. The warning is harmless because no AOP behavior is needed on the method `WebServiceGatewaySupport.afterPropertiesSet()`. It is caused by classes inheriting `AbstractLotjuMetadataClient`.
+
+```
+org.springframework.aop.framework.CglibAopProxy: Unable to proxy interface-implementing method [public final void org.springframework.ws.client.core.support.WebServiceGatewaySupport.afterPropertiesSet() throws java.lang.Exception] because it is marked as final, consider using interface-based JDK proxies instead.
+```
