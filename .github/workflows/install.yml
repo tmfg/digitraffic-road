@@ -133,7 +133,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-image-road-${{ matrix.app }}-${{ github.event.inputs.env }}
@@ -203,7 +203,7 @@ jobs:
       revision_web: ${{ steps.revision.outputs.revision_web }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
@@ -237,7 +237,7 @@ jobs:
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
@@ -261,7 +261,7 @@ jobs:
     environment: ${{ github.event.inputs.env }}
     steps:
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-road-${{ matrix.app }}-${{ github.event.inputs.env }}
@@ -331,7 +331,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials for ${{ matrix.app }}
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ fromJson(steps.sbom-config.outputs.common).sbomUploadRoleArn }}
           role-session-name: gh-actions-upload-sbom-road-${{ matrix.app }}-${{ github.event.inputs.env }}
