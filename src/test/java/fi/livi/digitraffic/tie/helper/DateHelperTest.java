@@ -39,7 +39,7 @@ public class DateHelperTest extends AbstractTest {
         final String DATE_TIME_MIKROS = "2022-01-02T10:31:21.123456";
         final String ZONE_Z = "Z";
         final String ZONE_OFFSET = "+01:00";
-        final String RANDOM = RandomStringUtils.random(3) + "\n" + RandomStringUtils.random(3);
+        final String RANDOM = RandomStringUtils.secure().next(3) + "\n" + RandomStringUtils.secure().next(3);
 
         // No extra befor or after allowed
         Assertions.assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER.matches(DATE_TIME + ZONE_Z));

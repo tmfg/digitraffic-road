@@ -53,7 +53,7 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
            SQL_SELECT +
            SQL_FROM +
            SQL_WHERE_PUBLISHABLE +
-           "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
+           "  and rs.type = :#{#roadStationType.name()}\n" +
            "  and sv.measured > (now() -(:timeLimitInMinutes * interval '1 MINUTE'))\n" +
            "order by rs.natural_id, s.natural_id",
            nativeQuery = true)
@@ -65,7 +65,7 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
     @Query(value = SQL_SELECT +
             SQL_FROM +
             SQL_WHERE_PUBLISHABLE +
-            " AND rs.road_station_type = :#{#roadStationType.name()}\n" +
+            " AND rs.type = :#{#roadStationType.name()}\n" +
             " AND sv.measured > (now() -(:measuredTimeLimitInMinutes * interval '1 MINUTE'))\n" +
             " AND s.name_fi IN (:sensorNames) ", nativeQuery = true)
     List<SensorValueDtoV1> findAllPublicPublishableRoadStationSensorValues(
@@ -79,7 +79,7 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
            SQL_SELECT +
            SQL_FROM +
            SQL_WHERE_PUBLISHABLE +
-           "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
+           "  and rs.type = :#{#roadStationType.name()}\n" +
            "  and rs.natural_id = :roadStationNaturalId\n" +
            "  and sv.measured > (now() -(:timeLimitInMinutes * interval '1 MINUTE'))\n" +
            "order by rs.natural_id, s.natural_id",
@@ -94,7 +94,7 @@ public interface RoadStationSensorValueDtoRepositoryV1 extends SqlRepository {
                SQL_SELECT +
                SQL_FROM +
                SQL_WHERE_PUBLISHABLE +
-               "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
+               "  and rs.type = :#{#roadStationType.name()}\n" +
                "  and sv.modified > :afterDate\n" +
                "order by sv.modified",
                    nativeQuery = true)

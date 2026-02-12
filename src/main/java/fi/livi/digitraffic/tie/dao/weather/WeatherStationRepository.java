@@ -43,18 +43,18 @@ public interface WeatherStationRepository extends JpaRepository<WeatherStation, 
 
     @Query(value = """
             select max(src.modified) as modified
-            from (select max(modified) as modified
-                  from weather_station
+            from (select max(ws.modified) as modified
+                  from weather_station ws
                   union
-                  select max(modified) as modified
-                  from road_station
-                  where road_station_type = 'WEATHER_STATION'
+                  select max(rs.modified) as modified
+                  from road_station rs
+                  where rs.type = 'WEATHER_STATION'
                   union
                   select max(rss.modified) as modified
                   from road_station_sensors rss
                   where exists(select null from road_station rs
                                where rs.id = rss.road_station_id
-                                 and rs.road_station_type = 'WEATHER_STATION')
+                                 and rs.type = 'WEATHER_STATION')
             ) src""", nativeQuery = true)
     Instant getLastUpdated();
 }

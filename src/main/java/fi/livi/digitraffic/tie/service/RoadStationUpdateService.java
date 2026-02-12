@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,49 +64,53 @@ public class RoadStationUpdateService {
 
     @Transactional
     public boolean updateRoadStation(final LamAsemaVO from) {
-        final RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.TMS_STATION, from.getId());
-        if (rs == null) { // Not found from db
+        final Optional<RoadStation> rs =
+                roadStationRepository.findByTypeAndLotjuId(RoadStationType.TMS_STATION, from.getId());
+        if (rs.isEmpty()) { // Not found from db
             return false;
         }
         if (from.getVanhaId() == null) {
             log.warn("method=updateRoadStation incoming LamAsema vanhaId is null. fromId={} toNaturalId={} toId={}",
-                     from.getId(), rs.getNaturalId(), rs.getId());
+                    from.getId(), rs.orElseThrow().getNaturalId(), rs.orElseThrow().getId());
             return false;
         }
-        return AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        return AbstractTmsStationAttributeUpdater.updateRoadStationAttributes(from, rs.orElse(null));
     }
 
     @Transactional
     public boolean updateRoadStation(final TiesaaAsemaVO from) {
-        final RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, from.getId());
-        if (rs == null) { // Ei löydy kannnasta
+        final Optional<RoadStation>
+                rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, from.getId());
+        if (rs.isEmpty()) { // Ei löydy kannnasta
             return false;
         }
         if (from.getVanhaId() == null) {
             log.warn("method=updateRoadStation incoming TiesaaAsema vanhaId is null. fromId={} toNaturalId={} toId={}",
-                     from.getId(), rs.getNaturalId(), rs.getId());
+                    from.getId(), rs.orElseThrow().getNaturalId(), rs.orElseThrow().getId());
             return false;
         }
-        return AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        return AbstractWeatherStationAttributeUpdater.updateRoadStationAttributes(from, rs.orElse(null));
     }
 
     @Transactional
     public boolean updateRoadStation(final KameraVO from) {
-        final RoadStation rs = roadStationRepository.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, from.getId());
-        if (rs == null) { // Ei löydy kannnasta
+        final Optional<RoadStation> rs =
+                roadStationRepository.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, from.getId());
+        if (rs.isEmpty()) { // Ei löydy kannnasta
             return false;
         }
         if (from.getVanhaId() == null) {
             log.warn("method=updateRoadStation incoming Kamera vanhaId is null. fromId={} toNaturalId={} toId={}",
-                     from.getId(), rs.getNaturalId(), rs.getId());
+                    from.getId(), rs.orElseThrow().getNaturalId(), rs.orElseThrow().getId());
             return false;
         }
 
-        return AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs);
+        return AbstractCameraStationAttributeUpdater.updateRoadStationAttributes(from, rs.orElse(null));
     }
 
     @Transactional
-    public int obsoleteRoadStationsExcludingLotjuIds(final RoadStationType roadStationType, final List<Long> roadStationsLotjuIdsNotToObsolete) {
+    public int obsoleteRoadStationsExcludingLotjuIds(final RoadStationType roadStationType,
+                                                     final List<Long> roadStationsLotjuIdsNotToObsolete) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaUpdate<RoadStation> update = cb.createCriteriaUpdate(RoadStation.class);
         final Root<RoadStation> root = update.from(RoadStation.class);
@@ -113,8 +118,9 @@ public class RoadStationUpdateService {
         update.set("obsoleteDate", LocalDate.now());
 
         final List<Predicate> predicates = new ArrayList<>();
-        predicates.add( cb.equal(root.get(rootModel.getSingularAttribute("roadStationType", RoadStationType.class)), roadStationType));
-        predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))) );
+        predicates.add(
+                cb.equal(root.get(rootModel.getSingularAttribute("type", RoadStationType.class)), roadStationType));
+        predicates.add(cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
         for (final List<Long> ids : Iterables.partition(roadStationsLotjuIdsNotToObsolete, 1000)) {
             predicates.add(cb.not(root.get("lotjuId").in(ids)));
         }

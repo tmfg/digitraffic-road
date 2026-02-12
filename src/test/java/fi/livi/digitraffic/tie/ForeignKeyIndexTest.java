@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -63,7 +63,7 @@ public class ForeignKeyIndexTest extends AbstractJpaTest {
         final List<Map<String, Object>> foreignKeysWithoutIndex =
                 jdbcTemplate.queryForList(sql)
                         .stream()
-                        .filter(fk -> !StringUtils.containsAny(fk.get("CONSTRAINT_NAME").toString().toUpperCase(),
+                        .filter(fk -> !Strings.CS.containsAny(fk.get("CONSTRAINT_NAME").toString().toUpperCase(),
                                 IGNORED_CONSTRAINT_NAMES))
                         .toList();
 
@@ -75,7 +75,7 @@ public class ForeignKeyIndexTest extends AbstractJpaTest {
             sb.append("_I ON ");
             sb.append(stringObjectMap.get("TABLE_NAME").toString().toUpperCase());
             sb.append(" USING BTREE (");
-            sb.append(StringUtils.replace(stringObjectMap.get("COLS").toString(), " ", ", "));
+            sb.append(Strings.CS.replace(stringObjectMap.get("COLS").toString(), " ", ", "));
             sb.append("); -- ");
             sb.append(stringObjectMap);
             sb.append("\n");

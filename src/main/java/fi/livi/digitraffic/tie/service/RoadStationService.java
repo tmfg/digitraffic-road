@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class RoadStationService {
     }
 
     @Transactional(readOnly = true)
-    public RoadStation findByTypeAndLotjuId(final RoadStationType type, final Long lotjuId) {
+    public Optional<RoadStation> findByTypeAndLotjuId(final RoadStationType type, final Long lotjuId) {
         return roadStationRepository.findByTypeAndLotjuId(type, lotjuId);
     }
 

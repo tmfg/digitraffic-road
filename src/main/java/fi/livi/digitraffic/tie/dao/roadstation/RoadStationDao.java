@@ -25,7 +25,7 @@ public class RoadStationDao {
         return jdbcTemplate.query("""
                         SELECT station.id, station.lotju_id
                         FROM ROAD_STATION station
-                        WHERE station.road_station_type = :stationType
+                        WHERE station.type = :stationType
                           AND station.publishable = true""",
             new MapSqlParameterSource().addValue("stationType", stationType, Types.VARCHAR),
             rs -> {
@@ -41,7 +41,7 @@ public class RoadStationDao {
         return jdbcTemplate.query("""
                         SELECT station.id, station.natural_id
                         FROM ROAD_STATION station
-                        WHERE station.road_station_type = :stationType
+                        WHERE station.type = :stationType
                           AND station.publishable = true""",
             new MapSqlParameterSource().addValue("stationType", stationType, Types.VARCHAR),
             rs -> {

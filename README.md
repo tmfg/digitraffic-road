@@ -50,24 +50,8 @@ Or build the JAR file with:
 
 ### Running tests
 
-
-Copy the template `application-default.properties.template` to `application-localhost.properties`.
+Properties can be found at [`application-localhost.properties`](src/test/resources/application-localhost.properties).
 Running may also require to specify the active Spring profile by setting _-Dspring.profiles.active=localhost_.
-
-### Generate SchemaSpy schemas from the db with Maven
-
-    $ mvn exec:exec@schemaspy
-
-Generated schemas can be found at `dbroad/schemaspy/schema` -directory
-
-Or with custom parameters.
-
-    $ mvn exec:exec@schemaspy -Dexec.args="-o=/tmp/schema"
-
-Or without Maven
-
-    $ cd dbroad/schemaspy
-    $ get-deps-and-run-schemaspy.sh [-o=/tmp/schema]
 
 ### Misc commands
 

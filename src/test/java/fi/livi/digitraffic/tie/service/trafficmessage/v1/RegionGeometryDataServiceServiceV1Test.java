@@ -66,9 +66,9 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
     public void getAreaLocationRegionEffectiveOn_WhenToCommitsHaveSameffectiveDatLatestCommitReturned() {
         final Instant secondAndThirdCommiteffectiveDate = Instant.now();
         final Instant firstCommiteffectiveDate = secondAndThirdCommiteffectiveDate.minus(1, ChronoUnit.DAYS);
-        final String commitId1 = RandomStringUtils.randomAlphanumeric(32);
-        final String commitId2 = RandomStringUtils.randomAlphanumeric(32);
-        final String commitId3 = RandomStringUtils.randomAlphanumeric(32);
+        final String commitId1 = RandomStringUtils.secure().nextAlphanumeric(32);
+        final String commitId2 = RandomStringUtils.secure().nextAlphanumeric(32);
+        final String commitId3 = RandomStringUtils.secure().nextAlphanumeric(32);
         final List<RegionGeometry> commit1Changes = createCommit(commitId1, firstCommiteffectiveDate, 1,2,3);
         final List<RegionGeometry> commit2Changes = createCommit(commitId2, secondAndThirdCommiteffectiveDate, 1,2,3);
         final List<RegionGeometry> commit3Changes = createCommit(commitId3, secondAndThirdCommiteffectiveDate, 1,2,3);
@@ -96,8 +96,8 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
     public void getAreaLocationRegionEffectiveOn_WhenThereIsInvalidTypeFirstValidShouldReturn() {
         final Instant secondCommiteffectiveDate = Instant.now();
         final Instant firstCommiteffectiveDate = secondCommiteffectiveDate.minus(1, ChronoUnit.DAYS);
-        final String commitId1 = RandomStringUtils.randomAlphanumeric(32);
-        final String commitId2 = RandomStringUtils.randomAlphanumeric(32);
+        final String commitId1 = RandomStringUtils.secure().nextAlphanumeric(32);
+        final String commitId2 = RandomStringUtils.secure().nextAlphanumeric(32);
         final List<RegionGeometry> commit1Changes = Collections.singletonList(
             RegionGeometryTestHelper.createNewRegionGeometry(1, firstCommiteffectiveDate, commitId1, AreaType.UNKNOWN));
         final List<RegionGeometry> commit2Changes = createCommit(commitId2, secondCommiteffectiveDate, 1);
@@ -121,8 +121,8 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
         final Instant commit2EffectiveDate = Instant.now();
         final Instant commit1EffectiveDate = commit2EffectiveDate.minus(1, ChronoUnit.DAYS);
 
-        final String commitId1 = RandomStringUtils.randomAlphanumeric(32);
-        final String commitId2 = RandomStringUtils.randomAlphanumeric(32);
+        final String commitId1 = RandomStringUtils.secure().nextAlphanumeric(32);
+        final String commitId2 = RandomStringUtils.secure().nextAlphanumeric(32);
 
         final List<RegionGeometry> commit1Changes = createCommit(commitId1, commit1EffectiveDate, 1,2,3);
         final List<RegionGeometry> commit2Changes = createCommit(commitId2, commit2EffectiveDate, 1,2,3);
@@ -163,7 +163,7 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
     public void findAreaLocationRegionsWithUpdateInfo() {
         // Create commit and ask update info
         final Instant effectiveDate = Instant.now();
-        final String commitId = RandomStringUtils.randomAlphanumeric(32);
+        final String commitId = RandomStringUtils.secure().nextAlphanumeric(32);
         final List<RegionGeometry> commitChanges = createCommit(commitId, effectiveDate, 1,2);
         when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(commitChanges);
         v3RegionGeometryTestHelper.runUpdateJob(); // update to commit1

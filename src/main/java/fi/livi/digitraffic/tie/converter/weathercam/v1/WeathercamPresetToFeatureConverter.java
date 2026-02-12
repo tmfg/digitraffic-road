@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +92,7 @@ public class WeathercamPresetToFeatureConverter extends AbstractRoadstationToFea
     }
 
     private String getImageUrl(final CameraPreset cp) {
-        return StringUtils.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg";
+        return Strings.CS.appendIfMissing(weathercamBaseurl, "/") + cp.getPresetId() + ".jpg";
     }
 
     private WeathercamStationFeatureSimpleV1 convertToSimpleFeature(final CameraPreset cp) {

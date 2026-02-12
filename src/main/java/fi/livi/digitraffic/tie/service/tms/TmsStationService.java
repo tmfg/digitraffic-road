@@ -82,8 +82,7 @@ public class TmsStationService extends AbstractTmsStationAttributeUpdater {
             }
             return UpdateStatus.NOT_UPDATED;
         } else {
-            final TmsStation newTms = new TmsStation();
-            newTms.setRoadStation(RoadStation.createTmsStation());
+            final TmsStation newTms = TmsStation.create();
             updateTmsStationAttributes(lam, newTms);
             tmsStationRepository.save(newTms);
 

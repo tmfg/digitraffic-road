@@ -70,8 +70,7 @@ public class WeatherStationService extends AbstractWeatherStationAttributeUpdate
                 }
                 return UpdateStatus.NOT_UPDATED;
             } else {
-                final WeatherStation newRws = new WeatherStation();
-                newRws.setRoadStation(RoadStation.createWeatherStation());
+                final WeatherStation newRws = WeatherStation.create();
                 updateWeatherStationAttributes(tiesaaAsema, newRws);
                 weatherStationRepository.save(newRws);
                 log.info("method=updateOrInsertWeatherStation Created new {}", newRws);

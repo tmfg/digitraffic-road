@@ -27,7 +27,7 @@ public class TmsSensorConstantDao {
         WITH TMS_RS AS (
             SELECT rs.id as rs_id, rs.lotju_id rs_lotju_id
             FROM road_station rs
-            WHERE rs.road_station_type = 'TMS_STATION'
+            WHERE rs.type = 'TMS_STATION'
               AND rs.lotju_id = :sensorConstantRoadStationLotjuId
         )
         INSERT INTO TMS_SENSOR_CONSTANT (LOTJU_ID, ROAD_STATION_ID, NAME)

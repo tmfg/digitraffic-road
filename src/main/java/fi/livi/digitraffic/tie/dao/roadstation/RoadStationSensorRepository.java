@@ -96,7 +96,7 @@ public interface RoadStationSensorRepository extends JpaRepository<RoadStationSe
                , SENSOR.ID AS ROAD_STATION_SENSOR_ID
           FROM ROAD_STATION_SENSOR SENSOR, ROAD_STATION RS
           WHERE SENSOR.ROAD_STATION_TYPE = :#{#roadStationType.name()}
-            AND RS.ROAD_STATION_TYPE = SENSOR.ROAD_STATION_TYPE
+            AND RS.TYPE = SENSOR.ROAD_STATION_TYPE
             AND SENSOR.LOTJU_ID IN (:sensorsLotjuIds)
             AND RS.ID = :roadStationId
             AND NOT EXISTS(

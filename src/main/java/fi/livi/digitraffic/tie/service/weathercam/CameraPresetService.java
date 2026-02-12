@@ -42,8 +42,10 @@ public class CameraPresetService {
     private final CameraPresetRepository cameraPresetRepository;
 
     @Autowired
-    public CameraPresetService(final EntityManager entityManager, final CameraPresetRepository cameraPresetRepository, final RoadStationRepository roadStationRepository,
-        final WeatherStationRepository weatherStationRepository, final CameraPresetHistoryRepository cameraPresetHistoryRepository) {
+    public CameraPresetService(final EntityManager entityManager, final CameraPresetRepository cameraPresetRepository,
+                               final RoadStationRepository roadStationRepository,
+                               final WeatherStationRepository weatherStationRepository,
+                               final CameraPresetHistoryRepository cameraPresetHistoryRepository) {
         this.entityManager = entityManager;
         this.roadStationRepository = roadStationRepository;
         this.weatherStationRepository = weatherStationRepository;
@@ -86,7 +88,8 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public List<CameraPreset> findAllPublishableCameraPresetsByCameraId(final String cameraId) {
-        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(cameraId);
+        return cameraPresetRepository.findByPublishableIsTrueAndRoadStationPublishableNowIsTrueOrderByPresetId(
+                cameraId);
     }
 
     @Transactional(readOnly = true)
@@ -104,7 +107,7 @@ public class CameraPresetService {
         update.set("obsoleteDate", LocalDate.now());
 
         final List<Predicate> predicates = new ArrayList<>();
-        predicates.add( cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
+        predicates.add(cb.isNull(root.get(rootModel.getSingularAttribute("obsoleteDate", LocalDate.class))));
         for (final List<Long> ids : Iterables.partition(camerasLotjuIds, 1000)) {
             predicates.add(cb.not(root.get("cameraLotjuId").in(ids)));
         }
@@ -124,24 +127,27 @@ public class CameraPresetService {
     }
 
     @Transactional
-    public void updateCameraPresetAndHistoryWithLotjuId(final long cameraPresetLotjuId, final boolean isImagePublic, final boolean isPresetPublic,
+    public void updateCameraPresetAndHistoryWithLotjuId(final long cameraPresetLotjuId, final boolean isImagePublic,
+                                                        final boolean isPresetPublic,
                                                         final ImageUpdateInfo updateInfo) {
         final CameraPreset cameraPreset = findCameraPresetByLotjuId(cameraPresetLotjuId);
         // Update version data only if write has succeeded
         if (updateInfo.isSuccess()) {
             final CameraPresetHistory history =
-                new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(), updateInfo.getLastUpdated(),
-                                        isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
+                    new CameraPresetHistory(cameraPreset.getPresetId(), updateInfo.getVersionId(), cameraPreset.getId(),
+                            updateInfo.getLastUpdated(),
+                            isImagePublic, updateInfo.getSizeBytes(), isPresetPublic);
             log.debug("method=updateCameraPresetAndHistoryWithLotjuId Save history with presetId={} s3VersionId=\"{}\"",
-                     cameraPreset.getPresetId(), updateInfo.getVersionId());
+                    cameraPreset.getPresetId(), updateInfo.getVersionId());
             cameraPresetHistoryRepository.save(history);
         }
         // Preset can be public when camera is secret. If camera is secret then public presets are not returned by the api.
         if (cameraPreset.isPublic() != isPresetPublic) {
             cameraPreset.setPublic(isPresetPublic);
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
-            log.info("method=updateCameraPresetAndHistoryWithLotjuId cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
-                     cameraPreset.getPresetId(), !isPresetPublic, isPresetPublic, updateInfo.getLastUpdated());
+            log.info(
+                    "method=updateCameraPresetAndHistoryWithLotjuId cameraPresetId={} isPublicExternal from {} to {} lastModified={}",
+                    cameraPreset.getPresetId(), !isPresetPublic, isPresetPublic, updateInfo.getLastUpdated());
         } else if (updateInfo.isSuccess()) {
             cameraPreset.setPictureLastModified(updateInfo.getLastUpdated());
         }
@@ -172,12 +178,14 @@ public class CameraPresetService {
 
     @Transactional(readOnly = true)
     public Map<String, Long> getNearestWeatherStationNaturalIdMappedByCameraId() {
-        final List<WeathercamNearestWeatherStationV1> stations = cameraPresetRepository.findAllPublishableNearestWeatherStations();
-        return stations.stream().collect(Collectors.toMap(WeathercamNearestWeatherStationV1::getCameraId, WeathercamNearestWeatherStationV1::getNearestWeatherStationNaturalId));
+        final List<WeathercamNearestWeatherStationV1> stations =
+                cameraPresetRepository.findAllPublishableNearestWeatherStations();
+        return stations.stream().collect(Collectors.toMap(WeathercamNearestWeatherStationV1::getCameraId,
+                WeathercamNearestWeatherStationV1::getNearestWeatherStationNaturalId));
     }
 
     @Transactional(readOnly = true)
     public Long getNearestWeatherStationNaturalIdByCameraNatualId(final String cameraId) {
-        return cameraPresetRepository.getNearestWeatherStationNaturalIdByCameraNatualId(cameraId);
+        return cameraPresetRepository.findNearestWeatherStationNaturalIdByCameraNatualId(cameraId);
     }
 }

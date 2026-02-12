@@ -221,7 +221,7 @@ public class WeathercamPresetHistoryDataWebServiceV1Test extends AbstractDaemonT
 
     private CameraPresetHistory generateHistory(final CameraPreset preset, final Instant lastModified,
                                                 final boolean publishable) {
-        final String versionId = RandomStringUtils.randomAlphanumeric(32);
+        final String versionId = RandomStringUtils.secure().nextAlphanumeric(32);
         final CameraPresetHistory history =
                 new CameraPresetHistory(preset.getPresetId(), versionId, preset.getId(), lastModified, publishable, 10,
                         preset.isPublic());

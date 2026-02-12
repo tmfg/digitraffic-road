@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,11 +132,11 @@ public class ImsJsonConverterTest extends AbstractServiceTest {
     }
 
     private String changeSituationIdInFeature(final String featureToEdit, final String situationIdToReplace, final String replacementSituationId) {
-        return StringUtils.replace(featureToEdit, situationIdToReplace, replacementSituationId);
+        return Strings.CS.replace(featureToEdit, situationIdToReplace, replacementSituationId);
     }
 
     private String createFeatureCollectionWithSituations(final String... feature) {
         final String features = StringUtils.joinWith(", ", (Object[]) feature);
-        return StringUtils.replace(FEATURE_COLLECTION, "FEATURES", features);
+        return Strings.CS.replace(FEATURE_COLLECTION, "FEATURES", features);
     }
 }

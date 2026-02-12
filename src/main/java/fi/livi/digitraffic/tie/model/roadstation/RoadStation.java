@@ -11,12 +11,10 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import fi.livi.digitraffic.tie.converter.RoadStationTypeIntegerConverter;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,7 +33,9 @@ import jakarta.validation.constraints.NotNull;
 public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
-    @SequenceGenerator(name = "SEQ_ROAD_STATION", sequenceName = "SEQ_ROAD_STATION", allocationSize = 1)
+    @SequenceGenerator(name = "SEQ_ROAD_STATION",
+                       sequenceName = "SEQ_ROAD_STATION",
+                       allocationSize = 1)
     @GeneratedValue(generator = "SEQ_ROAD_STATION")
     private Long id;
 
@@ -47,28 +47,24 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
 
     private String name;
 
-    @Convert(converter = RoadStationTypeIntegerConverter.class)
-    private RoadStationType type;
-
-    /**
-     * This is used only in db queries
-     */
+    @NotNull
     @Enumerated(EnumType.STRING)
-    private RoadStationType roadStationType;
+    @Column(nullable = false)
+    private RoadStationType type;
 
     @Enumerated(EnumType.STRING)
     private RoadStationState state;
 
     private LocalDate obsoleteDate;
 
-    @Column(name="IS_PUBLIC")
+    @Column(name = "IS_PUBLIC")
     private boolean isPublic;
 
     /**
      * Previous value for publicity. Used in case when new value is in the future
      * as publicityStartTime > now().
      */
-    @Column(name="IS_PUBLIC_PREVIOUS")
+    @Column(name = "IS_PUBLIC_PREVIOUS")
     private boolean isPublicPrevious;
 
     /**
@@ -78,7 +74,9 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
 
     private String nameFi, nameSv, nameEn;
 
-    /** ETRS89 coordinates */
+    /**
+     * ETRS89 coordinates
+     */
     private BigDecimal latitude, longitude, altitude;
 
     private Integer collectionInterval;
@@ -101,8 +99,11 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
     private Instant repairMaintenanceDate;
     private Instant annualMaintenanceDate;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name="ROAD_ADDRESS_ID", unique=true)
+    @OneToOne(cascade = CascadeType.ALL,
+              orphanRemoval = true,
+              fetch = FetchType.LAZY)
+    @JoinColumn(name = "ROAD_ADDRESS_ID",
+                unique = true)
     @Fetch(FetchMode.SELECT)
     private RoadAddress roadAddress;
 
@@ -110,22 +111,26 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
 
     @ManyToMany
     @JoinTable(name = "ROAD_STATION_SENSORS",
-               joinColumns = @JoinColumn(name = "ROAD_STATION_ID", referencedColumnName = "ID"),
-               inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID", referencedColumnName = "ID"))
+               joinColumns = @JoinColumn(name = "ROAD_STATION_ID",
+                                         referencedColumnName = "ID"),
+               inverseJoinColumns = @JoinColumn(name = "ROAD_STATION_SENSOR_ID",
+                                                referencedColumnName = "ID"))
     private List<RoadStationSensor> roadStationSensors = new ArrayList<>();
 
     /**
      * This value is calculated by db so it's value is not
      * reliable if entity is modified after fetch from db.
      */
-    @Column(updatable = false, insertable = false) // virtual column
+    @Column(updatable = false,
+            insertable = false) // virtual column
     private boolean publishable;
 
     protected RoadStation() {
+        // For Hibernate
     }
 
     private RoadStation(final RoadStationType type) {
-        setType(type);
+        this.type = type;
     }
 
     public static RoadStation createRoadStation(final RoadStationType roadStationType) {
@@ -165,7 +170,6 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
         this.naturalId = naturalId;
     }
 
-
     public Long getLotjuId() {
         return lotjuId;
     }
@@ -184,14 +188,6 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
 
     public RoadStationType getType() {
         return type;
-    }
-
-    public void setType(final RoadStationType type) {
-        if (this.type != null && !this.type.equals(type)) {
-            throw new IllegalArgumentException("RoadStationType can not be changed once set. (" + this.type + " -> " + type + " )");
-        }
-        this.type = type;
-        this.roadStationType = type;
     }
 
     private void internalSetPublic(final boolean isPublic) {
@@ -468,23 +464,21 @@ public class RoadStation extends ReadOnlyCreatedAndModifiedFields {
      * values.
      * isPublic and publicityStartTime are always updated to given parameter values.
      *
-     * @param isPublicNew new publicity value
+     * @param isPublicNew           new publicity value
      * @param publicityStartTimeNew time when new publicity value is valid from (Only for camera station)
-     *
      * @return was there status change
-     *
      * @throws IllegalStateException If called other than camera station with time set
      */
     public boolean updatePublicity(final boolean isPublicNew, final Instant publicityStartTimeNew) {
         if (publicityStartTimeNew != null && !RoadStationType.CAMERA_STATION.equals(getType())) {
             throw new IllegalStateException(String.format("Only %s can have publicityStartTime. Tried to it set to %s.",
-                                                          RoadStationType.CAMERA_STATION, this.getType()));
+                    RoadStationType.CAMERA_STATION, this.getType()));
         }
         final boolean changed = isPublic != isPublicNew || !Objects.equals(publicityStartTime, publicityStartTimeNew);
         // If publicity status changes and current value hasn't become valid, then previous publicity status will remain unchanged
         // currentPublicityStartTime == null -> Valid all the time OR !inFuture -> Valid already
-        if ( isPublic != isPublicNew &&
-            (publicityStartTime == null || publicityStartTime.isBefore(Instant.now())) ) {
+        if (isPublic != isPublicNew &&
+                (publicityStartTime == null || publicityStartTime.isBefore(Instant.now()))) {
             setPublicPrevious(isPublic);
         }
         internalSetPublic(isPublicNew);

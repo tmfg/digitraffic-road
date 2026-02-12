@@ -101,7 +101,7 @@ public class WeatherStationUpdater  {
             }
             final UpdateStatus updateStatus = weatherStationService.updateOrInsertWeatherStation(tiesaaAsema);
             final RoadStation weatherStation =
-                roadStationService.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, tiesaaAsema.getId());
+                roadStationService.findByTypeAndLotjuId(RoadStationType.WEATHER_STATION, tiesaaAsema.getId()).orElseThrow();
             final List<TiesaaLaskennallinenAnturiVO> anturit =
                 lotjuWeatherStationMetadataClientWrapper.getTiesaaAsemanLaskennallisetAnturit(tiesaaAsema.getId());
             final List<Long> sensorslotjuIds = anturit.stream().map(AbstractVO::getId).collect(Collectors.toList());

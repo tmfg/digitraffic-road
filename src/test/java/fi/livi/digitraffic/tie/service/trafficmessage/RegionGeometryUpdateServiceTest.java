@@ -46,8 +46,8 @@ public class RegionGeometryUpdateServiceTest extends AbstractServiceTest {
         final Instant secondCommiteffectiveDate = Instant.now();
         final Instant firstCommiteffectiveDate = secondCommiteffectiveDate.minus(1, ChronoUnit.DAYS);
 
-        final String commitId1 = RandomStringUtils.randomAlphanumeric(32);
-        final String commitId2 = RandomStringUtils.randomAlphanumeric(32);
+        final String commitId1 = RandomStringUtils.secure().nextAlphanumeric(32);
+        final String commitId2 = RandomStringUtils.secure().nextAlphanumeric(32);
         final List<RegionGeometry> commit1Changes = createCommit(commitId1, firstCommiteffectiveDate, 1,2,3);
         final List<RegionGeometry> commit2Changes = createCommit(commitId2, secondCommiteffectiveDate, 1,2,3);
 

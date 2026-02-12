@@ -1,5 +1,7 @@
 package fi.livi.digitraffic.tie.model.weather;
 
+import static fi.livi.digitraffic.tie.model.roadstation.RoadStationType.WEATHER_STATION;
+
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -25,7 +27,9 @@ public class WeatherStation extends ReadOnlyCreatedAndModifiedFields {
 
     @Id
     @NotNull
-    @SequenceGenerator(name = "SEQ_ROAD_WEATHER_STATION", sequenceName = "SEQ_ROAD_WEATHER_STATION", allocationSize = 1)
+    @SequenceGenerator(name = "SEQ_ROAD_WEATHER_STATION",
+                       sequenceName = "SEQ_ROAD_WEATHER_STATION",
+                       allocationSize = 1)
     @GeneratedValue(generator = "SEQ_ROAD_WEATHER_STATION")
     private Long id;
 
@@ -37,8 +41,11 @@ public class WeatherStation extends ReadOnlyCreatedAndModifiedFields {
 
     private boolean master;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="road_station_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY,
+              cascade = CascadeType.ALL,
+              orphanRemoval = true)
+    @JoinColumn(name = "road_station_id",
+                nullable = false)
     @Fetch(FetchMode.SELECT)
     private RoadStation roadStation;
 
@@ -61,11 +68,7 @@ public class WeatherStation extends ReadOnlyCreatedAndModifiedFields {
     public RoadStation getRoadStation() {
         return roadStation;
     }
-
-    public void setRoadStation(final RoadStation roadStation) {
-        this.roadStation = roadStation;
-    }
-
+    
     public boolean makeObsolete() {
         return roadStation.makeObsolete();
     }
@@ -103,4 +106,25 @@ public class WeatherStation extends ReadOnlyCreatedAndModifiedFields {
     public Long getRoadStationNaturalId() {
         return roadStation != null ? roadStation.getNaturalId() : null;
     }
+
+    protected WeatherStation() {
+        // for Hibernate
+    }
+
+    private WeatherStation(final RoadStation roadStation) {
+        if (roadStation == null || roadStation.getType() != WEATHER_STATION) {
+            throw new IllegalArgumentException(
+                    "RoadStation cannot be null and type must be WEATHER_STATION when creating TmsStation");
+        }
+        this.roadStation = roadStation;
+    }
+
+    public static WeatherStation create() {
+        return create(RoadStation.createWeatherStation());
+    }
+
+    public static WeatherStation create(final RoadStation roadStation) {
+        return new WeatherStation(roadStation);
+    }
+
 }

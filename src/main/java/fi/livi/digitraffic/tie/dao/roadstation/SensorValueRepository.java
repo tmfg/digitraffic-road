@@ -24,7 +24,7 @@ public interface SensorValueRepository extends JpaRepository<SensorValue, Long> 
         "from sensor_value sv\n" +
         "where exists(select null from road_station rs\n" +
         "             where rs.id = sv.road_station_id\n" +
-        "               and rs.road_station_type = :#{#roadStationType.name()})",
+        "               and rs.type = :#{#roadStationType.name()})",
            nativeQuery = true)
     Instant getLastModified(final RoadStationType roadStationType);
 

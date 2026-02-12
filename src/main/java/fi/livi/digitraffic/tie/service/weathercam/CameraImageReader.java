@@ -8,7 +8,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -62,6 +62,6 @@ public class CameraImageReader {
     }
 
     private String getCameraDownloadUrl(final URI destination, final long kuvaId) {
-        return StringUtils.appendIfMissing(destination.toString(), "/") + kuvaId;
+        return Strings.CS.appendIfMissing(destination.toString(), "/") + kuvaId;
     }
 }

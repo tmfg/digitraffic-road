@@ -178,7 +178,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
     /** @return versionId */
     private String insertHistoryTestData(final String presetId, final Instant lastModified, final boolean isPublic) {
-        final String versionId = RandomStringUtils.randomAlphanumeric(32);
+        final String versionId = RandomStringUtils.secure().nextAlphanumeric(32);
         final String cameraId = getCameraIdFromPresetId(presetId);
         entityManager.createNativeQuery(
                 "insert into camera_preset_history(preset_id, camera_id, version_id, camera_preset_id, last_modified, publishable, size, created, preset_public, preset_seq_prev)\n" +

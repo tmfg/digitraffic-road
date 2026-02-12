@@ -23,7 +23,7 @@ jobs:
       - name: Get database IP
         run: echo "db_addr=$(docker inspect dbroad-db-1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Prepare test run
-        run: cp src/test/resources/application-default.properties.template target/test-classes/application-ci.properties
+        run: cp src/test/resources/application-localhost.properties target/test-classes/application-ci.properties
       - name: Run tests
         timeout-minutes: 10
         run: |

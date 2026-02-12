@@ -981,16 +981,6 @@
                 <version>3.5.1</version>
                 <executions>
                     <execution>
-                        <id>schemaspy</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <workingDirectory>${basedir}/dbroad/schemaspy</workingDirectory>
-                            <executable>./get-deps-and-run-schemaspy.sh</executable>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>init git submodules</id>
                         <goals>
                             <goal>exec</goal>

@@ -52,11 +52,11 @@ public class RegionGeometryTestHelper {
     }
 
     public static RegionGeometry createNewRegionGeometry() {
-        return createNewRegionGeometry(1, Instant.parse("2020-01-01T00:00:00Z"), RandomStringUtils.randomAlphanumeric(32));
+        return createNewRegionGeometry(1, Instant.parse("2020-01-01T00:00:00Z"), RandomStringUtils.secure().nextAlphanumeric(32));
     }
 
     public static RegionGeometry createNewRegionGeometry(final int locationCode) {
-        return createNewRegionGeometry(locationCode, Instant.parse("2020-01-01T00:00:00Z"), RandomStringUtils.randomAlphanumeric(32));
+        return createNewRegionGeometry(locationCode, Instant.parse("2020-01-01T00:00:00Z"), RandomStringUtils.secure().nextAlphanumeric(32));
     }
     public static RegionGeometry createNewRegionGeometry(final int locationCode, final Instant effectiveDate, final String commitId) {
         return createNewRegionGeometry(locationCode, effectiveDate, commitId, AreaType.MUNICIPALITY);
@@ -86,7 +86,7 @@ public class RegionGeometryTestHelper {
                 "Helsinki", locationCode, type,
                 effectiveDate, geometry,
                 effectiveDate,
-                RandomStringUtils.randomAlphanumeric(32),
+                RandomStringUtils.secure().nextAlphanumeric(32),
                 "geometry/regions/" + StringUtils.leftPad("" + locationCode, 5, '0') + "_jokualue.json",
                 commitId);
         } catch (final ParseException e) {
@@ -110,7 +110,7 @@ public class RegionGeometryTestHelper {
                     regionName, locationCode, type,
                     effectiveDate, geometry,
                     effectiveDate,
-                    RandomStringUtils.randomAlphanumeric(32),
+                    RandomStringUtils.secure().nextAlphanumeric(32),
                     StringUtil.format("geometry/regions/{}", fileName),
                     commitId);
         } catch (final ParseException | IOException e) {

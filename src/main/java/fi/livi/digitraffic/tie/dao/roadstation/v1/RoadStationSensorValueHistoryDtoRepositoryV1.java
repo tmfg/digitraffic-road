@@ -43,7 +43,7 @@ public interface RoadStationSensorValueHistoryDtoRepositoryV1 extends SqlReposit
            SQL_SELECT +
                    SQL_FROM +
                    SQL_WHERE_PUBLISHABLE +
-                   "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
+                   "  and rs.type = :#{#roadStationType.name()}\n" +
                    "  and rs.natural_id = :roadStationNaturalId\n" +
                    "  and s.natural_id = :sensorNaturalId\n" +
                    "  and :actualFrom < sv.measured\n" +
@@ -62,7 +62,7 @@ public interface RoadStationSensorValueHistoryDtoRepositoryV1 extends SqlReposit
            SQL_SELECT +
            SQL_FROM +
            SQL_WHERE_PUBLISHABLE +
-           "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
+           "  and rs.type = :#{#roadStationType.name()}\n" +
            "  and rs.natural_id = :roadStationNaturalId\n" +
            "  and :actualFrom < sv.measured\n" +
            "  and sv.measured <= :actualTo\n" +
@@ -86,7 +86,7 @@ public interface RoadStationSensorValueHistoryDtoRepositoryV1 extends SqlReposit
                    SQL_SELECT +
                            SQL_FROM +
                            SQL_WHERE_PUBLISHABLE +
-                           "  and rs.road_station_type = :#{#roadStationType.name()}\n" +
+                           "  and rs.type = :#{#roadStationType.name()}\n" +
                            "  and :from <= sv.measured\n" +
                            "  and sv.measured < :to\n" +
                            "order by sv.measured",

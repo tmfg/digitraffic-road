@@ -62,9 +62,8 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
     @BeforeEach
     public void initData() {
         final CameraPreset p1 = generateDummyPreset();
-        final CameraPreset p2 = generateDummyPreset();
+        final CameraPreset p2 = generateDummyPreset(p1.getRoadStation());
         p1.setPresetId(p1.getPresetId().substring(0, 6) + "01");
-        p2.setRoadStation(p1.getRoadStation());
         p2.setCameraId(p1.getCameraId());
         p2.setPresetId(p1.getCameraId() + "09");
         p2.setDirection("9");

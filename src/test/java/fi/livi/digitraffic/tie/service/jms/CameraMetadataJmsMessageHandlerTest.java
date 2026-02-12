@@ -242,18 +242,24 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
     }
 
     private List<CameraPreset> createAndSaveCameraPresets(final int count) {
-        final AtomicReference<RoadStation> rs = new AtomicReference<>();
-        return IntStream.range(0, count).mapToObj(i -> {
-            final CameraPreset ps = TestUtils.generateDummyPreset();
-            // Every preset for same station has same roadstation
-            if (rs.get() == null) {
-                rs.set(ps.getRoadStation());
-            }
-            ps.setCameraLotjuId(rs.get().getLotjuId());
-            ps.setRoadStation(rs.get());
-            cameraPresetService.save(ps);
-            return ps;
-        }).collect(Collectors.toList());
+        if (count < 1) {
+            return Collections.emptyList();
+        }
+        // First preset with common road station
+        final CameraPreset first = TestUtils.generateDummyPreset();
+        cameraPresetService.save(first);
+
+        final List<CameraPreset> others = new java.util.ArrayList<>(
+                IntStream.range(1, count)
+                        .mapToObj(i -> {
+                            // Get road station of first preset to make sure all presets have same road station -> same camera
+                            final CameraPreset ps = TestUtils.generateDummyPreset(first.getRoadStation());
+                            cameraPresetService.save(ps);
+                            return ps;
+                        })
+                        .toList());
+        others.add(first);
+        return others;
     }
 
     private static String getUpdateMessageXml(final UpdateType tyyppi, final EntityType entiteetti, final long lotjuId,

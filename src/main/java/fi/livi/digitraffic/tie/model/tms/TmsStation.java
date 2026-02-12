@@ -1,7 +1,10 @@
 package fi.livi.digitraffic.tie.model.tms;
 
+import static fi.livi.digitraffic.tie.model.roadstation.RoadStationType.*;
+
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
@@ -71,6 +74,25 @@ public class TmsStation extends ReadOnlyCreatedAndModifiedFields {
     @Fetch(FetchMode.JOIN)
     private RoadStation roadStation;
 
+    protected TmsStation() {
+        // for Hibernate
+    }
+
+    private TmsStation(final RoadStation roadStation) {
+        if (roadStation == null || roadStation.getType() != TMS_STATION) {
+            throw new IllegalArgumentException("RoadStation cannot be null and type must be TMS_STATION when creating TmsStation");
+        }
+        this.roadStation = roadStation;
+    }
+
+    public static TmsStation create() {
+        return create(RoadStation.createTmsStation());
+    }
+
+    public static TmsStation create(final RoadStation roadStation) {
+        return new TmsStation(roadStation);
+    }
+
     public Long getId() {
         return id;
     }
@@ -113,10 +135,6 @@ public class TmsStation extends ReadOnlyCreatedAndModifiedFields {
 
     public RoadStation getRoadStation() {
         return roadStation;
-    }
-
-    public void setRoadStation(final RoadStation roadStation) {
-        this.roadStation = roadStation;
     }
 
     /**

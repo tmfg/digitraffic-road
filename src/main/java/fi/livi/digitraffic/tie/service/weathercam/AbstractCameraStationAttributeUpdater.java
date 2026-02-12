@@ -52,7 +52,6 @@ public abstract class AbstractCameraStationAttributeUpdater extends AbstractRoad
         }
 
         to.setNaturalId(kamera.getVanhaId().longValue());
-        to.setType(CAMERA_STATION);
         to.setName(kamera.getNimi());
         to.setNameFi(kamera.getNimiFi());
         to.setNameSv(kamera.getNimiSe());

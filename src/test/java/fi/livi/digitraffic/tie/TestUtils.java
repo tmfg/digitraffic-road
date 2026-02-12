@@ -99,12 +99,10 @@ public class TestUtils {
 
     public static CameraPreset generateDummyPreset(final RoadStation rs) {
 
-        final CameraPreset cp = new CameraPreset();
-        cp.setRoadStation(rs);
+        final CameraPreset cp = CameraPreset.create(rs);
 
         final String cameraId = CameraHelper.convertNaturalIdToCameraId(rs.getNaturalId());
         final String presetId = generateUniquePresetId(cameraId);
-
 
         cp.setCameraId(cameraId);
         cp.setPresetId(presetId);
@@ -117,7 +115,7 @@ public class TestUtils {
         cp.setDefaultDirection(true);
         cp.setResolution("1920x1080");
         cp.setDirection("1");
-        cp.setCameraLotjuId(cp.getLotjuId());
+        cp.setCameraLotjuId(rs.getLotjuId());
         cp.setPictureLastModified(Instant.now());
         cp.setPictureLastModifiedDb(cp.getPictureLastModified().plusSeconds(10));
 
@@ -340,10 +338,8 @@ public class TestUtils {
     }
 
     public static WeatherStation generateDummyWeatherStation(final String nameSuffix) {
-        final RoadStation rs = generateDummyRoadStation(RoadStationType.WEATHER_STATION, nameSuffix);
-        final WeatherStation ws = new WeatherStation();
-        ws.setRoadStation(rs);
-        ws.setLotjuId(rs.getLotjuId());
+        final WeatherStation ws = WeatherStation.create(generateDummyRoadStation(RoadStationType.WEATHER_STATION, nameSuffix));
+        ws.setLotjuId(ws.getRoadStation().getLotjuId());
         ws.setWeatherStationType(WeatherStationType.E_18);
         ws.setMaster(true);
         return ws;
@@ -354,12 +350,9 @@ public class TestUtils {
     }
 
     public static TmsStation generateDummyTmsStation(final String nameSuffix) {
-        final RoadStation rs = generateDummyRoadStation(RoadStationType.TMS_STATION, nameSuffix);
-
-        final TmsStation ts = new TmsStation();
-        ts.setRoadStation(rs);
-        ts.setLotjuId(rs.getLotjuId());
-        ts.setNaturalId(rs.getLotjuId());
+        final TmsStation ts = TmsStation.create(generateDummyRoadStation(RoadStationType.TMS_STATION, nameSuffix));
+        ts.setLotjuId(ts.getRoadStation().getLotjuId());
+        ts.setNaturalId(ts.getRoadStation().getLotjuId());
         ts.setCalculatorDeviceType(CalculatorDeviceType.DSL_5);
         ts.setName("TMS_" + getNameSuffix(nameSuffix));
         ts.setDirection1Municipality("Vihti");
@@ -416,31 +409,31 @@ public class TestUtils {
         entityManager.createNativeQuery("ALTER TABLE camera_preset DISABLE TRIGGER camera_preset_prevent_delete_t").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM camera_preset_history WHERE created > '1970-01-01T00:00Z'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM camera_preset WHERE created > '1970-01-01T00:00Z'").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'CAMERA_STATION'").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station where type = 'CAMERA_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE camera_preset ENABLE TRIGGER camera_preset_prevent_delete_t").executeUpdate();
         entityManager.flush();
     }
 
     public static void truncateTmsData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE tms_station DISABLE TRIGGER tms_station_prevent_delete_t").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'TMS_STATION')").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station rs WHERE rs.type = 'TMS_STATION')").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station rs WHERE rs.type = 'TMS_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id > 252 AND road_station_type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM tms_sensor_constant_value WHERE created > '1970-01-01T00:00Z'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM tms_sensor_constant WHERE created > '1970-01-01T00:00Z'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM tms_station WHERE created > '1970-01-01T00:00Z'").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'TMS_STATION'").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station rs where rs.type = 'TMS_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE tms_station ENABLE TRIGGER tms_station_prevent_delete_t").executeUpdate();
         entityManager.flush();
     }
 
     public static void truncateWeatherData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE weather_station DISABLE TRIGGER weather_station_prevent_delete_t").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station WHERE road_station_type = 'WEATHER_STATION')").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station rs WHERE rs.type = 'WEATHER_STATION')").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station rs WHERE rs.type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id >= " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM weather_station WHERE created > '1970-01-01T00:00Z'").executeUpdate();
-        entityManager.createNativeQuery("DELETE FROM road_station where road_station_type = 'WEATHER_STATION'").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM road_station rs where rs.type = 'WEATHER_STATION'").executeUpdate();
         entityManager.createNativeQuery("ALTER TABLE weather_station ENABLE TRIGGER weather_station_prevent_delete_t").executeUpdate();
         entityManager.flush();
     }

@@ -9,7 +9,6 @@ import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationState;
-import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationAttributeUpdater;
 
 public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {
@@ -18,7 +17,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         final int hash = HashCodeBuilder.reflectionHashCode(to);
 
         // Can insert obsolete stations
-        if ( CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila()) ) {
+        if (CollectionStatus.isPermanentlyDeletedKeruunTila(la.getKeruunTila())) {
             to.makeObsolete();
         } else {
             to.unobsolete();
@@ -26,7 +25,6 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         to.setLotjuId(la.getId());
         to.updatePublicity(la.isJulkinen() == null || la.isJulkinen());
         to.setNaturalId(la.getVanhaId().longValue());
-        to.setType(RoadStationType.TMS_STATION);
         to.setName(la.getNimi());
         to.setNameFi(la.getNimiFi());
         to.setNameSv(la.getNimiSe());
@@ -50,7 +48,7 @@ public abstract class AbstractTmsStationAttributeUpdater extends AbstractRoadSta
         to.setPurpose(la.getKayttotarkoitus());
 
         return updateRoadAddressAttributes(la.getTieosoite(), to.getRoadAddress()) ||
-               HashCodeBuilder.reflectionHashCode(to) != hash;
+                HashCodeBuilder.reflectionHashCode(to) != hash;
     }
 
     public static boolean updateRoadAddressAttributes(final TieosoiteVO lat, final RoadAddress to) {

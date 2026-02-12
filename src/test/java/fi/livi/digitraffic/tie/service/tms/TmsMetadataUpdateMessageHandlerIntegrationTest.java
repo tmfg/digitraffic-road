@@ -441,7 +441,7 @@ public class TmsMetadataUpdateMessageHandlerIntegrationTest extends AbstractMeta
         final TieosoiteVO to = lam.getTieosoite();
 
         // 2. Send road address insert message
-        to.setUrakkaAlue(RandomStringUtils.randomAlphanumeric(32));
+        to.setUrakkaAlue(RandomStringUtils.secure().nextAlphanumeric(32));
         to.setId(to.getId()+1);
         to.setTienumero(to.getTienumero()+1);
         when(lotjuTmsStationMetadataClient.getLamAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(lam);

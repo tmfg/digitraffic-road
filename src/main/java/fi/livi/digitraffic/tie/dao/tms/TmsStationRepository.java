@@ -46,18 +46,18 @@ public interface TmsStationRepository extends JpaRepository<TmsStation, Long> {
 
     @Query(value = """
             select max(src.modified) as modified
-            from (select max(modified) as modified
-                  from tms_station
+            from (select max(tms.modified) as modified
+                  from tms_station tms
                   union
-                  select max(modified) as modified
-                  from road_station
-                  where road_station_type = 'TMS_STATION'
+                  select max(rs.modified) as modified
+                  from road_station rs
+                  where rs.type = 'TMS_STATION'
                   union
                   select max(rss.modified) as modified
                   from road_station_sensors rss
                   where exists(select null from road_station rs
                                where rs.id = rss.road_station_id
-                                 and rs.road_station_type = 'TMS_STATION')
+                                 and rs.type = 'TMS_STATION')
             ) src""", nativeQuery = true)
     Instant getLastUpdated();
 

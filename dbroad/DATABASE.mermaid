@@ -1,0 +1,1067 @@
+erDiagram
+
+    allowed_tms_sensor_constant {
+        name text PK "not null"
+    }
+
+    camera_preset {
+        id numeric PK "not null"
+        nearest_rd_weather_station_id numeric FK "null"
+        road_station_id numeric FK "null"
+        is_public boolean "not null"
+        camera_id character_varying "not null"
+        preset_id character_varying "not null"
+        camera_lotju_id numeric "not null"
+        lotju_id numeric "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        default_direction boolean "null"
+        in_collection boolean "null"
+        publishable boolean "null"
+        camera_description character_varying "null"
+        camera_type character_varying "null"
+        direction character_varying "null"
+        preset_name_1 character_varying "null"
+        preset_name_2 character_varying "null"
+        resolution character_varying "null"
+        compression numeric "null"
+        preset_order numeric "null"
+        obsolete_date timestamp_with_time_zone "null"
+        pic_last_modified timestamp_with_time_zone "null"
+        pic_last_modified_db timestamp_with_time_zone "null"
+    }
+
+    camera_preset_history {
+        preset_id character_varying PK "not null"
+        version_id character_varying PK "not null"
+        camera_preset_id numeric FK "not null"
+        preset_seq bigint "not null"
+        preset_seq_prev bigint "not null"
+        preset_public boolean "not null"
+        publishable boolean "not null"
+        camera_id character_varying "not null"
+        size integer "not null"
+        created timestamp_with_time_zone "not null"
+        last_modified timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    code_description {
+        code character_varying PK "not null"
+        domain character_varying PK "not null"
+        description_en character_varying "not null"
+        description_fi character_varying "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    counting_site_counter {
+        id bigint PK "not null"
+        user_type_id smallint FK "not null"
+        domain_name text FK "not null"
+        location geography "not null"
+        site_id integer "not null"
+        direction smallint "not null"
+        interval smallint "not null"
+        domain_name text "not null"
+        name text "not null"
+        site_domain text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        last_data_timestamp timestamp_with_time_zone "null"
+        removed_timestamp timestamp_with_time_zone "null"
+    }
+
+    counting_site_data {
+        id bigint PK "not null"
+        counter_id bigint FK "not null"
+        interval smallint "not null"
+        created timestamp_with_time_zone "not null"
+        data_timestamp timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        count integer "null"
+        status smallint "null"
+    }
+
+    counting_site_domain {
+        name text PK "not null"
+        description text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        removed_timestamp timestamp_with_time_zone "null"
+    }
+
+    counting_site_user_type {
+        id smallint PK "not null"
+        name text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    cs2_data {
+        counts numeric "not null"
+        site_id numeric "not null"
+        direction text "not null"
+        granularity text "not null"
+        travel_mode text "not null"
+        created timestamp_with_time_zone "not null"
+        data_timestamp timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    cs2_site {
+        id numeric PK "not null"
+        directional boolean "not null"
+        latitude numeric "not null"
+        longitude numeric "not null"
+        domain text "not null"
+        name text "not null"
+        travel_modes text[] "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        custom_id text "null"
+        description text "null"
+        granularity text "null"
+        last_data_timestamp timestamp_with_time_zone "null"
+        removed_timestamp timestamp_with_time_zone "null"
+    }
+
+    data_datex2_situation {
+        datex2_id integer PK "not null"
+        geometry geometry "not null"
+        situation_version integer "not null"
+        situation_id text "not null"
+        situation_type text "not null"
+        created_at timestamp_with_time_zone "not null"
+        modified_at timestamp_with_time_zone "not null"
+        publication_time timestamp_with_time_zone "not null"
+        start_time timestamp_with_time_zone "not null"
+        end_time timestamp_with_time_zone "null"
+    }
+
+    data_datex2_situation_message {
+        message_id integer PK "not null"
+        datex2_id integer FK "not null"
+        datex2_id integer "not null"
+        message text "not null"
+        message_type text "not null"
+        message_version text "not null"
+        created_at timestamp_with_time_zone "not null"
+        modified_at timestamp_with_time_zone "not null"
+    }
+
+    data_incoming {
+        data_id integer PK "not null"
+        data text "not null"
+        message_id text "not null"
+        source text "not null"
+        status text "not null"
+        type text "not null"
+        version text "not null"
+        created_at timestamp_with_time_zone "not null"
+        modified_at timestamp_with_time_zone "not null"
+    }
+
+    data_source_info {
+        id text PK "not null"
+        recommended_fetch_interval text "not null"
+        update_interval text "not null"
+        source text "null"
+    }
+
+    data_updated {
+        id numeric PK "not null"
+        data_type character_varying "not null"
+        subtype character_varying "not null"
+        updated timestamp_with_time_zone "not null"
+    }
+
+    datex2 {
+        id numeric PK "not null"
+        situation_type text "not null"
+        created timestamp_with_time_zone "not null"
+        import_date timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        json_message json "null"
+        original_json_message json "null"
+        message text "null"
+        traffic_announcement_type text "null"
+        publication_time timestamp_with_time_zone "null"
+    }
+
+    datex2_rtti {
+        datex2_id integer PK "not null"
+        is_srti boolean "not null"
+        geometry geometry "not null"
+        message text "not null"
+        situation_id text "not null"
+        type text "not null"
+        created_at timestamp_with_time_zone "not null"
+        modified_at timestamp_with_time_zone "not null"
+        publication_time timestamp_with_time_zone "not null"
+        start_time timestamp_with_time_zone "not null"
+        end_time timestamp_with_time_zone "null"
+    }
+
+    datex2_situation {
+        id numeric PK "not null"
+        datex2_id numeric FK "not null"
+        situation_id character_varying "not null"
+        version_time timestamp_with_time_zone "null"
+    }
+
+    datex2_situation_record {
+        id numeric PK "not null"
+        datex2_situation_id numeric FK "not null"
+        life_cycle_management_canceled boolean "not null"
+        type character_varying "not null"
+        validy_status character_varying "not null"
+        created timestamp_with_time_zone "not null"
+        creation_time timestamp_with_time_zone "not null"
+        effective_end_time timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        overall_start_time timestamp_with_time_zone "not null"
+        version_time timestamp_with_time_zone "not null"
+        situation_record_id character_varying "null"
+        observation_time timestamp_with_time_zone "null"
+        overall_end_time timestamp_with_time_zone "null"
+    }
+
+    device {
+        id text PK "not null"
+        road_address text "not null"
+        type text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        etrs_tm35fin_x numeric "null"
+        etrs_tm35fin_y numeric "null"
+        carriageway text "null"
+        direction text "null"
+        deleted_date timestamp_with_time_zone "null"
+    }
+
+    device_data {
+        id integer PK "not null"
+        device_id text "not null"
+        reliability text "not null"
+        created timestamp_with_time_zone "not null"
+        effect_date timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        additional_information text "null"
+        cause text "null"
+        display_value text "null"
+    }
+
+    device_data_datex2 {
+        datex2 text "not null"
+        device_id text "not null"
+        type text "not null"
+        version text "not null"
+        created timestamp_with_time_zone "not null"
+        effect_date timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "null"
+    }
+
+    device_data_row {
+        id integer PK "not null"
+        device_data_id integer FK "not null"
+        row_number numeric "not null"
+        screen numeric "not null"
+        text text "null"
+    }
+
+    forecast_condition_reason {
+        forecast_name character_varying PK "not null"
+        forecast_section_id numeric PK "not null"
+        forecast_name character_varying FK "not null"
+        forecast_section_id numeric FK "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        freezing_rain_condition boolean "null"
+        winter_slipperiness boolean "null"
+        friction_condition character_varying "null"
+        precipitation_condition character_varying "null"
+        road_condition character_varying "null"
+        visibility_condition character_varying "null"
+        wind_condition character_varying "null"
+    }
+
+    forecast_section {
+        id numeric PK "not null"
+        natural_id character_varying "not null"
+        description text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        geometry geometry "null"
+        geometry_simplified geometry "null"
+        version integer "null"
+        end_distance numeric "null"
+        length numeric "null"
+        road_number numeric "null"
+        road_section_number numeric "null"
+        road_section_version_number numeric "null"
+        start_distance numeric "null"
+        obsolete_date timestamp_with_time_zone "null"
+    }
+
+    forecast_section_weather {
+        forecast_name character_varying PK "not null"
+        forecast_section_id numeric PK "not null"
+        forecast_section_id numeric FK "not null"
+        daylight boolean "not null"
+        overall_road_condition character_varying "not null"
+        reliability character_varying "not null"
+        road_temperature character_varying "not null"
+        temperature character_varying "not null"
+        weather_symbol character_varying "not null"
+        wind_direction numeric "not null"
+        wind_speed numeric "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        time timestamp_with_time_zone "not null"
+        type character_varying "null"
+    }
+
+    link_id {
+        order_number integer PK "not null"
+        forecast_section_id numeric PK "not null"
+        forecast_section_id numeric FK "not null"
+        link_id bigint "null"
+    }
+
+    location {
+        version character_varying PK "not null"
+        location_code numeric PK "not null"
+        subtype_code character_varying FK "not null"
+        version character_varying FK "not null"
+        version character_varying FK "not null"
+        version character_varying FK "not null"
+        area_ref numeric FK "null"
+        linear_ref numeric FK "null"
+        urban boolean "null"
+        first_name character_varying "null"
+        geocode character_varying "null"
+        neg_direction character_varying "null"
+        pos_direction character_varying "null"
+        road_junction character_varying "null"
+        road_name character_varying "null"
+        second_name character_varying "null"
+        etrs_tm35fin_x numeric "null"
+        etrs_tm35fin_y numeric "null"
+        neg_offset numeric "null"
+        order_of_point numeric "null"
+        pos_offset numeric "null"
+        wgs84_lat numeric "null"
+        wgs84_long numeric "null"
+    }
+
+    location_subtype {
+        subtype_code character_varying PK "not null"
+        version character_varying PK "not null"
+        description_en character_varying "not null"
+        description_fi character_varying "not null"
+    }
+
+    location_type {
+        type_code character_varying PK "not null"
+        version character_varying PK "not null"
+        description_en character_varying "not null"
+        description_fi character_varying "not null"
+    }
+
+    location_version {
+        version character_varying PK "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    locking_table {
+        lock_name text PK "not null"
+        instance_id text "not null"
+        lock_expires timestamp_with_time_zone "null"
+        lock_locked timestamp_with_time_zone "null"
+    }
+
+    maintenance_tracking {
+        id bigint PK "not null"
+        work_machine_id bigint FK "not null"
+        domain text FK "not null"
+        domain text FK "not null"
+        previous_tracking_id bigint FK "null"
+        contract text FK "null"
+        finished boolean "not null"
+        geometry geometry "not null"
+        last_point geometry "not null"
+        sending_system text "not null"
+        created timestamp_with_time_zone "not null"
+        end_time timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        sending_time timestamp_with_time_zone "not null"
+        start_time timestamp_with_time_zone "not null"
+        tasks maintenance_task_enum[] "null"
+        direction numeric "null"
+        message_original_id text "null"
+    }
+
+    maintenance_tracking_domain {
+        name text PK "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        source text "null"
+    }
+
+    maintenance_tracking_domain_contract {
+        contract text PK "not null"
+        domain text PK "not null"
+        domain text FK "not null"
+        name text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        source text "null"
+        data_last_updated timestamp_with_time_zone "null"
+        end_date timestamp_with_time_zone "null"
+        start_date timestamp_with_time_zone "null"
+    }
+
+    maintenance_tracking_domain_task_mapping {
+        domain text PK "not null"
+        original_id text PK "not null"
+        domain text FK "not null"
+        name text FK "null"
+        ignore boolean "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        info text "null"
+    }
+
+    maintenance_tracking_observation_data {
+        id bigint PK "not null"
+        harja_contract_id bigint "not null"
+        harja_workmachine_id bigint "not null"
+        status character_varying "not null"
+        hash text "not null"
+        json text "not null"
+        s3_uri text "not null"
+        sending_system text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        observation_time timestamp_with_time_zone "not null"
+        sending_time timestamp_with_time_zone "not null"
+        handling_info text "null"
+    }
+
+    maintenance_tracking_observation_data_tracking {
+        data_id bigint PK "not null"
+        tracking_id bigint PK "not null"
+        data_id bigint FK "not null"
+        tracking_id bigint FK "not null"
+    }
+
+    maintenance_tracking_task {
+        maintenance_tracking_id bigint PK "not null"
+        task text PK "not null"
+        maintenance_tracking_id bigint FK "not null"
+    }
+
+    maintenance_tracking_task_value {
+        name text PK "not null"
+        name_en text "not null"
+        name_fi text "not null"
+        name_harja text "not null"
+        name_sv text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    maintenance_tracking_work_machine {
+        id bigint PK "not null"
+        harja_id bigint "not null"
+        harja_urakka_id bigint "not null"
+        type text "not null"
+    }
+
+    ocpi_cpo {
+        dt_cpo_id text PK "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        country_code character_varying "null"
+        party_id character_varying "null"
+        dt_cpo_name text "null"
+        token_a text "null"
+        token_b text "null"
+        token_c text "null"
+        versions_endpoint text "null"
+    }
+
+    ocpi_cpo_business_details {
+        dt_cpo_id text PK "not null"
+        dt_cpo_id text FK "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        logo_height integer "null"
+        logo_width integer "null"
+        logo_category text "null"
+        logo_thumbnail text "null"
+        logo_type text "null"
+        logo_url text "null"
+        name text "null"
+        website text "null"
+    }
+
+    ocpi_cpo_module_endpoint {
+        dt_cpo_id text PK "not null"
+        module text PK "not null"
+        ocpi_version text PK "not null"
+        dt_cpo_id text FK "not null"
+        ocpi_version text FK "not null"
+        endpoint text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    ocpi_cpo_version {
+        dt_cpo_id text PK "not null"
+        ocpi_version text PK "not null"
+        dt_cpo_id text FK "not null"
+        ocpi_version text FK "not null"
+        endpoints_endpoint text "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    ocpi_location {
+        dt_cpo_id text PK "not null"
+        id text PK "not null"
+        dt_cpo_id text FK "not null"
+        ocpi_version text FK "not null"
+        removed boolean "not null"
+        geometry geometry "not null"
+        location_object jsonb "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        modified_cpo timestamp_with_time_zone "not null"
+    }
+
+    ocpi_version {
+        version text PK "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    open311_service {
+        service_code character_varying PK "not null"
+        metadata boolean "not null"
+        description text "not null"
+        service_name text "not null"
+        type character_varying "null"
+        group text "null"
+        keywords text "null"
+    }
+
+    open311_service_request {
+        service_request_id character_varying PK "not null"
+        description text "not null"
+        status text "not null"
+        requested_datetime timestamp_with_time_zone "not null"
+        geometry geometry "null"
+        subject_id integer "null"
+        subsubject_id integer "null"
+        address text "null"
+        address_id text "null"
+        agency_responsible text "null"
+        media_url text "null"
+        service_code text "null"
+        service_name text "null"
+        service_notice text "null"
+        service_object_id text "null"
+        service_object_type text "null"
+        status_id text "null"
+        status_notes text "null"
+        title text "null"
+        vendor_status text "null"
+        zipcode text "null"
+        media_urls text[] "null"
+        expected_datetime timestamp_with_time_zone "null"
+        updated_datetime timestamp_with_time_zone "null"
+    }
+
+    open311_service_request_state {
+        locale character_varying PK "not null"
+        key smallint PK "not null"
+        name text "not null"
+    }
+
+    open311_subject {
+        locale character_varying PK "not null"
+        id integer PK "not null"
+        active smallint "not null"
+        name text "not null"
+    }
+
+    open311_subsubject {
+        locale character_varying PK "not null"
+        id integer PK "not null"
+        active smallint "not null"
+        subject_id smallint "not null"
+        name text "not null"
+    }
+
+    permit {
+        id integer PK "not null"
+        removed boolean "not null"
+        geometry geometry "not null"
+        version integer "not null"
+        permit_type text "not null"
+        source text "not null"
+        source_id text "not null"
+        created timestamp_with_time_zone "not null"
+        effective_from timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        permit_subject text "null"
+        effective_to timestamp_with_time_zone "null"
+    }
+
+    pg_stat_statements {
+        calls bigint "null"
+        jit_emission_count bigint "null"
+        jit_functions bigint "null"
+        jit_inlining_count bigint "null"
+        jit_optimization_count bigint "null"
+        local_blks_dirtied bigint "null"
+        local_blks_hit bigint "null"
+        local_blks_read bigint "null"
+        local_blks_written bigint "null"
+        plans bigint "null"
+        queryid bigint "null"
+        rows bigint "null"
+        shared_blks_dirtied bigint "null"
+        shared_blks_hit bigint "null"
+        shared_blks_read bigint "null"
+        shared_blks_written bigint "null"
+        temp_blks_read bigint "null"
+        temp_blks_written bigint "null"
+        wal_fpi bigint "null"
+        wal_records bigint "null"
+        toplevel boolean "null"
+        blk_read_time double_precision "null"
+        blk_write_time double_precision "null"
+        jit_emission_time double_precision "null"
+        jit_generation_time double_precision "null"
+        jit_inlining_time double_precision "null"
+        jit_optimization_time double_precision "null"
+        max_exec_time double_precision "null"
+        max_plan_time double_precision "null"
+        mean_exec_time double_precision "null"
+        mean_plan_time double_precision "null"
+        min_exec_time double_precision "null"
+        min_plan_time double_precision "null"
+        stddev_exec_time double_precision "null"
+        stddev_plan_time double_precision "null"
+        temp_blk_read_time double_precision "null"
+        temp_blk_write_time double_precision "null"
+        total_exec_time double_precision "null"
+        total_plan_time double_precision "null"
+        wal_bytes numeric "null"
+        dbid oid "null"
+        userid oid "null"
+        query text "null"
+    }
+
+    pg_stat_statements_info {
+        dealloc bigint "null"
+        stats_reset timestamp_with_time_zone "null"
+    }
+
+    pghero_query_stats {
+        id integer PK "not null"
+        calls bigint "null"
+        query_hash bigint "null"
+        total_time double_precision "null"
+        database text "null"
+        query text "null"
+        user text "null"
+        captured_at timestamp_without_time_zone "null"
+    }
+
+    pghero_space_stats {
+        id integer PK "not null"
+        size bigint "null"
+        database text "null"
+        relation text "null"
+        schema text "null"
+        captured_at timestamp_without_time_zone "null"
+    }
+
+    qrtz_blob_triggers {
+        sched_name character_varying PK "not null"
+        trigger_group character_varying PK "not null"
+        trigger_name character_varying PK "not null"
+        sched_name character_varying FK "not null"
+        trigger_group character_varying FK "not null"
+        trigger_name character_varying FK "not null"
+        blob_data bytea "null"
+    }
+
+    qrtz_calendars {
+        calendar_name character_varying PK "not null"
+        sched_name character_varying PK "not null"
+        calendar bytea "not null"
+    }
+
+    qrtz_cron_triggers {
+        sched_name character_varying PK "not null"
+        trigger_group character_varying PK "not null"
+        trigger_name character_varying PK "not null"
+        sched_name character_varying FK "not null"
+        trigger_group character_varying FK "not null"
+        trigger_name character_varying FK "not null"
+        cron_expression character_varying "not null"
+        time_zone_id character_varying "null"
+    }
+
+    qrtz_fired_triggers {
+        entry_id character_varying PK "not null"
+        sched_name character_varying PK "not null"
+        fired_time bigint "not null"
+        sched_time bigint "not null"
+        is_nonconcurrent boolean "not null"
+        instance_name character_varying "not null"
+        state character_varying "not null"
+        trigger_group character_varying "not null"
+        trigger_name character_varying "not null"
+        priority integer "not null"
+        requests_recovery boolean "null"
+        job_group character_varying "null"
+        job_name character_varying "null"
+    }
+
+    qrtz_job_details {
+        job_group character_varying PK "not null"
+        job_name character_varying PK "not null"
+        sched_name character_varying PK "not null"
+        is_durable boolean "not null"
+        is_nonconcurrent boolean "not null"
+        is_update_data boolean "not null"
+        requests_recovery boolean "not null"
+        job_class_name character_varying "not null"
+        job_data bytea "null"
+        description character_varying "null"
+    }
+
+    qrtz_locks {
+        lock_name character_varying PK "not null"
+        sched_name character_varying PK "not null"
+    }
+
+    qrtz_paused_trigger_grps {
+        sched_name character_varying PK "not null"
+        trigger_group character_varying PK "not null"
+    }
+
+    qrtz_scheduler_state {
+        instance_name character_varying PK "not null"
+        sched_name character_varying PK "not null"
+        checkin_interval bigint "not null"
+        last_checkin_time bigint "not null"
+    }
+
+    qrtz_simple_triggers {
+        sched_name character_varying PK "not null"
+        trigger_group character_varying PK "not null"
+        trigger_name character_varying PK "not null"
+        sched_name character_varying FK "not null"
+        trigger_group character_varying FK "not null"
+        trigger_name character_varying FK "not null"
+        repeat_count bigint "not null"
+        repeat_interval bigint "not null"
+        times_triggered bigint "not null"
+    }
+
+    qrtz_simprop_triggers {
+        sched_name character_varying PK "not null"
+        trigger_group character_varying PK "not null"
+        trigger_name character_varying PK "not null"
+        sched_name character_varying FK "not null"
+        trigger_group character_varying FK "not null"
+        trigger_name character_varying FK "not null"
+        long_prop_1 bigint "null"
+        long_prop_2 bigint "null"
+        bool_prop_1 boolean "null"
+        bool_prop_2 boolean "null"
+        str_prop_1 character_varying "null"
+        str_prop_2 character_varying "null"
+        str_prop_3 character_varying "null"
+        time_zone_id character_varying "null"
+        int_prop_1 integer "null"
+        int_prop_2 integer "null"
+        dec_prop_1 numeric "null"
+        dec_prop_2 numeric "null"
+    }
+
+    qrtz_triggers {
+        sched_name character_varying PK "not null"
+        trigger_group character_varying PK "not null"
+        trigger_name character_varying PK "not null"
+        job_group character_varying FK "not null"
+        job_name character_varying FK "not null"
+        sched_name character_varying FK "not null"
+        start_time bigint "not null"
+        trigger_state character_varying "not null"
+        trigger_type character_varying "not null"
+        end_time bigint "null"
+        next_fire_time bigint "null"
+        prev_fire_time bigint "null"
+        job_data bytea "null"
+        calendar_name character_varying "null"
+        description character_varying "null"
+        priority integer "null"
+        misfire_instr smallint "null"
+    }
+
+    region_geometry {
+        id integer PK "not null"
+        location_code integer "not null"
+        git_commit_id text "not null"
+        git_id text "not null"
+        git_path text "not null"
+        name text "not null"
+        type text "not null"
+        effective_date timestamp_with_time_zone "not null"
+        version_date timestamp_with_time_zone "not null"
+        geometry geometry "null"
+    }
+
+    road_address {
+        id numeric PK "not null"
+        contract_area character_varying "null"
+        road_maintenance_class character_varying "null"
+        carriageway numeric "null"
+        contract_area_code numeric "null"
+        distance_from_road_section_st numeric "null"
+        road_number numeric "null"
+        road_section numeric "null"
+        side numeric "null"
+    }
+
+    road_segment {
+        order_number integer PK "not null"
+        forecast_section_id numeric PK "not null"
+        forecast_section_id numeric FK "not null"
+        carriageway integer "null"
+        end_distance integer "null"
+        start_distance integer "null"
+    }
+
+    road_station {
+        id numeric PK "not null"
+        type character_varying FK "not null"
+        road_address_id numeric FK "null"
+        is_public boolean "not null"
+        is_public_previous boolean "not null"
+        name character_varying "not null"
+        lotju_id numeric "not null"
+        natural_id numeric "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        publishable boolean "null"
+        additional_information character_varying "null"
+        collection_status character_varying "null"
+        country character_varying "null"
+        livi_id character_varying "null"
+        location character_varying "null"
+        municipality character_varying "null"
+        municipality_code character_varying "null"
+        name_en character_varying "null"
+        name_fi character_varying "null"
+        name_sv character_varying "null"
+        province character_varying "null"
+        province_code character_varying "null"
+        purpose character_varying "null"
+        state character_varying "null"
+        altitude numeric "null"
+        collection_interval numeric "null"
+        latitude numeric "null"
+        longitude numeric "null"
+        annual_maintenance_date timestamp_with_time_zone "null"
+        obsolete_date timestamp_with_time_zone "null"
+        publicity_start_time timestamp_with_time_zone "null"
+        repair_maintenance_date timestamp_with_time_zone "null"
+        start_date timestamp_with_time_zone "null"
+    }
+
+    road_station_sensor {
+        id numeric PK "not null"
+        road_station_type character_varying FK "null"
+        is_public boolean "not null"
+        publishable boolean "not null"
+        name character_varying "not null"
+        lotju_id numeric "not null"
+        natural_id numeric "not null"
+        description_en character_varying "null"
+        description_fi character_varying "null"
+        description_sv character_varying "null"
+        name_fi character_varying "null"
+        presentation_name_en character_varying "null"
+        presentation_name_fi character_varying "null"
+        presentation_name_sv character_varying "null"
+        short_name_fi character_varying "null"
+        unit character_varying "null"
+        vehicle_class character_varying "null"
+        accuracy numeric "null"
+        direction numeric "null"
+        lane numeric "null"
+        obsolete_date timestamp_with_time_zone "null"
+    }
+
+    road_station_sensors {
+        road_station_id numeric FK "not null"
+        road_station_sensor_id numeric FK "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+    }
+
+    road_station_type {
+        road_station_type character_varying PK "not null"
+        type numeric "not null"
+    }
+
+    sensor_value {
+        id numeric PK "not null"
+        road_station_id numeric FK "not null"
+        road_station_sensor_id numeric FK "not null"
+        road_station_id numeric "not null"
+        road_station_sensor_id numeric "not null"
+        value numeric "not null"
+        created timestamp_with_time_zone "not null"
+        measured timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        reliability text "null"
+        time_window_end timestamp_with_time_zone "null"
+        time_window_start timestamp_with_time_zone "null"
+    }
+
+    sensor_value_description {
+        sensor_id numeric PK "not null"
+        sensor_value numeric PK "not null"
+        sensor_id numeric FK "not null"
+        description_en character_varying "not null"
+        description_fi character_varying "not null"
+    }
+
+    sensor_value_history {
+        id numeric PK "not null"
+        road_station_id numeric "not null"
+        road_station_sensor_id numeric "not null"
+        value numeric "not null"
+        created timestamp_with_time_zone "not null"
+        measured timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        reliability text "null"
+        time_window_end timestamp_with_time_zone "null"
+        time_window_start timestamp_with_time_zone "null"
+    }
+
+    situation_record_comment_i18n {
+        id numeric PK "not null"
+        datex2_situation_record_id numeric FK "not null"
+        lang character_varying "not null"
+        value text "not null"
+    }
+
+    tms_sensor_constant {
+        lotju_id bigint PK "not null"
+        road_station_id bigint "not null"
+        name text "not null"
+        created timestamp_with_time_zone "null"
+        modified timestamp_with_time_zone "null"
+        obsolete_date timestamp_with_time_zone "null"
+    }
+
+    tms_sensor_constant_value {
+        lotju_id bigint PK "not null"
+        sensor_constant_lotju_id bigint FK "not null"
+        valid_from integer "not null"
+        valid_to integer "not null"
+        value integer "not null"
+        created timestamp_with_time_zone "null"
+        modified timestamp_with_time_zone "null"
+        obsolete_date timestamp_with_time_zone "null"
+    }
+
+    tms_station {
+        id numeric PK "not null"
+        road_station_id numeric FK "not null"
+        name character_varying "not null"
+        lotju_id numeric "not null"
+        natural_id numeric "not null"
+        road_station_id numeric "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        calculator_device_type character_varying "null"
+        direction_1_municipality character_varying "null"
+        direction_2_municipality character_varying "null"
+        tms_station_type character_varying "null"
+        direction_1_municipality_code numeric "null"
+        direction_2_municipality_code numeric "null"
+        obsolete_date timestamp_with_time_zone "null"
+    }
+
+    weather_station {
+        id numeric PK "not null"
+        road_station_id numeric FK "not null"
+        master boolean "not null"
+        lotju_id numeric "not null"
+        created timestamp_with_time_zone "not null"
+        modified timestamp_with_time_zone "not null"
+        weather_station_type character_varying "null"
+    }
+
+    camera_preset ||--o{ camera_preset_history : "camera_preset_history(camera_preset_id) -> camera_preset(id)"
+    counting_site_counter ||--o{ counting_site_data : "counting_site_data(counter_id) -> counting_site_counter(id)"
+    counting_site_domain ||--o{ counting_site_counter : "counting_site_counter(domain_name) -> counting_site_domain(name)"
+    counting_site_user_type ||--o{ counting_site_counter : "counting_site_counter(user_type_id) -> counting_site_user_type(id)"
+    data_datex2_situation ||--o{ data_datex2_situation_message : "data_datex2_situation_message(datex2_id) -> data_datex2_situation(datex2_id)"
+    datex2 ||--o{ datex2_situation : "datex2_situation(datex2_id) -> datex2(id)"
+    datex2_situation ||--o{ datex2_situation_record : "datex2_situation_record(datex2_situation_id) -> datex2_situation(id)"
+    datex2_situation_record ||--o{ situation_record_comment_i18n : "situation_record_comment_i18n(datex2_situation_record_id) -> datex2_situation_record(id)"
+    device_data ||--o{ device_data_row : "device_data_row(device_data_id) -> device_data(id)"
+    forecast_section ||--o{ forecast_section_weather : "forecast_section_weather(forecast_section_id) -> forecast_section(id)"
+    forecast_section ||--o{ link_id : "link_id(forecast_section_id) -> forecast_section(id)"
+    forecast_section ||--o{ road_segment : "road_segment(forecast_section_id) -> forecast_section(id)"
+    forecast_section_weather ||--o{ forecast_condition_reason : "forecast_condition_reason(forecast_name, forecast_section_id) -> forecast_section_weather(forecast_name, forecast_section_id)"
+    location ||--o{ location : "location(area_ref, version) -> location(location_code, version)"
+    location ||--o{ location : "location(linear_ref, version) -> location(location_code, version)"
+    location_subtype ||--o{ location : "location(subtype_code, version) -> location_subtype(subtype_code, version)"
+    maintenance_tracking ||--o{ maintenance_tracking : "maintenance_tracking(previous_tracking_id) -> maintenance_tracking(id)"
+    maintenance_tracking ||--o{ maintenance_tracking_observation_data_tracking : "maintenance_tracking_observation_data_tracking(tracking_id) -> maintenance_tracking(id)"
+    maintenance_tracking ||--o{ maintenance_tracking_task : "maintenance_tracking_task(maintenance_tracking_id) -> maintenance_tracking(id)"
+    maintenance_tracking_domain ||--o{ maintenance_tracking : "maintenance_tracking(domain) -> maintenance_tracking_domain(name)"
+    maintenance_tracking_domain ||--o{ maintenance_tracking_domain_contract : "maintenance_tracking_domain_contract(domain) -> maintenance_tracking_domain(name)"
+    maintenance_tracking_domain ||--o{ maintenance_tracking_domain_task_mapping : "maintenance_tracking_domain_task_mapping(domain) -> maintenance_tracking_domain(name)"
+    maintenance_tracking_domain_contract ||--o{ maintenance_tracking : "maintenance_tracking(contract, domain) -> maintenance_tracking_domain_contract(contract, domain)"
+    maintenance_tracking_observation_data ||--o{ maintenance_tracking_observation_data_tracking : "maintenance_tracking_observation_data_tracking(data_id) -> maintenance_tracking_observation_data(id)"
+    maintenance_tracking_task_value ||--o{ maintenance_tracking_domain_task_mapping : "maintenance_tracking_domain_task_mapping(name) -> maintenance_tracking_task_value(name)"
+    maintenance_tracking_work_machine ||--o{ maintenance_tracking : "maintenance_tracking(work_machine_id) -> maintenance_tracking_work_machine(id)"
+    ocpi_cpo ||--o{ ocpi_cpo_business_details : "ocpi_cpo_business_details(dt_cpo_id) -> ocpi_cpo(dt_cpo_id)"
+    ocpi_cpo ||--o{ ocpi_cpo_version : "ocpi_cpo_version(dt_cpo_id) -> ocpi_cpo(dt_cpo_id)"
+    ocpi_cpo_version ||--o{ ocpi_cpo_module_endpoint : "ocpi_cpo_module_endpoint(dt_cpo_id, ocpi_version) -> ocpi_cpo_version(dt_cpo_id, ocpi_version)"
+    ocpi_cpo_version ||--o{ ocpi_location : "ocpi_location(dt_cpo_id, ocpi_version) -> ocpi_cpo_version(dt_cpo_id, ocpi_version)"
+    ocpi_version ||--o{ ocpi_cpo_version : "ocpi_cpo_version(ocpi_version) -> ocpi_version(version)"
+    qrtz_job_details ||--o{ qrtz_triggers : "qrtz_triggers(job_group, job_name, sched_name) -> qrtz_job_details(job_group, job_name, sched_name)"
+    qrtz_triggers ||--o{ qrtz_blob_triggers : "qrtz_blob_triggers(sched_name, trigger_group, trigger_name) -> qrtz_triggers(sched_name, trigger_group, trigger_name)"
+    qrtz_triggers ||--o{ qrtz_cron_triggers : "qrtz_cron_triggers(sched_name, trigger_group, trigger_name) -> qrtz_triggers(sched_name, trigger_group, trigger_name)"
+    qrtz_triggers ||--o{ qrtz_simple_triggers : "qrtz_simple_triggers(sched_name, trigger_group, trigger_name) -> qrtz_triggers(sched_name, trigger_group, trigger_name)"
+    qrtz_triggers ||--o{ qrtz_simprop_triggers : "qrtz_simprop_triggers(sched_name, trigger_group, trigger_name) -> qrtz_triggers(sched_name, trigger_group, trigger_name)"
+    road_address ||--o{ road_station : "road_station(road_address_id) -> road_address(id)"
+    road_station ||--o{ camera_preset : "camera_preset(road_station_id) -> road_station(id)"
+    road_station ||--o{ road_station_sensors : "road_station_sensors(road_station_id) -> road_station(id)"
+    road_station ||--o{ sensor_value : "sensor_value(road_station_id) -> road_station(id)"
+    road_station ||--o{ tms_station : "tms_station(road_station_id) -> road_station(id)"
+    road_station ||--o{ weather_station : "weather_station(road_station_id) -> road_station(id)"
+    road_station_sensor ||--o{ road_station_sensors : "road_station_sensors(road_station_sensor_id) -> road_station_sensor(id)"
+    road_station_sensor ||--o{ sensor_value : "sensor_value(road_station_sensor_id) -> road_station_sensor(id)"
+    road_station_sensor ||--o{ sensor_value_description : "sensor_value_description(sensor_id) -> road_station_sensor(id)"
+    road_station_type ||--o{ road_station : "road_station(type) -> road_station_type(road_station_type)"
+    road_station_type ||--o{ road_station_sensor : "road_station_sensor(road_station_type) -> road_station_type(road_station_type)"
+    tms_sensor_constant ||--o{ tms_sensor_constant_value : "tms_sensor_constant_value(sensor_constant_lotju_id) -> tms_sensor_constant(lotju_id)"
+    weather_station ||--o{ camera_preset : "camera_preset(nearest_rd_weather_station_id) -> weather_station(id)"

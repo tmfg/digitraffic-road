@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.model.roadstation.CollectionStatus.isPerma
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -105,22 +106,17 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
 
             } else { // New preset
 
-                final CameraPreset cp = new CameraPreset();
-
-                RoadStation rs =
+                final Optional<RoadStation> existingRoadStation =
                         roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId());
-                boolean roadStationNew = false;
-                if (rs == null) {
-                    rs = RoadStation.createCameraStation();
-                    roadStationNew = true;
-                }
-                cp.setRoadStation(rs);
+                final CameraPreset cp = CameraPreset.create(
+                        existingRoadStation.orElseGet(RoadStation::createCameraStation));
 
                 updateCameraPresetAtributes(kamera, esiasento, cp);
 
                 cameraPresetService.save(cp);
-                if (roadStationNew) {
-                    log.info("method=updateOrInsertRoadStationAndPresets Created new {} and RoadStation {}", cp, rs);
+                if (existingRoadStation.isEmpty()) {
+                    log.info("method=updateOrInsertRoadStationAndPresets Created new {} and RoadStation {}", cp,
+                            cp.getRoadStation());
                 } else {
                     log.info("method=updateOrInsertRoadStationAndPresets Created new {}", cp);
                 }
@@ -128,9 +124,10 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
             }
         }
 
-        final RoadStation rs = roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId());
-        if (rs != null) {
-            cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
+        final Optional<RoadStation> rs =
+                roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId());
+        if (rs.isPresent()) {
+            cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs.orElseThrow());
         } else if (!esiasentos.isEmpty()) {
             // Can happen if camera is new and doesn't have any presets yet
             log.warn(
@@ -240,7 +237,7 @@ public class CameraStationUpdateService extends AbstractCameraStationAttributeUp
     public boolean updateCamera(final KameraVO kamera) {
         final boolean updated = roadStationUpdateService.updateRoadStation(kamera);
 
-        final RoadStation rs = roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId());
+        final RoadStation rs = roadStationService.findByTypeAndLotjuId(RoadStationType.CAMERA_STATION, kamera.getId()).orElseThrow();
         // Update history every time in case JMS message handling has failed
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
         return updated;

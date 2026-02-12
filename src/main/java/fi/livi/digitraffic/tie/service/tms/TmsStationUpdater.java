@@ -172,7 +172,7 @@ public class TmsStationUpdater {
             }
             final UpdateStatus updateStatus = tmsStationService.updateOrInsertTmsStation(lamAsema);
             final RoadStation tmsStation =
-                roadStationService.findByTypeAndLotjuId(RoadStationType.TMS_STATION, lamAsema.getId());
+                roadStationService.findByTypeAndLotjuId(RoadStationType.TMS_STATION, lamAsema.getId()).orElseThrow();
             final List<LamLaskennallinenAnturiVO> anturit =
                 lotjuTmsStationMetadataClientWrapper.getLamAsemanLaskennallisetAnturit(lamAsema.getId());
             final List<Long> sensorslotjuIds = anturit.stream().map(AbstractVO::getId).collect(Collectors.toList());

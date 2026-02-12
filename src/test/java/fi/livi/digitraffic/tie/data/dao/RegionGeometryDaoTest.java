@@ -78,7 +78,7 @@ public class RegionGeometryDaoTest extends AbstractJpaTest {
         // This will change default order for findAll
         entityManager.createNativeQuery(
             "UPDATE region_geometry\n" +
-            "SET git_id = '" + RandomStringUtils.randomAlphanumeric(32) + "'\n" +
+            "SET git_id = '" + RandomStringUtils.secure().nextAlphanumeric(32) + "'\n" +
             "WHERE id = " + allInOrder.get(5).getId()).executeUpdate();
 
         final List<RegionGeometry> allDb = regionGeometryRepository.findAllByOrderByIdAsc();

@@ -208,7 +208,8 @@ public class PostgisGeometryUtilsTest extends AbstractTest {
         assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(lineString, PostgisGeometryUtils.GeometryType.POINT));
 
         assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(lineString, (PostgisGeometryUtils.GeometryType)null));
-        assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(lineString, null));
+        assertThrows(IllegalArgumentException.class, () -> PostgisGeometryUtils.checkTypeInAndReturn(lineString,
+                (PostgisGeometryUtils.GeometryType) null));
 
         assertEquals(point, PostgisGeometryUtils.checkTypeInAndReturn(point));
         assertEquals(point, PostgisGeometryUtils.checkTypeInAndReturn(point, PostgisGeometryUtils.GeometryType.POINT));

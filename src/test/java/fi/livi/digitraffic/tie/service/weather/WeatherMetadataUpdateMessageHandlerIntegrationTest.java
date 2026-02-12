@@ -353,7 +353,7 @@ public class WeatherMetadataUpdateMessageHandlerIntegrationTest extends Abstract
         final TieosoiteVO to = tsa.getTieosoite();
 
         // 2. Send road address insert message
-        to.setUrakkaAlue(RandomStringUtils.randomAlphanumeric(32));
+        to.setUrakkaAlue(RandomStringUtils.secure().nextAlphanumeric(32));
         to.setId(to.getId()+1);
         to.setTienumero(to.getTienumero()+1);
         when(lotjuWeatherStationMetadataClient.getTiesaaAsema(eq(ROAD_STATION_LOTJU_ID))).thenReturn(tsa);

@@ -21,13 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointLocation;
-
-import fi.livi.digitraffic.tie.model.tms.TmsSensorConstant;
-import fi.livi.digitraffic.tie.model.tms.TmsSensorConstantValue;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,11 +40,8 @@ import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
+import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;
 import fi.livi.digitraffic.tie.dao.tms.TmsStationRepository;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.ConfidentialityValueEnum;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
-import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.external.lotju.metadata.lam.LamAnturiVakioVO;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
@@ -57,11 +49,18 @@ import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValue;
 import fi.livi.digitraffic.tie.model.tms.CalculatorDeviceType;
+import fi.livi.digitraffic.tie.model.tms.TmsSensorConstant;
+import fi.livi.digitraffic.tie.model.tms.TmsSensorConstantValue;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.model.tms.TmsStationType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.ConfidentialityValueEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointLocation;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Unmarshaller;
@@ -466,9 +465,9 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
     }
 
     private void checkXmlXsiType(final String xmlResponse, final Class<?> xsiType) {
-        assertTrue(StringUtils.contains(xmlResponse, "<d2:payload"));
+        assertTrue(Strings.CS.contains(xmlResponse, "<d2:payload"));
         final String typeString = StringUtil.format("xsi:type=\"roa:{}\"", xsiType.getSimpleName());
-        assertTrue(StringUtils.contains(xmlResponse, typeString), StringUtil.format("Xml message didn't contain: {}"));
+        assertTrue(Strings.CS.contains(xmlResponse, typeString), StringUtil.format("Xml message didn't contain: {}"));
     }
 
     private <T> T unmarshalXml(final String xml, final Class<T> clazz) {

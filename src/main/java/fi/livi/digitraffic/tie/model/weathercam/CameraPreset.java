@@ -1,5 +1,8 @@
 package fi.livi.digitraffic.tie.model.weathercam;
 
+import static fi.livi.digitraffic.tie.model.roadstation.RoadStationType.CAMERA_STATION;
+import static fi.livi.digitraffic.tie.model.roadstation.RoadStationType.TMS_STATION;
+
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -10,6 +13,7 @@ import org.hibernate.annotations.FetchMode;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
+import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -76,8 +80,9 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
     private LocalDate obsoleteDate;
 
     // Camera properties
+    // Road station lotjuId
     private Long cameraLotjuId;
-
+    //  "C(0) + road station naturalId
     private String cameraId;
 
     @Enumerated(EnumType.STRING)
@@ -87,7 +92,7 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
      * RoadStation is same for one camera all presets
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name="ROAD_STATION_ID")
+    @JoinColumn(name="ROAD_STATION_ID", nullable = false)
     @Fetch(FetchMode.SELECT)
     private RoadStation roadStation;
 
@@ -102,6 +107,21 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
      */
     @Column(updatable = false, insertable = false) // virtual column
     private boolean publishable;
+
+    protected CameraPreset() {
+        // for Hibernate
+    }
+
+    private CameraPreset(final RoadStation roadStation) {
+        if (roadStation == null || roadStation.getType() != CAMERA_STATION) {
+            throw new IllegalArgumentException("RoadStation cannot be null and type must be CAMERA_STATION when creating TmsStation");
+        }
+        this.roadStation = roadStation;
+    }
+
+    public static CameraPreset create(final RoadStation roadStation) {
+        return new CameraPreset(roadStation);
+    }
 
     public Long getId() {
         return id;
@@ -231,10 +251,6 @@ public class CameraPreset extends ReadOnlyCreatedAndModifiedFields {
 
     public RoadStation getRoadStation() {
         return roadStation;
-    }
-
-    public void setRoadStation(final RoadStation roadStation) {
-        this.roadStation = roadStation;
     }
 
     public WeatherStation getNearestWeatherStation() {

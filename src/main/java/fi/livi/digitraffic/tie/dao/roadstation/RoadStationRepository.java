@@ -21,7 +21,7 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
 
     @QueryHints(@QueryHint(name= AvailableHints.HINT_FETCH_SIZE, value="1000"))
     @EntityGraph(attributePaths = { "roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
-    List<RoadStation> findByType(RoadStationType type);
+    List<RoadStation> findByType(final RoadStationType type);
 
     @Query("""
             SELECT CASE WHEN count(rs) > 0 THEN TRUE ELSE FALSE END
@@ -34,16 +34,7 @@ public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
                                      @Param("roadStationType")
                                      final RoadStationType roadStationType);
 
-    RoadStation findByTypeAndNaturalId(final RoadStationType type, final Long naturalId);
-
-    RoadStation findByTypeAndLotjuId(final RoadStationType tmsStation, final Long id);
-
-    @Query("""
-            SELECT rs.id
-            FROM RoadStation rs
-            WHERE rs.naturalId = :naturalId
-            AND rs.type = WEATHER_STATION""")
-    Optional<Long> findWeatherStationIdByNaturalId(@Param("naturalId") final long naturalId);
+    Optional<RoadStation> findByTypeAndLotjuId(final RoadStationType tmsStation, final Long id);
 
     default void checkIsPublishableRoadStation(final long roadStationNaturalId, final RoadStationType type) {
         if ( !isPublishableRoadStation(roadStationNaturalId, type) ) {

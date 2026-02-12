@@ -2,6 +2,7 @@ services:
   db:
     image: postgis/postgis:15-3.5-alpine
     restart: always
+    #platform: linux/amd64
     environment:
       POSTGRES_USER: road
       POSTGRES_PASSWORD: road
