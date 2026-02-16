@@ -1,3 +1,2 @@
 dbroad/docker-compose.yml
 target/dependency-check-report.html
-src/test/resources/sftp/*

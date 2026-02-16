@@ -2,7 +2,7 @@ services:
   db:
     image: postgis/postgis:15-3.5-alpine
     restart: always
-    #platform: linux/amd64
+    platform: linux/amd64
     environment:
       POSTGRES_USER: road
       POSTGRES_PASSWORD: road
@@ -10,17 +10,21 @@ services:
     ports:
       - 54322:5432
     command: -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.max=10000 -c track_activity_query_size=2048 -c pg_stat_statements.track=all -c max_connections=200
+    networks:
+      - default
 
   db-init:
     image: flyway/flyway:11-alpine
     volumes:
       - "./sql:/flyway/sql"
-      - "./files:/flyway/conf"
+      - "./conf/dev:/flyway/conf"
     links:
       - "db:db"
     command: "migrate"
     depends_on:
       - db
+    networks:
+      - default
 
   pghero:
     image: ankane/pghero
@@ -33,3 +37,9 @@ services:
       - 8082:8080
     depends_on:
       - db
+    networks:
+      - default
+
+networks:
+  default:
+    name: dbroad

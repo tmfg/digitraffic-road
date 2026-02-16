@@ -1,33 +1,155 @@
-# Idea projektitiedostot
-*.iml
+# Inverse gitignore - ignore everything except what's explicitly allowed
+# Start by ignoring everything
+*
+
+# Allow this gitignore file
+!/.gitignore
+
+# =============================================================================
+# Root level files
+# =============================================================================
+!/.editorconfig
+!/LICENSE.txt
+!/README.md
+!/pom.xml
+!/owasp-suppressions.xml
+!/versions-maven-plugin-rules.xml
+!/check-dependency-updates.sh
+!/clean-logs.sh
+
+# =============================================================================
+# GitHub configuration
+# =============================================================================
+!/.github/
+!/.github/**/
+!/.github/**/*
+
+# =============================================================================
+# Common configuration
+# =============================================================================
+!/common/
+!/common/**/
+!/common/**/*.json
+!/common/**/*.mjs
+
+# =============================================================================
+# Database (Flyway migrations)
+# =============================================================================
+!/dbroad/
+!/dbroad/*
+!/dbroad/**/
+!/dbroad/sql/
+!/dbroad/sql/**/
+!/dbroad/sql/**/*.sql
+!/dbroad/**/*.sh
+!/dbroad/**/*.yml
+!/dbroad/**/*.md
+!/dbroad/**/*.mermaid
+!/dbroad/**/*.svg
+!/dbroad/conf/
+!/dbroad/conf/dev/
+!/dbroad/conf/dev/*
+
+# =============================================================================
+# Library submodule (has its own .gitignore)
+# =============================================================================
+!/lib/
+!/lib/digitraffic-common-java
+
+# =============================================================================
+# Source code
+# =============================================================================
+!/src/
+!/src/main/
+!/src/main/java/
+!/src/main/java/**/
+!/src/main/java/**/*
+!/src/test/
+!/src/test/java/
+!/src/test/java/**/
+!/src/test/java/**/*
+!/src/test/html/
+!/src/test/html/**/
+!/src/test/html/**/*.html
+!/src/test/html/**/*.js
+
+# =============================================================================
+# Main resources
+# =============================================================================
+!/src/main/resources/
+!/src/main/resources/**/
+!/src/main/resources/application.properties
+!/src/main/resources/application-localhost-daemon.properties
+!/src/main/resources/application-localhost-web.properties
+!/src/main/resources/banner.txt
+!/src/main/resources/bootstrap.properties
+!/src/main/resources/bootstrap-aws.properties
+!/src/main/resources/common-git.properties
+!/src/main/resources/favicon.ico
+!/src/main/resources/git.properties
+!/src/main/resources/logback-spring.xml
+!/src/main/resources/messages.properties
+!/src/main/resources/quartz.properties
+!/src/main/resources/img/
+!/src/main/resources/img/**/
+!/src/main/resources/img/**/*
+!/src/main/resources/schemas/
+!/src/main/resources/schemas/**/
+!/src/main/resources/schemas/**/*
+!/src/main/resources/static/
+!/src/main/resources/static/**/
+!/src/main/resources/static/**/*
+
+# =============================================================================
+# Test resources
+# =============================================================================
+!/src/test/resources/
+!/src/test/resources/*
+!/src/test/resources/application-localhost.properties
+!/src/test/resources/forecastsection/
+!/src/test/resources/forecastsection/**/
+!/src/test/resources/forecastsection/**/*
+!/src/test/resources/harja/
+!/src/test/resources/harja/**/
+!/src/test/resources/harja/**/*
+!/src/test/resources/locations/
+!/src/test/resources/locations/**/
+!/src/test/resources/locations/**/*
+!/src/test/resources/lotju/
+!/src/test/resources/lotju/**/
+!/src/test/resources/lotju/**/*
+!/src/test/resources/roadstationsensor/
+!/src/test/resources/roadstationsensor/**/
+!/src/test/resources/roadstationsensor/**/*
+!/src/test/resources/roadworks/
+!/src/test/resources/roadworks/**/
+!/src/test/resources/roadworks/**/*
+!/src/test/resources/tloik/
+!/src/test/resources/tloik/**/
+!/src/test/resources/tloik/**/*
+!/src/test/resources/wazefeed/
+!/src/test/resources/wazefeed/**/
+!/src/test/resources/wazefeed/**/*
+
+# =============================================================================
+# Explicitly ignored patterns (these override any negations above)
+# =============================================================================
+
+# IDE files (in case they end up in allowed directories)
 .idea/
+*.iml
 
-# Nämä tiedostot sisältävät salaisuuksia. Ignore.
-/src/test/resources/application-localhost.properties
-/src/main/resources/application-*-web.properties
-/src/main/resources/application-*-daemon.properties
-
-# Käännösartifaktit
-/target
-/buildNumber.properties
-/src/test/resources/sftp/client_known_hosts
-
-# Lokitiedostot
+# Logs (in case they end up in allowed directories)
 **/*.log
 **/*.log.gz
 **/*.tmp
 
-# no_commit tekstin sisältävät tiedostot
-**/*no_commit*
-
-# Flyway
-/dbroad/flyway-dev/flyway-test.conf
+# Backup files
 /pom.xml.versionsBackup
-# JUnit Insights Reports
-/build/reports
 
-# Mac tiedostoja
+# Mac files
 **/.DS_Store
 
-# Git submodule
+# Git submodules file (managed separately)
 .gitmodules
+
