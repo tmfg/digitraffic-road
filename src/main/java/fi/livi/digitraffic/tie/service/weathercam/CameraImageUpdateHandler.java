@@ -82,6 +82,12 @@ public class CameraImageUpdateHandler {
         if (cameraPreset != null) {
             final boolean roadStationPublic = cameraPreset.getRoadStation().isPublicNow();
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
+            if (!isResultPublic) {
+                log.warn(
+                        "Image {} for preset {} is not public, skipping upload",
+                        kuva.getKuvaId(), presetId);
+                return false;
+            }
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
 
             cameraPresetService.updateCameraPresetAndHistoryWithLotjuId(kuva.getEsiasentoId(), isResultPublic,
@@ -174,15 +180,13 @@ public class CameraImageUpdateHandler {
         });
     }
 
-    private void writeKuva(final byte[] realImage, final long timestampEpochMillis, final String filename,
+    private void writeKuva(final byte[] image, final long timestampEpochMillis, final String filename,
                            final ImageUpdateInfo info, final boolean isPublic) {
         final RetryTemplate retryTemplate = getRetryTemplate();
         retryTemplate.execute(retryContext -> {
             final StopWatch writeStart = StopWatch.createStarted();
             try {
-                final byte[] currentImageToWrite = isPublic ? realImage : noiseImage;
-
-                final String versionId = cameraImageS3Writer.writeImage(currentImageToWrite, realImage,
+                final String versionId = cameraImageS3Writer.writeImage(image, image,
                     filename, timestampEpochMillis);
                 info.setVersionId(versionId);
                 info.updateWriteStatusSuccess();
@@ -208,6 +212,19 @@ public class CameraImageUpdateHandler {
         final String imageKey = getPresetImageKey(preset.getPresetId());
         cameraImageS3Writer.writeCurrentImage(noiseImage, imageKey, Instant.now().toEpochMilli());
     }
+
+    public void deleteCurrentImagesForCamera(final RoadStation rs) {
+        final Map<Long, CameraPreset> presets =
+                cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
+        presets.values().forEach(this::deleteCurrentImageForPreset);
+    }
+
+
+    public void deleteCurrentImageForPreset(final CameraPreset preset) {
+        final String imageKey = getPresetImageKey(preset.getPresetId());
+        cameraImageS3Writer.deleteImage(imageKey);
+    }
+
 
     private RetryTemplate getRetryTemplate() {
         final RetryTemplate retryTemplate = new RetryTemplate();
