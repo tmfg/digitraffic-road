@@ -17,8 +17,9 @@ import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -102,7 +103,7 @@ public class RegionGeometryTestHelper {
             final String fileName =
                     StringUtil.format("{}_{}.json", StringUtils.leftPad(String.valueOf(locationCode), 5, "0"), regionName);
             final String json = TestUtils.readResourceContent(StringUtil.format("classpath:tloik/ims/regions/{}", fileName));
-            final ObjectMapper mapper = new ObjectMapper();
+            final ObjectMapper mapper = JsonMapper.builder().build();
             final JsonNode jsonObj = mapper.readTree(json);
             final Geometry geometry = GEOJSON_READER.read(jsonObj.get("geometry").toPrettyString());
             log.info("method=readRegionGeometry locationCode={} fileName={} geometryType={} valid={}", locationCode, fileName,  geometry.getGeometryType(), geometry.isValid());

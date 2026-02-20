@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 public class ResponseAsserter {
     protected final MockHttpServletResponse response;
@@ -27,7 +27,7 @@ public class ResponseAsserter {
         return new ResponseAsserter(response, HttpStatus.NOT_FOUND);
     }
 
-    public void run() throws UnsupportedEncodingException, JsonProcessingException {
+    public void run() throws UnsupportedEncodingException, JacksonException {
         Assertions.assertEquals(expectedStatus.value(), response.getStatus());
 
         if(expectedContentType != null) {

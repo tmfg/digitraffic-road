@@ -3,13 +3,13 @@ package fi.livi.digitraffic.tie.dto.weather.forecast.client;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
 
 public class ForecastSectionV2Geometry {
 
-    private final static ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    private final static ObjectWriter ow = JsonMapper.builder().build().writer().withDefaultPrettyPrinter();
 
     private String type;
 
@@ -34,7 +34,7 @@ public class ForecastSectionV2Geometry {
         this.coordinates = coordinates;
     }
 
-    public String toJsonString() throws JsonProcessingException {
+    public String toJsonString() throws JacksonException {
         return ow.writeValueAsString(this);
     }
 }

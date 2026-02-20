@@ -49,8 +49,11 @@ import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.roadstation.SensorValueHistory;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@ExtendWith(MockitoExtension.class)
 public class SensorDataS3WriterTest extends AbstractDaemonTest {
     public static final Logger log = LoggerFactory.getLogger(SensorDataS3WriterTest.class);
 

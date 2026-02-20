@@ -1,7 +1,7 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.common.util.TimeUtil;
@@ -296,7 +296,7 @@ public class DatexII223UpdateService {
                 return imsJsonConverter.replaceFeatureJsonGeometry(geoJsonFeature, fixedGeoJsonGeometry);
             }
             return null;
-        } catch (final ParseException | JsonProcessingException e) {
+        } catch (final ParseException | JacksonException e) {
             log.error(String.format("method=createJsonWithValidGeometryIfInvalid Failed to fix feature json: %s",
                     geoJsonFeature), e);
         }

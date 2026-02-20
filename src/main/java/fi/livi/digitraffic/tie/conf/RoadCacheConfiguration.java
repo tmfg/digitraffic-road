@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.conf;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @Configuration
 @EnableCaching
-public class RoadCacheConfiguration implements CachingConfigurer {
+public class RoadCacheConfiguration {
 
     public static final String CACHE_REVERSE_GEOCODE = "cacheReverseGeocode";
     public static final String CACHE_MAINTENANCE_ROUTES = "cacheMaintenanceTracking";
@@ -26,6 +25,7 @@ public class RoadCacheConfiguration implements CachingConfigurer {
     public static final String CACHE_FREE_FLOW_SPEEDS = "cacheFreeFlowSpeeds";
     public static final String CACHE_BEARING = "cacheBearing";
     public static final String CACHE_THUMBNAILS = "cacheThumbnails";
+
 
 
     @Bean(name = CACHE_REVERSE_GEOCODE)

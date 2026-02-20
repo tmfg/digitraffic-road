@@ -11,15 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -40,14 +37,6 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
 
     protected MockMvc mockMvc;
 
-    @Autowired
-    void setConverters(final HttpMessageConverter<?>[] converters) {
-
-        final HttpMessageConverter<?> mappingJackson2HttpMessageConverter = Arrays.stream(converters).filter(
-                hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElseThrow();
-
-        assertNotNull(mappingJackson2HttpMessageConverter, "the JSON message converter must not be null");
-    }
 
     @BeforeEach
     public void metadataTestBaseBefore() {

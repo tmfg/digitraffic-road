@@ -3,10 +3,10 @@ package fi.livi.digitraffic.tie.converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -32,7 +32,7 @@ public class GeoJsonGeometryAttributeConverter implements AttributeConverter<Geo
         }
         try {
             return jsonWriter.writeValueAsString(geometry);
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             log.error("Failed to convert geometry to json: {}", ToStringHelper.toStringFull(geometry));
             throw new RuntimeException(e);
         }
@@ -45,7 +45,7 @@ public class GeoJsonGeometryAttributeConverter implements AttributeConverter<Geo
         }
         try {
             return jsonReader.readValue(json);
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             log.error("Failed to convert json to geometry: {}", json);
             throw new RuntimeException(e);
         }

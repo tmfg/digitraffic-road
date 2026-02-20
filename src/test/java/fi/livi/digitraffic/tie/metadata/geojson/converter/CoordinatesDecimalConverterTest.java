@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.tie.AbstractDaemonTest;
 import fi.livi.digitraffic.tie.metadata.geojson.LineString;
@@ -36,7 +36,7 @@ public class CoordinatesDecimalConverterTest extends AbstractDaemonTest {
         "}";
 
     @Test
-    public void point() throws JsonProcessingException {
+    public void point() throws JacksonException {
         final Point point = new Point(0.1, 2.9, 2.9999999999);
         final String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(point);
         log.info(json);
@@ -44,7 +44,7 @@ public class CoordinatesDecimalConverterTest extends AbstractDaemonTest {
     }
 
     @Test
-    public void lineString() throws JsonProcessingException {
+    public void lineString() throws JacksonException {
         final List<List<Double>> coordinates = new ArrayList<>();
         coordinates.add(asList(1.1111111111, 1.2555555555, 1.3));
         coordinates.add(asList(2.1, 2.2, 2.3));

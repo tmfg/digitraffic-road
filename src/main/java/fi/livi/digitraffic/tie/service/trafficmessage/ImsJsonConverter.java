@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
@@ -46,7 +46,7 @@ public class ImsJsonConverter {
         final JsonNode root;
         try {
             root = genericJsonReader.readTree(imsJson);
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             log.error("method=parseFeatureJsonsFromImsJson Failed to read Json tree of imsJson: {} error: {}", imsJson, e.getMessage());
             return Collections.emptyMap();
         }
@@ -176,13 +176,13 @@ public class ImsJsonConverter {
         try {
             final JsonNode featureNode = genericJsonReader.readTree(featureJson);
             return featureNode.get("geometry");
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             log.error(String.format("method=parseGeometryFromFeatureJson Failed to read geometry of featureJson : %s", featureJson), e);
         }
         return null;
     }
 
-    public String replaceFeatureJsonGeometry(final String featureJson, final String replacementGeometryJson) throws JsonProcessingException {
+    public String replaceFeatureJsonGeometry(final String featureJson, final String replacementGeometryJson) throws JacksonException {
         final ObjectNode featureNode = (ObjectNode) genericJsonReader.readTree(featureJson);
         final JsonNode replacementGeometryNode = genericJsonReader.readTree(replacementGeometryJson);
         featureNode.set("geometry", replacementGeometryNode);

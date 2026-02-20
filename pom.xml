@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
+        <version>4.0.2</version>
         <relativePath/>
     </parent>
 
@@ -24,15 +24,15 @@
         <java.version>21</java.version>
         <maven.compiler.release>21</maven.compiler.release>
         <!-- https://mvnrepository.com/artifact/com.google.protobuf/protoc -->
-        <com.google.protobuf.version>4.33.4</com.google.protobuf.version>
-        <org.apache.cxf.version>4.1.4</org.apache.cxf.version>
+        <com.google.protobuf.version>4.33.5</com.google.protobuf.version>
+        <org.apache.cxf.version>4.2.0</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
-        <spring.cloud.version>4.3.1</spring.cloud.version>
+        <spring.cloud.version>5.0.1</spring.cloud.version>
         <proj4j.version>1.4.1</proj4j.version>
         <org.jvnet.jaxb.version>4.0.12</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java
         </project.digitraffic-common-java.directory>
-        <aws.sdk.version>2.41.11</aws.sdk.version>
+        <aws.sdk.version>2.41.33</aws.sdk.version>
     </properties>
 
     <profiles>
@@ -102,7 +102,7 @@
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
-            <version>3.4.2</version>
+            <version>4.0.0</version>
         </dependency>
 
         <dependency>
@@ -112,7 +112,7 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
         <dependency>
@@ -148,7 +148,7 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
 
         <!-- Cache support -->
@@ -202,16 +202,10 @@
             <version>2.0.1.Final</version>
         </dependency>
 
-        <!-- Includes spring's support classes for quartz -->
+        <!-- Quartz scheduler support via Spring Boot starter -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.5.2</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
 
         <!-- Spring Retry -->
@@ -274,29 +268,30 @@
             <version>0.4.21</version>
         </dependency>
 
-        <!-- use spring boot jackson version-->
+        <!-- use spring boot jackson version (Jackson 3) -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <groupId>tools.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jackson</artifactId>
         </dependency>
 
         <!-- OpenApi JSON API specification generation-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.15</version>
+            <version>3.0.1</version>
             <exclusions>
                 <!-- This has older with CVE-2025-48924 than explicitly included version below-->
                 <exclusion>
@@ -316,7 +311,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.9</version>
+            <version>42.7.10</version>
         </dependency>
 
         <dependency>
@@ -345,14 +340,14 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>6.6.41.Final</version>
+            <version>7.2.4.Final</version>
         </dependency>
 
         <!-- json column type -->
         <dependency>
             <groupId>io.hypersistence</groupId>
-            <artifactId>hypersistence-utils-hibernate-63</artifactId>
-            <version>3.14.1</version>
+            <artifactId>hypersistence-utils-hibernate-71</artifactId>
+            <version>3.15.2</version>
         </dependency>
 
         <!-- Library to transform GeoJSON <-> jts Geometry.
@@ -367,7 +362,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>8.1</version>
+            <version>9.0</version>
         </dependency>
 
         <dependency>
@@ -397,7 +392,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.14.2</version>
+            <version>6.0.3</version>
             <scope>test</scope>
         </dependency>
 
@@ -410,6 +405,33 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring Boot 4 modular test starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jackson-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-micrometer-metrics-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-jsonb</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -470,7 +492,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
-            <version>4.12.0</version>
+            <version>5.3.2</version>
             <scope>test</scope>
         </dependency>
 

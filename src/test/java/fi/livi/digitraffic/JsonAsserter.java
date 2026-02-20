@@ -1,8 +1,9 @@
 package fi.livi.digitraffic;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
@@ -29,10 +30,10 @@ public class JsonAsserter extends ResponseAsserter {
         return new JsonAsserter(response, HttpStatus.BAD_REQUEST);
     }
 
-    public void run() throws UnsupportedEncodingException, JsonProcessingException {
+    public void run() throws UnsupportedEncodingException, JacksonException {
         super.run();
 
-        final var jsonNode = new ObjectMapper().readValue(response.getContentAsString(), JsonNode.class);
+        final var jsonNode = JsonMapper.builder().build().readValue(response.getContentAsString(), JsonNode.class);
 
         if(this.expectedType != null) {
             Assertions.assertNotNull(jsonNode.get("type"));
@@ -46,10 +47,10 @@ public class JsonAsserter extends ResponseAsserter {
     }
 
     public void expectContent(final Consumer<JsonNode> function)
-            throws JsonProcessingException, UnsupportedEncodingException {
+            throws JacksonException, UnsupportedEncodingException {
         this.run();
 
-        function.accept(new ObjectMapper().readValue(response.getContentAsString(), JsonNode.class));
+        function.accept(JsonMapper.builder().build().readValue(response.getContentAsString(), JsonNode.class));
     }
 
     public JsonAsserter expectType(final String expectedType) {

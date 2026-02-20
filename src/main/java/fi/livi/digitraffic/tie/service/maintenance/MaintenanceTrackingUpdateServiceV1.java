@@ -32,10 +32,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingObservationDataRepository;
@@ -395,7 +395,7 @@ public class MaintenanceTrackingUpdateServiceV1 {
             String havaintoJson = null;
             try {
                 havaintoJson = jsonWriterForHavainto.writeValueAsString(havainto);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 log.error("Failed to convert havainto to json", e);
             }
             log.warn("method=splitLineStringsWithGaps Distance between points: {} The limit is {} km. Data will be fixed but this should be reported to source. JSON: \n{}\nHavainto:\n{}",

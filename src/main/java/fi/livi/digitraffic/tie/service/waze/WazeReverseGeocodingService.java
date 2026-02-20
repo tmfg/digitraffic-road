@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.service.waze;
 
 import static fi.livi.digitraffic.tie.conf.RoadCacheConfiguration.CACHE_REVERSE_GEOCODE;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -15,8 +14,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.dto.wazefeed.ReverseGeocode;
@@ -30,14 +30,14 @@ import fi.livi.digitraffic.tie.metadata.geojson.Point;
 public class WazeReverseGeocodingService {
     private static final Logger logger = LoggerFactory.getLogger(WazeReverseGeocodingService.class);
 
-    private final ObjectReader genericJsonReader;
+    private final ObjectReader reverseGeocodeReader;
 
     private final WazeReverseGeocodingApi wazeReverseGeocodingApi;
 
     @Autowired
     public WazeReverseGeocodingService(final ObjectMapper objectMapper,
                                        final WazeReverseGeocodingApi wazeReverseGeocodingApi) {
-        this.genericJsonReader = objectMapper.reader();
+        this.reverseGeocodeReader = objectMapper.readerFor(ReverseGeocode.class);
         this.wazeReverseGeocodingApi = wazeReverseGeocodingApi;
     }
 
@@ -101,9 +101,9 @@ public class WazeReverseGeocodingService {
 
     private Optional<ReverseGeocode> parseReverseGeocodeJson(final String input) {
         try {
-            final ReverseGeocode reverseGeocode = this.genericJsonReader.readValue(input, ReverseGeocode.class);
+            final ReverseGeocode reverseGeocode = this.reverseGeocodeReader.readValue(input);
             return Optional.of(reverseGeocode);
-        } catch (final IOException e) {
+        } catch (final JacksonException e) {
             logger.error("method=parseReverseGeocodeJson unable to parse input.", e);
         }
         return Optional.empty();

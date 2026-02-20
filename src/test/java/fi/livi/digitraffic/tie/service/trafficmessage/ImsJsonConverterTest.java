@@ -11,10 +11,10 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
@@ -63,7 +63,7 @@ public class ImsJsonConverterTest extends AbstractServiceTest {
                     }""";
 
     @Test
-    public void parseFeatureJsonsFromImsJson_Feature() throws JsonProcessingException {
+    public void parseFeatureJsonsFromImsJson_Feature() throws JacksonException {
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> jsons = imsJsonConverter.parseFeatureJsonsFromImsJson(FEATURE);
         assertEquals(1, jsons.size());
         final ObjectReader reader = objectMapper.reader();
@@ -73,7 +73,7 @@ public class ImsJsonConverterTest extends AbstractServiceTest {
     }
 
     @Test
-    public void parseFeatureJsonsFromImsJson_FeatureCollection() throws JsonProcessingException {
+    public void parseFeatureJsonsFromImsJson_FeatureCollection() throws JacksonException {
         // Create feature collection with two features (just situationId differs)
         final String feature2 = changeSituationIdInFeature(FEATURE, SITUATION_ID1, SITUATION_ID2);
         final String featureCollection = createFeatureCollectionWithSituations(FEATURE, feature2);

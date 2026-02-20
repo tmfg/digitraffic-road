@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.test.util.AssertUtil;

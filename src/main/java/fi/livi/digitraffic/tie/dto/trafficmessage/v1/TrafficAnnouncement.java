@@ -82,8 +82,8 @@ public class TrafficAnnouncement extends JsonAdditionalProperties {
         this.title = title;
         this.location = location;
         this.locationDetails = locationDetails;
-        this.features = features;
-        this.roadWorkPhases = roadWorkPhases;
+        this.features = features != null ? features : new ArrayList<>();
+        this.roadWorkPhases = roadWorkPhases != null ? roadWorkPhases : new ArrayList<>();
         this.earlyClosing = earlyClosing;
         this.lastActiveItinerarySegment = lastActiveItinerarySegment;
         this.comment = comment;
