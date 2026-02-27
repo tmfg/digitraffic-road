@@ -187,7 +187,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
 
     @Test
     public void historyUpdateInPast() {
-        doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
+        doNothing().when(cameraImageUpdateHandler).deleteCurrentImageForPreset(any(CameraPreset.class));
 
         final List<String> presetIds = generateHistoryForPublicPresets(2, 5);
         final String modifiedPresetId = presetIds.getFirst();
@@ -206,12 +206,12 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
 
-        // camera secret -> presets to secret
-        verify(cameraImageUpdateHandler, VerificationModeFactory.atLeast(1)).hideCurrentImageForPreset(
+        // camera secret -> images of presets deleted
+        verify(cameraImageUpdateHandler, VerificationModeFactory.atLeast(1)).deleteCurrentImageForPreset(
                 any(CameraPreset.class));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).deleteCurrentImagesForCamera(
                 argThat(r -> r.getLotjuId().equals(rs.getLotjuId())));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).deleteCurrentImagesForCamera(
                 argThat(r -> !r.getLotjuId().equals(rs.getLotjuId())));
 
         final List<CameraPresetHistory> allUpdated =

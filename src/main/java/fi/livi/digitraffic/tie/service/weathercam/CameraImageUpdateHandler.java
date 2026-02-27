@@ -83,10 +83,9 @@ public class CameraImageUpdateHandler {
             final boolean roadStationPublic = cameraPreset.getRoadStation().isPublicNow();
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             if (!isResultPublic) {
-                log.warn(
-                        "Image {} for preset {} is not public, skipping upload",
+                log.info(
+                        "method=handleKuva Image {} for preset {} is not public, writing to history only",
                         kuva.getKuvaId(), presetId);
-                return false;
             }
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
 
@@ -186,8 +185,12 @@ public class CameraImageUpdateHandler {
         retryTemplate.execute(retryContext -> {
             final StopWatch writeStart = StopWatch.createStarted();
             try {
-                final String versionId = cameraImageS3Writer.writeImage(image, image,
-                    filename, timestampEpochMillis);
+                // Always write to versioned bucket (history)
+                final String versionId = cameraImageS3Writer.writeVersionedImage(image, filename, timestampEpochMillis);
+                // Only write current image when public
+                if (isPublic) {
+                    cameraImageS3Writer.writeCurrentImage(image, filename, timestampEpochMillis);
+                }
                 info.setVersionId(versionId);
                 info.updateWriteStatusSuccess();
                 info.setWriteDurationMs(writeStart.getDuration().toMillis());
