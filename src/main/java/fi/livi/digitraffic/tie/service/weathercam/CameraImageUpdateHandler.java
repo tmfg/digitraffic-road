@@ -35,11 +35,8 @@ public class CameraImageUpdateHandler {
     private final CameraPresetService cameraPresetService;
     private final CameraImageReader imageReader;
     private final CameraImageS3Writer cameraImageS3Writer;
-    private final byte[] noiseImage;
-    private final ResourceLoader resourceLoader;
 
     public static final int RETRY_COUNT = 3;
-    private static final String NOISE_IMG = "img/noise.jpg";
 
     private static final Map<Class<? extends Throwable>, Boolean> retryableExceptions = Map.of(
         CameraImageReadFailureException.class, true,
@@ -51,21 +48,11 @@ public class CameraImageUpdateHandler {
         final int retryDelayMs,
         final CameraPresetService cameraPresetService,
         final CameraImageReader imageReader,
-        final CameraImageS3Writer cameraImageS3Writer,
-        final ResourceLoader resourceLoader) throws IOException {
+        final CameraImageS3Writer cameraImageS3Writer) {
         this.retryDelayMs = retryDelayMs;
         this.cameraPresetService = cameraPresetService;
         this.imageReader = imageReader;
         this.cameraImageS3Writer = cameraImageS3Writer;
-        this.resourceLoader = resourceLoader;
-        this.noiseImage = readEmptyImageFromResource();
-    }
-
-    private byte[] readEmptyImageFromResource() throws IOException {
-        log.info("Read image from {}", CameraImageUpdateHandler.NOISE_IMG);
-        final Resource resource = resourceLoader.getResource("classpath:" + CameraImageUpdateHandler.NOISE_IMG);
-        final InputStream imageIs = resource.getInputStream();
-        return IOUtils.toByteArray(imageIs);
     }
 
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
@@ -205,16 +192,6 @@ public class CameraImageUpdateHandler {
         });
     }
 
-    public void hideCurrentImagesForCamera(final RoadStation rs) {
-        final Map<Long, CameraPreset> presets =
-            cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
-        presets.values().forEach(this::hideCurrentImageForPreset);
-    }
-
-    public void hideCurrentImageForPreset(final CameraPreset preset) {
-        final String imageKey = getPresetImageKey(preset.getPresetId());
-        cameraImageS3Writer.writeCurrentImage(noiseImage, imageKey, Instant.now().toEpochMilli());
-    }
 
     public void deleteCurrentImagesForCamera(final RoadStation rs) {
         final Map<Long, CameraPreset> presets =

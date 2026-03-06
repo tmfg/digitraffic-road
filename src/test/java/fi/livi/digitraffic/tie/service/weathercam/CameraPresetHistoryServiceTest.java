@@ -206,7 +206,7 @@ public class CameraPresetHistoryServiceTest extends AbstractDaemonTest {
         cameraPresetHistoryUpdateService.updatePresetHistoryPublicityForCamera(rs);
         entityManager.flush();
 
-        // camera secret -> images of presets deleted
+        // camera secret -> current images of presets deleted from S3
         verify(cameraImageUpdateHandler, VerificationModeFactory.atLeast(1)).deleteCurrentImageForPreset(
                 any(CameraPreset.class));
         verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).deleteCurrentImagesForCamera(
