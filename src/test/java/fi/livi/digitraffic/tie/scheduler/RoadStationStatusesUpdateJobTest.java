@@ -84,7 +84,7 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
 
     @Test
     public void testUpdateRoadStationStatuses() {
-        doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
+        doNothing().when(cameraImageUpdateHandler).deleteCurrentImageForPreset(any(CameraPreset.class));
 
         lotjuLAMMetatiedotServiceMock.initStateAndService();
         lotjuTiesaaPerustiedotServiceMock.initStateAndService();
@@ -109,10 +109,10 @@ public class RoadStationStatusesUpdateJobTest extends AbstractMetadataUpdateJobT
         weatherStationUpdater.updateWeatherStationsStatuses();
         cameraStationUpdater.updateCameraStationsStatuses();
 
-        // camera 2 has 5 public but camera is not public -> 5 presets to secret
-        verify(cameraImageUpdateHandler, times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
-        verify(cameraImageUpdateHandler, times(5)).hideCurrentImageForPreset(any(CameraPreset.class));
-        verify(cameraImageUpdateHandler, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
+        // camera 2 has 5 public but camera is not public -> 5 presets deleted
+        verify(cameraImageUpdateHandler, times(1)).deleteCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
+        verify(cameraImageUpdateHandler, times(5)).deleteCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateHandler, times(0)).deleteCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
 
         final List<RoadStation> allAfterChange = roadStationService.findAll();
 

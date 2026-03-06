@@ -6,12 +6,16 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraImageThumbnailService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService;
 import fi.livi.digitraffic.tie.service.weathercam.CameraPresetHistoryDataService.HistoryStatus;
 import fi.livi.digitraffic.tie.service.weathercam.ThumbnailGenerationError;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.RejectedExecutionException;
@@ -38,29 +44,41 @@ public class WeathercamPermissionControllerV1 {
     public static final String WEATHERCAM_PATH = "/weathercam";
     private static final String VERSION_ID_PARAM = "versionId";
     private static final String THUMBNAIL_PARAM = "thumbnail";
+    private static final String IMAGE_NOT_AVAILABLE_IMG = "img/image_not_available.jpg";
 
     private final CameraPresetHistoryDataService cameraPresetHistoryDataService;
     private final WeathercamS3Properties weathercamS3Properties;
     private final CameraImageThumbnailService cameraImageThumbnailService;
+    private final byte[] imageNotAvailable;
 
     @Autowired
     public WeathercamPermissionControllerV1(final CameraPresetHistoryDataService cameraPresetHistoryDataService,
                                             final WeathercamS3Properties weathercamS3Properties,
-                                            final CameraImageThumbnailService cameraImageThumbnailService) {
+                                            final CameraImageThumbnailService cameraImageThumbnailService,
+                                            final ResourceLoader resourceLoader) throws IOException {
         this.cameraPresetHistoryDataService = cameraPresetHistoryDataService;
         this.weathercamS3Properties = weathercamS3Properties;
         this.cameraImageThumbnailService = cameraImageThumbnailService;
+        this.imageNotAvailable = readImageNotAvailableFromResource(resourceLoader);
+    }
+
+    private static byte[] readImageNotAvailableFromResource(final ResourceLoader resourceLoader) throws IOException {
+        log.info("Read image from {}", IMAGE_NOT_AVAILABLE_IMG);
+        final Resource resource = resourceLoader.getResource("classpath:" + IMAGE_NOT_AVAILABLE_IMG);
+        try (final InputStream is = resource.getInputStream()) {
+            return IOUtils.toByteArray(is);
+        }
     }
 
     /**
      * This method handles requests for specific weathercam image versions as well as thumbnails of image versions AND thumbnails of current weathercam images.
      * If versionId has a value, the publicity of the requested image version is checked first.
-     * If a current image is not public, the image file in the S3 bucket will be obscured and so will the resulting thumbnail.
+     * If the current image is not public (deleted from S3), an "image not available" placeholder is returned.
      *
      * @param imageName The name of the weathercam image eg C1234501.jpg
      * @param versionId The S3 version id of the requested image version (optional if thumbnail=true)
-     * @param thumbnail If true, a thumbnail of the curren image, or it's version is generated
-     * @return Redirect to the image version at S3 or a thumbnail of the current image or it's version.
+     * @param thumbnail If true, a thumbnail of the current image, or its version is generated
+     * @return Redirect to the image version at S3, a thumbnail, or an "image not available" placeholder.
      */
     @RequestMapping(method = RequestMethod.GET,
             path = "{imageName}")
@@ -78,7 +96,9 @@ public class WeathercamPermissionControllerV1 {
             log.debug("method=imageVersion history of s3Key={} historyStatus={}", imageName, historyStatus);
 
             if (historyStatus != PUBLIC) {
-                return completedFuture(notFoundResponse());
+                log.info("method=imageVersion Returning image-not-available placeholder for image={} versionId={} historyStatus={}",
+                        imageName, versionId, historyStatus);
+                return completedFuture(imageNotAvailableResponse());
             }
         } else if (!thumbnail) {
             // If no versionId and not thumbnail, bad request
@@ -112,8 +132,8 @@ public class WeathercamPermissionControllerV1 {
                             );
                             return internalServerErrorResponse();
                         } else if (cause instanceof NoSuchKeyException) {
-                            log.info("method=imageVersion Image not found image={} versionId={}", imageName, versionId, cause);
-                            return notFoundRequestResponse();
+                            log.info("method=imageVersion Image not found in S3, returning image-not-available placeholder image={} versionId={}", imageName, versionId);
+                            return imageNotAvailableResponse();
                         } else if (cause instanceof final ThumbnailGenerationError e) {
                             log.error(
                                     "method=imageVersion Thumbnail generation failed for imageName={} versionId={} lastModified={} size={} hash={}",
@@ -148,16 +168,15 @@ public class WeathercamPermissionControllerV1 {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    private static ResponseEntity<?> notFoundRequestResponse() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-
     private static ResponseEntity<?> internalServerErrorResponse() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    private ResponseEntity<Void> notFoundResponse() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    private ResponseEntity<?> imageNotAvailableResponse() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .cacheControl(CacheControl.noCache())
+                .body(imageNotAvailable);
     }
 
     private ResponseEntity<?> tooManyRequestsErrorResponse() {

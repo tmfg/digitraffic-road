@@ -65,7 +65,7 @@ public class CameraImageS3Writer {
      * @param timestampEpochMillis image timestamp
      * @return s3 version id
      */
-    private String writeVersionedImage(final byte[] versionedImageData,
+    public String writeVersionedImage(final byte[] versionedImageData,
                                        final String imageKey,
                                        final long timestampEpochMillis) {
         final String versionedKey = getVersionedKey(imageKey);

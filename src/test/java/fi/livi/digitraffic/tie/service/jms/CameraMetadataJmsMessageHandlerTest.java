@@ -82,7 +82,7 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
     @Test
     public void cameraMetadataUpdateReceiveMessages() {
 
-        doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
+        doNothing().when(cameraImageUpdateHandler).deleteCurrentImageForPreset(any(CameraPreset.class));
 
         // Create camera with preset to lotju
         final KameraVO kamera_T1 = createKamera(Instant.now());
@@ -98,7 +98,7 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).deleteCurrentImagesForCamera(
                 any(RoadStation.class));
 
         reset(lotjuCameraStationMetadataClient);
@@ -120,7 +120,7 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).deleteCurrentImagesForCamera(
                 any(RoadStation.class));
 
         reset(lotjuCameraStationMetadataClient);
@@ -142,7 +142,7 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_1.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasento(eq(esiasento_T1_2.getId()));
         verify(lotjuCameraStationMetadataClient, times(1)).getEsiasentos(eq(kamera_T1.getId()));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).deleteCurrentImagesForCamera(
                 any(RoadStation.class));
 
         reset(lotjuCameraStationMetadataClient);
@@ -169,12 +169,12 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
         verify(lotjuCameraStationMetadataClient, times(1)).getKamera(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
-        // camera T1 has 2 public presets, camera changes to secret -> 2 presets to secret
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(
+        // camera T1 has 2 public presets, camera changes to secret -> 2 presets deleted
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).deleteCurrentImagesForCamera(
                 argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(2)).hideCurrentImageForPreset(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(2)).deleteCurrentImageForPreset(
                 any(CameraPreset.class));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).deleteCurrentImagesForCamera(
                 argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
 
         reset(lotjuCameraStationMetadataClient);
@@ -192,12 +192,12 @@ public class CameraMetadataJmsMessageHandlerTest extends AbstractJMSMessageHandl
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasentos(eq(kamera_T1.getId()));
         verify(lotjuCameraStationMetadataClient, times(0)).getEsiasento(eq(esiasento_T1_2.getId()));
 
-        // camera T1 has 2 public presets, camera changes to secret -> 2 presets to secret
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).hideCurrentImagesForCamera(
+        // camera T1 has 2 public presets, camera changes to secret -> 2 presets deleted
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(1)).deleteCurrentImagesForCamera(
                 argThat(rs -> rs.getLotjuId().equals(kamera_T1.getId())));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(2)).hideCurrentImageForPreset(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(2)).deleteCurrentImageForPreset(
                 any(CameraPreset.class));
-        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).hideCurrentImagesForCamera(
+        verify(cameraImageUpdateHandler, VerificationModeFactory.times(0)).deleteCurrentImagesForCamera(
                 argThat(rs -> !rs.getLotjuId().equals(kamera_T1.getId())));
 
         reset(lotjuCameraStationMetadataClient);
