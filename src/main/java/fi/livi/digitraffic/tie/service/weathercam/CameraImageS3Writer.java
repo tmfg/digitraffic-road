@@ -81,7 +81,10 @@ public class CameraImageS3Writer {
     }
 
     /**
-     * @param imageKey file key (name) ins S3 to delete
+     * Deletes the current image and its versioned history from S3.
+     * Use when the preset no longer exists at all.
+     *
+     * @param imageKey file key (name) in S3 to delete
      * @return Info if the file exists and delete success. For non existing images success is false.
      */
     public DeleteInfo deleteImage(final String imageKey) {
@@ -105,6 +108,29 @@ public class CameraImageS3Writer {
             return DeleteInfo.doesNotExist(start.getDuration().toMillis(), imageKey);
         } catch (final Exception e) {
             log.error(String.format("Failed to remove s3 file s3Key=%s", imageKey), e);
+            return DeleteInfo.failed(start.getDuration().toMillis(), imageKey);
+        }
+    }
+
+    /**
+     * Deletes only the current image from S3, leaving the versioned history intact.
+     * Use when the image is not public but history should be preserved.
+     *
+     * @param imageKey file key (name) in S3 to delete
+     * @return Info if the file exists and delete success. For non existing images success is false.
+     */
+    public DeleteInfo deleteCurrentImage(final String imageKey) {
+        final StopWatch start = StopWatch.createStarted();
+        try {
+            checkS3KeyFormat(imageKey);
+            if (s3Service.doesObjectExist(weathercamS3Properties.getS3WeathercamBucketName(), imageKey)) {
+                log.info("method=deleteCurrentImage presetId={} s3Key={}", resolvePresetIdFromKey(imageKey), imageKey);
+                s3Service.deleteObject(weathercamS3Properties.getS3WeathercamBucketName(), imageKey);
+                return DeleteInfo.success(start.getDuration().toMillis(), imageKey);
+            }
+            return DeleteInfo.doesNotExist(start.getDuration().toMillis(), imageKey);
+        } catch (final Exception e) {
+            log.error(String.format("Failed to remove current s3 file s3Key=%s", imageKey), e);
             return DeleteInfo.failed(start.getDuration().toMillis(), imageKey);
         }
     }

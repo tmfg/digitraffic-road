@@ -80,6 +80,7 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
 
         verify(cameraImageS3Writer, times(1)).writeVersionedImage(any(), any(), anyLong());
         verify(cameraImageS3Writer, times(1)).writeCurrentImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).deleteCurrentImage(any());
     }
 
     @Test
@@ -92,6 +93,7 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
 
         verify(cameraImageS3Writer, times(1)).writeVersionedImage(any(), any(), anyLong());
         verify(cameraImageS3Writer, times(0)).writeCurrentImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(1)).deleteCurrentImage(any());
     }
 
     @Test
@@ -104,6 +106,7 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
 
         verify(cameraImageS3Writer, times(1)).writeVersionedImage(any(), any(), anyLong());
         verify(cameraImageS3Writer, times(0)).writeCurrentImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(1)).deleteCurrentImage(any());
     }
 
     private KuvaProtos.Kuva createKuva(final boolean julkinen) {

@@ -71,7 +71,7 @@ public class CameraImageUpdateHandler {
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
             if (!isResultPublic) {
                 log.info(
-                        "method=handleKuva Image {} for preset {} is not public, writing to history only",
+                        "method=handleKuva Image {} for preset {} is not public, writing to history only and deleting current image",
                         kuva.getKuvaId(), presetId);
             }
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
@@ -177,6 +177,9 @@ public class CameraImageUpdateHandler {
                 // Only write current image when public
                 if (isPublic) {
                     cameraImageS3Writer.writeCurrentImage(image, filename, timestampEpochMillis);
+                } else {
+                    // Also delete previous "current image" so that placeholder is returned when not public
+                    cameraImageS3Writer.deleteCurrentImage(filename);
                 }
                 info.setVersionId(versionId);
                 info.updateWriteStatusSuccess();
@@ -202,7 +205,7 @@ public class CameraImageUpdateHandler {
 
     public void deleteCurrentImageForPreset(final CameraPreset preset) {
         final String imageKey = getPresetImageKey(preset.getPresetId());
-        cameraImageS3Writer.deleteImage(imageKey);
+        cameraImageS3Writer.deleteCurrentImage(imageKey);
     }
 
 
