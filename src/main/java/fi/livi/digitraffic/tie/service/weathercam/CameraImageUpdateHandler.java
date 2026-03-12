@@ -35,11 +35,8 @@ public class CameraImageUpdateHandler {
     private final CameraPresetService cameraPresetService;
     private final CameraImageReader imageReader;
     private final CameraImageS3Writer cameraImageS3Writer;
-    private final byte[] noiseImage;
-    private final ResourceLoader resourceLoader;
 
     public static final int RETRY_COUNT = 3;
-    private static final String NOISE_IMG = "img/noise.jpg";
 
     private static final Map<Class<? extends Throwable>, Boolean> retryableExceptions = Map.of(
         CameraImageReadFailureException.class, true,
@@ -51,21 +48,11 @@ public class CameraImageUpdateHandler {
         final int retryDelayMs,
         final CameraPresetService cameraPresetService,
         final CameraImageReader imageReader,
-        final CameraImageS3Writer cameraImageS3Writer,
-        final ResourceLoader resourceLoader) throws IOException {
+        final CameraImageS3Writer cameraImageS3Writer) {
         this.retryDelayMs = retryDelayMs;
         this.cameraPresetService = cameraPresetService;
         this.imageReader = imageReader;
         this.cameraImageS3Writer = cameraImageS3Writer;
-        this.resourceLoader = resourceLoader;
-        this.noiseImage = readEmptyImageFromResource();
-    }
-
-    private byte[] readEmptyImageFromResource() throws IOException {
-        log.info("Read image from {}", CameraImageUpdateHandler.NOISE_IMG);
-        final Resource resource = resourceLoader.getResource("classpath:" + CameraImageUpdateHandler.NOISE_IMG);
-        final InputStream imageIs = resource.getInputStream();
-        return IOUtils.toByteArray(imageIs);
     }
 
     public boolean handleKuva(final KuvaProtos.Kuva kuva) {
@@ -82,6 +69,11 @@ public class CameraImageUpdateHandler {
         if (cameraPreset != null) {
             final boolean roadStationPublic = cameraPreset.getRoadStation().isPublicNow();
             final boolean isResultPublic = kuva.getJulkinen() && roadStationPublic;
+            if (!isResultPublic) {
+                log.info(
+                        "method=handleKuva Image {} for preset {} is not public, writing to history only and deleting current image",
+                        kuva.getKuvaId(), presetId);
+            }
             final ImageUpdateInfo transferInfo = transferKuva(kuva, presetId, imageKey, isResultPublic);
 
             cameraPresetService.updateCameraPresetAndHistoryWithLotjuId(kuva.getEsiasentoId(), isResultPublic,
@@ -174,16 +166,21 @@ public class CameraImageUpdateHandler {
         });
     }
 
-    private void writeKuva(final byte[] realImage, final long timestampEpochMillis, final String filename,
+    private void writeKuva(final byte[] image, final long timestampEpochMillis, final String filename,
                            final ImageUpdateInfo info, final boolean isPublic) {
         final RetryTemplate retryTemplate = getRetryTemplate();
         retryTemplate.execute(retryContext -> {
             final StopWatch writeStart = StopWatch.createStarted();
             try {
-                final byte[] currentImageToWrite = isPublic ? realImage : noiseImage;
-
-                final String versionId = cameraImageS3Writer.writeImage(currentImageToWrite, realImage,
-                    filename, timestampEpochMillis);
+                // Always write to versioned bucket (history)
+                final String versionId = cameraImageS3Writer.writeVersionedImage(image, filename, timestampEpochMillis);
+                // Only write current image when public
+                if (isPublic) {
+                    cameraImageS3Writer.writeCurrentImage(image, filename, timestampEpochMillis);
+                } else {
+                    // Also delete previous "current image" so that placeholder is returned when not public
+                    cameraImageS3Writer.deleteCurrentImage(filename);
+                }
                 info.setVersionId(versionId);
                 info.updateWriteStatusSuccess();
                 info.setWriteDurationMs(writeStart.getDuration().toMillis());
@@ -198,16 +195,19 @@ public class CameraImageUpdateHandler {
         });
     }
 
-    public void hideCurrentImagesForCamera(final RoadStation rs) {
+
+    public void deleteCurrentImagesForCamera(final RoadStation rs) {
         final Map<Long, CameraPreset> presets =
-            cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
-        presets.values().forEach(this::hideCurrentImageForPreset);
+                cameraPresetService.findAllCameraPresetsByCameraLotjuIdMappedByPresetLotjuId(rs.getLotjuId());
+        presets.values().forEach(this::deleteCurrentImageForPreset);
     }
 
-    public void hideCurrentImageForPreset(final CameraPreset preset) {
+
+    public void deleteCurrentImageForPreset(final CameraPreset preset) {
         final String imageKey = getPresetImageKey(preset.getPresetId());
-        cameraImageS3Writer.writeCurrentImage(noiseImage, imageKey, Instant.now().toEpochMilli());
+        cameraImageS3Writer.deleteCurrentImage(imageKey);
     }
+
 
     private RetryTemplate getRetryTemplate() {
         final RetryTemplate retryTemplate = new RetryTemplate();
