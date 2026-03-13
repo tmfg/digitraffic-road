@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.metadata.geojson.converter;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -8,26 +7,26 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /**
- * Copy of {@link com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer}
+ * Copy of {@link tools.jackson.databind.ser.impl.IndexedListSerializer}
  */
 public final class CoordinatesDecimalConverter
-    extends JsonSerializer<List<?>> {
+    extends ValueSerializer<List<?>> {
 
     private static final DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(Locale.ROOT);
 
     @Override
-    public void serialize(final List<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException {
+    public void serialize(final List<?> value, final JsonGenerator gen, final SerializationContext provider) {
         gen.writeStartArray(value);
         this.serializeContents(value, gen, provider);
         gen.writeEndArray();
     }
 
-    private void serializeContents(final List<?> value, final JsonGenerator gen, final SerializerProvider provider) throws IOException {
+    private void serializeContents(final List<?> value, final JsonGenerator gen, final SerializationContext provider) {
         if (isEmpty(provider, value)) {
             return;
         } else {
@@ -41,8 +40,8 @@ public final class CoordinatesDecimalConverter
         }
     }
 
-    synchronized private void serializeDouble(final Double value, final JsonGenerator gen, final SerializerProvider provider) throws IOException {
-        gen.writeObject(BigDecimal.valueOf(value).setScale(6, RoundingMode.HALF_UP));
+    synchronized private void serializeDouble(final Double value, final JsonGenerator gen, final SerializationContext provider) {
+        gen.writePOJO(BigDecimal.valueOf(value).setScale(6, RoundingMode.HALF_UP));
     }
 
     private DecimalFormat getNewDecimalFormat() {
@@ -52,7 +51,7 @@ public final class CoordinatesDecimalConverter
     }
 
     @Override
-    public boolean isEmpty(final SerializerProvider provider, final List<?> value) {
+    public boolean isEmpty(final SerializationContext provider, final List<?> value) {
         return value.isEmpty();
     }
 }

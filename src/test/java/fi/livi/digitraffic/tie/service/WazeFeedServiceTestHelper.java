@@ -10,9 +10,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AlertCLocation;
@@ -199,7 +199,7 @@ public class WazeFeedServiceTestHelper {
 
             try {
                 json = genericJsonWriter.writeValueAsString(feature);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
 

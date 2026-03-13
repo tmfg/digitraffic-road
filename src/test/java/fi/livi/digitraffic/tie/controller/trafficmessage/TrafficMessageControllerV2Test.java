@@ -16,10 +16,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -499,7 +499,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     }
 
     private void assertValidXml223(final MockHttpServletResponse response)
-            throws UnsupportedEncodingException, JsonProcessingException {
+            throws UnsupportedEncodingException, JacksonException {
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             final var publication = xmlNode.get("payloadPublication");
             Assertions.assertNotNull(publication);
@@ -550,7 +550,7 @@ values('id1', 'PLACEHOLDER', now(), 'POINT(10 10)', now(), true, 'MESSAGE')
     }
 
     private void assertValid35(final MockHttpServletResponse response, final String expectedGuid)
-            throws UnsupportedEncodingException, JsonProcessingException {
+            throws UnsupportedEncodingException, JacksonException {
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").textValue());
 

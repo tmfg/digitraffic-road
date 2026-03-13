@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.Area;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.AreaLocation;

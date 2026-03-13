@@ -7,6 +7,7 @@ import fi.livi.digitraffic.tie.conf.jaxb2.DatexII_3_NamespacePrefixMapper;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2RootElementHttpMessageConverter;
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.PayloadPublication;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.lang.NonNull;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
@@ -88,16 +90,36 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         return shallowEtagHeaderFilter;
     }
 
-    @Bean
-    public HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel() {
+    @Override
+    public void configureMessageConverters(final HttpMessageConverters.ServerBuilder builder) {
+        // Register JAXB XML converters as custom converters.
+        // Custom converters are considered before default ones.
+        builder.addCustomConverter(xmlHttpMessageConverterForD2LogicalModel());
+        builder.addCustomConverter(xmlHttpMessageConverterForMeasurementSiteTablePublication());
+        builder.addCustomConverter(xmlHttpMessageConverterForMeasuredDataPublication());
+        builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
+        // Also register via extendMessageConverters for MockMvc compatibility.
+        converters.addFirst(xmlHttpMessageConverterForSituationPublication());
+        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication());
+        converters.addFirst(xmlHttpMessageConverterForMeasurementSiteTablePublication());
+        converters.addFirst(xmlHttpMessageConverterForD2LogicalModel());
+    }
+
+    @SuppressWarnings("unchecked")
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel() {
         return new Jaxb2RootElementHttpMessageConverter<>(D2LogicalModel.class)
                 .withJaxbSchemaLocations(
                         "https://datex2.eu/schema/2/2_0",
                         dtDomainAndSchemaRootLocation + "/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
     }
 
-    @Bean
-    public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication() {
+    @SuppressWarnings("unchecked")
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication() {
         // To return child class in xml as xsi:type attribute we need to use custom implementation
         // telling the child and parent classes
         return new Jaxb2RootElementHttpMessageConverter<>(
@@ -109,13 +131,26 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
-    @Bean
-    public HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication() {
+    @SuppressWarnings("unchecked")
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication() {
         // To return child class in xml as xsi:type attribute we need to use custom implementation
         // telling the child and parent classes
         return new Jaxb2RootElementHttpMessageConverter<>(
                 MeasuredDataPublication.class,
                 PayloadPublication.class,
+                "payload")
+                .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
+                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
+    }
+
+    @SuppressWarnings("unchecked")
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForSituationPublication() {
+        // To return child class in xml as xsi:type attribute we need to use custom implementation
+        // telling the child and parent classes
+        return new Jaxb2RootElementHttpMessageConverter<>(
+                SituationPublication.class,
+                fi.livi.digitraffic.tie.datex2.v3_5.PayloadPublication.class,
                 "payload")
                 .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
                 .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())

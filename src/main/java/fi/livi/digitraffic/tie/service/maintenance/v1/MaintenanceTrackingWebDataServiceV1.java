@@ -31,9 +31,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.tie.controller.ControllerConstants;
@@ -266,7 +266,7 @@ public class MaintenanceTrackingWebDataServiceV1 {
         return maintenanceTrackingObservationDataRepository.findJsonsByTrackingId(trackingId).stream().map(j -> {
             try {
                 return objectMapper.readTree(j);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());

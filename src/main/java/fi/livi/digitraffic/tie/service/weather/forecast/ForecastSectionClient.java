@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.weather.forecast;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesEntry;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDto;
@@ -50,7 +49,6 @@ public class ForecastSectionClient {
         this.objectMapper = objectMapper;
         this.webClient = webClient;
 
-        this.objectMapper.registerModule(new JavaTimeModule());
 
         keyValues = Map.of(
             KEY_BASE_URL, baseUrl,

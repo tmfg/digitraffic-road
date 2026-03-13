@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -221,7 +221,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
 
         assertTrue(WazeDatex2JsonConverter.formatPolyline(new MultiPoint(coords), null).isEmpty());
         assertTrue(WazeDatex2JsonConverter.formatPolyline(new LineString(coords), null).isEmpty());
-        assertTrue(WazeDatex2JsonConverter.formatPolyline(new MultiPolygon(poly), null).isEmpty());
+        assertTrue(WazeDatex2JsonConverter.formatPolyline(MultiPolygon.ofSinglePolygon(poly), null).isEmpty());
         assertTrue(WazeDatex2JsonConverter.formatPolyline(new Polygon(poly), null).isEmpty());
     }
 
@@ -248,7 +248,7 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         wazeFeedServiceTestHelper.insertSituation("GUID1234", RoadAddressLocation.Direction.BOTH, geometry);
 
         // unsupported MultiPolygon
-        wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.BOTH, new MultiPolygon(List.of(coords)));
+        wazeFeedServiceTestHelper.insertSituation("GUID1235", RoadAddressLocation.Direction.BOTH, MultiPolygon.ofSinglePolygon(List.of(coords)));
 
         // expect the multipolygon version to be filtered out
         final WazeFeedAnnouncementDto announcement = wazeFeedService.findActive();

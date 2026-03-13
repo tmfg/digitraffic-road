@@ -14,7 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.oxm.UnmarshallingFailureException;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.OverallPeriod;
@@ -56,7 +56,7 @@ public class WazeDatex2Converter {
                 false,
                 datex2.getModified()
             );
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             logger.error("method=convertToWazeDatex2FeatureDto json string conversion to feature object failed", e);
             logger.info(String.format("DEBUG method=convertToWazeFeedAnnouncementDto json string conversion error in string: %s", jsonMessage));
             return Optional.empty();

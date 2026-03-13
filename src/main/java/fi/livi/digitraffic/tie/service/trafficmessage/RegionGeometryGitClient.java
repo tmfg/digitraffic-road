@@ -31,10 +31,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
 import fi.livi.digitraffic.tie.helper.GeometryConstants;
@@ -105,7 +105,7 @@ public class RegionGeometryGitClient {
     }
 
     private RegionGeometry createAreaLocationRegionObject(final RevCommit commit, final DiffEntry diff,
-                                                          final String contentJson) throws JsonProcessingException, ParseException {
+                                                          final String contentJson) throws JacksonException, ParseException {
         try {
             final String gitPath = diff.getNewPath();
             final String gitId = diff.getNewId().toObjectId().getName();

@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.common.util.TimeUtil;
@@ -177,14 +177,14 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
                                      o.getObservationTime().equals(h.getHavaintoaika()))
                         .findFirst().orElseThrow();
                 assertEquals(formatedJson, observation.getJson());
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
     @Test
-    public void handleTrackingWithMultipleWorkMachines() throws JsonProcessingException {
+    public void handleTrackingWithMultipleWorkMachines() throws JacksonException {
         // Create maintenance tracking message for <machineCount> machines and <observationCount> observations for each machine
         // and save observations to db
         final Instant now = getStartTimeOneDayInPast();
@@ -248,7 +248,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
                                     workMachines, ASFALTOINTI);
                     try {
                         testHelper.saveTrackingDataAsObservations(seuranta);
-                    } catch (final JsonProcessingException e) {
+                    } catch (final JacksonException e) {
                         throw new RuntimeException(e);
                     }
                     return getEndTime(seuranta);
@@ -305,7 +305,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
                         seuranta.getHavainnot().getFirst().getHavainto().getHavaintoaika(),
                         seuranta.getHavainnot().getLast().getHavainto()
                                 .getHavaintoaika());
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -330,7 +330,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void splitTrackingWhenJobChanges() throws JsonProcessingException {
+    public void splitTrackingWhenJobChanges() throws JacksonException {
         // Work machines with harja id 1
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneDayInPast();
@@ -351,7 +351,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void insideTimeLimitCombinesTrackingsAsOne() throws JsonProcessingException {
+    public void insideTimeLimitCombinesTrackingsAsOne() throws JacksonException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneDayInPast();
         final int observationCountPerTracking = 10;
@@ -375,7 +375,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void timeLimitBreaksTrackingInGroups() throws JsonProcessingException {
+    public void timeLimitBreaksTrackingInGroups() throws JacksonException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneDayInPast();
         // Last point will be startTime + 9 min
@@ -396,7 +396,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void timeLimitAndTaskChangeBreaksTrackingInGroups() throws JsonProcessingException {
+    public void timeLimitAndTaskChangeBreaksTrackingInGroups() throws JacksonException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneDayInPast();
         // Last point will be in time startTime + 9 min
@@ -417,7 +417,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    public void overSpeedBreaksTrackingInTwoParts() throws JsonProcessingException {
+    public void overSpeedBreaksTrackingInTwoParts() throws JacksonException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneDayInPast();
         // Last point will be startTime + 9 min
@@ -443,7 +443,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void taskChangeBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfNextTracking()
-            throws JsonProcessingException {
+            throws JacksonException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneDayInPast();
         // Last point will be in time startTime + 9 min
@@ -463,7 +463,7 @@ public class MaintenanceTrackingUpdateServiceTest extends AbstractServiceTest {
 
     @Test
     public void taskChangeToTransitionBreaksTrackingAndLastPointOfFirstTrackingIsSameAsFirstPointOfTransitionTracking()
-            throws JsonProcessingException {
+            throws JacksonException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneDayInPast();
         // Last point will be in time startTime + 9 min

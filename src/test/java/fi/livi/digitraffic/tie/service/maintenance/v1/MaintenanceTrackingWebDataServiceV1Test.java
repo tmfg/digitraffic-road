@@ -70,8 +70,8 @@ import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
 
 import fi.livi.digitraffic.common.util.ThreadUtil;
@@ -132,7 +132,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void findTrackingsWithCreationTime() throws JsonProcessingException {
+    public void findTrackingsWithCreationTime() throws JacksonException {
         final Instant start = getStartTimeOneHourInPast();
         final Instant created = start.plus(30, ChronoUnit.MINUTES);
         final List<Tyokone> workMachines1 = createWorkMachines(1);
@@ -192,7 +192,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void findCombinedTrackingsWithMultipleWorkMachines() throws JsonProcessingException {
+    public void findCombinedTrackingsWithMultipleWorkMachines() throws JacksonException {
         final Instant start = getStartTimeOneHourInPast();
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
@@ -234,7 +234,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                 createMaintenanceTrackingWithLineString(start, 10, i + 1, 1, workMachines, ASFALTOINTI, PAALLYSTEIDEN_JUOTOSTYOT);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
             return getEndTime(seuranta);
@@ -275,7 +275,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                 createMaintenanceTrackingWithLineString(start, 10, 1, workMachines, SuoritettavatTehtavatSchema.values()[idx]);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -303,7 +303,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void findTrackingWithDifferentJobsForSameMachine() throws JsonProcessingException {
+    public void findTrackingWithDifferentJobsForSameMachine() throws JacksonException {
         // Work machines with harja id 1
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneHourInPast();
@@ -326,7 +326,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void findSeparateTrackingsWhenTransitionInBetweenTasks() throws JsonProcessingException {
+    public void findSeparateTrackingsWhenTransitionInBetweenTasks() throws JacksonException {
         final List<Tyokone> workMachines = createWorkMachines(1);
         final Instant startTime = getStartTimeOneHourInPast();
         // tracking with job 1
@@ -350,7 +350,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void observationsTimesCrossesBetweenMessagesThenTrackingsAreCombinedToGroups() throws JsonProcessingException {
+    public void observationsTimesCrossesBetweenMessagesThenTrackingsAreCombinedToGroups() throws JacksonException {
         // M1 = Message 1, P1=Point 1. Then observation times are:
         // M1(P1) < M2(P1) < M1(P2) < M2(P2) < M1(P3) < M2(P3) ...
         final List<Tyokone> workMachines = createWorkMachines(getRandom(1,5));
@@ -393,7 +393,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void findWithMultipleTasks() throws JsonProcessingException {
+    public void findWithMultipleTasks() throws JacksonException {
         final int machineCount = getRandomId(2, 10);
         final List<Tyokone> workMachines = createWorkMachines(machineCount);
         final Instant startTime = getStartTimeOneHourInPast();
@@ -433,7 +433,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
      *      |
      */
     @Test
-    public void findMaintenanceTrackingWithLinestringCrossingWithBoundingBox() throws JsonProcessingException {
+    public void findMaintenanceTrackingWithLinestringCrossingWithBoundingBox() throws JacksonException {
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
@@ -470,7 +470,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
      *                          |
      */
     @Test
-    public void findMaintenanceTrackingWithLinestringNotCrossingWithBoundingBox() throws JsonProcessingException {
+    public void findMaintenanceTrackingWithLinestringNotCrossingWithBoundingBox() throws JacksonException {
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
@@ -500,7 +500,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
      * ––––––-----
      */
     @Test
-    public void findMaintenanceTrackingWithPointInsideBoundingBox() throws JsonProcessingException {
+    public void findMaintenanceTrackingWithPointInsideBoundingBox() throws JacksonException {
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
@@ -536,7 +536,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
      * ––––––-----
      */
     @Test
-    public void findMaintenanceTrackingWithPointOutsideBoundingBox() throws JsonProcessingException {
+    public void findMaintenanceTrackingWithPointOutsideBoundingBox() throws JacksonException {
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
@@ -562,7 +562,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void getById() throws JsonProcessingException {
+    public void getById() throws JacksonException {
         final Tyokone workMachine = createWorkmachine(1);
         final Instant startTime = getStartTimeOneHourInPast();
 
@@ -612,7 +612,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void latestUpdateTime() throws JsonProcessingException {
+    public void latestUpdateTime() throws JacksonException {
 
         // Create 2 trackings with 1 s handling time gap -> creation time diff is 1 s
         final List<Tyokone> workMachines1 = createWorkMachines(1);
@@ -709,7 +709,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
                                                         Collections.singletonList(workmachines.get(i)), ASFALTOINTI);
             try {
                 testHelper.saveTrackingDataAsObservations(seuranta1);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
             testHelper.handleUnhandledWorkMachineObservations(1000);
@@ -750,7 +750,7 @@ public class MaintenanceTrackingWebDataServiceV1Test extends AbstractRestWebTest
     }
 
     @Test
-    public void findRoutesIsCachedAlsoInParallelCalls() throws JsonProcessingException, InterruptedException {
+    public void findRoutesIsCachedAlsoInParallelCalls() throws JacksonException, InterruptedException {
         final Instant start = Instant.now().minus(3, ChronoUnit.MINUTES);
         final TyokoneenseurannanKirjausRequestSchema seuranta =
             createMaintenanceTrackingWithLineString(start, 10, 1, 1,

@@ -13,12 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
@@ -63,7 +63,7 @@ public class TrafficMessageImsJsonConverterV1 {
         final SituationType situationType,
         final TrafficAnnouncementType trafficAnnouncementType,
         final boolean includeAreaGeometry,
-        final Instant lastModified) throws JsonProcessingException {
+        final Instant lastModified) throws JacksonException {
 
         // Ims JSON String can be in 0.2.4, 0.2.6 or 0.2.8 format. Convert all to 0.2.10 format.
         final String imsJsonV3 = convertImsJsonTo_V1Compatible(imsJson);
@@ -115,11 +115,11 @@ public class TrafficMessageImsJsonConverterV1 {
         return feature;
     }
 
-    private String convertImsJsonTo_V1Compatible(final String imsJson) throws JsonProcessingException {
+    private String convertImsJsonTo_V1Compatible(final String imsJson) throws JacksonException {
         return convertImsJsonToV3And_V1Compatible(imsJson);
     }
 
-    private String convertImsJsonToV3And_V1Compatible(final String imsJson) throws JsonProcessingException {
+    private String convertImsJsonToV3And_V1Compatible(final String imsJson) throws JacksonException {
         final JsonNode root = genericJsonReader.readTree(imsJson);
 
         // append versionTime if missing

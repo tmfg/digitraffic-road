@@ -6,7 +6,7 @@ import static fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter.ge
 import java.time.Instant;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 
@@ -20,10 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalMessage;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
@@ -41,20 +41,17 @@ public class ImsUpdatingService {
     private final DatexII223UpdateService datexII223UpdateService;
     private final DataDatex2SituationRepository dataDatex2SituationRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().build();
 
     private static final Logger log = LoggerFactory.getLogger(ImsUpdatingService.class);
 
     public ImsUpdatingService(final DatexII223UpdateService datexII223UpdateService, final DataDatex2SituationRepository dataDatex2SituationRepository) {
         this.datexII223UpdateService = datexII223UpdateService;
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
-
-        // this is needed to handle Instant
-        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     @NotTransactionalServiceMethod
-    public void handleIms(final DataIncoming data) throws JsonProcessingException {
+    public void handleIms(final DataIncoming data) throws JacksonException {
         if(!data.getVersion().equals(IMS_122)) {
             throw new IllegalArgumentException("Unsupported version: " + data.getVersion());
         }
@@ -107,7 +104,7 @@ public class ImsUpdatingService {
     }
 
     private DataDatex2Situation createSituationFromSimple(final ExternalMessage message)
-            throws JsonProcessingException {
+            throws JacksonException {
         final ImsGeoJsonFeature feature = objectMapper.readerFor(ImsGeoJsonFeature.class).readValue(message.getContent());
 
         final var situationId = feature.getProperties().getSituationId();

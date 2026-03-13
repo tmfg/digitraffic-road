@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import fi.livi.digitraffic.test.util.AssertUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -289,7 +289,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                     createMaintenanceTrackingWithLineString(start, 10, 1, Collections.singletonList(machine),
                         SuoritettavatTehtavatSchema.values()[i], SuoritettavatTehtavatSchema.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(havainnot);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -334,7 +334,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                         start.plus(i * 10L, ChronoUnit.MINUTES), 10, 1, workMachines,
                         SuoritettavatTehtavatSchema.values()[i], SuoritettavatTehtavatSchema.values()[i + 1]);
                 testHelper.saveTrackingDataAsObservations(seuranta);
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -401,7 +401,7 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
                     createMaintenanceTrackingWithPoints(
                         start.plus(i * 10L, ChronoUnit.MINUTES), 10, 1, workMachines,
                         SuoritettavatTehtavatSchema.values()[i]));
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
         });

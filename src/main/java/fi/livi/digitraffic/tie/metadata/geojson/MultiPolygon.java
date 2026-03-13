@@ -3,6 +3,8 @@ package fi.livi.digitraffic.tie.metadata.geojson;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,8 +17,18 @@ public class MultiPolygon extends Geometry<List<List<List<Double>>>> {
         super(Type.MultiPolygon, new ArrayList<>());
     }
 
-    public MultiPolygon(final List<List<List<Double>>> coordinates) {
-        super(Type.MultiPolygon, coordinates);
+    @JsonCreator
+    public MultiPolygon(@JsonProperty("coordinates") final List<List<List<List<Double>>>> coordinates) {
+        super(Type.MultiPolygon, coordinates != null ? coordinates : new ArrayList<>());
+    }
+
+    /**
+     * Convenience factory to create a MultiPolygon from a single polygon's coordinates.
+     */
+    public static MultiPolygon ofSinglePolygon(final List<List<List<Double>>> polygonCoordinates) {
+        final List<List<List<List<Double>>>> coordinates = new ArrayList<>();
+        coordinates.add(polygonCoordinates);
+        return new MultiPolygon(coordinates);
     }
 
     // See https://github.com/swagger-api/swagger-core/issues/2949

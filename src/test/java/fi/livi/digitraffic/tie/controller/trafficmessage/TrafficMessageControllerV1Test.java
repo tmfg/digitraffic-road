@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -54,9 +53,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.xml.transform.StringSource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
@@ -340,19 +339,19 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
         assertNull(d2.getPayloadPublication());
     }
 
-    private void assertEmptyJsonSituations(final String simpleJson) throws JsonProcessingException {
+    private void assertEmptyJsonSituations(final String simpleJson) throws JacksonException {
         final TrafficAnnouncementFeatureCollection fc = parseSimpleJson(simpleJson);
         assertTrue(fc.getFeatures().isEmpty());
     }
 
     private TrafficAnnouncementFeatureCollection parseSimpleJson(final String simpleJson)
-            throws JsonProcessingException {
+            throws JacksonException {
         final ObjectReader r = objectMapper.readerFor(TrafficAnnouncementFeatureCollection.class);
         return r.readValue(simpleJson);
     }
 
     private RegionGeometryFeatureCollection parseRegionGeometryFeatureCollectionJson(
-            final String regionGeometryFeatureCollection) throws JsonProcessingException {
+            final String regionGeometryFeatureCollection) throws JacksonException {
         final ObjectReader r = objectMapper.readerFor(RegionGeometryFeatureCollection.class);
         return r.readValue(regionGeometryFeatureCollection);
     }
@@ -366,7 +365,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
                                      final String situationId,
                                      final Instant start, final Instant end,
                                      final ImsJsonVersion imsJsonVersion)
-            throws JsonProcessingException {
+            throws JacksonException {
         final D2LogicalModel d2 = parseD2LogicalModel(d2xml);
 
         final TrafficAnnouncementFeatureCollection fc = parseSimpleJson(simpleJsonFeatureCollection);
@@ -437,7 +436,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     private void assertTextIsValidJson(final String json) {
         try {
             objectMapper.readTree(json);
-        } catch (final IOException e) {
+        } catch (final JacksonException e) {
             throw new IllegalArgumentException("Not JSON: " + json, e);
         }
     }

@@ -6,9 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -25,7 +26,7 @@ import fi.livi.digitraffic.tie.metadata.geojson.Polygon;
 public class GeometryJacksonDeserializerTest extends AbstractTest {
     private static final Logger log = LoggerFactory.getLogger(GeometryJacksonDeserializerTest.class);
 
-    private final ObjectReader geoJsonGeometryReader = new ObjectMapper().readerFor(Geometry.class);
+    private final ObjectReader geoJsonGeometryReader = JsonMapper.builder().build().readerFor(Geometry.class);
 
     public static final String POINT =
             "{\n" +
@@ -103,56 +104,56 @@ public class GeometryJacksonDeserializerTest extends AbstractTest {
             "}";
 
     @Test
-    public void point() throws JsonProcessingException {
+    public void point() throws JacksonException {
         final Point geom = geoJsonGeometryReader.readValue(POINT);
         assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
-    public void lineString() throws JsonProcessingException {
+    public void lineString() throws JacksonException {
         final LineString geom = geoJsonGeometryReader.readValue(LINE_STRING);
         assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
-    public void multiLineString() throws JsonProcessingException {
+    public void multiLineString() throws JacksonException {
         final MultiLineString geom = geoJsonGeometryReader.readValue(MULTI_LINE_STRING);
         assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
-    public void polygon() throws JsonProcessingException {
+    public void polygon() throws JacksonException {
         final Polygon geom = geoJsonGeometryReader.readValue(POLYGON);
         assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
-    public void polygonWithInternalPolygon() throws JsonProcessingException {
+    public void polygonWithInternalPolygon() throws JacksonException {
         final Polygon geom = geoJsonGeometryReader.readValue(POLYGON_WITH_INTERNAL_POLYGON);
         assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
-    public void multiPoint() throws JsonProcessingException {
+    public void multiPoint() throws JacksonException {
         final MultiPoint geom = geoJsonGeometryReader.readValue(MULTI_POINT);
         assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
-    public void multiPolygon() throws JsonProcessingException {
+    public void multiPolygon() throws JacksonException {
         final MultiPolygon geom = geoJsonGeometryReader.readValue(MULTI_POLYGON);
         assertNotNull(geom);
         log.info(geom.toString());
     }
 
     @Test
-    public void multiPolygonWithInnerPolygon() throws JsonProcessingException {
+    public void multiPolygonWithInnerPolygon() throws JacksonException {
         final MultiPolygon geom = geoJsonGeometryReader.readValue(MULTI_POLYGON_WITH_INNER_POLYGON);
         assertNotNull(geom);
         log.info(geom.toString());

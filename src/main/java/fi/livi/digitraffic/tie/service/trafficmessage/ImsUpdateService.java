@@ -11,9 +11,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.helper.LoggerHelper;
@@ -27,14 +27,11 @@ public class ImsUpdateService {
 
     private final DataUpdatingService dataUpdatingService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().build();
 
     @Autowired
     public ImsUpdateService(final DataUpdatingService dataUpdatingService) {
         this.dataUpdatingService = dataUpdatingService;
-
-        // this is needed to handle Instant
-        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Transactional
@@ -55,7 +52,7 @@ public class ImsUpdateService {
                 } else {
                     log.error("method=handleTrafficDatex2ImsMessage invalid ims {}", messageAsString);
                 }
-            } catch (final JsonProcessingException e) {
+            } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
 

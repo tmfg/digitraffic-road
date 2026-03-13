@@ -31,11 +31,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.ObjectWriter;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -363,7 +364,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
 
     public String getFormatedTrackingJson(final String trackingJsonPath) throws IOException {
         final String json = readResourceContent(trackingJsonPath);
-        final JsonNode root = new ObjectMapper().readTree(json);
+        final JsonNode root = JsonMapper.builder().build().readTree(json);
         return root.toPrettyString();
     }
 
@@ -404,7 +405,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
             )""";
 
 
-    public void saveTrackingDataAsObservations(final TyokoneenseurannanKirjausRequestSchema seuranta) throws JsonProcessingException {
+    public void saveTrackingDataAsObservations(final TyokoneenseurannanKirjausRequestSchema seuranta) throws JacksonException {
         final String sendingSystem = seuranta.getOtsikko().getLahettaja().getJarjestelma();
         final Instant sendingTime = seuranta.getOtsikko().getLahetysaika();
 
@@ -430,7 +431,7 @@ public class MaintenanceTrackingServiceTestHelperV1 {
         entityManager.flush();
     }
 
-    public String getFormatedObservationJson(final Havainto seuranta) throws JsonProcessingException {
+    public String getFormatedObservationJson(final Havainto seuranta) throws JacksonException {
         return jsonWriterForHavainto.writeValueAsString(seuranta);
     }
 

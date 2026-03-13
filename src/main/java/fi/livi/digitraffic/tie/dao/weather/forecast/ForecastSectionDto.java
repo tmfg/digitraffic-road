@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
@@ -17,7 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public interface ForecastSectionDto {
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = JsonMapper.builder().build();
 
     /**
      * Road section identifier 15 characters ie. 00004_112_000_0
@@ -78,7 +79,7 @@ public interface ForecastSectionDto {
     default List<RoadSegmentDto> getRoadSegments()  {
         try {
             return mapper.readValue(getRoadSegmentsAsJsonString(), new TypeReference<>() {} );
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             throw new RuntimeException(e);
         }
     }

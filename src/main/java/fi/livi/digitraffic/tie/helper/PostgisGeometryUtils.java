@@ -32,9 +32,10 @@ import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.json.JsonMapper;
 
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 
@@ -60,7 +61,7 @@ public class PostgisGeometryUtils {
     private static final ThreadLocal<WKTReader> wktGeometryReader =
             ThreadLocal.withInitial(() -> new WKTReader(JTS_GEOMETRY_FACTORY));
 
-    private static final ObjectReader dtGeoJsonReader = new ObjectMapper().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
+    private static final ObjectReader dtGeoJsonReader = JsonMapper.builder().build().readerFor(fi.livi.digitraffic.tie.metadata.geojson.Geometry.class);
 
     public static Coordinate createCoordinateWithZ(final double x, final double y, final Double z) {
         // PostGIS PointZ can't have null Z-coordinate
@@ -122,7 +123,7 @@ public class PostgisGeometryUtils {
     public static <T extends fi.livi.digitraffic.tie.metadata.geojson.Geometry<?>> T convertGeoJSONStringToGeoJSON(final String geoJsonString) {
         try {
             return dtGeoJsonReader.readValue(geoJsonString);
-        } catch (final JsonProcessingException e) {
+        } catch (final JacksonException e) {
             log.error(MessageFormat.format("method=convertFromGeoJSONStringToGeoJSON Failed to convert {0} to GeoJSON", geoJsonString), e);
             throw new RuntimeException(e);
         }

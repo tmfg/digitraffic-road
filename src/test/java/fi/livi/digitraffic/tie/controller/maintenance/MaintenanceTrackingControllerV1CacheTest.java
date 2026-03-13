@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.external.harja.Tyokone;
@@ -81,7 +81,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
     private MaintenanceTrackingWebDataServiceV1 maintenanceTrackingWebDataServiceV1;
 
     @BeforeEach
-    public void initData() throws JsonProcessingException {
+    public void initData() throws JacksonException {
         testHelper.clearDb();
         final List<Tyokone> workMachines = createWorkMachines(1);
 

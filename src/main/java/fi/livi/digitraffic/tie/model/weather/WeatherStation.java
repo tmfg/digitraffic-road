@@ -114,7 +114,7 @@ public class WeatherStation extends ReadOnlyCreatedAndModifiedFields {
     private WeatherStation(final RoadStation roadStation) {
         if (roadStation == null || roadStation.getType() != WEATHER_STATION) {
             throw new IllegalArgumentException(
-                    "RoadStation cannot be null and type must be WEATHER_STATION when creating TmsStation");
+                    "RoadStation cannot be null and type must be WEATHER_STATION when creating WeatherStation");
         }
         this.roadStation = roadStation;
     }

@@ -3,12 +3,10 @@ package fi.livi.digitraffic.tie;
 import fi.livi.digitraffic.tie.conf.amazon.AmazonS3ClientTestConfiguration;
 import fi.livi.digitraffic.tie.service.aws.S3Service;
 
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.jdbc.TestDatabaseAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.test.autoconfigure.TestDatabaseAutoConfiguration;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.retry.support.RetryTemplate;
 
@@ -46,8 +44,7 @@ import fi.livi.digitraffic.tie.service.weather.v1.WeatherDataWebServiceV1;
 import fi.livi.digitraffic.tie.service.weather.v1.WeatherStationMetadataWebServiceV1;
 
 @DataJpaTest(properties = "spring.main.web-application-type=servlet",
-             excludeAutoConfiguration = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
-                                          TestDatabaseAutoConfiguration.class, DataSourceAutoConfiguration.class},
+             excludeAutoConfiguration = { TestDatabaseAutoConfiguration.class, DataSourceAutoConfiguration.class},
              showSql = false)
 @Import({// configurations
          AmazonS3ClientTestConfiguration.class, S3PropertiesConfiguration.class, PropertiesConfiguration.class, JacksonAutoConfiguration.class,

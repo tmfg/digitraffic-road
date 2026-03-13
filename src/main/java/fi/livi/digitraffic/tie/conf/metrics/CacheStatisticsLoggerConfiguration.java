@@ -7,6 +7,7 @@ import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
+@ConditionalOnBean(CacheManager.class)
 public class CacheStatisticsLoggerConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(CacheStatisticsLoggerConfiguration.class);
