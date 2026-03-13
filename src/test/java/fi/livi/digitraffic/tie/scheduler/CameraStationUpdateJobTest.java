@@ -68,16 +68,16 @@ public class CameraStationUpdateJobTest extends AbstractMetadataUpdateJobTest {
         assertEquals(8, presetsInitial.size());
         presetsInitial.forEach(cp -> entityManager.detach(cp));
 
-        doNothing().when(cameraImageUpdateHandler).hideCurrentImageForPreset(any(CameraPreset.class));
+        doNothing().when(cameraImageUpdateHandler).deleteCurrentImageForPreset(any(CameraPreset.class));
 
         // Update 121 camera to active, 56 removed and 2 not public
         lotjuKameraPerustiedotServiceMock.setStateAfterChange(true);
         cameraStationUpdater.updateCameras();
 
-        // 2 has 5 public but camera is not public -> 5 presets to secret
-        verify(cameraImageUpdateHandler, times(1)).hideCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
-        verify(cameraImageUpdateHandler, times(5)).hideCurrentImageForPreset(any(CameraPreset.class));
-        verify(cameraImageUpdateHandler, times(0)).hideCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
+        // 2 has 5 public but camera is not public -> 5 presets deleted
+        verify(cameraImageUpdateHandler, times(1)).deleteCurrentImagesForCamera(argThat(rs -> rs.getLotjuId().equals(2L)));
+        verify(cameraImageUpdateHandler, times(5)).deleteCurrentImageForPreset(any(CameraPreset.class));
+        verify(cameraImageUpdateHandler, times(0)).deleteCurrentImagesForCamera(argThat(rs -> !rs.getLotjuId().equals(2L)));
 
         final List<CameraPreset> presetsAfterUpdate = cameraPresetService.findAllPublishableCameraPresets();
         final long cameraCountAfterUpdate = presetsAfterUpdate.stream().map(CameraPreset::getCameraId).distinct().count();

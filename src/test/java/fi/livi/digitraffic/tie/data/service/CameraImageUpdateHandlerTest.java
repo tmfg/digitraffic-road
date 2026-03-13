@@ -43,7 +43,7 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
         service.handleKuva(kuva);
 
         verify(cameraImageReader, times(CameraImageUpdateHandler.RETRY_COUNT)).readImage(anyLong(), any());
-        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).writeVersionedImage(any(), any(), anyLong());
     }
 
     @Test
@@ -51,12 +51,11 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {});
-        doThrow(new RuntimeException()).when(cameraImageS3Writer).writeImage(any(), any(), any(), anyLong());
 
         service.handleKuva(kuva);
 
         verify(cameraImageReader, times(CameraImageUpdateHandler.RETRY_COUNT)).readImage(anyLong(), any());
-        verify(cameraImageS3Writer, times(0)).writeImage(any(), any(),any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).writeVersionedImage(any(), any(), anyLong());
     }
 
     @Test
@@ -64,17 +63,73 @@ public class CameraImageUpdateHandlerTest extends AbstractServiceTest {
         final KuvaProtos.Kuva kuva = KuvaProtos.Kuva.getDefaultInstance();
         when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset());
         when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {1});
-        doThrow(new RuntimeException("GENERATED IO ERROR")).when(cameraImageS3Writer).writeImage(any(), any(), any(), anyLong());
+        doThrow(new RuntimeException("GENERATED IO ERROR")).when(cameraImageS3Writer).writeVersionedImage(any(), any(), anyLong());
 
         service.handleKuva(kuva);
 
-        verify(cameraImageS3Writer, times(CameraImageUpdateHandler.RETRY_COUNT)).writeImage(any(), any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(CameraImageUpdateHandler.RETRY_COUNT)).writeVersionedImage(any(), any(), anyLong());
+    }
+
+    @Test
+    public void publicImageWritesToBothBuckets() throws Exception {
+        final KuvaProtos.Kuva kuva = createKuva(true);
+        when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset(true));
+        when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {1});
+
+        service.handleKuva(kuva);
+
+        verify(cameraImageS3Writer, times(1)).writeVersionedImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(1)).writeCurrentImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).deleteCurrentImage(any());
+    }
+
+    @Test
+    public void nonPublicImageWritesToHistoryOnly() throws Exception {
+        final KuvaProtos.Kuva kuva = createKuva(false);
+        when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset(true));
+        when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {1});
+
+        service.handleKuva(kuva);
+
+        verify(cameraImageS3Writer, times(1)).writeVersionedImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).writeCurrentImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(1)).deleteCurrentImage(any());
+    }
+
+    @Test
+    public void nonPublicRoadStationWritesToHistoryOnly() throws Exception {
+        final KuvaProtos.Kuva kuva = createKuva(true);
+        when(cameraPresetService.findCameraPresetByLotjuId(kuva.getEsiasentoId())).thenReturn(createPreset(false));
+        when(cameraImageReader.readImage(anyLong(), any())).thenReturn(new byte[] {1});
+
+        service.handleKuva(kuva);
+
+        verify(cameraImageS3Writer, times(1)).writeVersionedImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(0)).writeCurrentImage(any(), any(), anyLong());
+        verify(cameraImageS3Writer, times(1)).deleteCurrentImage(any());
+    }
+
+    private KuvaProtos.Kuva createKuva(final boolean julkinen) {
+        return KuvaProtos.Kuva.newBuilder()
+            .setNimi("C9876501.jpg")
+            .setJulkinen(julkinen)
+            .setAikaleima(System.currentTimeMillis())
+            .setKameraId(1234)
+            .setEsiasentoId(5678)
+            .setKuvaId(9999)
+            .setEsiasennonNimi("Esiasento1")
+            .setAsemanNimi("TestStation")
+            .build();
     }
 
     private CameraPreset createPreset() {
+        return createPreset(true);
+    }
+
+    private CameraPreset createPreset(final boolean isPublic) {
         final CameraPreset preset = CameraPreset.create(RoadStation.createCameraStation());
         preset.setPresetId("C9876501");
-        preset.getRoadStation().updatePublicity(true);
+        preset.getRoadStation().updatePublicity(isPublic);
         return preset;
     }
 
