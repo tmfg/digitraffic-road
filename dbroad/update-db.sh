@@ -55,4 +55,4 @@ docker run --rm \
 --network=dbroad \
 -v ${SCRIPT_DIR}/conf/${ENVIRONMENT}:/flyway/conf \
 -v "${SCRIPT_DIR}/sql:/flyway/sql" \
-flyway/flyway:11.20.0-alpine ${COMMAND} ${OPTIONS}
+flyway/flyway:12.1.0-alpine ${COMMAND} ${OPTIONS}
