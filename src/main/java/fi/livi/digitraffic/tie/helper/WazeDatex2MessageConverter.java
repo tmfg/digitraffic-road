@@ -688,6 +688,7 @@ public class WazeDatex2MessageConverter {
         weatherRelatedRoadConditionTypeMap.put(SURFACE_WATER, "Surface water");
         weatherRelatedRoadConditionTypeMap.put(WET_AND_ICY_ROAD, "Wet and icy road");
         weatherRelatedRoadConditionTypeMap.put(WET_ICY_PAVEMENT, "Wet icy pavement");
+        weatherRelatedRoadConditionTypeMap.put(WeatherRelatedRoadConditionTypeEnum.OTHER, SKIP_SUBTYPE);
 
         maintenanceWorksTypeMap.put(RESURFACING_WORK, "Resurfacing work");
         maintenanceWorksTypeMap.put(MAINTENANCE_WORK, "Maintenance work");
