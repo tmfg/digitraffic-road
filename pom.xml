@@ -268,6 +268,12 @@
             <version>0.4.21</version>
         </dependency>
 
+        <!-- Jackson XML support for XmlMapper -->
+        <dependency>
+            <groupId>tools.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+
         <!-- OpenApi JSON API specification generation-->
         <dependency>
             <groupId>org.springdoc</groupId>
