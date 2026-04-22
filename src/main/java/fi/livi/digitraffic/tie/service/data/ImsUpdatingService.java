@@ -1,12 +1,10 @@
 package fi.livi.digitraffic.tie.service.data;
 
 import static fi.livi.digitraffic.tie.model.data.IncomingDataTypes.IMS_122;
-import static fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter.getSituationType;
 
 import java.time.Instant;
 import java.util.List;
 
-import tools.jackson.databind.ObjectReader;
 
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 
