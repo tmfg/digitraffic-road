@@ -32,7 +32,6 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
     @Autowired
     private org.springframework.transaction.support.TransactionTemplate transactionTemplate;
 
-    @AfterEach
     @BeforeEach
     void cleanup() {
         transactionTemplate.executeWithoutResult(status -> {
