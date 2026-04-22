@@ -8,8 +8,6 @@ import java.util.List;
 
 import tools.jackson.databind.ObjectReader;
 
-import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
-
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncement;
@@ -19,6 +17,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
@@ -50,7 +50,7 @@ public class ImsUpdatingService {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
     }
 
-    @NotTransactionalServiceMethod
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleIms(final DataIncoming data) throws JacksonException {
         if(!data.getVersion().equals(IMS_122)) {
             throw new IllegalArgumentException("Unsupported version: " + data.getVersion());
