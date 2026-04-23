@@ -48,6 +48,14 @@ public class ImsUpdatingService {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
     }
 
+
+    /**
+     * Open a new transaction for the handling of each message.
+        This is to prevent rolling back successfully processed
+        messages if the batch also contains invalid messages causing
+        for example a duplicate key violation (happens if we receive
+        the same message twice for some reason).
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleIms(final DataIncoming data) throws JacksonException {
         if(!data.getVersion().equals(IMS_122)) {
