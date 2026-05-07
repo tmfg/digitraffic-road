@@ -63,6 +63,11 @@ public class LotjuWeatherStationMetadataClientWrapper {
                 countAnturis.addAndGet(f.get());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching Anturits", e);
+
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
