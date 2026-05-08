@@ -91,6 +91,9 @@ public class LotjuTmsStationMetadataClientWrapper {
                 log.debug("Got {} anturis", anturis.size());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamLaskennallinenAnturis", e);
+
+                interruptCurrentThreadIfInterruptedException(e);
+
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
@@ -130,6 +133,9 @@ public class LotjuTmsStationMetadataClientWrapper {
                 log.debug("Got {} AnturiVakios", values.size());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("Error while fetching LamAnturiVakios", e);
+
+                interruptCurrentThreadIfInterruptedException(e);
+
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
@@ -160,6 +166,9 @@ public class LotjuTmsStationMetadataClientWrapper {
                 log.debug("method=getAnturiVakioArvos {}/12", lamAnturiVakioArvos.size());
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("method=getAnturiVakioArvos Error while fetching LamAnturiVakioArvo", e);
+
+                interruptCurrentThreadIfInterruptedException(e);
+
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
@@ -198,6 +207,9 @@ public class LotjuTmsStationMetadataClientWrapper {
                 log.debug("method=getAllLamAnturiVakioArvos Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("method=getAllLamAnturiVakioArvos Error while fetching LamAnturiVakioArvos", e);
+
+                interruptCurrentThreadIfInterruptedException(e);
+
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
@@ -236,6 +248,9 @@ public class LotjuTmsStationMetadataClientWrapper {
                 log.debug("method=getAsemanLamAnturiVakioArvos Got {} LamAnturiVakioArvos, {}/{}", values.size(), i+1, monthCounter);
             } catch (final InterruptedException | ExecutionException e) {
                 log.error("method=getAsemanLamAnturiVakioArvos Error while fetching LamAnturiVakioArvos", e);
+
+                interruptCurrentThreadIfInterruptedException(e);
+
                 executor.shutdownNow();
                 throw new RuntimeException(e);
             }
@@ -268,6 +283,12 @@ public class LotjuTmsStationMetadataClientWrapper {
             .distinct()
             .map(LamAnturiVakioArvoWrapper::unWrap)
             .collect(Collectors.toList());
+    }
+
+    private void interruptCurrentThreadIfInterruptedException(final Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private static class LamAnturiVakioArvoWrapper {
