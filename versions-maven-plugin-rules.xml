@@ -6,6 +6,7 @@
         <ignoreVersion type="regex">(?i).*a(?:-?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*-alpha(?:(-|\.)?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*Beta(?:-?\d+)?</ignoreVersion>
+        <ignoreVersion type="regex">(?i).*-beta(?:(-|\.)?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*-B(?:-?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*RC(?:-?\d+)?</ignoreVersion>
         <ignoreVersion type="regex">(?i).*CR(?:-?\d+)?</ignoreVersion>

@@ -320,3 +320,7 @@ ij_java_wrap_comments = false
 ij_java_wrap_first_method_in_call_chain = false
 ij_java_wrap_long_lines = false
 ij_java_wrap_semicolon_after_call_chain = false
+
+# noinspection EditorConfigUnknownProperties
+[{dbroad/DATABASE.svg,dbroad/DATABASE.mermaid,dbroad/DATABASE.md}]
+generated_files = true

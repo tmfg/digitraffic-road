@@ -58,12 +58,12 @@ public final class ApiConstants {
     public static final String API_SIGNS_CODE_DESCRIPTIONS = API_SIGNS + "/code-descriptions";
 
     /* Counting site */
-    public static final String API_COUNTING_SITE_V1 = API + "/counting-site/v1";
-    public static final String API_COUNTING_SITE_V1_COUNTERS = API_COUNTING_SITE_V1 + "/counters";
-    public static final String API_COUNTING_SITE_V1_DIRECTIONS = API_COUNTING_SITE_V1 + "/directions";
-    public static final String API_COUNTING_SITE_V1_DOMAIN = API_COUNTING_SITE_V1 + "/domain";
-    public static final String API_COUNTING_SITE_V1_USER_TYPES = API_COUNTING_SITE_V1 + "/user-types";
-    public static final String API_COUNTING_SITE_V1_VALUES = API_COUNTING_SITE_V1 + "/values";
+    public static final String API_COUNTING_SITE_V2 = API + "/counting-site/v2";
+    public static final String API_COUNTING_SITE_V2_COUNTERS = API_COUNTING_SITE_V2 + "/counters";
+    public static final String API_COUNTING_SITE_V2_DIRECTIONS = API_COUNTING_SITE_V2 + "/directions";
+    public static final String API_COUNTING_SITE_V2_DOMAIN = API_COUNTING_SITE_V2 + "/domain";
+    public static final String API_COUNTING_SITE_V2_USER_TYPES = API_COUNTING_SITE_V2 + "/user-types";
+    public static final String API_COUNTING_SITE_V2_VALUES = API_COUNTING_SITE_V2 + "/values";
 
 
     private ApiConstants() {}

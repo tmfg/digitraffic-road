@@ -122,8 +122,7 @@ public class DataStatusService {
         return dataUpdatedRepository.findUpdatedTime(dataType);
     }
 
-    @Transactional(readOnly = true)
-    public Instant findDataUpdatedTime(final DataType dataType, final List<String> subtypes) {
+    private Instant findDataUpdatedTime(final DataType dataType, final List<String> subtypes) {
         return dataUpdatedRepository.findUpdatedTime(dataType, subtypes);
     }
 
@@ -236,13 +235,13 @@ public class DataStatusService {
         final Instant dataChecked = dataUpdatedRepository.findUpdatedTime(DataType.COUNTING_SITES_DATA);
 
         return Arrays.asList(
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_COUNTERS, countersUpdated, countersChecked,
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_COUNTERS, countersUpdated, countersChecked,
                 metadataInfo.getUpdateInterval(), metadataInfo.getRecommendedFetchInterval()),
-            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V1_DIRECTIONS, staticMetadataUpdated),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_DOMAIN, domainsUpdated,
+            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V2_DIRECTIONS, staticMetadataUpdated),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_DOMAIN, domainsUpdated,
                 metadataInfo.getUpdateInterval(), metadataInfo.getRecommendedFetchInterval()),
-            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V1_USER_TYPES, staticMetadataUpdated),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V1_VALUES, dataUpdated, dataChecked,
+            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V2_USER_TYPES, staticMetadataUpdated),
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_VALUES, dataUpdated, dataChecked,
                 dataInfo.getUpdateInterval(), dataInfo.getRecommendedFetchInterval())
         );
     }

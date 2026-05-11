@@ -65,7 +65,7 @@ Running may also require to specify the active Spring profile by setting _-Dspri
 
 #### Update Maven dependencies
 
-    $  mvn versions:use-latest-releases versions:update-properties
+    $ mvn versions:update-parent versions:use-latest-releases versions:update-properties
 
 #### Run dependency check
 

@@ -2,6 +2,8 @@
 
 ![diagram](./DATABASE.svg)
 
+Mermaid source: [DATABASE.mermaid](./DATABASE.mermaid)
+
 ## Indexes
 
 ### `allowed_tms_sensor_constant`
@@ -125,7 +127,7 @@
 ### `device_data`
 
 - `device_data_created_i`
-- `device_data_effect_date_i`
+- `device_data_device_id_effect_date_i`
 - `device_data_effect_date_key`
 - `device_data_modified_idx`
 - `device_data_pkey`

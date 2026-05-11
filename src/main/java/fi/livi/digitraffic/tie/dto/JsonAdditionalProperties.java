@@ -29,7 +29,7 @@ public abstract class JsonAdditionalProperties implements Serializable {
             new ClassWithProperties(RoadWorkPhase.class, Set.of("features")),
             new ClassWithProperties(TrafficAnnouncementProperties.class, Set.of("locationToDisplay")),
             new ClassWithProperties(Contact.class, Set.of("fax")),
-            new ClassWithProperties(TrafficAnnouncementFeature.class, Set.of("bbox"))
+            new ClassWithProperties(TrafficAnnouncementFeature.class, Set.of("bbox", "type"))
     ).collect(Collectors.toMap(ClassWithProperties::getType, ClassWithProperties::getProperties));
 
     /**
