@@ -1,14 +1,10 @@
 package fi.livi.digitraffic.tie.service.data;
 
 import static fi.livi.digitraffic.tie.model.data.IncomingDataTypes.IMS_122;
-import static fi.livi.digitraffic.tie.service.trafficmessage.ImsJsonConverter.getSituationType;
 
 import java.time.Instant;
 import java.util.List;
 
-import tools.jackson.databind.ObjectReader;
-
-import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
 
@@ -19,6 +15,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
@@ -50,7 +48,15 @@ public class ImsUpdatingService {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
     }
 
-    @NotTransactionalServiceMethod
+
+    /**
+     * Open a new transaction for the handling of each message.
+        This is to prevent rolling back successfully processed
+        messages if the batch also contains invalid messages causing
+        for example a duplicate key violation (happens if we receive
+        the same message twice for some reason).
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleIms(final DataIncoming data) throws JacksonException {
         if(!data.getVersion().equals(IMS_122)) {
             throw new IllegalArgumentException("Unsupported version: " + data.getVersion());

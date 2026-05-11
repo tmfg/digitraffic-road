@@ -8,10 +8,14 @@ import fi.livi.digitraffic.tie.dao.data.DataIncomingRepository;
 import fi.livi.digitraffic.tie.model.data.DataIncoming;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(propagation = org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED)
 public class DataServiceTest extends AbstractSpringJUnitTest {
     @Autowired
     private DataUpdatingService dataUpdatingService;
@@ -21,6 +25,21 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
 
     @Autowired
     private DataDatex2SituationRepository dataDatex2SituationRepository;
+
+    @Autowired
+    private jakarta.persistence.EntityManager entityManager;
+
+    @Autowired
+    private org.springframework.transaction.support.TransactionTemplate transactionTemplate;
+
+    @BeforeEach
+    void cleanup() {
+        transactionTemplate.executeWithoutResult(status -> {
+            entityManager.createNativeQuery("DELETE FROM data_datex2_situation_message").executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM data_datex2_situation").executeUpdate();
+            dataIncomingRepository.deleteAll();
+        });
+    }
 
     private static final String IMS_MESSAGE = """
             {
@@ -60,18 +79,19 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
     }
 
     private void assertDataDatex2(final int expectedCount, final String version) {
-        final var allSituations = dataDatex2SituationRepository.findAll();
-        Assertions.assertEquals(1, allSituations.size());
-        final var situation = allSituations.getFirst();
+        transactionTemplate.executeWithoutResult(status -> {
+            final var allSituations = dataDatex2SituationRepository.findAll();
+            Assertions.assertEquals(1, allSituations.size());
+            final var situation = allSituations.getFirst();
 
-        final var messageCount = situation.getMessages().stream().filter(f -> f.getMessageVersion().equals(version)).count();
-        Assertions.assertEquals(expectedCount, messageCount);
+            final var messageCount = situation.getMessages().stream().filter(f -> f.getMessageVersion().equals(version)).count();
+            Assertions.assertEquals(expectedCount, messageCount);
+        });
     }
 
     private void insertNewData(final String data) {
         final var incoming = DataIncoming.ims122("1234", data);
-
-        dataIncomingRepository.save(incoming);
+        dataUpdatingService.insertData(incoming);
     }
 
     private String createMessage(final String type, final String version, final String content) {
@@ -139,5 +159,34 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
         dataUpdatingService.handleNewData();
         assertDataDatex2(1, "3.5");
         assertDataDatex2(1, "2.3");
+    }
+
+    /**
+     * When a duplicate situation (same situationId + version) is in the batch,
+     * other valid messages in the same batch must still be processed successfully.
+     */
+    @Test
+    public void duplicateSituationDoesNotBlockOtherMessages() {
+        // First: insert and process a message normally
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
+                createMessage("DATEX_2", "3.5", DATEX_3_5)));
+        dataUpdatingService.handleNewData();
+        assertIncomingData(0, 0, 1);
+
+        // Now insert a duplicate (same situationId GUID50000221, version 1) AND a different valid message
+        final String simppeli2 = SIMPPELI_0_2_17.replace("GUID50000221", "GUID50000222");
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
+                createMessage("DATEX_2", "3.5", DATEX_3_5)));
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", simppeli2),
+                createMessage("DATEX_2", "3.5", DATEX_3_5)));
+
+        dataUpdatingService.handleNewData();
+
+        // The duplicate should be marked FAILED, the valid one PROCESSED
+        // Total: 1 processed (first run) + 1 failed (duplicate) + 1 processed (new situation) = 3
+        assertIncomingData(0, 1, 2);
     }
 }
