@@ -12,14 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.ObjectReader;
 import tools.jackson.databind.node.ObjectNode;
-
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.TrafficAnnouncementType;
 
 @Component
 public class ImsJsonConverter {
@@ -34,10 +33,12 @@ public class ImsJsonConverter {
 
     /**
      * If given json is GeoJSON FeatureCollection returns it's features otherwise returns the single feature json.
+     *
      * @param imsJson GeoJSON string
      * @return Map of situationId to GeoJSON feature JSON-string, SituationType and TrafficAnnouncementType. Empty if no features is found.
      */
-    public Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeatureJsonsFromImsJson(final String imsJson) {
+    public Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeatureJsonsFromImsJson(
+            final String imsJson) {
 
         if (StringUtils.isBlank(imsJson)) {
             return Collections.emptyMap();
@@ -47,16 +48,19 @@ public class ImsJsonConverter {
         try {
             root = genericJsonReader.readTree(imsJson);
         } catch (final JacksonException e) {
-            log.error("method=parseFeatureJsonsFromImsJson Failed to read Json tree of imsJson: {} error: {}", imsJson, e.getMessage());
+            log.error("method=parseFeatureJsonsFromImsJson Failed to read Json tree of imsJson: {} error: {}", imsJson,
+                    e.getMessage());
             return Collections.emptyMap();
         }
 
-        if ( isFeatureCollection(root) ) {
+        if (isFeatureCollection(root)) {
             return parseFeatureCollection(root);
-        } else if ( isFeature(root) ){
+        } else if (isFeature(root)) {
             return parseFeature(root);
         } else {
-            log.error("method=parseFeatureJsonsFromImsJson IMS Json doesn't contain valid GeoJson object type [Feature|FeatureCollection]. Json: {}", imsJson);
+            log.error(
+                    "method=parseFeatureJsonsFromImsJson IMS Json doesn't contain valid GeoJson object type [Feature|FeatureCollection]. Json: {}",
+                    imsJson);
             return Collections.emptyMap();
         }
     }
@@ -67,19 +71,22 @@ public class ImsJsonConverter {
         final TrafficAnnouncementType trafficAnnouncementType = getTrafficAnnouncementType(root, situationType);
 
         if (StringUtils.isNotBlank(situationId)) {
-            return Collections.singletonMap(situationId, Triple.of(root.toPrettyString(), situationType, trafficAnnouncementType));
+            return Collections.singletonMap(situationId,
+                    Triple.of(root.toPrettyString(), situationType, trafficAnnouncementType));
         }
         return Collections.emptyMap();
     }
 
-    private Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeatureCollection(final JsonNode root) {
+    private Map<String, Triple<String, SituationType, TrafficAnnouncementType>> parseFeatureCollection(
+            final JsonNode root) {
         final JsonNode features = root.get("features");
         final Map<String, Triple<String, SituationType, TrafficAnnouncementType>> featureJsons = new HashMap<>();
         for (int i = 0; i < features.size(); i++) {
             final String json = features.get(i).toPrettyString();
             final String situationId = getSituationId(features.get(i));
             final SituationType situationType = getSituationType(features.get(i));
-            final TrafficAnnouncementType trafficAnnouncementType = getTrafficAnnouncementType(features.get(i), situationType);
+            final TrafficAnnouncementType trafficAnnouncementType =
+                    getTrafficAnnouncementType(features.get(i), situationType);
             if (StringUtils.isNotBlank(situationId)) {
                 featureJsons.put(situationId, Triple.of(json, situationType, trafficAnnouncementType));
             }
@@ -98,7 +105,7 @@ public class ImsJsonConverter {
             log.error("method=getSituationId No situationId property for feature json: {}", feature.toPrettyString());
             return null;
         }
-        return situationId.asText();
+        return situationId.asString();
     }
 
     public static SituationType getSituationType(final JsonNode feature) {
@@ -111,7 +118,7 @@ public class ImsJsonConverter {
             return resolveSituationTypeFromTextWithError(feature);
         }
         try {
-            return SituationType.fromValue(situationType.asText());
+            return SituationType.fromValue(situationType.asString());
         } catch (final Exception e) {
             log.error("method=getSituationType Error while trying to resolve json SituationType", e);
             return resolveSituationTypeFromTextWithError(feature);
@@ -122,8 +129,11 @@ public class ImsJsonConverter {
         final SituationType resolvedType = DatexIIHelper.resolveSituationTypeFromText(featureNode.toString());
         try {
             final String situationInfo =
-                StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 27);
-            log.error("method=resolveSituationTypeFromTextWithError No situationType property for feature json. Resolved type from text {} for {}", resolvedType, situationInfo);
+                    StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"),
+                            featureNode.toString().indexOf("situationId") + 27);
+            log.error(
+                    "method=resolveSituationTypeFromTextWithError No situationType property for feature json. Resolved type from text {} for {}",
+                    resolvedType, situationInfo);
         } catch (final Exception e) {
             log.error("method=resolveSituationTypeFromTextWithError No situation id found from json: {}", featureNode);
         }
@@ -131,7 +141,7 @@ public class ImsJsonConverter {
     }
 
     public static TrafficAnnouncementType getTrafficAnnouncementType(final JsonNode feature,
-                                                               final SituationType situationType) {
+                                                                     final SituationType situationType) {
         if (situationType != SituationType.TRAFFIC_ANNOUNCEMENT) {
             return null;
         }
@@ -144,32 +154,40 @@ public class ImsJsonConverter {
             return resolveTrafficAnnouncementTypeTypeFromTextWithError(feature);
         }
         try {
-            return TrafficAnnouncementType.fromValue(trafficAnnouncementType.asText());
+            return TrafficAnnouncementType.fromValue(trafficAnnouncementType.asString());
         } catch (final Exception e) {
-            log.error("method=getTrafficAnnouncementType Error while trying to resolve json TrafficAnnouncementType", e);
+            log.error("method=getTrafficAnnouncementType Error while trying to resolve json TrafficAnnouncementType",
+                    e);
             return resolveTrafficAnnouncementTypeTypeFromTextWithError(feature);
         }
     }
 
-    private static TrafficAnnouncementType resolveTrafficAnnouncementTypeTypeFromTextWithError(final JsonNode featureNode) {
-        final TrafficAnnouncementType resolvedType = DatexIIHelper.resolveTrafficAnnouncementTypeFromText(featureNode.toString());
+    private static TrafficAnnouncementType resolveTrafficAnnouncementTypeTypeFromTextWithError(
+            final JsonNode featureNode) {
+        final TrafficAnnouncementType resolvedType =
+                DatexIIHelper.resolveTrafficAnnouncementTypeFromText(featureNode.toString());
         try {
             final String situationInfo =
-                StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"), featureNode.toString().indexOf("situationId") + 27);
-            log.error("method=resolveTrafficAnnouncementTypeTypeFromTextWithError No trafficAnnouncementType property for feature json. Resolved type from text {} for {}", resolvedType, situationInfo);
+                    StringUtils.substring(featureNode.toString(), featureNode.toString().indexOf("situationId"),
+                            featureNode.toString().indexOf("situationId") + 27);
+            log.error(
+                    "method=resolveTrafficAnnouncementTypeTypeFromTextWithError No trafficAnnouncementType property for feature json. Resolved type from text {} for {}",
+                    resolvedType, situationInfo);
         } catch (final Exception e) {
-            log.error("method=resolveTrafficAnnouncementTypeTypeFromTextWithError No situation id found from json: {}", featureNode);
+            log.error("method=resolveTrafficAnnouncementTypeTypeFromTextWithError No situation id found from json: {}",
+                    featureNode);
         }
         return resolvedType;
     }
 
     private boolean isFeatureCollection(final JsonNode root) {
         final JsonNode type = root.get("type");
-        return type != null && Strings.CS.equals(type.asText(), "FeatureCollection");
+        return type != null && Strings.CS.equals(type.asString(), "FeatureCollection");
     }
+
     private boolean isFeature(final JsonNode root) {
         final JsonNode type = root.get("type");
-        return type != null && Strings.CS.equals(type.asText(), "Feature");
+        return type != null && Strings.CS.equals(type.asString(), "Feature");
     }
 
     public JsonNode parseGeometryNodeFromFeatureJson(final String featureJson) {
@@ -177,12 +195,14 @@ public class ImsJsonConverter {
             final JsonNode featureNode = genericJsonReader.readTree(featureJson);
             return featureNode.get("geometry");
         } catch (final JacksonException e) {
-            log.error(String.format("method=parseGeometryFromFeatureJson Failed to read geometry of featureJson : %s", featureJson), e);
+            log.error(String.format("method=parseGeometryFromFeatureJson Failed to read geometry of featureJson : %s",
+                    featureJson), e);
         }
         return null;
     }
 
-    public String replaceFeatureJsonGeometry(final String featureJson, final String replacementGeometryJson) throws JacksonException {
+    public String replaceFeatureJsonGeometry(final String featureJson, final String replacementGeometryJson)
+            throws JacksonException {
         final ObjectNode featureNode = (ObjectNode) genericJsonReader.readTree(featureJson);
         final JsonNode replacementGeometryNode = genericJsonReader.readTree(replacementGeometryJson);
         featureNode.set("geometry", replacementGeometryNode);

@@ -164,12 +164,12 @@ public class ImsUpdatingService {
                     endTime = announcementEndTime;
                 }
             }
-        };
+        }
 
         return Pair.of(startTime, endTime);
     }
 
     private Instant safeParseInstant(final JsonNode node) {
-        return node == null ? null : Instant.parse(node.asText());
+        return node == null ? null : Instant.parse(node.asString());
     }
 }

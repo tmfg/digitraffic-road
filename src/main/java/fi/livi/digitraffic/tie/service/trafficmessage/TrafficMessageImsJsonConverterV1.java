@@ -10,15 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.ObjectReader;
-import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.node.ObjectNode;
 
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
@@ -28,6 +20,12 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * In this java class V2 and V3 refers to old controller and api path hierarchy
@@ -48,7 +46,8 @@ public class TrafficMessageImsJsonConverterV1 {
     public TrafficMessageImsJsonConverterV1(final ObjectMapper objectMapper,
                                             final RegionGeometryDataServiceV1 regionGeometryDataServiceV1) {
         this.objectMapper = objectMapper;
-        this.featureJsonReader_V1 = objectMapper.readerFor(fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature.class);
+        this.featureJsonReader_V1 =
+                objectMapper.readerFor(fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature.class);
 
         this.genericJsonReader = objectMapper.reader();
         this.regionGeometryDataServiceV1 = regionGeometryDataServiceV1;
@@ -59,35 +58,41 @@ public class TrafficMessageImsJsonConverterV1 {
     }
 
     public fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature convertToFeatureJsonObject_V1(
-        final String imsJson,
-        final SituationType situationType,
-        final TrafficAnnouncementType trafficAnnouncementType,
-        final boolean includeAreaGeometry,
-        final Instant lastModified) throws JacksonException {
+            final String imsJson,
+            final SituationType situationType,
+            final TrafficAnnouncementType trafficAnnouncementType,
+            final boolean includeAreaGeometry,
+            final Instant lastModified) throws JacksonException {
 
         // Ims JSON String can be in 0.2.4, 0.2.6 or 0.2.8 format. Convert all to 0.2.10 format.
         final String imsJsonV3 = convertImsJsonTo_V1Compatible(imsJson);
 
         final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature =
-            featureJsonReader_V1.readValue(imsJsonV3);
+                featureJsonReader_V1.readValue(imsJsonV3);
         feature.getProperties().setLastModified(lastModified);
 
         // Older
         if (feature.getProperties().getSituationType() == null) {
-            feature.getProperties().setSituationType(fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.fromValue(situationType.name()));
+            feature.getProperties().setSituationType(
+                    fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.fromValue(situationType.name()));
             if (trafficAnnouncementType != null) {
-                feature.getProperties().setTrafficAnnouncementType(fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.fromValue(trafficAnnouncementType.name()));
+                feature.getProperties().setTrafficAnnouncementType(
+                        fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementType.fromValue(
+                                trafficAnnouncementType.name()));
             }
         } else if (!feature.getProperties().getSituationType().name().equals(situationType.name())) {
-            log.error("method=convertToFeatureJsonObjectV3 Datex2 situationId={} SituationType: {} not equal to type in JSON: {}, sourceJson: {}",
-                      feature.getProperties().situationId, situationType.name(), feature.getProperties().getSituationType().name(), imsJson);
+            log.error(
+                    "method=convertToFeatureJsonObjectV3 Datex2 situationId={} SituationType: {} not equal to type in JSON: {}, sourceJson: {}",
+                    feature.getProperties().situationId, situationType.name(),
+                    feature.getProperties().getSituationType().name(), imsJson);
         }
         checkIsInvalidAnnouncementGeojson_V1(feature);
         checkDurationViolations_V1(feature);
 
         // Fetch or clear area geometries
         final List<fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement> announcementsWithAreas =
-            feature.getProperties().announcements.stream().filter(a -> a != null && a.containsAreaLocation()).collect(Collectors.toList());
+                feature.getProperties().announcements.stream().filter(a -> a != null && a.containsAreaLocation())
+                        .collect(Collectors.toList());
 
         if (!CollectionUtils.isEmpty(announcementsWithAreas)) {
             if (includeAreaGeometry) {
@@ -100,12 +105,14 @@ public class TrafficMessageImsJsonConverterV1 {
                         .toArray(Integer[]::new);
                 try {
                     feature.setGeometry(
-                        regionGeometryDataServiceV1.getGeoJsonGeometryUnion(effectiveDate, ids)
+                            regionGeometryDataServiceV1.getGeoJsonGeometryUnion(effectiveDate, ids)
                     );
                 } catch (final Exception e) {
                     // Fallback as null geometry to not fail the whole query that might contain multiple situations
                     feature.setGeometry(null);
-                    log.error("method=getGeoJsonGeometryUnion for situationId={} failed with parameters effectiveDate: {}, ids: {}. Returning null geometry.", feature.getProperties().situationId, effectiveDate, ids, e);
+                    log.error(
+                            "method=getGeoJsonGeometryUnion for situationId={} failed with parameters effectiveDate: {}, ids: {}. Returning null geometry.",
+                            feature.getProperties().situationId, effectiveDate, ids, e);
                 }
             } else {
                 feature.setGeometry(null);
@@ -136,7 +143,7 @@ public class TrafficMessageImsJsonConverterV1 {
 
     private void fixVersionTime(final JsonNode properties) {
         if (properties != null && !properties.has("versionTime")) {
-            ((ObjectNode)properties).set("versionTime", properties.get("releaseTime"));
+            ((ObjectNode) properties).set("versionTime", properties.get("releaseTime"));
         }
     }
 
@@ -183,9 +190,9 @@ public class TrafficMessageImsJsonConverterV1 {
                 final ArrayNode featuresWithProperties = objectMapper.createArrayNode();
                 for (final JsonNode f : features) {
                     // If it's not textual, then it is already right format from V0.2.5 on
-                    if (f.isTextual()) {
+                    if (f.isString()) {
                         final ObjectNode feature = objectMapper.createObjectNode();
-                        feature.put("name", f.textValue());
+                        feature.put("name", f.asString());
                         featuresWithProperties.add(feature);
                     }
                 }
@@ -210,33 +217,36 @@ public class TrafficMessageImsJsonConverterV1 {
         if (properties == null) {
             return null;
         }
-        return (ArrayNode)properties.get("announcements");
+        return (ArrayNode) properties.get("announcements");
     }
 
     protected JsonNode readPropertiesFromTheImsJson(final JsonNode root) {
         return root.get("properties");
     }
 
-    private void checkDurationViolations_V1(final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature) {
+    private void checkDurationViolations_V1(
+            final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature) {
         final List<ConstraintViolation<fi.livi.digitraffic.tie.dto.trafficmessage.v1.EstimatedDuration>> violations =
-            getDurationViolations_V1(feature);
+                getDurationViolations_V1(feature);
 
         if (!violations.isEmpty()) {
             final String joinedViolations = violations.stream()
-                .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(), v.getInvalidValue()))
-                .collect(Collectors.joining(","));
+                    .map(v -> String.format("Invalid EstimatedDuration.%s value %s", v.getPropertyPath(),
+                            v.getInvalidValue()))
+                    .collect(Collectors.joining(","));
             throw new IllegalArgumentException(joinedViolations + " " + ToStringHelper.toStringFull(feature));
         }
     }
 
     private List<ConstraintViolation<fi.livi.digitraffic.tie.dto.trafficmessage.v1.EstimatedDuration>> getDurationViolations_V1(
-        final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature) {
+            final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature) {
 
-        return feature.getProperties().announcements.stream().map(this::getDurationViolations_V1).flatMap(Collection::stream).collect(Collectors.toList());
+        return feature.getProperties().announcements.stream().map(this::getDurationViolations_V1)
+                .flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     private Set<ConstraintViolation<fi.livi.digitraffic.tie.dto.trafficmessage.v1.EstimatedDuration>> getDurationViolations_V1(
-        final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement a) {
+            final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement a) {
 
         if (a.timeAndDuration != null && a.timeAndDuration.estimatedDuration != null) {
             return validator.validate(a.timeAndDuration.estimatedDuration);
@@ -244,9 +254,11 @@ public class TrafficMessageImsJsonConverterV1 {
         return Collections.emptySet();
     }
 
-    private static void checkIsInvalidAnnouncementGeojson_V1(final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature) {
+    private static void checkIsInvalidAnnouncementGeojson_V1(
+            final fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature feature) {
         if (feature.getProperties() == null) {
-            throw new IllegalStateException("TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
+            throw new IllegalStateException(
+                    "TrafficAnnouncementFeature with null properties " + ToStringHelper.toStringFull(feature));
         }
     }
 }

@@ -1,18 +1,17 @@
 package fi.livi.digitraffic;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
+import java.io.UnsupportedEncodingException;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.io.UnsupportedEncodingException;
-import java.util.function.Consumer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
-public class JsonAsserter extends ResponseAsserter {
+public class JsonAsserter extends ResponseAsserter<JsonAsserter> {
     private String expectedType;
     private Integer expectedFeatureCount;
 
@@ -30,6 +29,10 @@ public class JsonAsserter extends ResponseAsserter {
         return new JsonAsserter(response, HttpStatus.BAD_REQUEST);
     }
 
+    public static JsonAsserter notFound(final MockHttpServletResponse response) {
+        return new JsonAsserter(response, HttpStatus.NOT_FOUND);
+    }
+
     public void run() throws UnsupportedEncodingException, JacksonException {
         super.run();
 
@@ -37,13 +40,14 @@ public class JsonAsserter extends ResponseAsserter {
 
         if(this.expectedType != null) {
             Assertions.assertNotNull(jsonNode.get("type"));
-            Assertions.assertEquals(this.expectedType, jsonNode.get("type").asText());
+            Assertions.assertEquals(this.expectedType, jsonNode.get("type").asString());
         }
 
         if(this.expectedFeatureCount != null) {
             Assertions.assertNotNull(jsonNode.get("features"));
             Assertions.assertEquals(this.expectedFeatureCount, jsonNode.get("features").size());
         }
+
     }
 
     public void expectContent(final Consumer<JsonNode> function)
@@ -59,7 +63,7 @@ public class JsonAsserter extends ResponseAsserter {
         return this;
     }
 
-    public ResponseAsserter expectFeatureCount(final int expectedCount) {
+    public JsonAsserter expectFeatureCount(final int expectedCount) {
         this.expectedFeatureCount = expectedCount;
 
         return this;

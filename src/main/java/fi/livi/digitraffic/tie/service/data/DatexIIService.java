@@ -1,9 +1,13 @@
 package fi.livi.digitraffic.tie.service.data;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import fi.livi.digitraffic.tie.controller.trafficmessage.MessageConverter;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
 
 import fi.livi.digitraffic.tie.model.ModifiedAt;
@@ -39,15 +43,6 @@ public class DatexIIService {
 
     private static final Instant TIME_END = Instant.ofEpochMilli(32503683600000L);
 
-    private static final String HISTORY_JSON_TEMPLATE = "[%s]";
-    private static final String FEATURE_COLLECTION_TEMPLATE = """
-    {
-        "type": "FeatureCollection",
-        "features": [
-        %s
-        ]
-    }""";
-
     public DatexIIService(final DataDatex2SituationRepository dataDatex2SituationRepository,
                           final DatexII35Converter datexII35Converter, final DatexII223Converter datexII223Converter,
                           final MessageConverter messageConverter) {
@@ -60,26 +55,6 @@ public class DatexIIService {
     @Transactional(readOnly = true)
     public Pair<D2LogicalModel, Instant> findRoadworks223(final Instant from, final Instant to) {
         return findDatexII223(SituationType.ROAD_WORK, from, to);
-    }
-
-    @Transactional(readOnly = true)
-    public Pair<String, Instant> findRoadworks(final Instant from, final Instant to, final Polygon bbox) {
-        return findSimppeli(SituationType.ROAD_WORK, from, to, bbox);
-    }
-
-    @Transactional(readOnly = true)
-    public Pair<String, Instant> findTrafficAnnouncements(final Instant from, final Instant to, final Polygon bbox) {
-        return findSimppeli(SituationType.TRAFFIC_ANNOUNCEMENT, from, to, bbox);
-    }
-
-    @Transactional(readOnly = true)
-    public Pair<String, Instant> findWeightRestrictions(final Instant from, final Instant to, final Polygon bbox) {
-        return findSimppeli(SituationType.WEIGHT_RESTRICTION, from, to, bbox);
-    }
-
-    @Transactional(readOnly = true)
-    public Pair<String, Instant> findExemptedTransports(final Instant from, final Instant to, final Polygon bbox) {
-        return findSimppeli(SituationType.EXEMPTED_TRANSPORT, from, to, bbox);
     }
 
     @Transactional(readOnly = true)
@@ -143,23 +118,6 @@ public class DatexIIService {
         return maxModifiedAt.orElse(Instant.now());
     }
 
-    private Pair<String, Instant> convertSimppeli(final List<DataDatex2Situation> situations, final boolean createFeatureCollection, final boolean includeAreaGeometry) {
-        final var messages = situations.stream()
-                .flatMap(s -> s.getMessages().stream())
-                .filter(m -> m.getMessageType().equals(MessageTypeEnum.SIMPPELI.value()))
-                .toList();
-
-        final var messageData = messages.stream()
-                .map(DataDatex2SituationMessage::getMessage)
-                .map(m -> includeAreaGeometry ? m : messageConverter.removeAreaGeometrySafe(m))
-                .toList();
-
-        final var maxModifiedAt = getMaxModified(messages);
-        final var template = createFeatureCollection ? FEATURE_COLLECTION_TEMPLATE : HISTORY_JSON_TEMPLATE;
-
-        return Pair.of(String.format(template, String.join(",", messageData)),  maxModifiedAt);
-    }
-
     private Pair<D2LogicalModel, Instant> convertDatexII223(final List<DataDatex2Situation> situations) {
         final var messages = situations.stream()
                 .flatMap(s -> s.getMessages().stream())
@@ -192,16 +150,6 @@ public class DatexIIService {
 
             throw e;
         }
-    }
-
-    private Pair<String, Instant> findSimppeli(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
-        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
-
-        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, bbox);
-        final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
-
-        return convertSimppeli(situations, true, true);
     }
 
     private Pair<D2LogicalModel, Instant> findDatexII223(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
@@ -244,10 +192,63 @@ public class DatexIIService {
     }
 
     @Transactional(readOnly = true)
-    public Pair<String, Instant> findSimppeliSituations(final String situationId, final boolean latestOnly, final boolean includeAreaGeometry) {
-        final var situations = getSituations(situationId, latestOnly);
+    public TrafficAnnouncementFeatureCollection findRoadworks(final Instant from, final Instant to, final Polygon bbox) {
+        return findSimppeli(SituationType.ROAD_WORK, from, to, bbox);
+    }
 
-        return convertSimppeli(situations, latestOnly, includeAreaGeometry);
+    @Transactional(readOnly = true)
+    public TrafficAnnouncementFeatureCollection findTrafficAnnouncements(final Instant from, final Instant to, final Polygon bbox) {
+        return findSimppeli(SituationType.TRAFFIC_ANNOUNCEMENT, from, to, bbox);
+    }
+
+    @Transactional(readOnly = true)
+    public TrafficAnnouncementFeatureCollection findWeightRestrictions(final Instant from, final Instant to, final Polygon bbox) {
+        return findSimppeli(SituationType.WEIGHT_RESTRICTION, from, to, bbox);
+    }
+
+    @Transactional(readOnly = true)
+    public TrafficAnnouncementFeatureCollection findExemptedTransports(final Instant from, final Instant to, final Polygon bbox) {
+        return findSimppeli(SituationType.EXEMPTED_TRANSPORT, from, to, bbox);
+    }
+
+    @Transactional(readOnly = true)
+    public TrafficAnnouncementFeatureCollection findSimppeliSituations(final String situationId, final boolean latestOnly, final boolean includeAreaGeometry) {
+        final var situations = getSituations(situationId, latestOnly);
+        return convertSimppeli(situations, includeAreaGeometry);
+    }
+
+    private TrafficAnnouncementFeatureCollection findSimppeli(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
+        final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
+        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+
+        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, bbox);
+        final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
+
+        return convertSimppeli(situations, true);
+    }
+
+    private TrafficAnnouncementFeatureCollection convertSimppeli(final List<DataDatex2Situation> situations, final boolean includeAreaGeometry) {
+        final var messages = situations.stream()
+                .flatMap(s -> s.getMessages().stream())
+                .filter(m -> m.getMessageType().equals(MessageTypeEnum.SIMPPELI.value()))
+                .toList();
+
+        final var maxModifiedAt = getMaxModified(messages);
+
+        final var features = messages.stream()
+                .map(m -> {
+                    try {
+                        return messageConverter.convertToFeature(m.getMessage(), includeAreaGeometry);
+                    } catch (final Exception e) {
+                        log.error("method=convertSimppeli Failed to convert message id={}", m.getMessageId(), e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing((TrafficAnnouncementFeature f) -> f.getProperties().releaseTime).reversed())
+                .toList();
+
+        return new TrafficAnnouncementFeatureCollection(maxModifiedAt, features);
     }
 
     private List<DataDatex2Situation> getSituations(final String situationId, final boolean latestOnly) {

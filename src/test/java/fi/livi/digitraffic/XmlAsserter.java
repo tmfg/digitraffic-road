@@ -11,7 +11,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
 
-public class XmlAsserter extends ResponseAsserter {
+public class XmlAsserter extends ResponseAsserter<XmlAsserter> {
     private static final XmlMapper XML_MAPPER = XmlMapper.builder()
             .disable(XmlReadFeature.AUTO_DETECT_XSI_TYPE)
             .build();

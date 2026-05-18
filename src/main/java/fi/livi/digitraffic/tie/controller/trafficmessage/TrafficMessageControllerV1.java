@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.livi.digitraffic.common.annotation.CustomRequestParam;
+import fi.livi.digitraffic.common.annotation.Sunset;
+import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
@@ -98,7 +100,9 @@ public class TrafficMessageControllerV1 {
         this.locationWebServiceV1 = locationWebServiceV1;
     }
 
-    @Operation(summary = "Active traffic messages as Datex2")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Active traffic messages as Datex2" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2 })
@@ -120,7 +124,9 @@ public class TrafficMessageControllerV1 {
                 API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2);
     }
 
-    @Operation(summary = "Traffic messages by situationId as Datex2")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Traffic messages by situationId as Datex2" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" + DATEX2 })
@@ -143,7 +149,9 @@ public class TrafficMessageControllerV1 {
                 API_TRAFFIC_MESSAGE_V1_MESSAGES + "/" + situationId + DATEX2);
     }
 
-    @Operation(summary = "Active traffic messages as simple JSON")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Active traffic messages as simple JSON" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES },
                     produces = { APPLICATION_JSON_VALUE,
@@ -169,7 +177,9 @@ public class TrafficMessageControllerV1 {
         return trafficMessageDataServiceV1.findActiveJson(inactiveHours, includeAreaGeometry, situationType);
     }
 
-    @Operation(summary = "Traffic messages history by situation id as simple JSON")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Traffic messages history by situation id as simple JSON" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" },
                     produces = { APPLICATION_JSON_VALUE,

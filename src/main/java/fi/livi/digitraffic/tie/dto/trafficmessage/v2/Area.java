@@ -1,0 +1,48 @@
+
+package fi.livi.digitraffic.tie.dto.trafficmessage.v2;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import fi.livi.digitraffic.tie.dto.JsonAdditionalProperties;
+import fi.livi.digitraffic.tie.helper.ToStringHelper;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+
+@Schema(description = "AlertC area", name = "AreaV2")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+   "name",
+   "locationCode",
+   "type"
+})
+public class Area extends JsonAdditionalProperties {
+
+    @Schema(description = "The name of the area", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
+    public String name;
+
+    @Schema(description = "Location code of the area, number of the road point in AlertC location table", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
+    public Integer locationCode;
+
+    @Schema(description = "The type of the area", example = "MUNICIPALITY", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
+    public AreaType type;
+
+    public Area() {
+    }
+
+    public Area(final String name, final Integer locationCode, final AreaType type) {
+        super();
+        this.name = name;
+        this.locationCode = locationCode;
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringHelper.toStringFull(this);
+    }
+
+}

@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGE;
-import static fi.livi.digitraffic.tie.controller.ApiConstants.BETA;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG_V2;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V2;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
@@ -11,6 +10,11 @@ import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.helper.BoundingBoxUtils.getBoundingBox;
 
 import java.time.Instant;
+import java.util.List;
+
+import fi.livi.digitraffic.common.annotation.Sunset;
+
+import fi.livi.digitraffic.tie.controller.ApiDeprecations;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.locationtech.jts.geom.Polygon;
@@ -26,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.data.DatexIIService;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,7 +68,9 @@ public class TrafficMessagesControllerV2 {
         this.datexIIService = datexIIService;
     }
 
-    @Operation(summary = "Traffic message by situationId as DatexII 2.2.3")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Traffic message by situationId as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + DATEX2_2_2_3})
@@ -81,7 +89,9 @@ public class TrafficMessagesControllerV2 {
                 API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + DATEX2_2_2_3);
     }
 
-    @Operation(summary = "Traffic message history by situationId as DatexII 2.2.3")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Traffic message history by situationId as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + HISTORY + DATEX2_2_2_3 })
@@ -149,7 +159,7 @@ public class TrafficMessagesControllerV2 {
             @ApiResponse(responseCode = HTTP_NOT_FOUND,
                     description = "Situation not found",
                     content = @Content) })
-    public ResponseEntityWithLastModifiedHeader<String> trafficMessageBySituationId(
+    public TrafficAnnouncementFeatureCollection trafficMessageBySituationId(
             @Parameter(description = "Situation id", required = true)
             @PathVariable
             final String situationId,
@@ -158,10 +168,7 @@ public class TrafficMessagesControllerV2 {
                             "Geometries for areas can be fetched from Traffic messages geometries for regions -api")
             @RequestParam(defaultValue = "true")
             final boolean includeAreaGeometry) {
-        final Pair<String, Instant> situation = datexIIService.findSimppeliSituations(situationId, true, includeAreaGeometry);
-
-        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId);
+        return datexIIService.findSimppeliSituations(situationId, true, includeAreaGeometry);
     }
 
     @Operation(summary = "Traffic data message by situationId as DatexII 3.5")
@@ -211,13 +218,12 @@ public class TrafficMessagesControllerV2 {
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
                                  description = "Situation id not found",
                                  content = @Content) })
-    public ResponseEntityWithLastModifiedHeader<String> trafficMessageHistoryBySituationId(
+    public ResponseEntityWithLastModifiedHeader<List<TrafficAnnouncementFeature>> trafficMessageHistoryBySituationId(
             @Parameter(description = "Situation id", required = true)
             @PathVariable
             final String situationId) {
-        final Pair<String, Instant> situation = datexIIService.findSimppeliSituations(situationId, false, true);
-
-        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
+        final var featureCollection = datexIIService.findSimppeliSituations(situationId, false, true);
+        return ResponseEntityWithLastModifiedHeader.of(featureCollection.getFeatures(), featureCollection.getLastModified(),
                 API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + HISTORY);
     }
 
@@ -336,7 +342,7 @@ public class TrafficMessagesControllerV2 {
             path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of road works") })
-    public ResponseEntityWithLastModifiedHeader<String> roadworks(
+    public TrafficAnnouncementFeatureCollection roadworks(
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -358,11 +364,7 @@ public class TrafficMessagesControllerV2 {
             @RequestParam(required = false)
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
-
-        final Pair<String, Instant> model = datexIIService.findRoadworks(from, to, bbox);
-
-        return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
+        return datexIIService.findRoadworks(from, to, bbox);
     }
 
     @Operation(summary = "Traffic announcements as json")
@@ -371,7 +373,7 @@ public class TrafficMessagesControllerV2 {
             path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of traffic announcements") })
-    public ResponseEntityWithLastModifiedHeader<String> trafficAnnouncements(
+    public TrafficAnnouncementFeatureCollection trafficAnnouncements(
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -393,10 +395,7 @@ public class TrafficMessagesControllerV2 {
             @RequestParam(required = false)
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
-        final Pair<String, Instant> model = datexIIService.findTrafficAnnouncements(from, to, bbox);
-
-        return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS);
+        return datexIIService.findTrafficAnnouncements(from, to, bbox);
     }
 
     @Operation(summary = "Weight restrictions as json")
@@ -405,7 +404,7 @@ public class TrafficMessagesControllerV2 {
             path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of weight restrictions") })
-    public ResponseEntityWithLastModifiedHeader<String> weightRestrictions(
+    public TrafficAnnouncementFeatureCollection weightRestrictions(
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -427,10 +426,7 @@ public class TrafficMessagesControllerV2 {
             @RequestParam(required = false)
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
-        final Pair<String, Instant> model = datexIIService.findWeightRestrictions(from, to, bbox);
-
-        return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS);
+        return datexIIService.findWeightRestrictions(from, to, bbox);
     }
 
     @Operation(summary = "Exempted transports as json")
@@ -439,7 +435,7 @@ public class TrafficMessagesControllerV2 {
             path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of exempted transports") })
-    public ResponseEntityWithLastModifiedHeader<String> exemptedTransports(
+    public TrafficAnnouncementFeatureCollection exemptedTransports(
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -461,13 +457,12 @@ public class TrafficMessagesControllerV2 {
             @RequestParam(required = false)
             final Double yMax) {
         final Polygon bbox = getBoundingBox(xMin, xMax, yMin, yMax);
-        final Pair<String, Instant> model = datexIIService.findExemptedTransports(from, to, bbox);
-
-        return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS);
+        return datexIIService.findExemptedTransports(from, to, bbox);
     }
 
-    @Operation(summary = "Roadworks as DatexII 2.2.3")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Roadworks as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_2_2_3})
@@ -488,7 +483,9 @@ public class TrafficMessagesControllerV2 {
                 API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_2_2_3);
     }
 
-    @Operation(summary = "Traffic announcements as DatexII 2.2.3")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Traffic announcements as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3})
@@ -509,7 +506,9 @@ public class TrafficMessagesControllerV2 {
                 API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3);
     }
 
-    @Operation(summary = "Weight restrictions as DatexII 2.2.3")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Weight restrictions as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3})
@@ -530,7 +529,9 @@ public class TrafficMessagesControllerV2 {
                 API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3);
     }
 
-    @Operation(summary = "Exempted transports as DatexII 2.2.3")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Operation(summary = "Exempted transports as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3})

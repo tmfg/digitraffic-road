@@ -31,14 +31,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
+import fi.livi.digitraffic.tie.helper.GeometryConstants;
+import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.ObjectReader;
-
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.AreaType;
-import fi.livi.digitraffic.tie.helper.GeometryConstants;
-import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 
 @ConditionalOnNotWebApplication
 @Component
@@ -52,11 +51,12 @@ public class RegionGeometryGitClient {
     private final ObjectReader genericJsonReader;
     private final GeoJsonReader geoJsonReader = new GeoJsonReader(GeometryConstants.JTS_GEOMETRY_FACTORY);
 
-    public RegionGeometryGitClient(@Value("${dt.traffic-messages.git-repo.url}")
-                                   final String gitUrl,
-                                   @Value("${dt.traffic-messages.git-repo.path}")
-                                   final String gitPath,
-                                   final ObjectMapper objectMapper) {
+    public RegionGeometryGitClient(
+            @Value("${dt.traffic-messages.git-repo.url}")
+            final String gitUrl,
+            @Value("${dt.traffic-messages.git-repo.path}")
+            final String gitPath,
+            final ObjectMapper objectMapper) {
 
         this.gitUrl = gitUrl;
         this.gitPath = gitPath;
@@ -95,17 +95,20 @@ public class RegionGeometryGitClient {
                 final String content = new String(objectLoader.getBytes());
                 changesAfterCommit.add(createAreaLocationRegionObject(commit, diff, content));
             } catch (final IOException e) {
-                log.error(format("Failed to read contents of commit {0} for {1}} changeType {2}}", commit.getId().getName(), diff.getNewPath(), diff.getChangeType()), e);
+                log.error(format("Failed to read contents of commit {0} for {1}} changeType {2}}",
+                        commit.getId().getName(), diff.getNewPath(), diff.getChangeType()), e);
                 throw new RuntimeException(e);
             } catch (final ParseException e) {
-                log.error(format("Failed to parse contents of commit {0} for {1} changeType {2}}", commit.getId().getName(), diff.getNewPath(), diff.getChangeType()), e);
+                log.error(format("Failed to parse contents of commit {0} for {1} changeType {2}}",
+                        commit.getId().getName(), diff.getNewPath(), diff.getChangeType()), e);
                 throw new RuntimeException(e);
             }
         }
     }
 
     private RegionGeometry createAreaLocationRegionObject(final RevCommit commit, final DiffEntry diff,
-                                                          final String contentJson) throws JacksonException, ParseException {
+                                                          final String contentJson)
+            throws JacksonException, ParseException {
         try {
             final String gitPath = diff.getNewPath();
             final String gitId = diff.getNewId().toObjectId().getName();
@@ -116,8 +119,11 @@ public class RegionGeometryGitClient {
             final AreaType type = readType(json);
             final Instant effectiveDate = readEffectiveDate(json);
             final Geometry geometry = geoJsonReader.read(json.get("geometry").toString());
-            log.info("Create new RegionGeometry with name {}, locationCode {}, type {}, effectiveDate {}, gitPath {}, changeType {}", name, locationCode,type, effectiveDate, gitPath, diff.getChangeType());
-            return new RegionGeometry(name, locationCode, type, effectiveDate, geometry, versionDate, gitId, gitPath, commit.getId().getName());
+            log.info(
+                    "Create new RegionGeometry with name {}, locationCode {}, type {}, effectiveDate {}, gitPath {}, changeType {}",
+                    name, locationCode, type, effectiveDate, gitPath, diff.getChangeType());
+            return new RegionGeometry(name, locationCode, type, effectiveDate, geometry, versionDate, gitId, gitPath,
+                    commit.getId().getName());
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -128,18 +134,18 @@ public class RegionGeometryGitClient {
     }
 
     private String readName(final JsonNode json) {
-        return json.get("name").asText();
+        return json.get("name").asString();
     }
 
     private AreaType readType(final JsonNode json) {
         if (json.has("type")) {
-            return AreaType.fromValue(json.get("type").asText());
+            return AreaType.fromValue(json.get("type").asString());
         }
         return AreaType.UNKNOWN;
     }
 
     private Instant readEffectiveDate(final JsonNode json) {
-        return ZonedDateTime.parse(json.get("effectiveDate").asText()).toInstant();
+        return ZonedDateTime.parse(json.get("effectiveDate").asString()).toInstant();
     }
 
     private List<RevCommit> getCommitsAfterCommitIdAsc(final Git git, final String afterCommitId) {
@@ -153,7 +159,7 @@ public class RegionGeometryGitClient {
                 if (afterCommitId != null && afterCommitId.equals(revCommit.getId().getName())) {
                     break;
                 }
-                logAsc.add(0, revCommit);
+                logAsc.addFirst(revCommit);
             }
             return logAsc;
         } catch (final GitAPIException e) {
@@ -162,7 +168,8 @@ public class RegionGeometryGitClient {
         }
     }
 
-    private static List<DiffEntry> getJsonChangesForCommit(final RevCommit commit, final String path, final Repository repository) {
+    private static List<DiffEntry> getJsonChangesForCommit(final RevCommit commit, final String path,
+                                                           final Repository repository) {
         final List<DiffEntry> diffsOut = new ArrayList<>();
 
         final DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
@@ -171,7 +178,8 @@ public class RegionGeometryGitClient {
         df.setDetectRenames(true);
 
         try {
-            log.info("Get commit {} at {} message {}", commit.getId().getName(), Instant.ofEpochSecond(commit.getCommitTime()), commit.getShortMessage());
+            log.info("Get commit {} at {} message {}", commit.getId().getName(),
+                    Instant.ofEpochSecond(commit.getCommitTime()), commit.getShortMessage());
             final RevTree parentTree = commit.getParentCount() > 0 ? commit.getParent(0).getTree() : null;
             final List<DiffEntry> diffs = df.scan(parentTree, commit.getTree());
             for (final DiffEntry diff : diffs) {
@@ -199,7 +207,8 @@ public class RegionGeometryGitClient {
                     git.pull().call();
                     return git;
                 } catch (final GitAPIException e) {
-                    log.error(format("Failed to do git pull for local repository at {0}. Clean it and do clone.", targetPath), e);
+                    log.error(format("Failed to do git pull for local repository at {0}. Clean it and do clone.",
+                            targetPath), e);
                     // If we are here there is an error and we should clean up the local
                     cleanLocalRepo(targetPath);
                 }
@@ -214,11 +223,11 @@ public class RegionGeometryGitClient {
     private static Git clone(final String repoUrl, final File targetPath) {
         log.info("Cloning repo {} to {}", repoUrl, targetPath);
         final CloneCommand clone = Git
-            .cloneRepository()
-            .setCloneAllBranches(false)
-            .setBranch("master")
-            .setURI(repoUrl)
-            .setDirectory(targetPath);
+                .cloneRepository()
+                .setCloneAllBranches(false)
+                .setBranch("master")
+                .setURI(repoUrl)
+                .setDirectory(targetPath);
 
         try (final Git git = clone.call()) {
             log.info("Cloning repo {} to {} done", repoUrl, targetPath);
