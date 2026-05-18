@@ -59,10 +59,10 @@ public final class ApiConstants {
 
     /* Counting site */
     public static final String API_COUNTING_SITE_V2 = API + "/counting-site/v2";
-    public static final String API_COUNTING_SITE_V2_COUNTERS = API_COUNTING_SITE_V2 + "/counters";
+    public static final String API_COUNTING_SITE_V2_SITES = API_COUNTING_SITE_V2 + "/sites";
     public static final String API_COUNTING_SITE_V2_DIRECTIONS = API_COUNTING_SITE_V2 + "/directions";
-    public static final String API_COUNTING_SITE_V2_DOMAIN = API_COUNTING_SITE_V2 + "/domain";
-    public static final String API_COUNTING_SITE_V2_USER_TYPES = API_COUNTING_SITE_V2 + "/user-types";
+    public static final String API_COUNTING_SITE_V2_DOMAINS = API_COUNTING_SITE_V2 + "/domains";
+    public static final String API_COUNTING_SITE_V2_TRAVEL_MODES = API_COUNTING_SITE_V2 + "/travel-modes";
     public static final String API_COUNTING_SITE_V2_VALUES = API_COUNTING_SITE_V2 + "/values";
 
 

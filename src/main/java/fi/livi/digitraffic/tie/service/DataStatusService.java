@@ -235,12 +235,12 @@ public class DataStatusService {
         final Instant dataChecked = dataUpdatedRepository.findUpdatedTime(DataType.COUNTING_SITES_DATA);
 
         return Arrays.asList(
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_COUNTERS, countersUpdated, countersChecked,
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_SITES, countersUpdated, countersChecked,
                 metadataInfo.getUpdateInterval(), metadataInfo.getRecommendedFetchInterval()),
             UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V2_DIRECTIONS, staticMetadataUpdated),
-            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_DOMAIN, domainsUpdated,
+            new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_DOMAINS, domainsUpdated,
                 metadataInfo.getUpdateInterval(), metadataInfo.getRecommendedFetchInterval()),
-            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V2_USER_TYPES, staticMetadataUpdated),
+            UpdateInfoDtoV1.staticData(ApiConstants.API_COUNTING_SITE_V2_TRAVEL_MODES, staticMetadataUpdated),
             new UpdateInfoDtoV1(ApiConstants.API_COUNTING_SITE_V2_VALUES, dataUpdated, dataChecked,
                 dataInfo.getUpdateInterval(), dataInfo.getRecommendedFetchInterval())
         );
