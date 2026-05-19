@@ -398,6 +398,27 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
     }
 
     @Test
+    public void roadWorksJsonWithoutMillis() throws Exception {
+        // Test that timestamps without milliseconds can be deserialized and serialized with .000Z
+        final String simppeliWithoutMillis = SIMPPELI
+                .replace("2020-12-14T00:00:00.000Z", "2020-12-14T00:00:00Z");
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", simppeliWithoutMillis);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
+
+        JsonAsserter.ok(response)
+                .expectType("FeatureCollection")
+                .expectFeatureCount(1)
+                .run();
+        // Verify output always contains .000Z even when input had no millis
+        final String body = response.getContentAsString();
+        Assertions.assertTrue(body.contains("2020-12-14T00:00:00.000Z"),
+                "Output should always contain milliseconds, got: " + body);
+        Assertions.assertFalse(body.matches(".*\\d{2}:\\d{2}:\\d{2}Z.*"),
+                "Output should not contain timestamps without milliseconds");
+    }
+
+    @Test
     public void roadWorksJson() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.SIMPPELI, "0.2.17", SIMPPELI);
 
