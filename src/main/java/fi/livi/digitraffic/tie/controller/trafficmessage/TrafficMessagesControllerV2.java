@@ -69,7 +69,7 @@ public class TrafficMessagesControllerV2 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
     @Operation(summary = "Traffic message by situationId as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
@@ -90,7 +90,7 @@ public class TrafficMessagesControllerV2 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
     @Operation(summary = "Traffic message history by situationId as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
@@ -461,7 +461,7 @@ public class TrafficMessagesControllerV2 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
     @Operation(summary = "Roadworks as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
@@ -484,7 +484,7 @@ public class TrafficMessagesControllerV2 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
     @Operation(summary = "Traffic announcements as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
@@ -507,7 +507,7 @@ public class TrafficMessagesControllerV2 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
     @Operation(summary = "Weight restrictions as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },
@@ -530,7 +530,7 @@ public class TrafficMessagesControllerV2 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
     @Operation(summary = "Exempted transports as DatexII 2.2.3" + ApiDeprecations.API_NOTE_2026_11_17)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE },

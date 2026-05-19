@@ -10,17 +10,17 @@ package fi.livi.digitraffic.tie.controller;
  * And add those values for deprecated APIs:
  * @Deprecated(forRemoval = true)
  * @Sunset(date = SUNSET_2022_01_01) OR @Sunset(tbd = true)
- * @Operation(summary = "Api description plaa plaa. " + ApiDeprecations.API_NOTE_2022_01_01)
+ * @Operation(summary = "Api description plaa plaa." + ApiDeprecations.API_NOTE_2022_01_01)
  */
 public final class ApiDeprecations {
 
-    private static final String SUNSET_TEXT = "Will be removed after ";
+    private static final String SUNSET_TEXT = " Will be removed after ";
 
     public static final String SUNSET_FUTURE = "TBD";
-    public static final String API_NOTE_FUTURE = "Will be removed in the future";
+    public static final String API_NOTE_FUTURE = " Will be removed in the future ";
 
-    public static final String SUNSET_2026_11_17    = "2026-11-17";
-    public static final String  API_NOTE_2026_11_17 = SUNSET_TEXT + SUNSET_2026_11_17;
+    public static final String SUNSET_2026_10_20 = "2026-10-20";
+    public static final String  API_NOTE_2026_11_17 = SUNSET_TEXT + SUNSET_2026_10_20;
 
     private ApiDeprecations() {}
 
