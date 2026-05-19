@@ -2,9 +2,10 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v2;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import fi.livi.digitraffic.tie.dto.JsonAdditionalProperties;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
@@ -22,11 +23,13 @@ public class TimeAndDuration extends JsonAdditionalProperties {
 
     @Schema(description = "Start time of the situation", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = V2DateTimeFormat.FORMAT, timezone = V2DateTimeFormat.TIMEZONE)
+    @JsonSerialize(using = V2DateTimeFormat.Serializer.class)
+    @JsonDeserialize(using = V2DateTimeFormat.Deserializer.class)
     public Instant startTime;
 
     @Schema(description = "End time of the situation. If the end time has been passed, the situation can be assumed to be over. If end time is not given, there will be follow-up announcement about the situation.")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = V2DateTimeFormat.FORMAT, timezone = V2DateTimeFormat.TIMEZONE)
+    @JsonSerialize(using = V2DateTimeFormat.Serializer.class)
+    @JsonDeserialize(using = V2DateTimeFormat.Deserializer.class)
     public Instant endTime;
 
     @Schema(description = "If exact endtime is not known, duration may be estimated.")
