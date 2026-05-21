@@ -29,6 +29,7 @@ import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1;
 import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
 import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV1;
+import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2;
 import fi.livi.digitraffic.tie.controller.weather.WeatherControllerV1;
 import fi.livi.digitraffic.tie.controller.weathercam.WeathercamControllerV1;
 import fi.livi.digitraffic.tie.dao.DataUpdatedRepository;
@@ -49,6 +50,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.model.DataSource;
 import fi.livi.digitraffic.tie.model.DataType;
+import fi.livi.digitraffic.tie.model.maintenance.MaintenanceTrackingTask;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationVersion;
 
@@ -160,7 +162,9 @@ public class DataStatusService {
         final List<MaintenanceTrackingDomainDtoV1> domains = maintenanceTrackingRepository.getDomains();
         final DataSourceInfoDtoV1 stateInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING);
         final DataSourceInfoDtoV1 municipalityInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY);
-        return domains.stream().map(d -> {
+        final DataSourceInfoDtoV1 maintenanceDomainsInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING_DOMAINS);
+        final DataSourceInfoDtoV1 maintenanceTasksInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING_TASKS);
+        final List<UpdateInfoDtoV1> infos = domains.stream().map(d -> {
             final String domain = d.getName();
             final String updateInterval = domain.contains("state") ? stateInfo.getUpdateInterval() : municipalityInfo.getUpdateInterval();
             final String recommendedFetchInterval =
@@ -170,6 +174,23 @@ public class DataStatusService {
             return new UpdateInfoDtoV1(MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES, d.getName(), updated, checked,
                 updateInterval, recommendedFetchInterval);
         }).collect(Collectors.toList());
+
+        // domains endpoint — uses getDomainsWithGenerics which includes modified as dataUpdatedTime
+        final Instant domainsUpdated = maintenanceTrackingRepository.getDomainsWithGenerics().stream()
+            .map(MaintenanceTrackingDomainDtoV1::getDataUpdatedTime)
+            .filter(Objects::nonNull)
+            .max(Comparator.naturalOrder()).orElse(null);
+        infos.add(new UpdateInfoDtoV1(MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_DOMAINS, domainsUpdated,
+            maintenanceDomainsInfo.getUpdateInterval(), maintenanceDomainsInfo.getRecommendedFetchInterval()));
+
+        // tasks endpoint (static reference data)
+        final Instant tasksUpdated = Arrays.stream(MaintenanceTrackingTask.values())
+            .map(MaintenanceTrackingTask::getDataUpdatedTime)
+            .max(Comparator.naturalOrder()).orElse(null);
+        infos.add(new UpdateInfoDtoV1(MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_TASKS, tasksUpdated,
+            maintenanceTasksInfo.getUpdateInterval(), maintenanceTasksInfo.getRecommendedFetchInterval()));
+
+        return infos;
     }
 
     private List<UpdateInfoDtoV1> getTrafficMessageInfos() {
@@ -182,6 +203,24 @@ public class DataStatusService {
                         trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval());
                 })
                 .collect(Collectors.toList());
+
+        // V2 type-specific endpoints (same underlying data as V1)
+        trafficMessageInfos.add(new UpdateInfoDtoV1(
+            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.TRAFFIC_ANNOUNCEMENTS,
+            datex2Repository.getLastModified(SituationType.TRAFFIC_ANNOUNCEMENT.name()), null,
+            trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
+        trafficMessageInfos.add(new UpdateInfoDtoV1(
+            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.ROADWORKS,
+            datex2Repository.getLastModified(SituationType.ROAD_WORK.name()), null,
+            trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
+        trafficMessageInfos.add(new UpdateInfoDtoV1(
+            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.WEIGHT_RESTRICTIONS,
+            datex2Repository.getLastModified(SituationType.WEIGHT_RESTRICTION.name()), null,
+            trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
+        trafficMessageInfos.add(new UpdateInfoDtoV1(
+            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.EXEMPTED_TRANSPORTS,
+            datex2Repository.getLastModified(SituationType.EXEMPTED_TRANSPORT.name()), null,
+            trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
 
         // /api/traffic-message/v1/area-geometries
         final DataSourceInfoDtoV1 areaInfo = dataUpdatedRepository.getDataSourceInfo(DataSource.TRAFFIC_MESSAGE_AREA);
