@@ -447,6 +447,13 @@
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
             <version>${org.apache.cxf.version}</version>
         </dependency>
+        <!-- TODO: Remove neethi override when CXF ≥4.2.1 (which bundles neethi 3.2.2) is adopted.
+             Added 2026-05-22 to fix CVE-2026-42402, CVE-2026-42403, CVE-2026-42404 -->
+        <dependency>
+            <groupId>org.apache.neethi</groupId>
+            <artifactId>neethi</artifactId>
+            <version>3.2.2</version>
+        </dependency>
         <!-- For test WS server -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
