@@ -9,7 +9,7 @@
 
 ### Clone project to your computer
 
-    $ git clone https://github.com/tmfg/digitraffic-metadata.git
+    $ git clone https://github.com/tmfg/digitraffic-road.git
     # Clones a repository to your computer
 
 ### Configure project
@@ -22,7 +22,7 @@ If you want to disable some jobs, it can be done by adding following line to app
     # Disable jobs. Format: quartz.{jobClassName}.enabled = false
     quartz.CameraUpdateJob.enabled = false
 
-### Run PosgresSQL server
+### Run PostgreSQL server
 
 See dbroad directory [README.md](dbroad/README.md)
 
