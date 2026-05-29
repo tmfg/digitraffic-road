@@ -16,11 +16,17 @@ import jakarta.persistence.QueryHint;
 @Repository
 public interface DeviceDataRepositoryV1 extends JpaRepository<DeviceData, Long> {
     @Query(value =
-        "select distinct on (device_id) id from device_data " +
-        "where effect_date > now() - interval '60 days' " +
-        "order by device_id, effect_date desc",
+        "select latest.id " +
+        "from device d " +
+        "join lateral (" +
+        "  select id, effect_date from device_data " +
+        "  where device_id = d.id " +
+        "  order by effect_date desc " +
+        "  limit 1" +
+        ") latest on true " +
+        "where latest.effect_date > now() - interval '60 days'",
         nativeQuery = true)
-    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
+    @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
     List<Long> findLatestData();
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))

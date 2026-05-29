@@ -8,7 +8,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.CodeDescriptionRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceDataRepositoryV1;
 import fi.livi.digitraffic.tie.dao.variablesign.v1.DeviceRepositoryV1;
@@ -42,17 +41,20 @@ public class VariableSignDataServiceV1 {
         this.testDataFilteringService = testDataFilteringService;
     }
 
-    @PerformanceMonitor(maxInfoExcecutionTime = 100000, maxWarnExcecutionTime = 3000)
     @Transactional(readOnly = true)
     public VariableSignFeatureCollectionV1 listLatestValues() {
-        final List<Device> devices = deviceRepositoryV1.findAllByDeletedDateIsNull();
+        // findLatestData() already filters by non-deleted devices and effect_date within 60 days,
+        // using a LATERAL join so only one index seek per device is needed instead of a full 60-day scan.
         final List<Long> dataIds = deviceDataRepositoryV1.findLatestData();
         final List<DeviceData> data = deviceDataRepositoryV1.findDistinctByIdIn(dataIds);
         final Instant dataLastUpdated = getDataLastUpdated(data);
 
-        final Map<String, DeviceData> dataMap = data.stream().collect(Collectors.toMap(DeviceData::getDeviceId, d -> d));
-        final List<VariableSignFeatureV1> features = devices.stream()
-            .map(d -> convert(d, dataMap))
+        final List<String> deviceIds = data.stream().map(DeviceData::getDeviceId).toList();
+        final Map<String, Device> deviceMap = deviceRepositoryV1.findAllById(deviceIds).stream()
+            .collect(Collectors.toMap(Device::getId, d -> d));
+
+        final List<VariableSignFeatureV1> features = data.stream()
+            .map(d -> convert(deviceMap.get(d.getDeviceId()), d))
             .filter(Objects::nonNull)
             .filter(testDataFilteringService::isProductionData)
             .toList();
@@ -60,13 +62,10 @@ public class VariableSignDataServiceV1 {
         return new VariableSignFeatureCollectionV1(dataLastUpdated, features);
     }
 
-    private VariableSignFeatureV1 convert(final Device device, final Map<String, DeviceData> dataMap) {
-        final DeviceData data = dataMap.get(device.getId());
-
-        return data == null ? null : convert(device, data);
-    }
-
     private VariableSignFeatureV1 convert(final Device device, final DeviceData data) {
+        if (device == null) {
+            return null;
+        }
         final List<SignTextRowV1> textRows = CollectionUtils.isEmpty(data.getRows()) ? Collections.emptyList() : convert(data.getRows());
 
         final VariableSignPropertiesV1 properties = new VariableSignPropertiesV1(

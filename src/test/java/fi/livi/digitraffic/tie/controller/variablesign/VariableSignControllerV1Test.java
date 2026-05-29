@@ -81,6 +81,55 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     }
 
     @Test
+    public void allSignsReturnsLatestDataForEachDevice() throws Exception {
+        insertTestData();
+
+        getJson(API_SIGNS)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
+            .andExpect(jsonPath("features", Matchers.hasSize(1)))
+            .andExpect(jsonPath("features[0].properties.id", Matchers.equalTo("ID1")))
+            .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("80")));
+    }
+
+    @Test
+    public void allSignsIncludesDeletedDevices() throws Exception {
+        insertTestData();
+        entityManager.createNativeQuery("update device set deleted_date = now() where id = 'ID1'").executeUpdate();
+
+        getJson(API_SIGNS)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("features", Matchers.hasSize(1)));
+    }
+
+    @Test
+    public void allSignsExcludesDataOlderThan60Days() throws Exception {
+        insertTestData();
+        entityManager.createNativeQuery(
+            "update device_data set effect_date = now() - interval '61 days' where device_id = 'ID1'").executeUpdate();
+
+        getJson(API_SIGNS)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("features", Matchers.empty()));
+    }
+
+    @Test
+    public void allSignsReturnsOnlyLatestRowPerDevice() throws Exception {
+        insertTestData();
+        // Insert a newer row for the same device
+        entityManager.createNativeQuery(
+            "insert into device_data(device_id,display_value,additional_information,effect_date,cause,reliability) " +
+                "values ('ID1','120',null,:time,null,'NORMAALI');")
+            .setParameter("time", NOW_DATETIME.plusSeconds(60))
+            .executeUpdate();
+
+        getJson(API_SIGNS)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("features", Matchers.hasSize(1)))
+            .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("120")));
+    }
+
+    @Test
     public void notExists() throws Exception {
         getJson(API_SIGNS + "/unknown")
             .andExpect(status().isNotFound());
