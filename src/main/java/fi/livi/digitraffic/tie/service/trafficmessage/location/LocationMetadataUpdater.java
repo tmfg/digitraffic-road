@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +48,12 @@ public class LocationMetadataUpdater {
             final MetadataVersions latestVersions = metadataFileFetcher.getLatestVersions();
             final LocationVersion currentVersion = locationVersionRepository.findLatestVersion();
 
-            if(areVersionsEmpty(latestVersions)) {
-                log.error("empty metadataversions:" + latestVersions);
-            } else if(!areVersionsSame(latestVersions)) {
-                log.info("Different versions, locations {} and types {}", latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
-            } else if(isUpdateNeeded(latestVersions, currentVersion)) {
+            if (areVersionsEmpty(latestVersions)) {
+                log.error("method=findAndUpdate empty metadataversions: {}", latestVersions);
+            } else if (!areVersionsSame(latestVersions)) {
+                log.info("method=findAndUpdate Different versions, locations {} and types {}",
+                        latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
+            } else if (isUpdateNeeded(latestVersions, currentVersion)) {
                 final MetadataPathCollection paths = metadataFileFetcher.getFilePaths(latestVersions);
                 final StopWatch stopWatch = StopWatch.createStarted();
 
@@ -60,23 +61,25 @@ public class LocationMetadataUpdater {
                 removeTempFiles(paths);
                 stopWatch.stop();
 
-                log.info("Locations and locationtypes updated, tookMs={}", stopWatch.getDuration().toMillis());
+                log.info("method=findAndUpdate Locations and locationtypes updated, tookMs={}",
+                        stopWatch.getDuration().toMillis());
             } else {
-                log.info("No need to update locations or locationtypes");
+                log.info("method=findAndUpdate No need to update locations or locationtypes");
             }
-        } catch(final Exception e) {
-            log.error("exception when fetching locations metadata", e);
-
+        } catch (final Exception e) {
+            log.error("method=findAndUpdate exception when fetching locations metadata", e);
             throw e;
         }
     }
 
     private boolean areVersionsEmpty(final MetadataVersions latestVersions) {
-        return latestVersions == null || latestVersions.getLocationsVersion() == null || latestVersions.getLocationTypeVersion() == null;
+        return latestVersions == null || latestVersions.getLocationsVersion() == null ||
+                latestVersions.getLocationTypeVersion() == null;
     }
 
     private boolean areVersionsSame(final MetadataVersions latestVersions) {
-        return StringUtils.equals(latestVersions.getLocationsVersion().version, latestVersions.getLocationTypeVersion().version);
+        return Strings.CS.equals(latestVersions.getLocationsVersion().version,
+                latestVersions.getLocationTypeVersion().version);
     }
 
     private void removeTempFiles(final MetadataPathCollection paths) {
@@ -87,24 +90,26 @@ public class LocationMetadataUpdater {
 
     private boolean isUpdateNeeded(final MetadataVersions latestVersions, final LocationVersion currentVersion) {
         return currentVersion == null ||
-               needUpdate(latestVersions.getLocationsVersion(), currentVersion.getVersion()) ||
-               needUpdate(latestVersions.getLocationTypeVersion(), currentVersion.getVersion());
+                needUpdate(latestVersions.getLocationsVersion(), currentVersion.getVersion()) ||
+                needUpdate(latestVersions.getLocationTypeVersion(), currentVersion.getVersion());
     }
 
     private static boolean needUpdate(final MetadataVersions.MetadataVersion newVersion, final String currentVersion) {
-        if(!StringUtils.equals(newVersion.version, currentVersion)) {
-            log.info("Versions differ, oldVersion={}, newVersion={}, must be updated", currentVersion, newVersion.version);
-
+        if (!Strings.CS.equals(newVersion.version, currentVersion)) {
+            log.info("method=needUpdate Versions differ, oldVersion={}, newVersion={}, must be updated", currentVersion,
+                    newVersion.version);
             return true;
         }
         return false;
     }
 
-    private void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath, final MetadataVersions latestVersions) {
+    private void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath,
+                           final MetadataVersions latestVersions) {
         final String version = latestVersions.getLocationsVersion().version;
 
         locationTypeUpdater.updateLocationTypes(locationTypePath, version);
-        final List<LocationSubtype> locationSubtypes = locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath, version);
+        final List<LocationSubtype> locationSubtypes =
+                locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath, version);
         locationUpdater.updateLocations(locationPath, locationSubtypes, version);
 
         locationVersionRepository.save(new LocationVersion(version));

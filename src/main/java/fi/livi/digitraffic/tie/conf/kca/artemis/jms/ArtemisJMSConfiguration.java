@@ -19,6 +19,7 @@ import fi.livi.digitraffic.common.annotation.NoJobLogging;
 import fi.livi.digitraffic.common.service.locking.CachedLockingService;
 import fi.livi.digitraffic.common.service.locking.LockingService;
 import fi.livi.digitraffic.common.util.StringUtil;
+import jakarta.annotation.PreDestroy;
 import jakarta.jms.ConnectionFactory;
 
 /**
@@ -82,18 +83,54 @@ public class ArtemisJMSConfiguration {
     }
 
     /**
-     * Returns true when all containers have fully drained in-flight onMessage() calls after stop().
-     * Needed because isRunning() returns false immediately when stop() is called, before draining
-     * completes — allowing start() to race against an in-progress stop() causing transient
-     * "Session is closed" warnings.
-     * getActiveConsumerCount() == 0 is the exact point DMLC itself considers stop complete.
-     * Cast is guaranteed: both factories are DefaultJmsListenerContainerFactory which always
-     * creates DefaultMessageListenerContainer instances.
+     * Orchestrates a clean JMS shutdown in the correct order:
+     * <ol>
+     *   <li>Destroy the {@link JmsListenerEndpointRegistry} — calls {@code shutdown()} on every
+     *       container, which: sets {@code running=false}, stops the shared Connection, then
+     *       <strong>blocks</strong> in {@code doShutdown()} until {@code activeInvokerCount == 0},
+     *       i.e. all consumer threads have fully exited and sessions are closed. The broker receives
+     *       a clean consumer-close before this method returns.</li>
+     *   <li>Explicitly release the distributed lock via {@link CachedLockingService#deactivate()} —
+     *       DELETEs the lock row from {@code locking_table} immediately after all connections are
+     *       confirmed closed, so a new instance can acquire the lock and connect right away instead
+     *       of waiting up to {@value #JMS_LOCK_EXPIRATION_SECONDS} seconds for expiry.</li>
+     * </ol>
+     * <p>
+     * <strong>Why {@code destroy()} and not {@code stop()}?</strong><br>
+     * {@code stop()} only sets {@code running=false} and returns immediately — consumer threads may
+     * still be active. {@code destroy()} → {@code shutdown()} → {@code doShutdown()} blocks until
+     * {@code activeInvokerCount == 0}, guaranteeing that no consumer is still connected when we
+     * release the lock.
+     * <p>
+     * Note: each listener configuration subclass bean also has its own {@code @PreDestroy}
+     * that sets the {@code shutdownCalled} flag — Spring calls those automatically and they are
+     * idempotent.
+     */
+    @PreDestroy
+    public void onShutdown() {
+        log.info("method=onShutdown Destroying JmsListenerEndpointRegistry to disconnect from broker (blocking until all consumers exit)");
+        jmsListenerEndpointRegistry.destroy();
+        log.info("method=onShutdown All consumers stopped, releasing JMS distributed lock so new instance can connect immediately");
+        lock.deactivate();
+        log.info("method=onShutdown Done {}", lock.getLockInfoForLogging());
+    }
+
+    /**
+     * Returns true when all containers have fully stopped (no active consumer threads).
+     * Needed because {@code isRunning()} returns false immediately when {@code stop()} is called,
+     * before consumer threads have actually exited — allowing {@code start()} to race against an
+     * in-progress stop and causing transient "Session is closed" warnings.
+     * {@code getActiveConsumerCount() == 0} is the exact point DMLC considers stop complete.
      */
     private boolean isStopCompleted() {
         return jmsListenerEndpointRegistry.getListenerContainers().stream()
-                .map(c -> (DefaultMessageListenerContainer) c)
-                .allMatch(c -> c.getActiveConsumerCount() == 0);
+                .allMatch(c -> {
+                    if (c instanceof DefaultMessageListenerContainer dmlc) {
+                        return dmlc.getActiveConsumerCount() == 0;
+                    }
+                    // Unknown container type — assume stopped (conservative: don't block start)
+                    return !c.isRunning();
+                });
     }
 
     /**
@@ -116,9 +153,7 @@ public class ArtemisJMSConfiguration {
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(true); // Topic
         factory.setAutoStartup(false); // Startup only when instance has a lock
-        factory.setErrorHandler(t -> log.error(StringUtil.format(
-                "method=jmsListenerErrorHandler type={} Execution of JMS message listener failed.",
-                "Topic"), t));
+        factory.setErrorHandler(t -> logListenerError("Topic", t));
         // After a session/connection failure, wait RECOVERY_INTERVAL_MS before trying to reconnect.
         // This avoids rapid retry storms against the broker when the connection is broken.
         factory.setRecoveryInterval(RECOVERY_INTERVAL_MS);
@@ -145,14 +180,27 @@ public class ArtemisJMSConfiguration {
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(false); // Queue
         factory.setAutoStartup(false); // Startup only when instance has a lock
-        factory.setErrorHandler(t -> log.error(StringUtil.format(
-                "method=jmsListenerErrorHandler type={} Execution of JMS message listener failed.",
-                "Queue"), t));
+        factory.setErrorHandler(t -> logListenerError("Queue", t));
         factory.setRecoveryInterval(RECOVERY_INTERVAL_MS);
         log.info("method=jmsListenerContainerFactory created type={} instanceId={}, connection info: {}",
                 "Queue", lock.getInstanceId(), getConnectionFactoryInfo(connectionFactory));
 
         return factory;
+    }
+
+    /**
+     * Logs a JMS listener error. During application shutdown an {@link IllegalStateException}
+     * is thrown deliberately by {@link fi.livi.digitraffic.tie.service.jms.JMSMessageHandler} to
+     * stop processing new messages. That is expected — log it at WARN instead of ERROR so it
+     * does not trigger false alerts on monitoring dashboards.
+     */
+    private void logListenerError(final String type, final Throwable t) {
+        final Throwable cause = t.getCause() != null ? t.getCause() : t;
+        if (cause instanceof IllegalStateException) {
+            log.warn("method=jmsListenerErrorHandler type={} Execution of JMS message listener failed: {}", type, cause.getMessage());
+        } else {
+            log.error(StringUtil.format("method=jmsListenerErrorHandler type={} Execution of JMS message listener failed.", type), t);
+        }
     }
 
     private String getConnectionFactoryInfo(final ConnectionFactory connectionFactory) {

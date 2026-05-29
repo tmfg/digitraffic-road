@@ -46,7 +46,6 @@ public abstract class AbstractReader<T> {
             .withSeparator(delimeterCharacter)
             .withQuoteChar(QUOTE)
             .build();
-
     }
 
     protected AbstractReader(final String version) {
@@ -58,29 +57,28 @@ public abstract class AbstractReader<T> {
     }
 
     public List<T> read(final URL url) throws IOException {
-        return read(url.openStream());
+        return read(url.openStream(), url.getFile());
     }
 
     public List<T> read(final File file) {
-        try {
-            return read(new FileInputStream(file));
+        try (final FileInputStream fis = new FileInputStream(file)) {
+            return read(fis, file.getName());
         } catch (final FileNotFoundException e) {
-            log.error("error reading file", e);
+            log.error("method=read File not found file={}", file, e);
+        } catch (final IOException e) {
+            log.error("method=read IO error reading file={}", file, e);
         }
 
         return Collections.emptyList();
     }
 
-    public List<T> read(final InputStream inputStream) {
-        final CSVReader reader =
-            new CSVReaderBuilder(new InputStreamReader(inputStream, charset))
-                .withCSVParser(parser)
-                .build();
-
+    public List<T> read(final InputStream inputStream, final String filename) {
         final AtomicInteger counter = new AtomicInteger(0);
         final AtomicReference<String[]> ref = new AtomicReference<>();
 
-        try {
+        try (final CSVReader reader = new CSVReaderBuilder(new InputStreamReader(inputStream, charset))
+                .withCSVParser(parser)
+                .build()) {
             return StreamSupport.stream(reader.spliterator(), false).skip(1)
                 .map(item -> {
                     counter.getAndIncrement();
@@ -90,10 +88,11 @@ public abstract class AbstractReader<T> {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         } catch (final Exception e) {
-            log.error("Line: " + Arrays.toString(ref.get()));
-            log.error("Read or parse error occured at line: " + counter.get(), e);
-
-            throw e;
+            log.error("method=read Read or parse error at file={} lineNumber={} line={}", filename, counter.get(), Arrays.toString(ref.get()), e);
+            if (e instanceof final RuntimeException re) {
+                throw re;
+            }
+            throw new RuntimeException(e);
         }
     }
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +53,12 @@ public class MetadataFileFetcher {
         final URL url = getLatestUrl();
         final LatestReader reader = new LatestReader();
 
-        log.info("reading latest from url={}", url);
+        log.info("method=getLatestVersions reading latest from url={}", url);
 
         try {
-            reader.read(createStreamFromUrl(url));
+            reader.read(createStreamFromUrl(url), url.getFile());
         } catch (final IOException e) {
-            log.error("error reading latest versions", e);
+            log.error("method=getLatestVersions error reading latest versions from url={}", url, e);
         }
 
         return reader.getLatestMetadataVersions();
@@ -66,7 +68,7 @@ public class MetadataFileFetcher {
         final URL url = getUrl(latestVersion.filename);
         final File destination = getLocationsZipDestination();
 
-        log.info("reading locations from url={}", url);
+        log.info("method=getLocationsFile reading locations from url={}", url);
 
         try {
             FileUtils.copyToFile(createStreamFromUrl(url), destination);
@@ -81,7 +83,7 @@ public class MetadataFileFetcher {
         final URL url = getUrl(latestVersion.filename);
         final File destination = getCcLtnZipDestination();
 
-        log.info("reading types from url={}", url);
+        log.info("method=getTypefiles reading types from url={}", url);
 
         try {
             FileUtils.copyToFile(createStreamFromUrl(url), destination);
@@ -108,13 +110,12 @@ public class MetadataFileFetcher {
     }
 
     private Path getFileFromZip(final File zipfile, final String entryName, final String destinationName) throws IOException {
-        try(final ZipFile z = new ZipFile(zipfile)) {
+        try (final ZipFile z = new ZipFile(zipfile)) {
             final File entryDestination = Files.createTempFile(destinationName, null).toFile();
-            final ZipEntry e = findEntry(z, entryName);
-            final InputStream is = z.getInputStream(e);
-
-            doCopy(is, entryDestination);
-
+            final ZipEntry e = findEntry(z, entryName); // always non-null — throws if not found
+            try (final InputStream is = z.getInputStream(e)) {
+                doCopy(is, entryDestination);
+            }
             return entryDestination.toPath();
         }
     }
@@ -129,19 +130,21 @@ public class MetadataFileFetcher {
         final Enumeration<? extends ZipEntry> entries = z.entries();
 
         // if given name is empty, return first entry
-        if(StringUtils.isEmpty(name)) {
+        if (StringUtils.isEmpty(name)) {
+            if (!entries.hasMoreElements()) {
+                throw new IllegalArgumentException("method=findEntry Zip file is empty zipFile=" + z.getName());
+            }
             return entries.nextElement();
         }
 
-        while(entries.hasMoreElements()) {
+        while (entries.hasMoreElements()) {
             final ZipEntry entry = entries.nextElement();
-
-            if (StringUtils.equals(entry.getName(), name)) {
+            if (Strings.CS.equals(entry.getName(), name)) {
                 return entry;
             }
         }
 
-        return null;
+        throw new IllegalArgumentException("method=findEntry Entry not found in zip entryName=" + name + " zipFile=" + z.getName());
     }
 
     private static File getLocationsZipDestination() throws IOException {
@@ -157,7 +160,7 @@ public class MetadataFileFetcher {
     }
 
     public URL getUrl(final String filename) throws MalformedURLException {
-        return new URL(tmcUrl + filename);
+        return URI.create(tmcUrl + filename).toURL();
     }
 
     private InputStream createStreamFromUrl(final URL url) throws IOException {

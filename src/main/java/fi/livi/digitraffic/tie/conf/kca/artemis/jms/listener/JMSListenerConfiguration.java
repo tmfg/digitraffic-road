@@ -25,6 +25,11 @@ public abstract class JMSListenerConfiguration<K> {
     protected void onMessage(final ActiveMQMessage activeMQMessage) throws JMSException {
         try {
             jmsMessageHandler.onMessage(activeMQMessage);
+        } catch (final IllegalStateException e) {
+            // During application shutdown the handler deliberately throws IllegalStateException.
+            // Log at WARN so it does not pollute error dashboards.
+            log.warn("method=onMessage failed {}", e.getMessage());
+            throw e;
         } catch (final Exception e) {
             log.error("method=onMessage failed {}", e.getMessage(), e);
             throw e;

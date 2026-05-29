@@ -19,7 +19,7 @@ public class LocationTypeReader extends AbstractReader<LocationType> {
         newType.setDescriptionFi(components[4]);
 
         if(!newType.validate()) {
-            log.error("Could not validate new LocationType:" + Arrays.toString(components));
+            log.error("method=convert Could not validate new LocationType:{}", Arrays.toString(components));
 
             return null;
         }

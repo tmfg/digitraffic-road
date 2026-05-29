@@ -107,7 +107,11 @@ public class JMSMessageHandler<K> {
         if (CollectionUtils.isNotEmpty(messagePayload)) {
             messageQueue.addAll(messagePayload);
 
-            // if queue (= not topic) handle it immediately and acknowledge the handling of the message after successful saving to db.
+            // Queue types (drainScheduled=false) drain synchronously here, inside onMessage(), BEFORE
+            // the JMS session auto-acknowledges the message. This guarantees the DB write completes
+            // before ack — effectively providing at-least-once delivery semantics even with AUTO ack.
+            // ⚠️ If this synchronous drain is ever removed for queue types, AUTO ack must be replaced
+            // with CLIENT_ACKNOWLEDGE or SESSION_TRANSACTED to avoid silent message loss.
             if (!jmsMessageType.isDrainScheduled()) {
                 drainQueueInternal();
             }
