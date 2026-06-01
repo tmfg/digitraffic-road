@@ -20,9 +20,9 @@ public class LocationSubtypeUpdater {
     }
 
     @Transactional
-    public List<LocationSubtype> updateLocationSubtypes(final Path path, final String version) {
+    public List<LocationSubtype> updateLocationSubtypes(final Path path, final String source, final String version) {
         final LocationSubtypeReader locationSubtypeReader = new LocationSubtypeReader(version);
-        final List<LocationSubtype> newTypes = locationSubtypeReader.read(path);
+        final List<LocationSubtype> newTypes = locationSubtypeReader.read(path.toFile(), source);
 
         locationSubtypeRepository.saveAll(newTypes);
 

@@ -20,9 +20,9 @@ public class LocationTypeUpdater {
     }
 
     @Transactional
-    public List<LocationType> updateLocationTypes(final Path path, final String version) {
+    public List<LocationType> updateLocationTypes(final Path path, final String source, final String version) {
         final LocationTypeReader locationTypeReader = new LocationTypeReader(version);
-        final List<LocationType> newTypes = locationTypeReader.read(path);
+        final List<LocationType> newTypes = locationTypeReader.read(path.toFile(), source);
 
         locationTypeRepository.saveAll(newTypes);
 

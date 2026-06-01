@@ -57,7 +57,7 @@ public class LocationMetadataUpdater {
                 final MetadataPathCollection paths = metadataFileFetcher.getFilePaths(latestVersions);
                 final StopWatch stopWatch = StopWatch.createStarted();
 
-                updateAll(paths.typesPath, paths.subtypesPath, paths.locationsPath, latestVersions);
+                updateAll(paths.typesPath, paths.subtypesPath, paths.locationsPath, latestVersions, paths);
                 removeTempFiles(paths);
                 stopWatch.stop();
 
@@ -104,13 +104,13 @@ public class LocationMetadataUpdater {
     }
 
     private void updateAll(final Path locationTypePath, final Path locationSubtypePath, final Path locationPath,
-                           final MetadataVersions latestVersions) {
+                           final MetadataVersions latestVersions, final MetadataPathCollection paths) {
         final String version = latestVersions.getLocationsVersion().version;
 
-        locationTypeUpdater.updateLocationTypes(locationTypePath, version);
+        locationTypeUpdater.updateLocationTypes(locationTypePath, paths.typesSource, version);
         final List<LocationSubtype> locationSubtypes =
-                locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath, version);
-        locationUpdater.updateLocations(locationPath, locationSubtypes, version);
+                locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath, paths.subtypesSource, version);
+        locationUpdater.updateLocations(locationPath, paths.locationsSource, locationSubtypes, version);
 
         locationVersionRepository.save(new LocationVersion(version));
     }
