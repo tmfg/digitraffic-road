@@ -6,15 +6,13 @@ import java.util.List;
 
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import fi.livi.digitraffic.tie.controller.ApiConstants;
-import fi.livi.digitraffic.tie.documentation.RoadApiInfo;
-import fi.livi.digitraffic.tie.service.RoadApiInfoGetter;
+import fi.livi.digitraffic.tie.service.BuildVersionService;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
 
@@ -22,17 +20,15 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class SwaggerConfiguration {
 
-    private final RoadApiInfo roadApiInfo;
-
     private final String API_PATHS = ApiConstants.API + "/**";
     private final String BETA_PATHS = "/**" + ApiConstants.BETA + "/**";
     private final String host;
     private final String scheme;
+    private final BuildVersionService buildVersionService;
 
-    @Autowired
-    public SwaggerConfiguration(final RoadApiInfoGetter roadApiInfoGetter,
+    public SwaggerConfiguration(final BuildVersionService buildVersionService,
                                 final @Value("${dt.domain.url}") String domainUrl) throws URISyntaxException {
-        this.roadApiInfo = roadApiInfoGetter.getApiInfo();
+        this.buildVersionService = buildVersionService;
 
         final URI uri = new URI(domainUrl);
 
@@ -66,14 +62,9 @@ public class SwaggerConfiguration {
 
     private OpenApiCustomizer openApiConfig() {
         return openApi -> {
-            openApi
-                .setInfo(new Info()
-                    .title(roadApiInfo.getTitle())
-                    .description(roadApiInfo.getDescription())
-                    .version(roadApiInfo.getVersion())
-                    .contact(roadApiInfo.getContact())
-                    .termsOfService(roadApiInfo.getTermsOfServiceUrl())
-                    .license(roadApiInfo.getLicense()));
+            openApi.setInfo(new Info()
+                .title("Digitraffic Road API")
+                .version(buildVersionService.getAppFullVersion()));
 
             final Server server = new Server();
             final String url = scheme + "://" + host;
