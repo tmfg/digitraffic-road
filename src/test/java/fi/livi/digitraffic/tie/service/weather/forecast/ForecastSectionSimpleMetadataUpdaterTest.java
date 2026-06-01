@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.controller.ControllerConstants.X_MIN_DOUBL
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MAX_DOUBLE;
 import static fi.livi.digitraffic.tie.controller.ControllerConstants.Y_MIN_DOUBLE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -57,13 +58,19 @@ public class ForecastSectionSimpleMetadataUpdaterTest extends AbstractDaemonTest
     public void updateForecastSectionV1MetadataSucceeds() throws IOException {
         forecastSectionTestHelper.serveGzippedMetadata(server, 1);
 
+        final Instant before = getTransactionTimestamp();
         forecastSectionV1MetadataUpdater.updateForecastSectionV1Metadata();
+        final Instant after = getTransactionTimestamp();
+
         final ForecastSectionFeatureCollectionSimpleV1 collection =
             forecastWebDataServiceV1.findSimpleForecastSections(false, null,
                 X_MIN_DOUBLE, Y_MIN_DOUBLE, X_MAX_DOUBLE, Y_MAX_DOUBLE);
 
-        final Instant now = getTransactionTimestamp();
-        assertEquals(now.getEpochSecond(), collection.dataUpdatedTime.getEpochSecond(), 1);
+        // dataUpdatedTime must be between before and after the update (allow 1s slack for transaction boundaries)
+        assertFalse(collection.dataUpdatedTime.isBefore(before.minusSeconds(1)),
+            "dataUpdatedTime should not be before update started");
+        assertFalse(collection.dataUpdatedTime.isAfter(after.plusSeconds(1)),
+            "dataUpdatedTime should not be after update finished");
 
         assertEquals(10, collection.getFeatures().size());
         assertEquals("00001_001_000_0", collection.getFeatures().getFirst().getProperties().id);

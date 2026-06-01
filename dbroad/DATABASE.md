@@ -128,7 +128,6 @@ Mermaid source: [DATABASE.mermaid](./DATABASE.mermaid)
 
 - `device_data_created_i`
 - `device_data_device_id_effect_date_i`
-- `device_data_effect_date_key`
 - `device_data_modified_idx`
 - `device_data_pkey`
 

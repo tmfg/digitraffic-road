@@ -27,6 +27,20 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
+/**
+ * Base class for reading TMC metadata CSV/DAT files.
+ *
+ * <p>Subclasses implement {@link #convert(String[])} or {@link #convert(String[], String)}
+ * to parse a single CSV row into a domain object. The {@code source} parameter carries the
+ * original remote URL + zip entry name so parse errors can be traced back to the exact file,
+ * e.g. {@code https://tmc.digitraffic.fi/tmc/4.6.zip!locations.csv}.
+ *
+ * <p>On parse failure a single ERROR log line is emitted:
+ * <pre>
+ * method=read Parse error file=https://tmc.digitraffic.fi/tmc/4.6.zip!locations.csv lineNumber=8300
+ *   line=[15, 17, 44590, L, 1, 0, ...] cause=method=convert ... cause=Could not find subtype L1.0
+ * </pre>
+ */
 public abstract class AbstractReader<T> {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -60,13 +74,26 @@ public abstract class AbstractReader<T> {
         return read(url.openStream(), url.getFile());
     }
 
+    /**
+     * Reads and parses all rows from a file, using the file name as the source label in logs.
+     */
     public List<T> read(final File file) {
+        return read(file, file.getName());
+    }
+
+    /**
+     * Reads and parses all rows from a file.
+     *
+     * @param source human-readable origin for logging, e.g.
+     *               {@code https://tmc.digitraffic.fi/tmc/4.6.zip!locations.csv}
+     */
+    public List<T> read(final File file, final String source) {
         try (final FileInputStream fis = new FileInputStream(file)) {
-            return read(fis, file.getName());
+            return read(fis, source);
         } catch (final FileNotFoundException e) {
-            log.error("method=read File not found file={}", file, e);
+            log.error("method=read File not found source={}", source, e);
         } catch (final IOException e) {
-            log.error("method=read IO error reading file={}", file, e);
+            log.error("method=read IO error reading source={}", source, e);
         }
 
         return Collections.emptyList();
@@ -83,12 +110,12 @@ public abstract class AbstractReader<T> {
                 .map(item -> {
                     counter.getAndIncrement();
                     ref.set(item);
-                    return convert(item);
+                    return convert(item, filename);
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         } catch (final Exception e) {
-            log.error("method=read Read or parse error at file={} lineNumber={} line={}", filename, counter.get(), Arrays.toString(ref.get()), e);
+            log.error("method=read Parse error file={} lineNumber={} line=\"{}\" {}", filename, counter.get(), Arrays.toString(ref.get()), e.getMessage(), e);
             if (e instanceof final RuntimeException re) {
                 throw re;
             }
@@ -96,5 +123,21 @@ public abstract class AbstractReader<T> {
         }
     }
 
-    protected abstract T convert(final String[] line);
+    /**
+     * Converts one parsed CSV row to a domain object.
+     * Override this variant to get the source file name for richer error messages.
+     *
+     * @param filename source label, e.g. {@code https://tmc.digitraffic.fi/tmc/4.6.zip!locations.csv}
+     */
+    protected T convert(final String[] line, final String filename) {
+        return convert(line);
+    }
+
+    /**
+     * Converts one parsed CSV row to a domain object.
+     * Subclasses must override this or {@link #convert(String[], String)}.
+     */
+    protected T convert(final String[] line) {
+        throw new UnsupportedOperationException("Subclass must override convert(line) or convert(line, filename)");
+    }
 }

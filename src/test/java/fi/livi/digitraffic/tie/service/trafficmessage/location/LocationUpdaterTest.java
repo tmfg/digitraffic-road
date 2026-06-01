@@ -35,24 +35,24 @@ public class LocationUpdaterTest extends AbstractServiceTest {
     @Test
     public void unknownSubtype() {
         assertThrows(IllegalArgumentException.class, () -> {
-            final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_unknown_subtype.csv"), getSubtypes(), VERSION);
+            final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_unknown_subtype.csv"), "test-source", getSubtypes(), VERSION);
         });
     }
 
     @Test
     public void ok() {
-        final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_ok.csv"), getSubtypes(), VERSION);
+        final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_ok.csv"), "test-source", getSubtypes(), VERSION);
         assertThat(locations, Matchers.not(Matchers.empty()));
     }
 
     @Test
     public void illegalReference() {
-        assertThrows(IllegalArgumentException.class, () -> locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_illegal_geocode.csv"), getSubtypes(), VERSION));
+        assertThrows(IllegalArgumentException.class, () -> locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_illegal_geocode.csv"), "test-source", getSubtypes(), VERSION));
     }
 
     @Test
     public void correctAreaReference() {
-        final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_correct_area_reference.csv"), getSubtypes(), VERSION);
+        final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_correct_area_reference.csv"), "test-source", getSubtypes(), VERSION);
         assertThat(locations, Matchers.hasSize(3));
         assertThat(locations.getFirst().getLocationCode(), Matchers.comparesEqualTo(21));
         assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(23));
@@ -66,7 +66,7 @@ public class LocationUpdaterTest extends AbstractServiceTest {
 
     @Test
     public void correctLinearReference() {
-        final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_correct_linear_reference.csv"), getSubtypes(), VERSION);
+        final List<Location> locations = locationUpdater.updateLocations(TestUtils.getPath("/locations/locations_correct_linear_reference.csv"), "test-source", getSubtypes(), VERSION);
         assertThat(locations, Matchers.hasSize(3));
         assertThat(locations.getFirst().getLocationCode(), Matchers.comparesEqualTo(31));
         assertThat(locations.get(1).getLocationCode(), Matchers.comparesEqualTo(33));

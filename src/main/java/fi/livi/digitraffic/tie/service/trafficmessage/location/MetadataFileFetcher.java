@@ -19,7 +19,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +31,6 @@ public class MetadataFileFetcher {
     private final String tmcUrl;
 
     private static final String LATEST_FILENAME = "latest.txt";
-    private static final String LOCATIONS_FILENAME = "locations.csv";
     private static final String LOCATION_TYPES_FILENAME = "TYPES.DAT";
     private static final String LOCATION_SUBTYPES_FILENAME = "SUBTYPES.DAT";
 
@@ -43,10 +41,23 @@ public class MetadataFileFetcher {
     }
 
     public MetadataPathCollection getFilePaths(final MetadataVersions latestVersions) throws IOException {
-        final Path locationsPath = getLocationsFile(latestVersions.getLocationsVersion());
-        final Pair<Path, Path> pathPair = getTypefiles(latestVersions.getLocationTypeVersion());
+        final URL locationsUrl = getUrl(latestVersions.getLocationsVersion().filename);
+        final MetadataFileEntry locationsEntry = getLocationsFileEntry(locationsUrl);
 
-        return new MetadataPathCollection(locationsPath, pathPair.getRight(), pathPair.getLeft());
+        final URL typesUrl = getUrl(latestVersions.getLocationTypeVersion().filename);
+        final File typesZip = downloadToTemp(typesUrl, getCcLtnZipDestination());
+        try {
+            final MetadataFileEntry typesEntry = getFileFromZip(typesZip, LOCATION_TYPES_FILENAME);
+            final MetadataFileEntry subtypesEntry = getFileFromZip(typesZip, LOCATION_SUBTYPES_FILENAME);
+
+            return new MetadataPathCollection(
+                locationsEntry.path(), locationsUrl + "!" + locationsEntry.entryName(),
+                subtypesEntry.path(), typesUrl + "!" + subtypesEntry.entryName(),
+                typesEntry.path(), typesUrl + "!" + typesEntry.entryName()
+            );
+        } finally {
+            FileUtils.deleteQuietly(typesZip);
+        }
     }
 
     public MetadataVersions getLatestVersions() throws MalformedURLException {
@@ -64,59 +75,44 @@ public class MetadataFileFetcher {
         return reader.getLatestMetadataVersions();
     }
 
-    public Path getLocationsFile(final MetadataVersions.MetadataVersion latestVersion) throws IOException {
-        final URL url = getUrl(latestVersion.filename);
+
+    private MetadataFileEntry getLocationsFileEntry(final URL url) throws IOException {
         final File destination = getLocationsZipDestination();
 
-        log.info("method=getLocationsFile reading locations from url={}", url);
+        log.info("method=getLocationsFileEntry reading locations from url={}", url);
 
         try {
-            FileUtils.copyToFile(createStreamFromUrl(url), destination);
-
-            return getLocationsFileFromZip(destination);
+            downloadToTemp(url, destination);
+            return getFileFromZip(destination, null);
         } finally {
             FileUtils.deleteQuietly(destination);
         }
     }
 
-    public Pair<Path, Path> getTypefiles(final MetadataVersions.MetadataVersion latestVersion) throws IOException {
-        final URL url = getUrl(latestVersion.filename);
-        final File destination = getCcLtnZipDestination();
-
-        log.info("method=getTypefiles reading types from url={}", url);
-
-        try {
-            FileUtils.copyToFile(createStreamFromUrl(url), destination);
-
-            final Path typesPath = getTypesPathFromZip(destination);
-            final Path subtypesPath = getSubtypesPathFromZip(destination);
-
-            return Pair.of(typesPath, subtypesPath);
-        } finally {
-            FileUtils.deleteQuietly(destination);
-        }
+    private File downloadToTemp(final URL url, final File destination) throws IOException {
+        log.info("method=downloadToTemp url={}", url);
+        FileUtils.copyToFile(createStreamFromUrl(url), destination);
+        return destination;
     }
 
-    private Path getTypesPathFromZip(final File destination) throws IOException {
-        return getFileFromZip(destination, LOCATION_TYPES_FILENAME, LOCATION_TYPES_FILENAME);
-    }
-
-    private Path getSubtypesPathFromZip(final File destination) throws IOException {
-        return getFileFromZip(destination, LOCATION_SUBTYPES_FILENAME, LOCATION_SUBTYPES_FILENAME);
-    }
-
-    private Path getLocationsFileFromZip(final File zipfile) throws IOException {
-        return getFileFromZip(zipfile, null, LOCATIONS_FILENAME);
-    }
-
-    private Path getFileFromZip(final File zipfile, final String entryName, final String destinationName) throws IOException {
+    /**
+     * Extracts a zip entry to a temp file.
+     *
+     * @param entryName the entry to extract, or null to take the first entry
+     * @return {@link MetadataFileEntry} with the temp path and the actual entry name,
+     *         e.g. {@code FI_LC_noncertified_simple_1_11_45.csv}
+     */
+    private MetadataFileEntry getFileFromZip(final File zipfile, final String entryName) throws IOException {
         try (final ZipFile z = new ZipFile(zipfile)) {
-            final File entryDestination = Files.createTempFile(destinationName, null).toFile();
-            final ZipEntry e = findEntry(z, entryName); // always non-null — throws if not found
+            final ZipEntry e = findEntry(z, entryName);
+            // Strip directory components and ensure prefix is at least 3 chars for createTempFile
+            final String baseName = Path.of(e.getName()).getFileName().toString();
+            final String prefix = baseName.length() >= 3 ? baseName : baseName + "___";
+            final File entryDestination = Files.createTempFile(prefix, null).toFile();
             try (final InputStream is = z.getInputStream(e)) {
                 doCopy(is, entryDestination);
             }
-            return entryDestination.toPath();
+            return new MetadataFileEntry(entryDestination.toPath(), e.getName());
         }
     }
 

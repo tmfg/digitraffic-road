@@ -27,7 +27,7 @@ public class LocationSubtypeUpdaterTest extends AbstractServiceTest {
     public void updateLocationSubtypesOk() {
         final Path path = new File(Objects.requireNonNull(getClass().getResource(SUBTYPES_FILE_NAME_OK)).getFile()).toPath();
 
-        final List<LocationSubtype> subtypes = locationSubtypeUpdater.updateLocationSubtypes(path, "VERSION");
+        final List<LocationSubtype> subtypes = locationSubtypeUpdater.updateLocationSubtypes(path, "test-source", "VERSION");
         assertThat(subtypes, hasSize(106));
     }
 
@@ -36,7 +36,7 @@ public class LocationSubtypeUpdaterTest extends AbstractServiceTest {
     public void updateLocationSubtypesError() {
         final Path path = new File(Objects.requireNonNull(getClass().getResource(SUBTYPES_FILE_NAME_ERROR)).getFile()).toPath();
 
-        final List<LocationSubtype> subtypes = locationSubtypeUpdater.updateLocationSubtypes(path, "VERSION");
+        final List<LocationSubtype> subtypes = locationSubtypeUpdater.updateLocationSubtypes(path, "test-source", "VERSION");
         assertThat(subtypes, hasSize(1));
     }
 }

@@ -29,10 +29,10 @@ public class LocationUpdater {
     }
 
     @Transactional
-    public List<Location> updateLocations(final Path path, final List<LocationSubtype> locationSubtypes, final String version) {
-        final List<Location> newLocations = getLocations(path, locationSubtypes, version);
+    public List<Location> updateLocations(final Path path, final String source, final List<LocationSubtype> locationSubtypes, final String version) {
+        final List<Location> newLocations = getLocations(path, source, locationSubtypes, version);
 
-        for(int i= 0;i < newLocations.size();i++) {
+        for(int i = 0; i < newLocations.size(); i++) {
             entityManager.persist(newLocations.get(i));
 
             if(i % batchSize == 0) {
@@ -44,11 +44,11 @@ public class LocationUpdater {
         return newLocations;
     }
 
-    private List<Location> getLocations(final Path path, final List<LocationSubtype> locationSubtypes, final String version) {
+    private List<Location> getLocations(final Path path, final String source, final List<LocationSubtype> locationSubtypes, final String version) {
         final Map<String, LocationSubtype> subtypeMap = locationSubtypes.stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
 
         final LocationReader reader = new LocationReader(subtypeMap, version);
-        final List<Location> locations = reader.read(path);
+        final List<Location> locations = reader.read(path.toFile(), source);
 
         setReferences(locations, reader.getAreaRefMap(), reader.getLinearRefMap());
 
