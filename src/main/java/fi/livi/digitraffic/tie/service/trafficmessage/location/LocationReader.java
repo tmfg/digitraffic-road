@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.Location;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationSubtype;
 
@@ -22,16 +21,6 @@ public class LocationReader extends AbstractReader<Location> {
     public LocationReader(final Map<String, LocationSubtype> subtypeMap, final String version) {
         super(StandardCharsets.UTF_8, DELIMITER_COMMA, version);
         this.subtypeMap = subtypeMap;
-    }
-
-    @Override
-    protected Location convert(final String[] components, final String filename) {
-        try {
-            return convert(components);
-        } catch (final Exception e) {
-            throw new IllegalArgumentException(
-                    StringUtil.format("version={} cause=\"{}\"", version, e.getMessage()), e);
-        }
     }
 
     @Override

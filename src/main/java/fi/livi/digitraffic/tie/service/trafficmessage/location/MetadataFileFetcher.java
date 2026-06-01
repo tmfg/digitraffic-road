@@ -43,17 +43,10 @@ public class MetadataFileFetcher {
     }
 
     public MetadataPathCollection getFilePaths(final MetadataVersions latestVersions) throws IOException {
-        final URL locationsUrl = getUrl(latestVersions.getLocationsVersion().filename);
-        final Path locationsPath = getLocationsFile(locationsUrl);
+        final Path locationsPath = getLocationsFile(latestVersions.getLocationsVersion());
+        final Pair<Path, Path> pathPair = getTypefiles(latestVersions.getLocationTypeVersion());
 
-        final URL typesUrl = getUrl(latestVersions.getLocationTypeVersion().filename);
-        final Pair<Path, Path> pathPair = getTypefiles(typesUrl);
-
-        return new MetadataPathCollection(
-            locationsPath, locationsUrl + "!" + LOCATIONS_FILENAME,
-            pathPair.getRight(), typesUrl + "!" + LOCATION_SUBTYPES_FILENAME,
-            pathPair.getLeft(), typesUrl + "!" + LOCATION_TYPES_FILENAME
-        );
+        return new MetadataPathCollection(locationsPath, pathPair.getRight(), pathPair.getLeft());
     }
 
     public MetadataVersions getLatestVersions() throws MalformedURLException {
@@ -72,10 +65,7 @@ public class MetadataFileFetcher {
     }
 
     public Path getLocationsFile(final MetadataVersions.MetadataVersion latestVersion) throws IOException {
-        return getLocationsFile(getUrl(latestVersion.filename));
-    }
-
-    private Path getLocationsFile(final URL url) throws IOException {
+        final URL url = getUrl(latestVersion.filename);
         final File destination = getLocationsZipDestination();
 
         log.info("method=getLocationsFile reading locations from url={}", url);
@@ -90,10 +80,7 @@ public class MetadataFileFetcher {
     }
 
     public Pair<Path, Path> getTypefiles(final MetadataVersions.MetadataVersion latestVersion) throws IOException {
-        return getTypefiles(getUrl(latestVersion.filename));
-    }
-
-    private Pair<Path, Path> getTypefiles(final URL url) throws IOException {
+        final URL url = getUrl(latestVersion.filename);
         final File destination = getCcLtnZipDestination();
 
         log.info("method=getTypefiles reading types from url={}", url);
