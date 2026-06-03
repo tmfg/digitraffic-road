@@ -18,8 +18,6 @@ import jakarta.persistence.QueryHint;
 
 @Repository
 public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{
-
-    @QueryHints(@QueryHint(name= AvailableHints.HINT_FETCH_SIZE, value="1000"))
     @EntityGraph(attributePaths = { "roadAddress" }, type = EntityGraph.EntityGraphType.LOAD)
     List<RoadStation> findByType(final RoadStationType type);
 
