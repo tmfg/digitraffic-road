@@ -30,7 +30,7 @@ public class LocationReader extends AbstractReader<Location> {
             return convert(components);
         } catch (final Exception e) {
             throw new IllegalArgumentException(
-                    StringUtil.format("file={} version={} cause=\"{}\"", filename, version, e.getMessage()), e);
+                    StringUtil.format("version={} cause=\"{}\"", version, e.getMessage()), e);
         }
     }
 
