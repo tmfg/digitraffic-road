@@ -13,18 +13,18 @@ reindex (VERBOSE) table data_updated;
 reindex (VERBOSE) table datex2;
 reindex (VERBOSE) table datex2_situation;
 reindex (VERBOSE) table datex2_situation_record;
-reindex (VERBOSE) table device_data;
+reindex (VERBOSE) table device_data; -- takes 2 minutes
 reindex (VERBOSE) table forecast_condition_reason;
 reindex (VERBOSE) table forecast_section_weather;
 reindex (VERBOSE) table forecast_section;
 reindex (VERBOSE) table link_id;
 reindex (VERBOSE) table locking_table;
-reindex (VERBOSE) table maintenance_tracking; -- takes 8 s
+-- reindex (VERBOSE) table maintenance_tracking; -- takes 9,5 min
 reindex (VERBOSE) table maintenance_tracking_observation_data; -- takes 100 s
 reindex (VERBOSE) table maintenance_tracking_task;
 reindex (VERBOSE) table road_segment;
 reindex (VERBOSE) table road_station;
-reindex (VERBOSE) table sensor_value; -- 45s
+reindex (VERBOSE) table sensor_value; -- 1 min
 reindex (VERBOSE) table sensor_value_history; -- 22 s
 
 -- reindex qrtz_tables

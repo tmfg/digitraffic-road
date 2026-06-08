@@ -191,3 +191,72 @@ END IF;
 RETURN NEW;
 END;
 $$ language 'plpgsql';
+
+-- Maintains is_latest_version for data_datex2_situation on each INSERT.
+-- Must run as BEFORE INSERT so we can modify NEW before the row is written.
+--
+-- If the arriving situation_version is strictly greater than every existing version
+-- for this situation_id, the new row is the genuine latest:
+--   - demote the current latest row (set is_latest_version = false)
+--   - let NEW keep the column default (true)
+-- If an older or duplicate version arrives late, mark NEW as not-latest immediately
+-- and leave the current latest row untouched.
+--
+-- Because this is a BEFORE INSERT trigger, the new row is not yet in the table,
+-- so the SELECT and UPDATE do not need to exclude it by datex2_id.
+CREATE OR REPLACE FUNCTION update_data_datex2_situation_is_latest_version()
+  RETURNS TRIGGER AS $$
+DECLARE
+  _max_version integer;
+BEGIN
+  SELECT MAX(situation_version)
+    INTO _max_version
+    FROM data_datex2_situation
+   WHERE situation_id = NEW.situation_id;
+
+  IF NEW.situation_version > COALESCE(_max_version, -1) THEN
+    -- Genuine new latest: demote the previous latest row for this situation
+    UPDATE data_datex2_situation
+       SET is_latest_version = false
+     WHERE situation_id     = NEW.situation_id
+       AND is_latest_version = true;
+    -- NEW.is_latest_version stays true (column default)
+  ELSE
+    -- Late-arriving or duplicate version: do not disturb the existing latest
+    NEW.is_latest_version = false;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Same pattern for datex2_rtti.
+-- Uses publication_time per situation_id to decide which row is latest.
+-- situation_record_id is stored for future use but not used for grouping yet —
+-- pending confirmation from the upstream maintainer on whether multiple concurrent
+-- situationRecords per situation need to be handled differently.
+-- See tmp/datex2-rtti-versioning-analysis.md for the full analysis.
+CREATE OR REPLACE FUNCTION update_datex2_rtti_is_latest_version()
+  RETURNS TRIGGER AS $$
+DECLARE
+  _max_pub_time timestamptz;
+BEGIN
+  SELECT MAX(publication_time)
+    INTO _max_pub_time
+    FROM datex2_rtti
+   WHERE situation_id = NEW.situation_id;
+
+  IF NEW.publication_time > COALESCE(_max_pub_time, '-infinity'::timestamptz) THEN
+    -- Genuine new latest: demote the previous latest row for this situation
+    UPDATE datex2_rtti
+       SET is_latest_version = false
+     WHERE situation_id     = NEW.situation_id
+       AND is_latest_version = true;
+    -- NEW.is_latest_version stays true (column default)
+  ELSE
+    -- Late-arriving or same-time row: do not disturb the existing latest
+    NEW.is_latest_version = false;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+

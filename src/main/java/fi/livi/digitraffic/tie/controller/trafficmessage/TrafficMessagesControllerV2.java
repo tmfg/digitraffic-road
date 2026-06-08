@@ -135,7 +135,7 @@ public class TrafficMessagesControllerV2 {
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/{situationId}" + HISTORY + DATEX2_3_5 })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of traffic message"),
+                                 description = "Successful retrieval of traffic message history"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
                                  description = "Situation not found",
                                  content = @Content) })
@@ -234,7 +234,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of road works") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> roadworks_35(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -255,7 +255,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of traffic announcements") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficAnnouncements_35(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -276,7 +276,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of weight restrictions") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> weightRestrictions_35(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -297,7 +297,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of exempted transports") })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> exemptedTransports_35(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -321,7 +321,7 @@ public class TrafficMessagesControllerV2 {
             @Parameter(description = "SRTI only")
             @RequestParam(defaultValue = "false")
             final boolean srti,
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -343,7 +343,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of road works") })
     public TrafficAnnouncementFeatureCollection roadworks(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -374,7 +374,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of traffic announcements") })
     public TrafficAnnouncementFeatureCollection trafficAnnouncements(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -405,7 +405,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of weight restrictions") })
     public TrafficAnnouncementFeatureCollection weightRestrictions(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -436,7 +436,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of exempted transports") })
     public TrafficAnnouncementFeatureCollection exemptedTransports(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -469,7 +469,7 @@ public class TrafficMessagesControllerV2 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of road works") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> roadworks_223(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -490,9 +490,9 @@ public class TrafficMessagesControllerV2 {
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of traffic announcements") })
+            description = "Successful retrieval of traffic announcements") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficAnnouncements_223(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -513,9 +513,9 @@ public class TrafficMessagesControllerV2 {
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of weight restrictions") })
+            description = "Successful retrieval of weight restrictions") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> weightRestrictions_223(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,
@@ -536,9 +536,9 @@ public class TrafficMessagesControllerV2 {
                     produces = { APPLICATION_XML_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of exempted transports") })
+            description = "Successful retrieval of exempted transports") })
     public ResponseEntityWithLastModifiedHeader<D2LogicalModel> exemptedTransports_223(
-            @Parameter(description = "Limit validity")
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final Instant from,

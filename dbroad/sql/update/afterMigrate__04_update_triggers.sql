@@ -74,3 +74,20 @@ EXECUTE PROCEDURE maintenance_tracking_task_update();
 -- pic_last_modified is the source system update time, keep track of update time on Digitraffic side with column pic_last_updated_db
 DROP TRIGGER IF EXISTS camera_preset_pic_last_modified_db_t ON camera_preset;
 CREATE TRIGGER camera_preset_pic_last_modified_db_t BEFORE UPDATE ON camera_preset FOR EACH ROW EXECUTE PROCEDURE update_pic_last_modified_db_column();
+
+-- Maintains is_latest_version on data_datex2_situation.
+-- BEFORE INSERT so the trigger function can set NEW.is_latest_version = false
+-- for late-arriving older versions without a second UPDATE.
+DROP TRIGGER IF EXISTS update_data_datex2_situation_is_latest_version_t ON data_datex2_situation;
+CREATE TRIGGER update_data_datex2_situation_is_latest_version_t
+  BEFORE INSERT ON data_datex2_situation
+  FOR EACH ROW
+EXECUTE FUNCTION update_data_datex2_situation_is_latest_version();
+
+-- Same pattern for datex2_rtti (publication_time used instead of situation_version)
+DROP TRIGGER IF EXISTS update_datex2_rtti_is_latest_version_t ON datex2_rtti;
+CREATE TRIGGER update_datex2_rtti_is_latest_version_t
+  BEFORE INSERT ON datex2_rtti
+  FOR EACH ROW
+EXECUTE FUNCTION update_datex2_rtti_is_latest_version();
+

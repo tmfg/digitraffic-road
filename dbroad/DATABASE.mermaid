@@ -128,6 +128,7 @@ erDiagram
 
     data_datex2_situation {
         datex2_id integer PK "not null"
+        is_latest_version boolean "not null"
         geometry geometry "not null"
         situation_version integer "not null"
         situation_id text "not null"
@@ -191,6 +192,7 @@ erDiagram
 
     datex2_rtti {
         datex2_id integer PK "not null"
+        is_latest_version boolean "not null"
         is_srti boolean "not null"
         geometry geometry "not null"
         message text "not null"

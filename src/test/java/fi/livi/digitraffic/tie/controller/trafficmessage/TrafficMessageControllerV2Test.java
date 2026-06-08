@@ -16,14 +16,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 
-import tools.jackson.core.JacksonException;
-
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType;
-import tools.jackson.databind.node.ObjectNode;
-
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,16 +32,24 @@ import fi.livi.digitraffic.JsonAsserter;
 import fi.livi.digitraffic.ResponseAsserter;
 import fi.livi.digitraffic.XmlAsserter;
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
+import fi.livi.digitraffic.tie.DataDatex2SituationTestHelper;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
-import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
-import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
-import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 
 public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock {
     @Autowired
     private DataDatex2SituationRepository dataDatex2SituationRepository;
+
+    private DataDatex2SituationTestHelper helper;
+
+    @BeforeEach
+    void setUpHelper() {
+        helper = new DataDatex2SituationTestHelper(dataDatex2SituationRepository);
+    }
 
     private static final String TIME_PAST = Instant.now().minus(10, ChronoUnit.HOURS).toString();
     private static final String TIME_NOW = Instant.now().toString();
@@ -257,20 +260,8 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     private void insertSituation(final SituationType situationType, final MessageTypeEnum messageType,
                                  final String version, final String message) throws ParseException {
-        final Geometry geometry = PostgisGeometryUtils.convertGeoJsonGeometryToGeometry("""
-                {
-                    "type": "Point",
-                    "coordinates": [24.0, 61.0]
-                  }
-                """);
-
-        final var situation = new DataDatex2Situation("id1", 1L, situationType,
-                geometry, Instant.now(), Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20));
-
-        final var situationMessage = new DataDatex2SituationMessage(version, messageType.value(), message);
-        situation.addMessage(situationMessage);
-
-        dataDatex2SituationRepository.save(situation);
+        helper.insertSituation("id1", 1L, situationType, messageType, version, message,
+                Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20));
     }
 
     @Test

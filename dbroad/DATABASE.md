@@ -69,6 +69,8 @@ Mermaid source: [DATABASE.mermaid](./DATABASE.mermaid)
 
 ### `data_datex2_situation`
 
+- `data_datex2_situation_latest_by_type_i`
+- `data_datex2_situation_latest_ui`
 - `data_datex2_situation_pkey`
 - `data_datex2_situation_search_by_type_key`
 - `data_datex2_situation_search_key`
@@ -103,6 +105,8 @@ Mermaid source: [DATABASE.mermaid](./DATABASE.mermaid)
 
 ### `datex2_rtti`
 
+- `datex2_rtti_latest_i`
+- `datex2_rtti_latest_ui`
 - `datex2_rtti_pkey`
 - `datex2_rtti_situation_publication_time`
 - `datex2_rtti_start_time`

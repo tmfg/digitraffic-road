@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.data;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,11 @@ public class DatexIIService {
     private static final Logger log = LoggerFactory.getLogger(DatexIIService.class);
 
     private static final Instant TIME_END = Instant.ofEpochMilli(32503683600000L);
+
+    /** Default value for {@code from} when not provided by the caller: current time minus one hour. */
+    private static Instant defaultFrom() {
+        return Instant.now().minus(1, ChronoUnit.HOURS);
+    }
 
     public DatexIIService(final DataDatex2SituationRepository dataDatex2SituationRepository,
                           final DatexII35Converter datexII35Converter, final DatexII223Converter datexII223Converter,
@@ -94,7 +100,7 @@ public class DatexIIService {
 
     @Transactional(readOnly = true)
     public Pair<SituationPublication, Instant> findTrafficData35(final Instant fromParameter, final Instant toParameter, final boolean srtiOnly) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
+        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
         final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
@@ -153,20 +159,20 @@ public class DatexIIService {
     }
 
     private Pair<D2LogicalModel, Instant> findDatexII223(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
+        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
-        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to);
+        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, null);
         final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
 
         return convertDatexII223(situations);
     }
 
     private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
+        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
-        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to);
+        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, null);
         final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
 
         return convertDatexII35(situations);
@@ -218,7 +224,7 @@ public class DatexIIService {
     }
 
     private TrafficAnnouncementFeatureCollection findSimppeli(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, Instant.now());
+        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
         final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, bbox);

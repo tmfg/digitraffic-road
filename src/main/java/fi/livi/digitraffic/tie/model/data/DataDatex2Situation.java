@@ -38,6 +38,11 @@ public class DataDatex2Situation {
 
     private Geometry geometry;
 
+    /** Maintained by the DB: true for the highest situation_version per situation_id, false for all others.
+     *  Set by default on INSERT; updated to false by trigger when a newer version arrives. */
+    @Column(name = "is_latest_version", insertable = false, updatable = false)
+    private boolean isLatestVersion;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "situation")
     private List<DataDatex2SituationMessage> messages = new ArrayList<>();
 
