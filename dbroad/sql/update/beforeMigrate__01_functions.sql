@@ -204,11 +204,26 @@ $$ language 'plpgsql';
 --
 -- Because this is a BEFORE INSERT trigger, the new row is not yet in the table,
 -- so the SELECT and UPDATE do not need to exclude it by datex2_id.
+--
+-- pg_advisory_xact_lock serializes concurrent inserts for the same situation_id,
+-- preventing a race condition where two concurrent transactions both read the same
+-- MAX(situation_version) and both try to insert with is_latest_version = true.
 CREATE OR REPLACE FUNCTION update_data_datex2_situation_is_latest_version()
   RETURNS TRIGGER AS $$
 DECLARE
   _max_version integer;
 BEGIN
+  -- Serialize concurrent inserts for the same situation_id within this table.
+  -- Key1 = table OID (distinguishes from other tables using the same lock space),
+  -- Key2 = hash of situation_id.
+  --
+  -- pg_advisory_xact_lock (transaction-level) is used deliberately — NOT pg_advisory_lock
+  -- (session-level). Transaction-level locks are released automatically at COMMIT or ROLLBACK,
+  -- so there is no need to call pg_advisory_unlock(). Using the session-level variant in a
+  -- trigger would be dangerous: a rolled-back transaction would leak the lock until the
+  -- session disconnects.
+  PERFORM pg_advisory_xact_lock('data_datex2_situation'::regclass::oid::int4, hashtext(NEW.situation_id));
+
   SELECT MAX(situation_version)
     INTO _max_version
     FROM data_datex2_situation
@@ -235,11 +250,27 @@ $$ LANGUAGE plpgsql;
 -- pending confirmation from the upstream maintainer on whether multiple concurrent
 -- situationRecords per situation need to be handled differently.
 -- See tmp/datex2-rtti-versioning-analysis.md for the full analysis.
+--
+-- pg_advisory_xact_lock serializes concurrent inserts for the same situation_id,
+-- preventing a race condition where two concurrent transactions both read the same
+-- MAX(publication_time) and both try to insert with is_latest_version = true,
+-- which would violate the datex2_rtti_latest_ui unique partial index.
 CREATE OR REPLACE FUNCTION update_datex2_rtti_is_latest_version()
   RETURNS TRIGGER AS $$
 DECLARE
   _max_pub_time timestamptz;
 BEGIN
+  -- Serialize concurrent inserts for the same situation_id within this table.
+  -- Key1 = table OID (distinguishes from other tables using the same lock space),
+  -- Key2 = hash of situation_id.
+  --
+  -- pg_advisory_xact_lock (transaction-level) is used deliberately — NOT pg_advisory_lock
+  -- (session-level). Transaction-level locks are released automatically at COMMIT or ROLLBACK,
+  -- so there is no need to call pg_advisory_unlock(). Using the session-level variant in a
+  -- trigger would be dangerous: a rolled-back transaction would leak the lock until the
+  -- session disconnects.
+  PERFORM pg_advisory_xact_lock('datex2_rtti'::regclass::oid::int4, hashtext(NEW.situation_id));
+
   SELECT MAX(publication_time)
     INTO _max_pub_time
     FROM datex2_rtti
