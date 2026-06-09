@@ -20,6 +20,7 @@ public class DatexII_3_NamespacePrefixMapper extends NamespacePrefixMapper {
             Map.entry("http://datex2.eu/schema/3/energyInfrastructure", "egi"),
             Map.entry("http://datex2.eu/schema/3/exchangeInformation", "ex"),
             Map.entry("http://datex2.eu/schema/3/facilities", "fac"),
+            Map.entry("http://datex2.eu/schema/3/faultAndStatus", "fst"),
             Map.entry("http://datex2.eu/schema/3/informationManagement", "inf"),
             Map.entry("http://datex2.eu/schema/3/locationExtension", "locx"),
             Map.entry("http://datex2.eu/schema/3/locationReferencing", "loc"),

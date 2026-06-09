@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:com="http://datex2.eu/schema/3/common" version="3.5" targetNamespace="http://datex2.eu/schema/3/common" xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import namespace="http://datex2.eu/schema/3/commonExtension" schemaLocation="DATEXII_3_CommonExtension.xsd" />
+  <xs:complexType name="_CalendarWeekWithinMonthEnum">
+    <xs:simpleContent>
+      <xs:extension base="com:CalendarWeekWithinMonthEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <xs:complexType name="_ComparisonOperatorEnum">
     <xs:simpleContent>
       <xs:extension base="com:ComparisonOperatorEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_ComputationMethodEnum">
+    <xs:simpleContent>
+      <xs:extension base="com:ComputationMethodEnum">
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
@@ -18,6 +32,13 @@
   <xs:complexType name="_DangerousGoodsRegulationsEnum">
     <xs:simpleContent>
       <xs:extension base="com:DangerousGoodsRegulationsEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_DayEnum">
+    <xs:simpleContent>
+      <xs:extension base="com:DayEnum">
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
@@ -84,6 +105,13 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:complexType name="_InstanceOfDayEnum">
+    <xs:simpleContent>
+      <xs:extension base="com:InstanceOfDayEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
   <xs:complexType name="_LoadTypeEnum">
     <xs:simpleContent>
       <xs:extension base="com:LoadTypeEnum">
@@ -94,6 +122,13 @@
   <xs:complexType name="_LowEmissionLevelEnum">
     <xs:simpleContent>
       <xs:extension base="com:LowEmissionLevelEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_MonthOfYearEnum">
+    <xs:simpleContent>
+      <xs:extension base="com:MonthOfYearEnum">
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
@@ -129,6 +164,20 @@
   <xs:complexType name="_SourceTypeEnum">
     <xs:simpleContent>
       <xs:extension base="com:SourceTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_SpecialDayTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="com:SpecialDayTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_TimePrecisionEnum">
+    <xs:simpleContent>
+      <xs:extension base="com:TimePrecisionEnum">
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
@@ -254,6 +303,12 @@
       <xs:element name="_axleSpacingExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
+  <xs:simpleType name="AxlesPerHour">
+    <xs:annotation>
+      <xs:documentation>Vehicle axles per hour.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:NonNegativeInteger" />
+  </xs:simpleType>
   <xs:complexType name="AxleWeight">
     <xs:annotation>
       <xs:documentation>The weight details of a specific axle on the vehicle. </xs:documentation>
@@ -289,6 +344,66 @@
     </xs:annotation>
     <xs:restriction base="xs:boolean" />
   </xs:simpleType>
+  <xs:complexType name="CalendarWeekWithinMonth">
+    <xs:annotation>
+      <xs:documentation>Specification of periods defined by relevant calendar weeks in a month, see ISO8601. Note: Calendar weeks start with Monday. First week is the week containing the first of the month.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:DayWeekMonth">
+        <xs:sequence>
+          <xs:element name="applicableCalenderWeekWithinMonth" type="com:_CalendarWeekWithinMonthEnum" minOccurs="1" maxOccurs="6">
+            <xs:annotation>
+              <xs:documentation>Calender week in month. See ISO8601.  "All weeks of the month" is expressed by not using the CalendarWeekOfMonth class. Note: Calendar weeks start with Monday. First week is the week containing the first of the month.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_calendarWeekWithinMonthExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="CalendarWeekWithinMonthEnum">
+    <xs:annotation>
+      <xs:documentation>Calendar week within month (see ISO8601).</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="firstWeek">
+        <xs:annotation>
+          <xs:documentation>Calendar week containing the first of the month. Several days of the first week of the month may occur in the previous calendar month. By construction, the last week of a preceding month can also be the first week of a subsequent month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="secondWeek">
+        <xs:annotation>
+          <xs:documentation>Second week of the month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="thirdWeek">
+        <xs:annotation>
+          <xs:documentation>Third week of the month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fourthWeek">
+        <xs:annotation>
+          <xs:documentation>Fourth week of the month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fifthWeek">
+        <xs:annotation>
+          <xs:documentation>Fifth week of the month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sixthWeek">
+        <xs:annotation>
+          <xs:documentation>Sixth week of the month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="lastWeek">
+        <xs:annotation>
+          <xs:documentation>Last calendar week within month, regardless of its actual number. The last calendar week is the week beginning with Monday and containing the last of the month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="ComparisonOperatorEnum">
     <xs:annotation>
       <xs:documentation>Logical comparison operations.</xs:documentation>
@@ -317,6 +432,39 @@
       <xs:enumeration value="lessThanOrEqualTo">
         <xs:annotation>
           <xs:documentation>Logical comparison operator of "less than or equal to".</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ComputationMethodEnum">
+    <xs:annotation>
+      <xs:documentation>Types of computational methods used in deriving data values for data sets.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="arithmeticAverageOfSamplesBasedOnAFixedNumberOfSamples">
+        <xs:annotation>
+          <xs:documentation>Arithmetic average of sample values based on a fixed number of samples.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="arithmeticAverageOfSamplesInATimePeriod">
+        <xs:annotation>
+          <xs:documentation>Arithmetic average of sample values in a time period.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="harmonicAverageOfSamplesInATimePeriod">
+        <xs:annotation>
+          <xs:documentation>Harmonic average of sample values in a time period.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="medianOfSamplesInATimePeriod">
+        <xs:annotation>
+          <xs:documentation>Median of sample values taken over a time period.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="movingAverageOfSamples">
+        <xs:annotation>
+          <xs:documentation>Moving average of sample values.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
       <xs:enumeration value="_extended" />
@@ -412,12 +560,79 @@
       <xs:element name="_dataValueExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
+  <xs:simpleType name="Date">
+    <xs:annotation>
+      <xs:documentation>A combination of year, month and day integer-valued properties plus an optional timezone property. It represents an interval of exactly one day, beginning on the first moment of the day in the timezone, i.e. '00:00:00' up to but not including '24:00:00'.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:date" />
+  </xs:simpleType>
   <xs:simpleType name="DateTime">
     <xs:annotation>
       <xs:documentation>A combination of integer-valued year, month, day, hour, minute properties, a decimal-valued second property and a time zone property from which it is possible to determine the local time, the equivalent UTC time and the time zone offset from UTC.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:dateTime" />
   </xs:simpleType>
+  <xs:simpleType name="DayEnum">
+    <xs:annotation>
+      <xs:documentation>Days of the week.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="monday">
+        <xs:annotation>
+          <xs:documentation>Monday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tuesday">
+        <xs:annotation>
+          <xs:documentation>Tuesday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="wednesday">
+        <xs:annotation>
+          <xs:documentation>Wednesday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="thursday">
+        <xs:annotation>
+          <xs:documentation>Thursday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="friday">
+        <xs:annotation>
+          <xs:documentation>Friday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="saturday">
+        <xs:annotation>
+          <xs:documentation>Saturday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sunday">
+        <xs:annotation>
+          <xs:documentation>Sunday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="DayWeekMonth">
+    <xs:annotation>
+      <xs:documentation>Specification of periods defined by the intersection of days or instances of them, calendar weeks and months.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="applicableDay" type="com:_DayEnum" minOccurs="0" maxOccurs="7">
+        <xs:annotation>
+          <xs:documentation>Applicable day of the week. "All days of the week" is expressed by non-inclusion of this attribute.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="applicableMonth" type="com:_MonthOfYearEnum" minOccurs="0" maxOccurs="12">
+        <xs:annotation>
+          <xs:documentation>Applicable month of the year.  "All months of the year" is expressed by non-inclusion of this attribute.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_dayWeekMonthExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
   <xs:simpleType name="Decimal">
     <xs:annotation>
       <xs:documentation>A decimal number whose value space is the set of numbers that can be obtained by multiplying an integer by a non-positive power of ten, i.e., expressible as i × 10^-n where i and n are integers and n &gt;= 0.</xs:documentation>
@@ -778,6 +993,23 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="GenericPublication">
+    <xs:annotation>
+      <xs:documentation>A publication used to make level B extensions at the publication level.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:PayloadPublication">
+        <xs:sequence>
+          <xs:element name="genericPublicationName" type="com:String" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The name of the generic publication.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_genericPublicationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="GlobalReference" abstract="true">
     <xs:annotation>
       <xs:documentation>A versioned reference to an object that may be in another publication from another publisher.</xs:documentation>
@@ -1015,6 +1247,61 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="InstanceOfDayEnum">
+    <xs:annotation>
+      <xs:documentation>Instances of a day of the week in a month</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="firstInstance">
+        <xs:annotation>
+          <xs:documentation>First instance of specified day of week in month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="secondInstance">
+        <xs:annotation>
+          <xs:documentation>Second instance of specified day of week in month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="thirdInstance">
+        <xs:annotation>
+          <xs:documentation>Third instance of specified day of week in month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fourthInstance">
+        <xs:annotation>
+          <xs:documentation>Fourth instance of specified day of week in month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fifthInstance">
+        <xs:annotation>
+          <xs:documentation>Fifth instance of specified day of week in month.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="lastInstance">
+        <xs:annotation>
+          <xs:documentation>Last instance of specified day of week in month (regardless its actual instance number).</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="InstanceOfDayWithinMonth">
+    <xs:annotation>
+      <xs:documentation>Specification of periods defined by the instance of a specific weekday within a month (e.g. 3rd Tuesday in May)</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:DayWeekMonth">
+        <xs:sequence>
+          <xs:element name="applicableInstanceOfDayWithinMonth" type="com:_InstanceOfDayEnum" minOccurs="1" maxOccurs="5">
+            <xs:annotation>
+              <xs:documentation>The specified integer instance of the specified applicable day within a month.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_instanceOfDayWithinMonthExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:simpleType name="Integer">
     <xs:annotation>
       <xs:documentation>An integer number whose value space is the set {-2147483648, -2147483647, -2147483646, ..., -2, -1, 0, 1, 2, ..., 2147483645, 2147483646, 2147483647}.</xs:documentation>
@@ -1342,6 +1629,74 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:simpleType name="MonthOfYearEnum">
+    <xs:annotation>
+      <xs:documentation>A list of the months of the year.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="january">
+        <xs:annotation>
+          <xs:documentation>The month of January.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="february">
+        <xs:annotation>
+          <xs:documentation>The month of February.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="march">
+        <xs:annotation>
+          <xs:documentation>The month of March.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="april">
+        <xs:annotation>
+          <xs:documentation>The month of April.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="may">
+        <xs:annotation>
+          <xs:documentation>The month of May.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="june">
+        <xs:annotation>
+          <xs:documentation>The month of June.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="july">
+        <xs:annotation>
+          <xs:documentation>The month of July.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="august">
+        <xs:annotation>
+          <xs:documentation>The month of August.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="september">
+        <xs:annotation>
+          <xs:documentation>The month of September.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="october">
+        <xs:annotation>
+          <xs:documentation>The month of October.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="november">
+        <xs:annotation>
+          <xs:documentation>The month of November.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="december">
+        <xs:annotation>
+          <xs:documentation>The month of December.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="MultilingualString">
     <xs:sequence>
       <xs:element name="values">
@@ -1407,6 +1762,21 @@
           <xs:documentation>Start of bounding period of validity defined by date and time.</xs:documentation>
         </xs:annotation>
       </xs:element>
+      <xs:element name="overallEndTime" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>End of bounding period of validity defined by date and time.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="validPeriod" type="com:Period" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>A single time period, a recurring time period or a set of different recurring time periods during which validity is true.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="exceptionPeriod" type="com:Period" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>A single time period, a recurring time period or a set of different recurring time periods during which validity is false.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
       <xs:element name="_overallPeriodExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
@@ -1415,6 +1785,16 @@
       <xs:documentation>A payload publication of traffic related information or associated management information created at a specific point in time that can be exchanged via a DATEX II interface.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
+      <xs:element name="feedDescription" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A description of the information which is to be found in the publications originating from the particular feed (URL).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="feedType" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A classification of the information which is to be found in the publications originating from the particular feed.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
       <xs:element name="publicationTime" type="com:DateTime" minOccurs="1" maxOccurs="1">
         <xs:annotation>
           <xs:documentation>Date/time at which the payload publication was created.</xs:documentation>
@@ -1456,6 +1836,44 @@
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Period">
+    <xs:annotation>
+      <xs:documentation>A continuous time period or a set of discontinuous time periods defined by the intersection of a set of criteria all within an overall delimiting interval.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="startOfPeriod" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Start of period.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="endOfPeriod" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>End of a period.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="periodName" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The name of the period.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="recurringTimePeriodOfDay" type="com:TimePeriodOfDay" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>A recurring period of a day.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="recurringDayWeekMonthPeriod" type="com:DayWeekMonth" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>A recurring period defined in terms of days of the week, weeks of the month and months of the year. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="recurringSpecialDay" type="com:SpecialDay" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>A recurring period in terms of special days.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_periodExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
   </xs:complexType>
   <xs:simpleType name="PollutantTypeEnum">
     <xs:annotation>
@@ -2113,6 +2531,23 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="PublicHoliday">
+    <xs:annotation>
+      <xs:documentation>Specification of a specific public holiday in case specialDayType is set to 'publicHoliday'.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:SpecialDay">
+        <xs:sequence>
+          <xs:element name="publicHolidayName" type="com:MultilingualString" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Specification of a specific public holiday by its name.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_publicHolidayExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="Reference">
     <xs:attribute name="id" type="xs:string" use="required" />
   </xs:complexType>
@@ -2331,6 +2766,83 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="SpecialDay">
+    <xs:annotation>
+      <xs:documentation>Specification of a special type of day, possibly also a public holiday. Can be country or region specific.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="intersectWithApplicableDays" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>When true, the period is the intersection of applicable days and this special day. When false, the period is the union of applicable days and this special day.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="specialDayType" type="com:_SpecialDayTypeEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Specification of a special day, for example schoolDay, publicHoliday, ...</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="publicEvent" type="com:_PublicEventTypeEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of public event on this special day.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="namedArea" type="com:NamedArea" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_specialDayExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="SpecialDayTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Collection of special types of days.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="dayBeforePublicHoliday">
+        <xs:annotation>
+          <xs:documentation>The day preceding a public holiday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="publicHoliday">
+        <xs:annotation>
+          <xs:documentation>A public holiday in general. You may use the PublicHoliday class to refer on a specific public holiday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="dayFollowingPublicHoliday">
+        <xs:annotation>
+          <xs:documentation>A day following a public holiday.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="longWeekendDay">
+        <xs:annotation>
+          <xs:documentation>A day between a public holiday and the weekend.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="inLieuOfPublicHoliday">
+        <xs:annotation>
+          <xs:documentation>A holiday in lieu of a public holiday that falls on a weekend.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="schoolDay">
+        <xs:annotation>
+          <xs:documentation>A school day.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="schoolHolidays">
+        <xs:annotation>
+          <xs:documentation>A day within the school holidays.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="publicEventDay">
+        <xs:annotation>
+          <xs:documentation>A day of a public event. You may use the publicEvent attribute to specify the corresponding event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Some other special day.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="SpeedValue">
     <xs:annotation>
       <xs:documentation>A measured or calculated value of speed.</xs:documentation>
@@ -2430,6 +2942,62 @@
       <xs:documentation>An instant of time that recurs every day. The value space of time is the space of time of day values as defined in § 5.3 of [ISO 8601]. Specifically, it is a set of zero-duration daily time instances.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:time" />
+  </xs:simpleType>
+  <xs:complexType name="TimePeriodOfDay">
+    <xs:annotation>
+      <xs:documentation>Specification of a continuous period of time within a 24 hour period.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="startTimeOfPeriod" type="com:Time" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Start of time period.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="endTimeOfPeriod" type="com:Time" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>End of time period.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_timePeriodOfDayExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="TimePrecisionEnum">
+    <xs:annotation>
+      <xs:documentation>List of precisions to which times can be given.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="tenthsOfSecond">
+        <xs:annotation>
+          <xs:documentation>Time given to the nearest tenth of a second.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="second">
+        <xs:annotation>
+          <xs:documentation>Time given to the nearest second.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="minute">
+        <xs:annotation>
+          <xs:documentation>Time given to the nearest minute.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="quarterHour">
+        <xs:annotation>
+          <xs:documentation>Time given to the nearest quarter hour.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="halfHour">
+        <xs:annotation>
+          <xs:documentation>Time given to the nearest half hour.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hour">
+        <xs:annotation>
+          <xs:documentation>Time given to the nearest hour.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="Tonnes">
     <xs:annotation>
@@ -2734,6 +3302,29 @@
       </xs:enumeration>
       <xs:enumeration value="_extended" />
     </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="VehicleFlowValue">
+    <xs:annotation>
+      <xs:documentation>A measured or calculated value of the flow rate of vehicles.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:DataValue">
+        <xs:sequence>
+          <xs:element name="vehicleFlowRate" type="com:VehiclesPerHour" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A value of vehicle flow rate expressed in vehicles per hour.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_vehicleFlowValueExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="VehiclesPerHour">
+    <xs:annotation>
+      <xs:documentation>Vehicles per hour.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:NonNegativeInteger" />
   </xs:simpleType>
   <xs:simpleType name="VehicleStatusEnum">
     <xs:annotation>

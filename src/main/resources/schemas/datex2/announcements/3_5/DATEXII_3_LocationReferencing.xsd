@@ -2871,6 +2871,90 @@ The boundary always consists of road segments</xs:documentation>
       <xs:element name="_positionConfidenceEllipseExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="PredefinedItinerary">
+    <xs:annotation>
+      <xs:documentation>An identifiable versioned instance of a predefined itinerary.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="loc:PredefinedLocationReference">
+        <xs:sequence>
+          <xs:element name="predefinedItineraryName" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A name assigned to the predefined itinerary.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="itinerary" type="loc:Itinerary" minOccurs="0" />
+          <xs:element name="predefinedLocation" type="loc:PredefinedLocation" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="_predefinedItineraryExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="version" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PredefinedLocation">
+    <xs:annotation>
+      <xs:documentation>An identifiable versioned instance of a single predefined location.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="loc:PredefinedLocationReference">
+        <xs:sequence>
+          <xs:element name="predefinedLocationName" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A name assigned to the predefined location (e.g. extracted out of the network operator's gazetteer).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="location" type="loc:Location" />
+          <xs:element name="_predefinedLocationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="version" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PredefinedLocationGroup">
+    <xs:annotation>
+      <xs:documentation>An identifiable versioned instance of a predefined group of non-ordered locations (i.e. more than one).</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="loc:PredefinedLocationReference">
+        <xs:sequence>
+          <xs:element name="predefinedLocationGroupName" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A name assigned to the predefined group of non-ordered locations.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="locationGroup" type="loc:LocationGroup" minOccurs="0" />
+          <xs:element name="predefinedLocation" type="loc:PredefinedLocation" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="_predefinedLocationGroupExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="version" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PredefinedLocationReference" abstract="true">
+    <xs:annotation>
+      <xs:documentation>A location reference which is predefined and may be realised by a predefined itinerary, non-ordered group of locations or single location.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="_predefinedLocationReferenceExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PredefinedLocationsPublication">
+    <xs:annotation>
+      <xs:documentation>A publication containing one or more groups of predefined locations organised either as itineraries, non-ordered groups or as individual locations.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:PayloadPublication">
+        <xs:sequence>
+          <xs:element name="headerInformation" type="com:HeaderInformation" />
+          <xs:element name="predefinedLocationReference" type="loc:PredefinedLocationReference" maxOccurs="unbounded" />
+          <xs:element name="_predefinedLocationsPublicationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="Referent">
     <xs:annotation>
       <xs:documentation>A referent on a linear object that has a known location such as a node, a reference marker (e.g. a marker-post), an intersection etc.</xs:documentation>

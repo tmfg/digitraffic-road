@@ -5,11 +5,6 @@ import static fi.livi.digitraffic.tie.model.data.IncomingDataTypes.IMS_122;
 import java.time.Instant;
 import java.util.List;
 
-
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
-
-import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncement;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -18,13 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
-
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalMessage;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.ImsGeoJsonFeature;
+import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncement;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.ImsMessage;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
@@ -33,6 +25,9 @@ import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.data.DataIncoming;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223UpdateService;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class ImsUpdatingService {
@@ -144,12 +139,35 @@ public class ImsUpdatingService {
         }
     }
 
-    private Pair<Instant, Instant> getStartAndEndTimes(final List<TrafficAnnouncement> announcements) {
+    /**
+     * Derives the overall situation time window from its announcements.
+     *
+     * <ul>
+     *   <li><b>startTime</b> – the earliest {@code startTime} across all announcements
+     *       (i.e. when the situation first became active).</li>
+     *   <li><b>endTime</b> – the latest {@code endTime} across all announcements,
+     *       i.e. the time window that covers all of them.
+     *       Returns {@code null} if <em>any</em> announcement is open-ended
+     *       ({@code endTime == null} or {@code timeAndDuration} is absent altogether),
+     *       because the situation as a whole cannot be considered ended until every
+     *       announcement has ended.</li>
+     * </ul>
+     */
+    Pair<Instant, Instant> getStartAndEndTimes(final List<TrafficAnnouncement> announcements) {
         Instant startTime = null;
         Instant endTime = null;
+        boolean anyEndTimeNull = false;
 
         for(final TrafficAnnouncement announcement : announcements) {
             final var timeAndDuration = announcement.getTimeAndDuration();
+
+            // timeAndDuration is not required by the IMS JSON schema — treat a
+            // missing block the same as an open-ended announcement with no startTime.
+            if (timeAndDuration == null) {
+                anyEndTimeNull = true;
+                continue;
+            }
+
             final var announcementStartTime = timeAndDuration.getStartTime();
             final var announcementEndTime = timeAndDuration.getEndTime();
 
@@ -159,17 +177,17 @@ public class ImsUpdatingService {
                 }
             }
 
-            if(announcementEndTime != null) {
+            if(announcementEndTime == null) {
+                // If any announcement is open-ended, the whole situation is open-ended.
+                // A situation is only fully ended when all its announcements have ended.
+                anyEndTimeNull = true;
+            } else {
                 if (endTime == null || endTime.isBefore(announcementEndTime)) {
                     endTime = announcementEndTime;
                 }
             }
         }
 
-        return Pair.of(startTime, endTime);
-    }
-
-    private Instant safeParseInstant(final JsonNode node) {
-        return node == null ? null : Instant.parse(node.asString());
+        return Pair.of(startTime, anyEndTimeNull ? null : endTime);
     }
 }
