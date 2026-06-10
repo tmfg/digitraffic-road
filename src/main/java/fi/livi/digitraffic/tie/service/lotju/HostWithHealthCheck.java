@@ -77,19 +77,19 @@ public class HostWithHealthCheck {
             healthy = true;
             return true;
         } else if (!isHealthCheckNeeded()) {
-            log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true not performed as ttl not exceeded", healthUrl, dataUrl, "not_performed_ttl", null);
+            log.debug("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true not performed as ttl not exceeded", healthUrl, dataUrl, "not_performed_ttl", null);
             return healthy;
         }
 
         final String healthString = doRequestHealthString();
 
         if (healthString != null && StringUtils.trimToEmpty(healthString).toUpperCase().startsWith(healthOkValue.toUpperCase()) ) {
-            log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true",
+            log.debug("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=true",
                      healthUrl, dataUrl, healthString, healthOkValue);
             setHealthy(true);
             return true;
         }
-        log.info("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=false",
+        log.debug("method=doHealthCheck healthCheckUrl={} dataUrl={} healthCheckValue={} healthCheckExpectedValue={} returnStatus=false",
                  healthUrl, dataUrl, healthString, healthOkValue);
         setHealthy(false);
         return false;
