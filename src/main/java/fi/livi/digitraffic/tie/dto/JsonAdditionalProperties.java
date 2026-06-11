@@ -45,7 +45,7 @@ public abstract class JsonAdditionalProperties implements Serializable {
         // Don's save the value, just log unmapped values
         if (isLoggable(property)) {
             // Log missing properties
-            getLogger(getClass()).warn("method=setAdditionalProperty No property found with the name: {} and value: {}",
+            getLogger(getClass()).warn("method=setAdditionalProperty No property found with the name={} and value=\"{}\"",
                 property, LoggerHelper.objectToStringLoggerSafe(value));
         }
     }

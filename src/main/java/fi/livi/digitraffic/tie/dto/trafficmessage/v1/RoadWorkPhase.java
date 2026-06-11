@@ -4,6 +4,7 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v1;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -13,20 +14,22 @@ import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "A single phase in a larger road work", name = "RoadWorkPhaseV1")
+@Schema(description = "A single phase in a larger road work",
+        name = "RoadWorkPhaseV1")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "id",
-    "location",
-    "locationDetails",
-    "features",
-    "workingHours",
-    "comment",
-    "timeAndDuration"
+        "id",
+        "location",
+        "locationDetails",
+        "features",
+        "workingHours",
+        "comment",
+        "timeAndDuration"
 })
 public class RoadWorkPhase extends JsonAdditionalProperties {
 
-    @Schema(description = "id", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "id",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public String id;
 
@@ -37,6 +40,7 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     public LocationDetails locationDetails;
 
     @Schema(description = "The types of work that are carried out")
+    @JsonAlias("worktypes")
     public List<WorkType> workTypes = new ArrayList<>();
 
     @Schema(description = "Restrictions on traffic")
@@ -45,12 +49,15 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     @Schema(description = "Restrictions can be lifted for abnormal transports")
     public Boolean restrictionsLiftable;
 
-    @Schema(description = "Severity of the disruption to traffic. How severely this road work phase disrupts traffic. LOW - no disruption, " +
-                               "HIGH - disruption, HIGHEST - significant disruption", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description =
+                    "Severity of the disruption to traffic. How severely this road work phase disrupts traffic. LOW - no disruption, " +
+                            "HIGH - disruption, HIGHEST - significant disruption",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public Severity severity;
 
-    @Schema(description = "WorkingHours of an traffic situation announcement", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "WorkingHours of an traffic situation announcement",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public List<WeekdayTimePeriod> workingHours = new ArrayList<>();
 
@@ -63,16 +70,19 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     @Schema(description = "Free comment")
     public String comment;
 
-    @Schema(description = "Time and duration of an traffic situation announcement", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Time and duration of an traffic situation announcement",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public TimeAndDuration timeAndDuration;
 
     public RoadWorkPhase() {
     }
 
-    public RoadWorkPhase(final String id, final Location location, final LocationDetails locationDetails, final List<WorkType> workTypes, final List<Restriction> restrictions,
+    public RoadWorkPhase(final String id, final Location location, final LocationDetails locationDetails,
+                         final List<WorkType> workTypes, final List<Restriction> restrictions,
                          final Boolean restrictionsLiftable, final Severity severity,
-                         final List<WeekdayTimePeriod> workingHours, final List<WeekdayTimePeriod> slowTrafficTimes, final List<WeekdayTimePeriod> queuingTrafficTimes,
+                         final List<WeekdayTimePeriod> workingHours, final List<WeekdayTimePeriod> slowTrafficTimes,
+                         final List<WeekdayTimePeriod> queuingTrafficTimes,
                          final String comment, final TimeAndDuration timeAndDuration) {
         this.id = id;
         this.location = location;

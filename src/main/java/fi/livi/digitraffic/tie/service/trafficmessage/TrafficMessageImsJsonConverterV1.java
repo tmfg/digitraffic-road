@@ -180,8 +180,6 @@ public class TrafficMessageImsJsonConverterV1 {
                         }
                         ((ObjectNode) roadWorkPhase).set("worktypes", worktypes);
                     }
-
-                    fixWorktypesToCamelCase(roadWorkPhase);
                 }
             }
             final ArrayNode features = (ArrayNode) announcement.get("features");
@@ -203,15 +201,6 @@ public class TrafficMessageImsJsonConverterV1 {
         }
     }
 
-    private void fixWorktypesToCamelCase(final JsonNode roadWorkPhase) {
-        final ArrayNode workTypes = (ArrayNode) roadWorkPhase.get("worktypes");
-        if (workTypes != null) {
-            if (!workTypes.isEmpty()) {
-                ((ObjectNode) roadWorkPhase).set("workTypes", workTypes);
-            }
-            ((ObjectNode) roadWorkPhase).remove("worktypes");
-        }
-    }
 
     protected ArrayNode readAnnouncementsFromTheImsJsonProperties(final JsonNode properties) {
         if (properties == null) {

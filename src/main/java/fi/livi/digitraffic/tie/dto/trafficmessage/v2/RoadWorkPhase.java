@@ -4,6 +4,7 @@ package fi.livi.digitraffic.tie.dto.trafficmessage.v2;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -38,6 +39,7 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
     public LocationDetails locationDetails;
 
     @Schema(description = "The types of work that are carried out")
+    @JsonAlias("worktypes")
     public List<WorkType> workTypes = new ArrayList<>();
 
     @Schema(description = "Restrictions on traffic")
