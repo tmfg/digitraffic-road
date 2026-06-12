@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.location;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.model.trafficmessage.location.Location;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationSubtype;
+import fi.livi.digitraffic.common.util.StringUtil;
 import jakarta.persistence.EntityManager;
 
 @ConditionalOnNotWebApplication
@@ -29,63 +31,72 @@ public class LocationUpdater {
     }
 
     @Transactional
-    public List<Location> updateLocations(final Path path, final String source, final List<LocationSubtype> locationSubtypes, final String version) {
-        final List<Location> newLocations = getLocations(path, source, locationSubtypes, version);
+    public ParseResult<Location> updateLocations(final Path path, final String source,
+                                                 final List<LocationSubtype> locationSubtypes,
+                                                 final String subtypesSource,
+                                                 final String version) {
+        final Map<String, LocationSubtype> subtypeMap = locationSubtypes.stream()
+                .collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
+        final LocationReader reader = new LocationReader(subtypeMap, version, subtypesSource);
+        final List<Location> locations = reader.read(path.toFile(), source);
 
-        for(int i = 0; i < newLocations.size(); i++) {
-            entityManager.persist(newLocations.get(i));
+        final List<String> referenceErrors = setReferences(locations, reader.getAreaRefMap(), reader.getLinearRefMap());
 
-            if(i % batchSize == 0) {
+        // Persist all successfully-parsed locations. Even if there are parse/reference errors the
+        // persist and flush still run here, but the caller (LocationMetadataUpdater.updateAll) will
+        // throw an IllegalStateException when it sees hasErrors(), which causes Spring to roll back
+        // the whole transaction – so nothing is ever committed to the DB on a partial import.
+        for (int i = 0; i < locations.size(); i++) {
+            entityManager.persist(locations.get(i));
+            if (batchSize > 0 && (i + 1) % batchSize == 0) {
                 entityManager.flush();
                 entityManager.clear();
             }
         }
 
-        return newLocations;
+        final List<String> allErrors = new ArrayList<>(reader.getParseErrors());
+        allErrors.addAll(referenceErrors);
+        return new ParseResult<>(locations, allErrors);
     }
 
-    private List<Location> getLocations(final Path path, final String source, final List<LocationSubtype> locationSubtypes, final String version) {
-        final Map<String, LocationSubtype> subtypeMap = locationSubtypes.stream().collect(Collectors.toMap(LocationSubtype::getSubtypeCode, Function.identity()));
-
-        final LocationReader reader = new LocationReader(subtypeMap, version);
-        final List<Location> locations = reader.read(path.toFile(), source);
-
-        setReferences(locations, reader.getAreaRefMap(), reader.getLinearRefMap());
-
-        return locations;
-    }
-
-    private void setReferences(final List<Location> newLocations, final Map<Integer, Integer> areaRefMap, final Map<Integer, Integer> linearRefMap) {
-        final Map<Integer, Location> newMap = newLocations.parallelStream().collect(Collectors.toMap(Location::getLocationCode, Function.identity()));
+    /**
+     * Resolves area and linear cross-references between parsed locations.
+     * Returns a list of error messages for every unresolvable reference instead of throwing,
+     * so the caller can include them in the full parse report.
+     */
+    private List<String> setReferences(final List<Location> newLocations,
+                                       final Map<Integer, Integer> areaRefMap,
+                                       final Map<Integer, Integer> linearRefMap) {
+        final List<String> errors = new ArrayList<>();
+        final Map<Integer, Location> newMap = newLocations.parallelStream()
+                .collect(Collectors.toMap(Location::getLocationCode, Function.identity()));
 
         areaRefMap.forEach((id, areaRefId) -> {
             final Location location = newMap.get(id);
-            final Location areaRef = newMap.get(areaRefId);
-
-            if(location == null) {
-                throw new IllegalArgumentException();
+            if (location == null) {
+                errors.add(StringUtil.format("locationCode={} cause=location missing from parsed set (area-ref={})", id, areaRefId));
+                return;
             }
-
-            if(areaRef == null) {
-                throw new IllegalArgumentException("could not find area reference " + areaRefId);
+            if (newMap.get(areaRefId) == null) {
+                errors.add(StringUtil.format("locationCode={} cause=could not find area reference {}", id, areaRefId));
+                return;
             }
-
             location.setAreaRef(areaRefId);
         });
 
         linearRefMap.forEach((id, linearRefId) -> {
             final Location location = newMap.get(id);
-            final Location linearRef = newMap.get(linearRefId);
-
-            if(location == null) {
-                throw new IllegalArgumentException();
+            if (location == null) {
+                errors.add(StringUtil.format("locationCode={} cause=location missing from parsed set (linear-ref={})", id, linearRefId));
+                return;
             }
-
-            if(linearRef == null) {
-                throw new IllegalArgumentException("could not find linear reference " + linearRefId);
+            if (newMap.get(linearRefId) == null) {
+                errors.add(StringUtil.format("locationCode={} cause=could not find linear reference {}", id, linearRefId));
+                return;
             }
-
             location.setLinearRef(linearRefId);
         });
+
+        return errors;
     }
 }

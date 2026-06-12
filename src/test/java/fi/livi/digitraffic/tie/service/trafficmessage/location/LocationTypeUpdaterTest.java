@@ -22,7 +22,7 @@ public class LocationTypeUpdaterTest extends AbstractServiceTest {
     public void testUpdateLocationTypes() {
         final Path path = new File(Objects.requireNonNull(getClass().getResource(TYPES_FILE_NAME)).getFile()).toPath();
 
-        final List<LocationType> updated = locationTypeUpdater.updateLocationTypes(path, "test-source", "testVersion");
+        final List<LocationType> updated = locationTypeUpdater.updateLocationTypes(path, "test-source", "testVersion").items();
         Assertions.assertNotEquals(0, updated.size());
     }
 }

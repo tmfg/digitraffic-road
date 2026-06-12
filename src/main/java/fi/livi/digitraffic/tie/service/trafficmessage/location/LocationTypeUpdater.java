@@ -20,12 +20,12 @@ public class LocationTypeUpdater {
     }
 
     @Transactional
-    public List<LocationType> updateLocationTypes(final Path path, final String source, final String version) {
+    public ParseResult<LocationType> updateLocationTypes(final Path path, final String source, final String version) {
         final LocationTypeReader locationTypeReader = new LocationTypeReader(version);
         final List<LocationType> newTypes = locationTypeReader.read(path.toFile(), source);
 
         locationTypeRepository.saveAll(newTypes);
 
-        return newTypes;
+        return new ParseResult<>(newTypes, locationTypeReader.getParseErrors());
     }
 }

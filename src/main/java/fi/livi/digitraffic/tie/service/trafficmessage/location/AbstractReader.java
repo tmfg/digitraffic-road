@@ -10,6 +10,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,8 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
+import fi.livi.digitraffic.common.util.StringUtil;
+
 /**
  * Base class for reading TMC metadata CSV/DAT files.
  *
@@ -35,10 +38,9 @@ import com.opencsv.CSVReaderBuilder;
  * original remote URL + zip entry name so parse errors can be traced back to the exact file,
  * e.g. {@code https://tmc.digitraffic.fi/tmc/4.6.zip!locations.csv}.
  *
- * <p>On parse failure a single ERROR log line is emitted:
+ * <p>On parse failure a single entry is added to {@link #getParseErrors()}:
  * <pre>
- * method=read Parse error file=https://tmc.digitraffic.fi/tmc/4.6.zip!locations.csv lineNumber=8300
- *   line=[15, 17, 44590, L, 1, 0, ...] cause=method=convert ... cause=Could not find subtype L1.0
+ * line=8300 file=FI_LC_4.6.zip!locations.csv cause=Could not find subtype L1.0
  * </pre>
  */
 public abstract class AbstractReader<T> {
@@ -52,6 +54,8 @@ public abstract class AbstractReader<T> {
     private final Charset charset;
     protected final String version;
     private final CSVParser parser;
+
+    private final List<String> parseErrors = new ArrayList<>();
 
     protected AbstractReader(final Charset charset, final char delimeterCharacter, final String version) {
         this.charset = charset;
@@ -100,6 +104,7 @@ public abstract class AbstractReader<T> {
     }
 
     public List<T> read(final InputStream inputStream, final String filename) {
+        parseErrors.clear();
         final AtomicInteger counter = new AtomicInteger(0);
         final AtomicReference<String[]> ref = new AtomicReference<>();
 
@@ -110,17 +115,35 @@ public abstract class AbstractReader<T> {
                 .map(item -> {
                     counter.getAndIncrement();
                     ref.set(item);
-                    return convert(item, filename);
+                    try {
+                        return convert(item, filename);
+                    } catch (final Exception e) {
+                        final String shortSource = StringUtil.fileBaseName(filename);
+                        parseErrors.add(StringUtil.format("line={} file={} row={} cause={}",
+                                counter.get(), shortSource, Arrays.toString(item), e.getMessage()));
+                        return null;
+                    }
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         } catch (final Exception e) {
-            log.error("method=read Parse error file={} lineNumber={} line=\"{}\" {}", filename, counter.get(), Arrays.toString(ref.get()), e.getMessage(), e);
+            log.error("method=read IO/CSV error file={} lineNumber={} line=\"{}\" {}",
+                    filename, counter.get(), Arrays.toString(ref.get()), e.getMessage(), e);
             if (e instanceof final RuntimeException re) {
                 throw re;
             }
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Returns all per-row parse errors collected during the last {@link #read} call.
+     * Each entry contains the line number, source file name, raw CSV row, and the error message.
+     * The list is cleared at the start of each {@link #read} call, so it always reflects only
+     * the most recent invocation.
+     */
+    public List<String> getParseErrors() {
+        return Collections.unmodifiableList(parseErrors);
     }
 
     /**

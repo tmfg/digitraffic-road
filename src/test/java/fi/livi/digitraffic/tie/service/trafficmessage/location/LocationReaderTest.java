@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.location;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ public class LocationReaderTest extends AbstractJpaTest {
     private Map<String, LocationSubtype> subtypeMap;
 
     private final static String VERSION = "VERSION";
+    private final static String TEST_SUBTYPES_SOURCE = "SUBTYPES.DAT";
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +39,7 @@ public class LocationReaderTest extends AbstractJpaTest {
 
     @Test
     public void emptyLocationsFile() {
-        final LocationReader reader = new LocationReader(subtypeMap, VERSION);
+        final LocationReader reader = new LocationReader(subtypeMap, VERSION, TEST_SUBTYPES_SOURCE);
 
         final List<Location> locations = reader.read(TestUtils.getPath("/locations/locations_empty.csv"));
         assertThat(locations, Matchers.empty());
@@ -47,7 +47,7 @@ public class LocationReaderTest extends AbstractJpaTest {
 
     @Test
     public void illegalGeocode() {
-        final LocationReader reader = new LocationReader(subtypeMap, VERSION);
+        final LocationReader reader = new LocationReader(subtypeMap, VERSION, TEST_SUBTYPES_SOURCE);
         final LocationReader spyReader = Mockito.spy(reader);
 
         final List<Location> locations = spyReader.read(TestUtils.getPath("/locations/locations_illegal_geocode.csv"));
@@ -60,8 +60,11 @@ public class LocationReaderTest extends AbstractJpaTest {
 
     @Test
     public void illegalSubtype() {
-        final LocationReader reader = new LocationReader(subtypeMap, VERSION);
+        final LocationReader reader = new LocationReader(subtypeMap, VERSION, TEST_SUBTYPES_SOURCE);
 
-        assertThrows(IllegalArgumentException.class, () -> reader.read(TestUtils.getPath("/locations/locations_illegal_subtype.csv")));
+        // Unknown subtypes are collected as parse errors rather than aborting; row is skipped
+        reader.read(TestUtils.getPath("/locations/locations_illegal_subtype.csv"));
+        assertThat(reader.getParseErrors(), Matchers.not(Matchers.empty()));
+        assertThat(reader.getParseErrors().getFirst(), Matchers.containsString(TEST_SUBTYPES_SOURCE));
     }
 }

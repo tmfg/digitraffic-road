@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +65,6 @@ public class LocationMetadataUpdaterTest extends AbstractServiceTest {
     }
 
     @Test
-    @Disabled
-    public void findAndUpdate() throws IOException {
-        locationMetadataUpdater.findAndUpdate();
-        verify(metadataFileFetcherSpy).getFilePaths(any(MetadataVersions.class));
-    }
-
-    @Test
     public void findAndUpdateVersionsDiffer() throws IOException {
         final MetadataVersions mv = mock(MetadataVersions.class);
         when(mv.getLocationsVersion()).thenReturn(new MetadataVersions.MetadataVersion("a", "1"));
@@ -107,7 +99,7 @@ public class LocationMetadataUpdaterTest extends AbstractServiceTest {
 
             fail();
         } catch(final IllegalArgumentException iae) {
-            assertEquals(iae.getMessage(), "TEST");
+            assertEquals("TEST", iae.getMessage());
         }
 
         verify(metadataFileFetcherSpy, never()).getFilePaths(any(MetadataVersions.class));

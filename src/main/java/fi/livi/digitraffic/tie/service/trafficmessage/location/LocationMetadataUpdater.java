@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.service.trafficmessage.location;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -13,8 +14,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.dao.trafficmessage.location.LocationVersionRepository;
+import fi.livi.digitraffic.tie.model.trafficmessage.location.Location;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationSubtype;
+import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationVersion;
 
 @ConditionalOnNotWebApplication
@@ -57,8 +61,12 @@ public class LocationMetadataUpdater {
                 final MetadataPathCollection paths = metadataFileFetcher.getFilePaths(latestVersions);
                 final StopWatch stopWatch = StopWatch.createStarted();
 
-                updateAll(paths.typesPath, paths.subtypesPath, paths.locationsPath, latestVersions, paths);
-                removeTempFiles(paths);
+                try {
+                    updateAll(paths.typesPath, paths.subtypesPath, paths.locationsPath, latestVersions, paths);
+                } finally {
+                    // Always clean up temp files, even when updateAll() throws (parse failures etc.)
+                    removeTempFiles(paths);
+                }
                 stopWatch.stop();
 
                 log.info("method=findAndUpdate Locations and locationtypes updated, tookMs={}",
@@ -107,11 +115,43 @@ public class LocationMetadataUpdater {
                            final MetadataVersions latestVersions, final MetadataPathCollection paths) {
         final String version = latestVersions.getLocationsVersion().version;
 
-        locationTypeUpdater.updateLocationTypes(locationTypePath, paths.typesSource, version);
-        final List<LocationSubtype> locationSubtypes =
+        final ParseResult<LocationType> typesResult =
+                locationTypeUpdater.updateLocationTypes(locationTypePath, paths.typesSource, version);
+        final ParseResult<LocationSubtype> subtypesResult =
                 locationSubtypeUpdater.updateLocationSubtypes(locationSubtypePath, paths.subtypesSource, version);
-        locationUpdater.updateLocations(locationPath, paths.locationsSource, locationSubtypes, version);
+        final ParseResult<Location> locationsResult =
+                locationUpdater.updateLocations(locationPath, paths.locationsSource, subtypesResult.items(),
+                        paths.subtypesSource, version);
+
+        final List<String> allErrors = collectErrors(typesResult, subtypesResult, locationsResult);
+
+        if (!allErrors.isEmpty()) {
+            log.error("method=updateAll version={} Parse failures detected – DB update rolled back. " +
+                            "{} error(s) total:\n{}",
+                    version, allErrors.size(), String.join("\n", allErrors));
+            throw new IllegalStateException(
+                    "Location metadata parse failures in version " + version +
+                    ": " + allErrors.size() + " error(s) – see logs for details");
+        }
 
         locationVersionRepository.save(new LocationVersion(version));
+    }
+
+    private static List<String> collectErrors(final ParseResult<LocationType> typesResult,
+                                              final ParseResult<LocationSubtype> subtypesResult,
+                                              final ParseResult<Location> locationsResult) {
+        final List<String> all = new ArrayList<>();
+        appendErrors(all, "TYPES",     typesResult.parseErrors());
+        appendErrors(all, "SUBTYPES",  subtypesResult.parseErrors());
+        appendErrors(all, "LOCATIONS", locationsResult.parseErrors());
+        return all;
+    }
+
+    private static void appendErrors(final List<String> target, final String section,
+                                     final List<String> errors) {
+        if (!errors.isEmpty()) {
+            target.add(StringUtil.format("{} ({} error(s)):", section, errors.size()));
+            errors.forEach(e -> target.add("  " + e));
+        }
     }
 }

@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage.location;
 
-import java.util.Arrays;
-
+import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationType;
 import fi.livi.digitraffic.tie.model.trafficmessage.location.LocationTypeKey;
 
@@ -11,17 +10,16 @@ public class LocationTypeReader extends AbstractReader<LocationType> {
     }
 
     @Override
-    protected LocationType convert(final String[] components) {
+    protected LocationType convert(final String[] components, final String filename) {
         final LocationType newType = new LocationType();
 
         newType.setId(new LocationTypeKey(version, components[3]));
         newType.setDescriptionEn(components[2]);
         newType.setDescriptionFi(components[4]);
 
-        if(!newType.validate()) {
-            log.error("method=convert Could not validate new LocationType:{}", Arrays.toString(components));
-
-            return null;
+        if (!newType.validate()) {
+            throw new IllegalArgumentException(
+                    StringUtil.format("Could not validate LocationType typeCode={}", components[3]));
         }
 
         return newType;

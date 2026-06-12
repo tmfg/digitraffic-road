@@ -17,22 +17,19 @@ public class LocationReader extends AbstractReader<Location> {
     private final Map<Integer, Integer> areaRefMap = new HashMap<>();
     private final Map<Integer, Integer> linearRefMap = new HashMap<>();
 
+    /** Short form of the subtypes source, e.g. {@code FI_LC_noncertified_1_11_45.zip!SUBTYPES.DAT}. */
+    private final String subtypesSource;
+
     private static final String GEOCODE_FIN_CODE = "FinCode:";
 
-    public LocationReader(final Map<String, LocationSubtype> subtypeMap, final String version) {
+    public LocationReader(final Map<String, LocationSubtype> subtypeMap, final String version,
+                          final String subtypesSource) {
         super(StandardCharsets.UTF_8, DELIMITER_COMMA, version);
         this.subtypeMap = subtypeMap;
+        // Strip URL prefix so error messages show just the zip+entry name
+        this.subtypesSource = StringUtil.fileBaseName(subtypesSource);
     }
 
-    @Override
-    protected Location convert(final String[] components, final String filename) {
-        try {
-            return convert(components);
-        } catch (final Exception e) {
-            throw new IllegalArgumentException(
-                    StringUtil.format("version={} cause=\"{}\"", version, e.getMessage()), e);
-        }
-    }
 
     @Override
     protected Location convert(final String[] components) {
@@ -80,14 +77,15 @@ public class LocationReader extends AbstractReader<Location> {
         return component.substring(GEOCODE_FIN_CODE.length());
     }
 
-    private static String parseSubtype(final String classValue, final String typeValue, final String subtypeValue,
+    private String parseSubtype(final String classValue, final String typeValue, final String subtypeValue,
                                        final Map<String, LocationSubtype> subtypeMap) {
-        final String subtypeCode = String.format("%s%s.%s", classValue, typeValue, subtypeValue);
+        final String subtypeCode = StringUtil.format("{}{}.{}", classValue, typeValue, subtypeValue);
 
         final LocationSubtype subtype = subtypeMap.get(subtypeCode);
 
         if (subtype == null) {
-            throw new IllegalArgumentException("Could not find subtype " + subtypeCode);
+            throw new IllegalArgumentException(
+                    StringUtil.format("Could not find subtype {} (subtypes from {})", subtypeCode, subtypesSource));
         }
 
         return subtype.getSubtypeCode();
