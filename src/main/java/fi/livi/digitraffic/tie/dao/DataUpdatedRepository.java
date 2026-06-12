@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.dao;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,14 +17,14 @@ import fi.livi.digitraffic.tie.model.DataUpdated;
 @Repository
 public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> {
 
-    String UNSET_SUBTYPE = "-";
-
     @Query(value = "select transaction_timestamp()", nativeQuery = true)
     Instant getTransactionStartTime();
 
-    default Instant findUpdatedTime(final DataType dataType) {
-        return findUpdatedTime(dataType, Collections.singletonList(UNSET_SUBTYPE));
-    }
+    @Query("""
+            SELECT max(d.updated)
+            FROM DataUpdated d
+            WHERE d.dataType = :dataType AND d.subtype IS NULL""")
+    Instant findUpdatedTime(final DataType dataType);
 
     @Query("""
             SELECT max(d.updated)
@@ -35,12 +34,12 @@ public interface DataUpdatedRepository extends JpaRepository<DataUpdated, Long> 
 
     @Modifying
     default void upsertDataUpdated(final DataType dataType) {
-        upsertDataUpdated(dataType, UNSET_SUBTYPE);
+        upsertDataUpdated(dataType, (String) null);
     }
 
     @Modifying
     default void upsertDataUpdated(final DataType dataType, final Instant updated) {
-        upsertDataUpdated(dataType, UNSET_SUBTYPE, updated);
+        upsertDataUpdated(dataType, null, updated);
     }
 
     @Modifying

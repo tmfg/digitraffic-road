@@ -75,6 +75,34 @@ public class DataUpdatedRepositoryTest extends AbstractJpaTest {
         assertPlusMinusMillis(setTime2, result, 500);
     }
 
+    @Test
+    public void upsertNoSubtypeConflictResolution() {
+        // Upserting the same DataType twice without subtype should result in ON CONFLICT update, not duplicate rows
+        final Instant firstTime = Instant.now().minusSeconds(100);
+        final Instant secondTime = Instant.now().minusSeconds(10);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, firstTime);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, secondTime);
+        final long rowCount = ((Number) entityManager.createNativeQuery(
+                "SELECT COUNT(*) FROM data_updated WHERE data_type = ?1 AND subtype IS NULL")
+                .setParameter(1, DataType.TMS_STATION_SENSOR_METADATA.name())
+                .getSingleResult()).longValue();
+        MatcherAssert.assertThat(rowCount, CoreMatchers.is(1L));
+        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA);
+        assertPlusMinusMillis(secondTime, result, 500);
+    }
+
+    @Test
+    public void findUpdatedTimeDoesNotReturnSubtypedRows() {
+        // findUpdatedTime(DataType) must return only the no-subtype row, not rows with real subtypes
+        final String subtype = RandomStringUtils.secure().nextAlphanumeric(5);
+        final Instant subtypeTime = Instant.now().minusSeconds(10);
+        final Instant noSubtypeTime = Instant.now().minusSeconds(50);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, subtype, subtypeTime);
+        dataUpdatedRepository.upsertDataUpdated(DataType.TMS_STATION_SENSOR_METADATA, noSubtypeTime);
+        final Instant result = dataUpdatedRepository.findUpdatedTime(DataType.TMS_STATION_SENSOR_METADATA);
+        assertPlusMinusMillis(noSubtypeTime, result, 500);
+    }
+
     private void assertPlusMinusMillis(final Instant expected, final Instant actual, final long deltaMillis) {
         MatcherAssert.assertThat(actual.toEpochMilli(),
             CoreMatchers.allOf(Matchers.greaterThanOrEqualTo(expected.minusMillis(deltaMillis).toEpochMilli()),
