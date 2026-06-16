@@ -93,7 +93,7 @@ public class TrafficAnnouncementProperties extends PropertiesV1 {
         return trafficAnnouncementType;
     }
 
-    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Update time for station metadata", requiredMode = Schema.RequiredMode.REQUIRED)
     public Instant getDataUpdatedTime() {
         return getLastModified();
     }

@@ -42,7 +42,7 @@ public class ForecastSectionPropertiesV1 extends PropertiesV1 {
     @Schema(description = "Forecast section link indices. Refers to https://aineistot.vayla.fi/digiroad/")
     public final List<Long> linkIds;
 
-    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Update time for station metadata", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant dataUpdatedTime;
 
     public ForecastSectionPropertiesV1(final String id, final String description, final int roadSectionNumber,
