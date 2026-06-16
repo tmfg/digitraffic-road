@@ -1,9 +1,9 @@
-# Loading Datex II Announcements 3.5 Schema
+# Loading Datex II Announcements 3.7 Schema
 
 Go to https://webtool.datex2.eu/wizard/#
 
 1. Source
-   * Select: V3.5 DATEX II DATEX II
+   * Select: V3.7 DATEX II DATEX II
 2. Selection file
    * NONE
 3. Profile Selection
@@ -17,6 +17,7 @@ Go to https://webtool.datex2.eu/wizard/#
 5. Selection
    * PayloadPublication
       SELECT -> Selecting the top level selects all items under it
+     * Deselect all EnergyInfrastructure* items
 6. Options
    * Select target PSM
      * XML Schema

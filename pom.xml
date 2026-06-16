@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,7 +17,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.6</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <properties>
@@ -608,7 +608,7 @@
                 <version>3.5.4</version>
                 <configuration>
                     <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
-                    <!-- <argLine>-Xms512m -Xmx1024M ${argLine}</argLine> -->
+                    <argLine>-Xms512m -Xmx4g -XX:+UseG1GC -XX:MaxMetaspaceSize=512m -XX:SoftRefLRUPolicyMSPerMB=0</argLine>
                     <systemPropertyVariables>
                         <junit.jupiter.extensions.autodetection.enabled>true
                         </junit.jupiter.extensions.autodetection.enabled>
@@ -664,7 +664,8 @@
                                     </wsdl>
                                     <packagenames>
                                         <packagename>
-                                            fi.livi.digitraffic.tie.external.lotju.metadata.lam</packagename>
+                                            fi.livi.digitraffic.tie.external.lotju.metadata.lam
+                                        </packagename>
                                     </packagenames>
                                 </wsdlOption>
 
@@ -732,8 +733,7 @@
                     </plugins>
                 </configuration>
                 <executions>
-                    <!--Datex2
-                    3.5 TMS-->
+                    <!--Datex2 3.5 TMS-->
                     <execution>
                         <goals>
                             <goal>generate</goal>
@@ -742,7 +742,8 @@
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
                             <schemaDirectory>
-                                ${basedir}/src/main/resources/schemas/datex2/tms/3_5/xml</schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/datex2/tms/3_5/xml
+                            </schemaDirectory>
                             <schemaIncludes>DATEXII_3_D2Payload.xsd</schemaIncludes>
                             <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
                             <bindingIncludes>
@@ -756,8 +757,7 @@
                         </configuration>
                     </execution>
 
-                    <!--Datex2
-                    2.2.3 with Finnish definitions -->
+                    <!--Datex2 2.2.3 with Finnish definitions -->
                     <execution>
                         <goals>
                             <goal>generate</goal>
@@ -766,7 +766,8 @@
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
                             <schemaDirectory>
-                                ${basedir}/src/main/resources/schemas/datex2/announcements/2_2_3_fi</schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/datex2/announcements/2_2_3_fi
+                            </schemaDirectory>
                             <schemaIncludes>
                                 <include>DATEXIISchema_2_2_3_with_definitions_FI.xsd</include>
                             </schemaIncludes>
@@ -784,8 +785,7 @@
                         </configuration>
                     </execution>
 
-                    <!--Datex2
-                    3.5 traffic announcements -->
+                    <!--Datex2 3.5 traffic announcements -->
                     <execution>
                         <goals>
                             <goal>generate</goal>
@@ -794,19 +794,45 @@
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
                             <schemaDirectory>
-                                ${basedir}/src/main/resources/schemas/datex2/announcements/3_5</schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/datex2/announcements/3_5
+                            </schemaDirectory>
                             <schemaIncludes>
                                 <include>DATEXII_3_D2Payload.xsd</include>
                             </schemaIncludes>
                             <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
                             <bindingIncludes>
                                 <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
-                                <bindingInclude>datex2/announcements/3_5/DATEXII_3.xjb
-                                </bindingInclude>
+                                <bindingInclude>datex2/announcements/3_5/DATEXII_3.xjb</bindingInclude>
                             </bindingIncludes>
                             <generatePackage>fi.livi.digitraffic.tie.datex2.v3_5</generatePackage>
                             <generateDirectory>
                                 ${project.build.directory}/generated-sources/datex2-v3_5-xml
+                            </generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!--Datex2 3.7 traffic announcements -->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>DATEXII_3.7</id>
+                        <configuration>
+                            <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/datex2/announcements/3_7
+                            </schemaDirectory>
+                            <schemaIncludes>
+                                <include>DATEXII_3_D2Payload.xsd</include>
+                            </schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas/</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                                <bindingInclude>datex2/announcements/3_7/DATEXII_3.xjb</bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.datex2.v3_7</generatePackage>
+                            <generateDirectory>
+                                ${project.build.directory}/generated-sources/datex2-v3_7-xml
                             </generateDirectory>
                         </configuration>
                     </execution>
@@ -819,7 +845,8 @@
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
                             <schemaDirectory>
-                                ${basedir}/src/main/resources/schemas/lotju/jms/metadata</schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/lotju/jms/metadata
+                            </schemaDirectory>
                             <schemaIncludes>
                                 <include>metatietomuutos_kamera_tietovirta.xsd</include>
                             </schemaIncludes>
@@ -845,7 +872,8 @@
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
                             <schemaDirectory>
-                                ${basedir}/src/main/resources/schemas/lotju/jms/metadata</schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/lotju/jms/metadata
+                            </schemaDirectory>
                             <schemaIncludes>
                                 <include>metatietomuutos_lam_tietovirta.xsd</include>
                             </schemaIncludes>
@@ -871,7 +899,8 @@
                         <configuration>
                             <!--<forceRegenerate>true</forceRegenerate>-->
                             <schemaDirectory>
-                                ${basedir}/src/main/resources/schemas/lotju/jms/metadata</schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/lotju/jms/metadata
+                            </schemaDirectory>
                             <schemaIncludes>
                                 <include>metatietomuutos_tiesaa_tietovirta.xsd</include>
                             </schemaIncludes>
@@ -952,7 +981,8 @@
                             <sourceDirectory>${basedir}/src/main/resources/schemas/tloik</sourceDirectory>
                             <targetPackage>fi.livi.digitraffic.tie.external.tloik</targetPackage>
                             <outputDirectory>
-                                ${project.build.directory}/generated-sources/tloik-json/</outputDirectory>
+                                ${project.build.directory}/generated-sources/tloik-json/
+                            </outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -962,7 +992,8 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>
-                                ${basedir}/src/main/resources/schemas/datex2/tms/3_5/json</sourceDirectory>
+                                ${basedir}/src/main/resources/schemas/datex2/tms/3_5/json
+                            </sourceDirectory>
                             <targetPackage>fi.livi.digitraffic.tie.tms.datex2.v3_5.json</targetPackage>
                             <outputDirectory>
                                 ${project.build.directory}/generated-sources/datex2-v3_5-json
@@ -984,13 +1015,15 @@
                         </goals>
                         <configuration>
                             <protocArtifact>
-                                com.google.protobuf:protoc:${com.google.protobuf.version}</protocArtifact>
+                                com.google.protobuf:protoc:${com.google.protobuf.version}
+                            </protocArtifact>
                             <addProtoSources>all</addProtoSources>
                             <inputDirectories>
                                 <include>src/main/resources/schemas/lotju/proto</include>
                             </inputDirectories>
                             <outputDirectory>
-                                ${project.build.directory}/generated-sources/lotju-proto</outputDirectory>
+                                ${project.build.directory}/generated-sources/lotju-proto
+                            </outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -1112,22 +1145,30 @@
                                 <source>${project.build.directory}/generated-sources/annotations</source>
                                 <source>${project.build.directory}/generated-sources/cxf</source>
                                 <source>
-                                    ${project.build.directory}/generated-sources/datex2-tms-v3_5-xml</source>
+                                    ${project.build.directory}/generated-sources/datex2-tms-v3_5-xml
+                                </source>
                                 <source>
-                                    ${project.build.directory}/generated-sources/datex2-v2_2_3_fi-xml</source>
+                                    ${project.build.directory}/generated-sources/datex2-v2_2_3_fi-xml
+                                </source>
                                 <source>
-                                    ${project.build.directory}/generated-sources/datex2-v3_5-json</source>
+                                    ${project.build.directory}/generated-sources/datex2-v3_5-json
+                                </source>
                                 <source>${project.build.directory}/generated-sources/datex2-v3_5-xml</source>
+                                <source>${project.build.directory}/generated-sources/datex2-v3_7-xml</source>
                                 <source>${project.build.directory}/generated-sources/harja-json</source>
                                 <source>
-                                    ${project.build.directory}/generated-sources/lotju-kamera-metadata-xml</source>
+                                    ${project.build.directory}/generated-sources/lotju-kamera-metadata-xml
+                                </source>
                                 <source>
-                                    ${project.build.directory}/generated-sources/lotju-lam-metadata-xml</source>
+                                    ${project.build.directory}/generated-sources/lotju-lam-metadata-xml
+                                </source>
                                 <source>${project.build.directory}/generated-sources/lotju-proto</source>
                                 <source>
-                                    ${project.build.directory}/generated-sources/lotju-tiesaa-metadata-xml</source>
+                                    ${project.build.directory}/generated-sources/lotju-tiesaa-metadata-xml
+                                </source>
                                 <source>
-                                    ${project.build.directory}/generated-sources/tloik-ims_1_2_2-xml</source>
+                                    ${project.build.directory}/generated-sources/tloik-ims_1_2_2-xml
+                                </source>
                                 <source>${project.build.directory}/generated-sources/tloik-json</source>
                             </sources>
                         </configuration>

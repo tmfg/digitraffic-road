@@ -24,7 +24,7 @@
 <!--        </jaxb:bindings>-->
 <!--    </jaxb:bindings>-->
 
-    <!-- Generate XmlRootElement annotations fox JAXB -->
+    <!-- Generate XmlRootElement annotations for JAXB -->
     <jaxb:bindings schemaLocation="DATEXII_3_RoadTrafficData.xsd" node="/xs:schema">
         <jaxb:bindings node="xs:complexType[@name='MeasuredDataPublication']">
             <annox:annotate>

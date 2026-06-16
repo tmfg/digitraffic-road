@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" version="3.7" targetNamespace="http://datex2.eu/schema/3/energyInfrastructure" xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/facilities" schemaLocation="DATEXII_3_Facilities.xsd" />
+  <xs:complexType name="_PricingPolicyEnum">
+    <xs:simpleContent>
+      <xs:extension base="egi:PricingPolicyEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="EnergyPricingPolicy">
+    <xs:annotation>
+      <xs:documentation>Details how the price for the charging process is calculated.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="pricingPolicy" type="egi:_PricingPolicyEnum" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Information on which ways of pricing are used at the refill point.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combinationWithParkingFee" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates whether vehicle charging and parking are included in one combined fee</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="discount" type="com:Percentage" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Discount indicated in %</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="maximumDeliveryFee" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A maximum delivery fee.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minimumDeliveryFee" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A minimum delivery fee.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="additionalInformation" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free text field for additional information regarding the pricing policy.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_energyPricingPolicyExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="PricingPolicyEnum">
+    <xs:annotation>
+      <xs:documentation>A list of possible pricing policies at refill points</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pricePerChargingTime">
+        <xs:annotation>
+          <xs:documentation>The charging time defines the price.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="pricePerDeliveryUnit">
+        <xs:annotation>
+          <xs:documentation>The amount of delivery units (see DeliveryUnitEnum) defines the price.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="contract">
+        <xs:annotation>
+          <xs:documentation>A contract defines the pricing.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="flatRate">
+        <xs:annotation>
+          <xs:documentation>Customers can or must have (depends on other available options) a flatrate to use the RefillPoint.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unknown">
+        <xs:annotation>
+          <xs:documentation>The pricing details are unknown.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="free">
+        <xs:annotation>
+          <xs:documentation>Charging is free.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other method of pricing.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

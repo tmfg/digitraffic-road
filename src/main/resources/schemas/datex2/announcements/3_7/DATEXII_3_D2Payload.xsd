@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:d2="http://datex2.eu/schema/3/d2Payload" version="3.5" targetNamespace="http://datex2.eu/schema/3/d2Payload" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:fst="http://datex2.eu/schema/3/faultAndStatus" xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" xmlns:sit="http://datex2.eu/schema/3/situation" xmlns:vms="http://datex2.eu/schema/3/vms" xmlns:prk="http://datex2.eu/schema/3/parking" xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan" xmlns:rer="http://datex2.eu/schema/3/reroutingManagementEnhanced" xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:ubx="http://datex2.eu/schema/3/urbanExtensions" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import namespace="http://datex2.eu/schema/3/urbanExtensions" schemaLocation="DATEXII_3_UrbanExtensions.xsd" />
-  <xs:import namespace="http://datex2.eu/schema/3/locationExtension" schemaLocation="DATEXII_3_LocationExtension.xsd" />
-  <xs:import namespace="http://datex2.eu/schema/3/commonExtension" schemaLocation="DATEXII_3_CommonExtension.xsd" />
-  <xs:import namespace="http://datex2.eu/schema/3/reroutingManagementEnhanced" schemaLocation="DATEXII_3_ReroutingManagementEnhanced.xsd" />
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:d2="http://datex2.eu/schema/3/d2Payload" version="3.7" targetNamespace="http://datex2.eu/schema/3/d2Payload" xmlns:com="http://datex2.eu/schema/3/common" xmlns:rer="http://datex2.eu/schema/3/reroutingManagementEnhanced" xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:ubx="http://datex2.eu/schema/3/urbanExtensions" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:afac="http://datex2.eu/schema/3/afirFacilities" xmlns:cz="http://datex2.eu/schema/3/controlledZone" xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:fst="http://datex2.eu/schema/3/faultAndStatus" xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" xmlns:sit="http://datex2.eu/schema/3/situation" xmlns:tro="http://datex2.eu/schema/3/trafficRegulation" xmlns:vms="http://datex2.eu/schema/3/vms" xmlns:prk="http://datex2.eu/schema/3/parking" xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import namespace="http://datex2.eu/schema/3/trafficManagementPlan" schemaLocation="DATEXII_3_TrafficManagementPlan.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/parking" schemaLocation="DATEXII_3_Parking.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/vms" schemaLocation="DATEXII_3_Vms.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/trafficRegulation" schemaLocation="DATEXII_3_TrafficRegulation.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/situation" schemaLocation="DATEXII_3_Situation.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/roadTrafficData" schemaLocation="DATEXII_3_RoadTrafficData.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/faultAndStatus" schemaLocation="DATEXII_3_FaultAndStatus.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/facilities" schemaLocation="DATEXII_3_Facilities.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/energyInfrastructure" schemaLocation="DATEXII_3_EnergyInfrastructure.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/controlledZone" schemaLocation="DATEXII_3_ControlledZone.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/afirFacilities" schemaLocation="DATEXII_3_AfirFacilities.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/urbanExtensions" schemaLocation="DATEXII_3_UrbanExtensions.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/locationExtension" schemaLocation="DATEXII_3_LocationExtension.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/commonExtension" schemaLocation="DATEXII_3_CommonExtension.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/reroutingManagementEnhanced" schemaLocation="DATEXII_3_ReroutingManagementEnhanced.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
   <xs:element name="payload" type="com:PayloadPublication">
     <xs:unique name="_payloadOperatingHoursSpecificationConstraint">
@@ -33,8 +37,18 @@
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
+    <xs:unique name="_payloadafacOperatingHoursTableConstraint">
+      <xs:selector xpath=".//afac:operatingHoursTable" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
     <xs:unique name="_payloadSituationRecordConstraint">
       <xs:selector xpath=".//sit:situationRecord" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadafacRightSpecificationConstraint">
+      <xs:selector xpath=".//afac:rightSpecification" />
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
@@ -53,8 +67,25 @@
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
+    <xs:unique name="_payloadControlledZoneTablePublicationConstraint">
+      <xs:selector xpath=".//cz:controlledZoneTablePublication" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+    <xs:unique name="_payloadPredefinedConditionPublicationConstraint">
+      <xs:selector xpath=".//tro:predefinedConditionPublication" />
+      <xs:field xpath="@id" />
+    </xs:unique>
     <xs:unique name="_payloadPtScheduleConstraint">
       <xs:selector xpath=".//rer:ptSchedule" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadDynamicActivationStatusPublicationConstraint">
+      <xs:selector xpath=".//cz:dynamicActivationStatusPublication" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+    <xs:unique name="_payloadTrafficRegulationOrderConstraint">
+      <xs:selector xpath=".//tro:trafficRegulationOrder" />
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
@@ -92,8 +123,22 @@
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
+    <xs:unique name="_payloadafacRateMatrixConstraint">
+      <xs:selector xpath=".//afac:rateMatrix" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
     <xs:unique name="_payloadDeviceConstraint">
       <xs:selector xpath=".//fst:device" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadWarningPublicationConstraint">
+      <xs:selector xpath=".//tro:warningPublication" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+    <xs:unique name="_payloadControlledZoneConstraint">
+      <xs:selector xpath=".//cz:controlledZone" />
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
@@ -104,6 +149,11 @@
     </xs:unique>
     <xs:unique name="_payloadOrganisationTableConstraint">
       <xs:selector xpath=".//fac:organisationTable" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadTrafficRegulationConstraint">
+      <xs:selector xpath=".//tro:trafficRegulation" />
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
@@ -119,6 +169,11 @@
     </xs:unique>
     <xs:unique name="_payloadPredefinedLocationConstraint">
       <xs:selector xpath=".//loc:predefinedLocation" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadafacRateTableConstraint">
+      <xs:selector xpath=".//afac:rateTable" />
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
@@ -152,6 +207,11 @@
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
+    <xs:unique name="_payloadActivationStatusConstraint">
+      <xs:selector xpath=".//cz:activationStatus" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
     <xs:unique name="_payloadMeasurementSiteTableConstraint">
       <xs:selector xpath=".//roa:measurementSiteTable" />
       <xs:field xpath="@id" />
@@ -162,8 +222,32 @@
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>
+    <xs:unique name="_payloadafacOperatingHoursSpecificationConstraint">
+      <xs:selector xpath=".//afac:operatingHoursSpecification" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
     <xs:unique name="_payloadVmsControllerTableConstraint">
       <xs:selector xpath=".//vms:vmsControllerTable" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadPermitInformationConstraint">
+      <xs:selector xpath=".//tro:permitInformation" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadTrafficRegulationPublicationConstraint">
+      <xs:selector xpath=".//tro:trafficRegulationPublication" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+    <xs:unique name="_payloadPredefinedConditionConstraint">
+      <xs:selector xpath=".//tro:predefinedCondition" />
+      <xs:field xpath="@id" />
+      <xs:field xpath="@version" />
+    </xs:unique>
+    <xs:unique name="_payloadafacOrganisationTableConstraint">
+      <xs:selector xpath=".//afac:organisationTable" />
       <xs:field xpath="@id" />
       <xs:field xpath="@version" />
     </xs:unique>

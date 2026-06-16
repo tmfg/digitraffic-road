@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:fac="http://datex2.eu/schema/3/facilities" version="3.5" targetNamespace="http://datex2.eu/schema/3/facilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:fac="http://datex2.eu/schema/3/facilities" version="3.7" targetNamespace="http://datex2.eu/schema/3/facilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/energyInfrastructure" schemaLocation="DATEXII_3_EnergyInfrastructure.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
   <xs:complexType name="_CredentialTypeEnum">
@@ -1373,6 +1374,14 @@
       <xs:documentation>Information about rates, either by reference or by a table specification.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
+      <xs:element name="applicableCurrency" type="fac:CurrencyCode" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>A general information on the applicable monetary currency.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="paymentMethod" type="fac:PaymentMethod" minOccurs="0" />
+      <xs:element name="overallPeriod" type="com:OverallPeriod" minOccurs="0" />
+      <xs:element name="energyPricingPolicy" type="egi:EnergyPricingPolicy" minOccurs="0" />
       <xs:element name="_ratesExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
