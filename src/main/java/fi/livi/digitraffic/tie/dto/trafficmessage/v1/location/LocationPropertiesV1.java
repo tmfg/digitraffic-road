@@ -60,7 +60,7 @@ public class LocationPropertiesV1 extends PropertiesV1 implements DataUpdatedSup
     @Schema(description = "The order of point within line or segment feature")
     public final String orderOfPoint;
 
-    @Schema(description = "Update time for station metadata", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Date time of the most recent data update", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public final Instant dataUpdatedTime;
 

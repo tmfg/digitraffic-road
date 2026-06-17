@@ -100,7 +100,7 @@ public class TrafficAnnouncementProperties extends PropertiesV1 {
         return trafficAnnouncementType;
     }
 
-    @Schema(description = "Update time for station metadata", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Date time of the most recent data update", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonSerialize(using = V2DateTimeFormat.Serializer.class)
     @JsonDeserialize(using = V2DateTimeFormat.Deserializer.class)
     public Instant getDataUpdatedTime() {
