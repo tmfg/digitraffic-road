@@ -29,7 +29,7 @@ import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.controller.maintenance.MaintenanceTrackingControllerV1;
 import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
 import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV1;
-import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2;
+import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2;
 import fi.livi.digitraffic.tie.controller.weather.WeatherControllerV1;
 import fi.livi.digitraffic.tie.controller.weathercam.WeathercamControllerV1;
 import fi.livi.digitraffic.tie.dao.DataUpdatedRepository;
@@ -206,19 +206,19 @@ public class DataStatusService {
 
         // V2 type-specific endpoints (same underlying data as V1)
         trafficMessageInfos.add(new UpdateInfoDtoV1(
-            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.TRAFFIC_ANNOUNCEMENTS,
+            TrafficMessageControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessageControllerV2.TRAFFIC_ANNOUNCEMENTS,
             datex2Repository.getLastModified(SituationType.TRAFFIC_ANNOUNCEMENT.name()), null,
             trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
         trafficMessageInfos.add(new UpdateInfoDtoV1(
-            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.ROADWORKS,
+            TrafficMessageControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessageControllerV2.ROADWORKS,
             datex2Repository.getLastModified(SituationType.ROAD_WORK.name()), null,
             trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
         trafficMessageInfos.add(new UpdateInfoDtoV1(
-            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.WEIGHT_RESTRICTIONS,
+            TrafficMessageControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessageControllerV2.WEIGHT_RESTRICTIONS,
             datex2Repository.getLastModified(SituationType.WEIGHT_RESTRICTION.name()), null,
             trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
         trafficMessageInfos.add(new UpdateInfoDtoV1(
-            TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessagesControllerV2.EXEMPTED_TRANSPORTS,
+            TrafficMessageControllerV2.API_TRAFFIC_MESSAGE_V2 + TrafficMessageControllerV2.EXEMPTED_TRANSPORTS,
             datex2Repository.getLastModified(SituationType.EXEMPTED_TRANSPORT.name()), null,
             trafficMessageInfo.getUpdateInterval(), trafficMessageInfo.getRecommendedFetchInterval()));
 

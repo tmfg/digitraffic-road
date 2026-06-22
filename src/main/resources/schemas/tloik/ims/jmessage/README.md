@@ -71,7 +71,7 @@ Ie. `RoadWorkPhase.java`:
                     assertNotNull(rwp.queuingTrafficTimes.getFirst().endTime);
                 }
             }
-15. Modify test `TrafficMessagesControllerV1Test.java` to check new values ie.
+15. Modify test `TrafficMessageControllerV1Test.java` to check new values ie.
 
             private void assertContentsMatch(...) {
             ...

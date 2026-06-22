@@ -79,23 +79,23 @@ public class DatexIIService {
     }
 
     @Transactional(readOnly = true)
-    public Pair<SituationPublication, Instant> findRoadworks35(final Instant from, final Instant to) {
-        return findDatexII35(SituationType.ROAD_WORK, from, to);
+    public Pair<SituationPublication, Instant> findRoadworks35(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII35(SituationType.ROAD_WORK, from, to, bbox);
     }
 
     @Transactional(readOnly = true)
-    public Pair<SituationPublication, Instant> findTrafficAnnouncements35(final Instant from, final Instant to) {
-        return findDatexII35(SituationType.TRAFFIC_ANNOUNCEMENT, from, to);
+    public Pair<SituationPublication, Instant> findTrafficAnnouncements35(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII35(SituationType.TRAFFIC_ANNOUNCEMENT, from, to, bbox);
     }
 
     @Transactional(readOnly = true)
-    public Pair<SituationPublication, Instant> findWeightRestrictions35(final Instant from, final Instant to) {
-        return findDatexII35(SituationType.WEIGHT_RESTRICTION, from, to);
+    public Pair<SituationPublication, Instant> findWeightRestrictions35(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII35(SituationType.WEIGHT_RESTRICTION, from, to, bbox);
     }
 
     @Transactional(readOnly = true)
-    public Pair<SituationPublication, Instant> findExemptedTransports35(final Instant from, final Instant to) {
-        return findDatexII35(SituationType.EXEMPTED_TRANSPORT, from, to);
+    public Pair<SituationPublication, Instant> findExemptedTransports35(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII35(SituationType.EXEMPTED_TRANSPORT, from, to, bbox);
     }
 
     @Transactional(readOnly = true)
@@ -168,11 +168,11 @@ public class DatexIIService {
         return convertDatexII223(situations);
     }
 
-    private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
+    private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
-        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, null);
+        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, bbox);
         final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
 
         return convertDatexII35(situations);

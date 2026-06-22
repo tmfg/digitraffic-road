@@ -48,7 +48,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @Validated
 @ConditionalOnWebApplication
-public class TrafficMessagesControllerV2 {
+public class TrafficMessageControllerV2 {
     public static final String API_TRAFFIC_MESSAGE_V2 = API_TRAFFIC_MESSAGE + V2;
 
     public static final String MESSAGES = "/messages";
@@ -64,7 +64,7 @@ public class TrafficMessagesControllerV2 {
 
     private final DatexIIService datexIIService;
 
-    public TrafficMessagesControllerV2(final DatexIIService datexIIService) {
+    public TrafficMessageControllerV2(final DatexIIService datexIIService) {
         this.datexIIService = datexIIService;
     }
 
@@ -241,8 +241,20 @@ public class TrafficMessagesControllerV2 {
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to) {
-        final var publication = datexIIService.findRoadworks35(from, to);
+            final Instant to,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMax,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMax) {
+        final var publication = datexIIService.findRoadworks35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5);
@@ -262,8 +274,20 @@ public class TrafficMessagesControllerV2 {
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to) {
-        final var publication = datexIIService.findTrafficAnnouncements35(from, to);
+            final Instant to,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMax,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMax) {
+        final var publication = datexIIService.findTrafficAnnouncements35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
@@ -283,8 +307,20 @@ public class TrafficMessagesControllerV2 {
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to) {
-        final var publication = datexIIService.findWeightRestrictions35(from, to);
+            final Instant to,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMax,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMax) {
+        final var publication = datexIIService.findWeightRestrictions35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5);
@@ -304,8 +340,20 @@ public class TrafficMessagesControllerV2 {
             @Parameter(description = "Limit validity")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to) {
-        final var publication = datexIIService.findExemptedTransports35(from, to);
+            final Instant to,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double xMax,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMin,
+            @Parameter(description = "Bounding box")
+            @RequestParam(required = false)
+            final Double yMax) {
+        final var publication = datexIIService.findExemptedTransports35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
 
         return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
                 API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5);

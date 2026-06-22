@@ -1,15 +1,15 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.API_TRAFFIC_MESSAGE_V2;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.DATEX2_2_2_3;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.DATEX2_3_5;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.EXEMPTED_TRANSPORTS;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.HISTORY;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.MESSAGES;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.ROADWORKS;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.TRAFFIC_ANNOUNCEMENTS;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.TRAFFIC_DATA;
-import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessagesControllerV2.WEIGHT_RESTRICTIONS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.API_TRAFFIC_MESSAGE_V2;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.DATEX2_2_2_3;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.DATEX2_3_5;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.EXEMPTED_TRANSPORTS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.HISTORY;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.MESSAGES;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.ROADWORKS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.TRAFFIC_ANNOUNCEMENTS;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.TRAFFIC_DATA;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.WEIGHT_RESTRICTIONS;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
@@ -54,6 +54,8 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
     private static final String TIME_PAST = Instant.now().minus(10, ChronoUnit.HOURS).toString();
     private static final String TIME_NOW = Instant.now().toString();
     private static final String TIME_FUTURE = Instant.now().plus(10, ChronoUnit.HOURS).toString();
+    private static final String BBOX_HITS = "?xMin=22&xMax=31&yMin=60&yMax=70";
+    private static final String BBOX_MISSES = "?xMin=21&xMax=22&yMin=60&yMax=61";
 
     private static final String SIMPPELI = """
             {
@@ -615,6 +617,96 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
             Assertions.assertNotNull(situation);
             Assertions.assertEquals(expectedGuid, situation.get("id").asString());
         });
+    }
+
+    private void assertEmpty35(final MockHttpServletResponse response)
+            throws UnsupportedEncodingException, JacksonException {
+        XmlAsserter.ok(response).expectContent(xmlNode -> {
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").asString());
+
+            final var situation = xmlNode.get("situation");
+            Assertions.assertNull(situation);
+        });
+    }
+
+    @Test
+    public void roadWorks35WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + BBOX_HITS);
+
+        assertValid35(response, "GUID50444616");
+    }
+
+    @Test
+    public void roadWorks35WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + BBOX_MISSES);
+
+        assertEmpty35(response);
+    }
+
+    @Test
+    public void trafficAnnouncements35WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5 + BBOX_HITS);
+
+        assertValid35(response, "GUID50444616");
+    }
+
+    @Test
+    public void trafficAnnouncements35WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5 + BBOX_MISSES);
+
+        assertEmpty35(response);
+    }
+
+    @Test
+    public void weightRestrictions35WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5 + BBOX_HITS);
+
+        assertValid35(response, "GUID50444616");
+    }
+
+    @Test
+    public void weightRestrictions35WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5 + BBOX_MISSES);
+
+        assertEmpty35(response);
+    }
+
+    @Test
+    public void exemptedTransports35WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                EXEMPTED_TRANSPORT_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5 + BBOX_HITS);
+
+        assertValid35(response, "GUID50442308");
+    }
+
+    @Test
+    public void exemptedTransports35WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                EXEMPTED_TRANSPORT_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5 + BBOX_MISSES);
+
+        assertEmpty35(response);
     }
 
     @Test
