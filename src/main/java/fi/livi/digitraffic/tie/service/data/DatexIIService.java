@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
@@ -37,8 +39,8 @@ public class DatexIIService {
     private final DataDatex2SituationRepository dataDatex2SituationRepository;
     private final DatexII35Converter datexII35Converter;
     private final DatexII223Converter datexII223Converter;
-
     private final MessageConverter messageConverter;
+    private final boolean rttiEnabled;
 
     private static final Logger log = LoggerFactory.getLogger(DatexIIService.class);
 
@@ -51,11 +53,13 @@ public class DatexIIService {
 
     public DatexIIService(final DataDatex2SituationRepository dataDatex2SituationRepository,
                           final DatexII35Converter datexII35Converter, final DatexII223Converter datexII223Converter,
-                          final MessageConverter messageConverter) {
+                          final MessageConverter messageConverter,
+                          @Value("${dt.trafficMessage.rtti.enabled:true}") final boolean rttiEnabled) {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
         this.datexII35Converter = datexII35Converter;
         this.datexII223Converter = datexII223Converter;
         this.messageConverter = messageConverter;
+        this.rttiEnabled = rttiEnabled;
     }
 
     @Transactional(readOnly = true)
@@ -100,6 +104,11 @@ public class DatexIIService {
 
     @Transactional(readOnly = true)
     public Pair<SituationPublication, Instant> findTrafficData35(final Instant fromParameter, final Instant toParameter, final boolean srtiOnly) {
+        if (!rttiEnabled) {
+            log.info("method=findTrafficData35 RTTI/SRTI publishing disabled, returning empty SituationPublication");
+            return Pair.of(datexII35Converter.createPublication(List.of()), Instant.now());
+        }
+
         final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
 
@@ -180,6 +189,10 @@ public class DatexIIService {
 
     @Transactional(readOnly = true)
     public Pair<SituationPublication, Instant> findLatestTrafficDataMessage(final String situationId, final boolean latestOnly) {
+        if (!rttiEnabled) {
+            throw new ObjectNotFoundException("Traffic data message", situationId);
+        }
+
         final var messages = latestOnly
                            ? dataDatex2SituationRepository.findLatestTrafficDataMessageBySituationId(situationId)
                            : dataDatex2SituationRepository.findTrafficDataMessagesBySituationId(situationId);
