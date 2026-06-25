@@ -28,7 +28,9 @@ public class SensorValueHistoryDao {
               AND sensor.road_station_type = :stationType
               AND sensor.publishable = true""";
 
-    private static final String CLEAN = "DELETE FROM SENSOR_VALUE_HISTORY WHERE measured < :remove_before";
+    private static final String CLEAN_WEATHER_HISTORY =
+            "DELETE FROM SENSOR_VALUE_HISTORY WHERE measured < :remove_before" +
+            " AND road_station_id IN (SELECT id FROM road_station WHERE type = 'WEATHER_STATION')";
 
     @Autowired
     public SensorValueHistoryDao(final NamedParameterJdbcTemplate jdbcTemplate) {
@@ -36,8 +38,10 @@ public class SensorValueHistoryDao {
     }
 
     /**
-     * @param params
-     * @return the number of rows inserted for each param.
+     * Inserts sensor history data in batch.
+     *
+     * @param params sensor value update parameters to insert
+     * @return array of row counts, one entry per parameter, each indicating the number of rows inserted
      */
     public int[] insertSensorData(final List<SensorValueUpdateParameterDto> params) {
         final MapSqlParameterSource[] batchData = getMapSqlParameterSources(params);
@@ -56,12 +60,21 @@ public class SensorValueHistoryDao {
                 .toArray(MapSqlParameterSource[]::new);
     }
 
+    /**
+     * Removes weather station sensor history rows measured before the given time.
+     * <p>
+     * Note: this method only cleans history for {@code WEATHER_STATION} type stations.
+     * It does not affect other station types (e.g. TMS, camera).
+     *
+     * @param time rows with measured timestamp before this instant will be deleted
+     * @return number of deleted rows
+     */
     public int cleanSensorData(final Instant time) {
         final MapSqlParameterSource source = new MapSqlParameterSource();
 
         // this needs to be OffsetDateTime
         source.addValue("remove_before", OffsetDateTime.ofInstant(time, ZoneId.of("UTC")));
 
-        return jdbcTemplate.update(CLEAN, source);
+        return jdbcTemplate.update(CLEAN_WEATHER_HISTORY, source);
     }
 }

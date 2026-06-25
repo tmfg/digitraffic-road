@@ -12,7 +12,6 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncementFeatureC
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
 
 import fi.livi.digitraffic.tie.model.ModifiedAt;
-import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
 
 import fi.livi.digitraffic.tie.model.data.MessageAndModified;
 
@@ -29,7 +28,6 @@ import org.springframework.beans.factory.annotation.Value;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
-import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
@@ -38,6 +36,7 @@ import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 public class DatexIIService {
     private final DataDatex2SituationRepository dataDatex2SituationRepository;
     private final DatexII35Converter datexII35Converter;
+    private final DatexII37Converter datexII37Converter;
     private final DatexII223Converter datexII223Converter;
     private final MessageConverter messageConverter;
     private final boolean rttiEnabled;
@@ -52,11 +51,13 @@ public class DatexIIService {
     }
 
     public DatexIIService(final DataDatex2SituationRepository dataDatex2SituationRepository,
-                          final DatexII35Converter datexII35Converter, final DatexII223Converter datexII223Converter,
+                          final DatexII35Converter datexII35Converter, final DatexII37Converter datexII37Converter,
+                          final DatexII223Converter datexII223Converter,
                           final MessageConverter messageConverter,
                           @Value("${dt.trafficMessage.rtti.enabled:true}") final boolean rttiEnabled) {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
         this.datexII35Converter = datexII35Converter;
+        this.datexII37Converter = datexII37Converter;
         this.datexII223Converter = datexII223Converter;
         this.messageConverter = messageConverter;
         this.rttiEnabled = rttiEnabled;
@@ -103,26 +104,47 @@ public class DatexIIService {
     }
 
     @Transactional(readOnly = true)
+    public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findRoadworks37(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII37(SituationType.ROAD_WORK, from, to, bbox);
+    }
+
+    @Transactional(readOnly = true)
+    public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findTrafficAnnouncements37(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII37(SituationType.TRAFFIC_ANNOUNCEMENT, from, to, bbox);
+    }
+
+    @Transactional(readOnly = true)
+    public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findWeightRestrictions37(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII37(SituationType.WEIGHT_RESTRICTION, from, to, bbox);
+    }
+
+    @Transactional(readOnly = true)
+    public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findExemptedTransports37(final Instant from, final Instant to, final Polygon bbox) {
+        return findDatexII37(SituationType.EXEMPTED_TRANSPORT, from, to, bbox);
+    }
+
+    @Transactional(readOnly = true)
     public Pair<SituationPublication, Instant> findTrafficData35(final Instant fromParameter, final Instant toParameter, final boolean srtiOnly) {
         if (!rttiEnabled) {
-            log.info("method=findTrafficData35 RTTI/SRTI publishing disabled, returning empty SituationPublication");
-            return Pair.of(datexII35Converter.createPublication(List.of()), Instant.now());
+            log.info("method=findTrafficData35 RTTI publishing disabled, returning empty SituationPublication");
+            return toDatexII35Publication(List.of());
         }
-
         final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
-
         final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
-        final var messageData = messages.stream().map(MessageAndModified::getMessage).toList();
-        final var maxModified = getMaxModified(messages);
+        return toDatexII35Publication(messages);
+    }
 
-        try {
-            return Pair.of(datexII35Converter.createPublication(messageData), maxModified);
-        } catch(final Exception e) {
-            log.error("Error creating publication", e);
-
-            throw e;
+    @Transactional(readOnly = true)
+    public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findTrafficData37(final Instant fromParameter, final Instant toParameter, final boolean srtiOnly) {
+        if (!rttiEnabled) {
+            log.info("method=findTrafficData37 RTTI publishing disabled, returning empty SituationPublication");
+            return toDatexII37Publication(List.of());
         }
+        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
+        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
+        return toDatexII37Publication(messages);
     }
 
     private Instant getMaxModified(final List<? extends ModifiedAt> messages) {
@@ -133,36 +155,27 @@ public class DatexIIService {
         return maxModifiedAt.orElse(Instant.now());
     }
 
-    private Pair<D2LogicalModel, Instant> convertDatexII223(final List<DataDatex2Situation> situations) {
-        final var messages = situations.stream()
-                .flatMap(s -> s.getMessages().stream())
-                .filter(m -> m.getMessageType().equals(MessageTypeEnum.DATEX_2.value()))
-                .filter(m -> m.getMessageVersion().equals(Datex2Version.V_2_2_3.version))
-                .toList();
-
+    private Pair<D2LogicalModel, Instant> toDatexII223Publication(final List<MessageAndModified> messages) {
         final var maxModifiedAt = getMaxModified(messages);
-
         return Pair.of(datexII223Converter.createD2LogicalModel(messages), maxModifiedAt);
     }
 
-    private Pair<SituationPublication, Instant> convertDatexII35(final List<DataDatex2Situation> situations) {
-        final var messages = situations.stream()
-                .flatMap(s -> s.getMessages().stream())
-                .filter(m -> m.getMessageType().equals(MessageTypeEnum.DATEX_2.value()))
-                .filter(m -> m.getMessageVersion().equals(Datex2Version.V_3_5.version))
-                .toList();
-
-        final var messageData = messages.stream()
-                .map(DataDatex2SituationMessage::getMessage)
-                .toList();
-
+    private Pair<SituationPublication, Instant> toDatexII35Publication(final List<MessageAndModified> messages) {
         final var maxModifiedAt = getMaxModified(messages);
-
         try {
-            return Pair.of(datexII35Converter.createPublication(messageData), maxModifiedAt);
-        } catch(final Exception e) {
-            log.error("Error creating publication", e);
+            return Pair.of(datexII35Converter.createPublication(messages), maxModifiedAt);
+        } catch (final Exception e) {
+            log.error("Error creating Datex II 3.5 publication", e);
+            throw e;
+        }
+    }
 
+    private Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> toDatexII37Publication(final List<MessageAndModified> messages) {
+        final var maxModifiedAt = getMaxModified(messages);
+        try {
+            return Pair.of(datexII37Converter.createPublication(messages), maxModifiedAt);
+        } catch (final Exception e) {
+            log.error("Error creating Datex II 3.7 publication", e);
             throw e;
         }
     }
@@ -170,21 +183,22 @@ public class DatexIIService {
     private Pair<D2LogicalModel, Instant> findDatexII223(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
         final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
-
-        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, null);
-        final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
-
-        return convertDatexII223(situations);
+        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, null, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version);
+        return toDatexII223Publication(messages);
     }
 
     private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version);
+        return toDatexII35Publication(messages);
+    }
 
-        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, bbox);
-        final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
-
-        return convertDatexII35(situations);
+    private Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findDatexII37(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
+        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
+        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version);
+        return toDatexII37Publication(messages);
     }
 
     @Transactional(readOnly = true)
@@ -192,22 +206,31 @@ public class DatexIIService {
         if (!rttiEnabled) {
             throw new ObjectNotFoundException("Traffic data message", situationId);
         }
-
         final var messages = latestOnly
                            ? dataDatex2SituationRepository.findLatestTrafficDataMessageBySituationId(situationId)
                            : dataDatex2SituationRepository.findTrafficDataMessagesBySituationId(situationId);
 
-        if(messages.isEmpty()) {
+        if (messages.isEmpty()) {
             throw new ObjectNotFoundException("Traffic data message", situationId);
         }
 
-        final var messageData = messages.stream()
-                .map(MessageAndModified::getMessage)
-                .toList();
+        return toDatexII35Publication(messages);
+    }
 
-        final var maxModifiedAt = getMaxModified(messages);
+    @Transactional(readOnly = true)
+    public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findLatestTrafficDataMessage37(final String situationId, final boolean latestOnly) {
+        if (!rttiEnabled) {
+            throw new ObjectNotFoundException("Traffic data message", situationId);
+        }
+        final var messages = latestOnly
+                           ? dataDatex2SituationRepository.findLatestTrafficDataMessageBySituationId(situationId)
+                           : dataDatex2SituationRepository.findTrafficDataMessagesBySituationId(situationId);
 
-        return Pair.of(datexII35Converter.createPublication(messageData), maxModifiedAt);
+        if (messages.isEmpty()) {
+            throw new ObjectNotFoundException("Traffic data message", situationId);
+        }
+
+        return toDatexII37Publication(messages);
     }
 
     @Transactional(readOnly = true)
@@ -232,26 +255,25 @@ public class DatexIIService {
 
     @Transactional(readOnly = true)
     public TrafficAnnouncementFeatureCollection findSimppeliSituations(final String situationId, final boolean latestOnly, final boolean includeAreaGeometry) {
-        final var situations = getSituations(situationId, latestOnly);
-        return convertSimppeli(situations, includeAreaGeometry);
+        final var messages = latestOnly
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.SIMPPELI.value(), null)
+                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.SIMPPELI.value(), null);
+
+        if (messages.isEmpty()) {
+            throw new ObjectNotFoundException("Traffic message", situationId);
+        }
+
+        return convertSimppeli(messages, includeAreaGeometry);
     }
 
     private TrafficAnnouncementFeatureCollection findSimppeli(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
         final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
-
-        final var datex2SituationIds = dataDatex2SituationRepository.findLatestByType(situationType.name(), from, to, bbox);
-        final var situations = dataDatex2SituationRepository.findAllById(datex2SituationIds);
-
-        return convertSimppeli(situations, true);
+        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.SIMPPELI.value(), null);
+        return convertSimppeli(messages, true);
     }
 
-    private TrafficAnnouncementFeatureCollection convertSimppeli(final List<DataDatex2Situation> situations, final boolean includeAreaGeometry) {
-        final var messages = situations.stream()
-                .flatMap(s -> s.getMessages().stream())
-                .filter(m -> m.getMessageType().equals(MessageTypeEnum.SIMPPELI.value()))
-                .toList();
-
+    private TrafficAnnouncementFeatureCollection convertSimppeli(final List<MessageAndModified> messages, final boolean includeAreaGeometry) {
         final var maxModifiedAt = getMaxModified(messages);
 
         final var features = messages.stream()
@@ -270,29 +292,20 @@ public class DatexIIService {
         return new TrafficAnnouncementFeatureCollection(maxModifiedAt, features);
     }
 
-    private List<DataDatex2Situation> getSituations(final String situationId, final boolean latestOnly) {
-        final var datex2Ids = latestOnly ? dataDatex2SituationRepository.findLatestSituationBySituationId(situationId)
-                                         : dataDatex2SituationRepository.findAllBySituationId(situationId);
-
-        if(datex2Ids.isEmpty()) {
-            throw new ObjectNotFoundException("Traffic message", situationId);
-        }
-
-        final var situations = dataDatex2SituationRepository.findAllById(datex2Ids);
-
-        if(situations.isEmpty()) {
-            throw new ObjectNotFoundException("Traffic message", situationId);
-        }
-
-        return situations;
-    }
 
     @Transactional(readOnly = true)
     public Pair<D2LogicalModel, Instant> findDatexII223Situations(final String situationId, final boolean latestOnly) {
-        final var situations = getSituations(situationId, latestOnly);
-        final var model = convertDatexII223(situations);
+        final var messages = latestOnly
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version)
+                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version);
 
-        if(((fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication)model.getLeft().getPayloadPublication()).getSituations().isEmpty()) {
+        if (messages.isEmpty()) {
+            throw new ObjectNotFoundException("Traffic message", situationId);
+        }
+
+        final var model = toDatexII223Publication(messages);
+
+        if (((fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication) model.getLeft().getPayloadPublication()).getSituations().isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
         }
 
@@ -301,13 +314,27 @@ public class DatexIIService {
 
     @Transactional(readOnly = true)
     public Pair<SituationPublication, Instant> findDatexII35Situations(final String situationId, final boolean latestOnly) {
-        final var situations = getSituations(situationId, latestOnly);
-        final var model = convertDatexII35(situations);
+        final var messages = latestOnly
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version)
+                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version);
 
-        if(model.getLeft().getSituations().isEmpty()) {
+        if (messages.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
         }
 
-        return model;
+        return toDatexII35Publication(messages);
+    }
+
+    @Transactional(readOnly = true)
+    public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findDatexII37Situations(final String situationId, final boolean latestOnly) {
+        final var messages = latestOnly
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version)
+                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version);
+
+        if (messages.isEmpty()) {
+            throw new ObjectNotFoundException("Traffic message", situationId);
+        }
+
+        return toDatexII37Publication(messages);
     }
 }

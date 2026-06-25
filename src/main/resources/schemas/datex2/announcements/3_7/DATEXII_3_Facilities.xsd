@@ -52,6 +52,20 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:complexType name="_OrganisationSpecificationVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:OrganisationSpecification" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_OrganisationTableVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:OrganisationTable" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="_OrganisationTypeEnum">
     <xs:simpleContent>
       <xs:extension base="fac:OrganisationTypeEnum">
@@ -93,6 +107,13 @@
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_RateMatrixVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:RateMatrix" />
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="_RateTableVersionedReference">
     <xs:complexContent>
@@ -410,6 +431,23 @@
     </xs:annotation>
     <xs:restriction base="xs:duration" />
   </xs:simpleType>
+  <xs:complexType name="DurationValue">
+    <xs:annotation>
+      <xs:documentation>A measured or calculated value of a period of time.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:DataValue">
+        <xs:sequence>
+          <xs:element name="duration" type="com:Seconds" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A period of time expressed in seconds.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_durationValueExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="Eligibility">
     <xs:annotation>
       <xs:documentation>Class support concepts for defining eligibility criteria.</xs:documentation>
@@ -570,6 +608,30 @@
       <xs:extension base="fac:FacilityObjectStatus">
         <xs:sequence>
           <xs:element name="_facilityStatusExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="FreeOfCharge">
+    <xs:annotation>
+      <xs:documentation>There are no rates or fees to be paid.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_freeOfChargeExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeneralRateInformation">
+    <xs:annotation>
+      <xs:documentation>Some general rates and payment information without specifying rates as such.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_generalRateInformationExtension" type="com:_ExtensionType" minOccurs="0" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -804,6 +866,28 @@
       </xs:element>
       <xs:element name="_organisationExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrganisationByReference">
+    <xs:annotation>
+      <xs:documentation>Organisation information that is based on a reference</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Organisation">
+        <xs:sequence>
+          <xs:element name="organisationReference" type="fac:_OrganisationSpecificationVersionedReference" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Organisation information provided by a reference.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="organisationTableReference" type="fac:_OrganisationTableVersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Organisation table in question defined by a reference.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_organisationByReferenceExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="OrganisationPublication">
     <xs:annotation>
@@ -1385,6 +1469,28 @@
       <xs:element name="_ratesExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="RatesByReference">
+    <xs:annotation>
+      <xs:documentation>Reference to a rate table previously specified.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="rateTableReference" type="fac:_RateTableVersionedReference" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Reference to rate information specified in a rate table.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="rateMatrixReference" type="fac:_RateMatrixVersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Reference to the corresponding rate matrix.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_ratesByReferenceExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="RatesPublication">
     <xs:annotation>
       <xs:documentation>A publication to supply rate information.</xs:documentation>
@@ -1672,6 +1778,18 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="UndefinedOrganisation">
+    <xs:annotation>
+      <xs:documentation>The organisation for the specified association end (within the specified validity if applicable) is not defined.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Organisation">
+        <xs:sequence>
+          <xs:element name="_undefinedOrganisationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="UnknownOperatingHours">
     <xs:annotation>
       <xs:documentation>The operating hours are not known.</xs:documentation>
@@ -1680,6 +1798,42 @@
       <xs:extension base="fac:OperatingHours">
         <xs:sequence>
           <xs:element name="_unknownOperatingHoursExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnknownOrganisation">
+    <xs:annotation>
+      <xs:documentation>The organisation for the specified association end (within the specified validity if applicable) is unknown.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Organisation">
+        <xs:sequence>
+          <xs:element name="_unknownOrganisationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnknownRates">
+    <xs:annotation>
+      <xs:documentation>There is no information about rates.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_unknownRatesExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnspecifiedRates">
+    <xs:annotation>
+      <xs:documentation>Rates are not (yet) specified.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_unspecifiedRatesExtension" type="com:_ExtensionType" minOccurs="0" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

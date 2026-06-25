@@ -17,11 +17,12 @@ Go to https://webtool.datex2.eu/wizard/#
 5. Selection
    * PayloadPublication
       SELECT -> Selecting the top level selects all items under it
-     * Deselect all EnergyInfrastructure* items
-6. Options
+     * Note: OpenLrBinary (`olrb`) is an extension for binary location references. And it is not directly downloadable and needs to be generated from Enterprise Architect UML model.
    * Select target PSM
      * XML Schema
    * Generate schema with definitions
    * Save selection to file selection.sel
-7. Download generated schema zip file and unzip to this directory.
-8. Finish
+6. Download generated schema zip file and unzip to this directory.
+7. Manually add `DATEXII_3_OpenLrBinary.xsd` (not available from the wizard — must be generated from the Enterprise Architect UML model).
+8. Add `xmlns:olrb="http://datex2.eu/schema/3/openLrBinary"` namespace declaration and `<xs:import namespace="http://datex2.eu/schema/3/openLrBinary" schemaLocation="DATEXII_3_OpenLrBinary.xsd" />` to `DATEXII_3_D2Payload.xsd`.
+9. Finish

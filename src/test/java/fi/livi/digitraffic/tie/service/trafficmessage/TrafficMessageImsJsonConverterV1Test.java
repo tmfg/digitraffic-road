@@ -192,7 +192,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
                 "classpath:tloik/ims/versions/" + getJsonVersionString(jsonVersion) + "/" + situationType + "_WITH_MULTIPLE_ANOUNCEMENTS.json",
                 ImsJsonVersion.V0_2_12, Instant.now().minus(1, ChronoUnit.HOURS), Instant.now().plus(1, ChronoUnit.HOURS), false);
         // replace area codes with invalid codes
-        final String jsonWithIvalidLocationRefs = RegExUtils.replacePattern(json, "\"locationCode\".{3}\\d*,", "\"locationCode\" : -1,");
+        final String jsonWithIvalidLocationRefs = RegExUtils.replacePattern((CharSequence) json, "\"locationCode\".{3}\\d*,", "\"locationCode\" : -1,");
 
         final Instant now = Instant.now();
         log.info("Try to convert SituationType {} from json version {} to TrafficAnnouncementFeature V2", situationType, jsonVersion);
@@ -225,6 +225,12 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
                 assertFeatures(announcement, version,
                                Triple.of("Nopeusrajoitus", 50.0, "km/h"),
                                Triple.of("Huono ajokeli", null, null));
+                if (version.version >= ImsJsonVersion.V0_2_18.version) {
+                    assertNotNull(announcement.locationOpenLr, "locationOpenLr should exist in 0.2.18+");
+                    assertEquals("IxGQjyrPow==", announcement.locationOpenLr.openLrLocationString);
+                } else {
+                    assertNull(announcement.locationOpenLr, "locationOpenLr should be null before 0.2.18");
+                }
                 break;
             case EXEMPTED_TRANSPORT:
                 assertEquals("GUID10000002", props.situationId);
@@ -334,6 +340,13 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
                 assertNotNull(rwp.queuingTrafficTimes.getFirst().startTime);
                 assertNotNull(rwp.queuingTrafficTimes.getFirst().endTime);
             }
+
+            if (version.version >= ImsJsonVersion.V0_2_18.version) {
+                assertNotNull(rwp.locationOpenLr, "road-work-phase locationOpenLr should exist in 0.2.18+");
+                assertEquals("IxGQjyrPow==", rwp.locationOpenLr.openLrLocationString);
+            } else {
+                assertNull(rwp.locationOpenLr, "road-work-phase locationOpenLr should be null before 0.2.18");
+            }
         }
     }
 
@@ -402,7 +415,8 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
 
     private void assertAreaLocation(final TrafficAnnouncement announcement,
                                     final ImsJsonVersion version) {
-        final int size = version.version >= ImsJsonVersion.V0_2_8.version ? 5 : 4;
+        final int size = version.version >= ImsJsonVersion.V0_2_18.version ? 6 :
+                         version.version >= ImsJsonVersion.V0_2_8.version ? 5 : 4;
         assertEquals(size, announcement.locationDetails.areaLocation.areas.size());
 
         assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.COUNTRY);
@@ -411,6 +425,9 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
         assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.WEATHER_REGION);
         if (version.version >= ImsJsonVersion.V0_2_8.version) {
             assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.REGIONAL_STATE_ADMINISTRATIVE_AGENCY);
+        }
+        if (version.version >= ImsJsonVersion.V0_2_18.version) {
+            assertContainsLocationType(announcement.locationDetails.areaLocation.areas, AreaType.METROPOLITAN_AREA);
         }
     }
 

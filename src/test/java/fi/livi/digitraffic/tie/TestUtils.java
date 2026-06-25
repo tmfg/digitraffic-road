@@ -429,6 +429,9 @@ public class TestUtils {
 
     public static void truncateWeatherData(final EntityManager entityManager) {
         entityManager.createNativeQuery("ALTER TABLE weather_station DISABLE TRIGGER weather_station_prevent_delete_t").executeUpdate();
+        // Clean history before deleting road stations to avoid FK issues and to ensure
+        // cleanWeatherHistoryData() tests start with a known-empty sensor_value_history table
+        entityManager.createNativeQuery("DELETE FROM sensor_value_history WHERE road_station_id IN (SELECT id FROM road_station rs WHERE rs.type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM sensor_value WHERE road_station_id IN (SELECT id FROM road_station rs WHERE rs.type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensors WHERE road_station_id IN (SELECT id FROM road_station rs WHERE rs.type = 'WEATHER_STATION')").executeUpdate();
         entityManager.createNativeQuery("DELETE FROM road_station_sensor WHERE lotju_id >= " + MIN_LOTJU_ID + " AND road_station_type = 'WEATHER_STATION'").executeUpdate();

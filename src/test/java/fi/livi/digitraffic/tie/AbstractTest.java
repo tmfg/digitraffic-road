@@ -3,8 +3,18 @@ package fi.livi.digitraffic.tie;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 
+import digital.pragmatech.testing.SpringTestProfilerListener;
+import digital.pragmatech.testing.diagnostic.ContextDiagnosticApplicationInitializer;
+
+@TestExecutionListeners(
+        value = { SpringTestProfilerListener.class },
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
+)
+@ContextConfiguration(initializers = ContextDiagnosticApplicationInitializer.class)
 @TestPropertySource(properties = {
         "config.test=true",
         "dt.scheduled.annotation.enabled=false",

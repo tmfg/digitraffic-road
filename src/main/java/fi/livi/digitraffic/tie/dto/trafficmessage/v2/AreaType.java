@@ -19,6 +19,7 @@ public enum AreaType {
     COUNTRY("country"),
     CITY_REGION("city region"),
     TRAVEL_REGION("travel region"),
+    METROPOLITAN_AREA("metropolitan area"),
     UNKNOWN("UNKNOWN");
 
     AreaType(final String fromValue) {

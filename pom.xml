@@ -498,6 +498,13 @@
         </dependency>
 
         <dependency>
+            <groupId>digital.pragmatech.testing</groupId>
+            <artifactId>spring-test-profiler</artifactId>
+            <version>0.1.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-jpeg</artifactId>
             <version>3.13.1</version>

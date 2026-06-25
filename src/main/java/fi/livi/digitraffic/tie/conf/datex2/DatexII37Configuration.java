@@ -2,8 +2,8 @@ package fi.livi.digitraffic.tie.conf.datex2;
 
 import fi.livi.digitraffic.tie.conf.jaxb2.DatexII_3_NamespacePrefixMapper;
 import fi.livi.digitraffic.tie.conf.jaxb2.Jaxb2RootElementHttpMessageConverter;
-import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.v3_5.PayloadPublication;
+import fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v3_7.PayloadPublication;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +12,9 @@ import org.springframework.http.converter.HttpMessageConverter;
 
 @ConditionalOnWebApplication
 @Configuration
-public class DatexII35Configuration {
+public class DatexII37Configuration {
     @Bean
-    public HttpMessageConverter<Object> xmlHttpMessageConverterForD2SituationPublication() {
+    public HttpMessageConverter<Object> xmlHttpMessageConverterForD2SituationPublication37() {
         return new Jaxb2RootElementHttpMessageConverter<>(
                 SituationPublication.class, PayloadPublication.class, "payload")
                 .withJaxbSchemaLocations("https://datex2.eu/schema/3/situation")

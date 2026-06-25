@@ -115,14 +115,15 @@ public class SensorDataS3WriterTest extends AbstractDaemonTest {
         builder = new SensorValueHistoryBuilder(repository, log)
                 .truncate()
                 .setReferenceTime(time)
-                .buildWithStationId(10, ws.getRoadStationId(), ids, 0, min)
+                // Math.max(min, 1) avoids IllegalArgumentException when min=0 (test runs at exactly the top of an hour)
+                .buildWithStationId(10, ws.getRoadStationId(), ids, 0, Math.max(min, 1))
                 .buildWithStationId(50, ws2.getRoadStationId(), ids, min + 1, min + 61)
                 .save();
     }
 
     @Test
     public void s3Bucket() throws IOException {
-        final Instant now = TimeUtil.withoutMillis(Instant.now().atZone(ZoneOffset.UTC).withHour(1).toInstant());
+        final Instant now = TimeUtil.withoutMillis(Instant.now());
         final Instant to = now.truncatedTo(ChronoUnit.HOURS);
         final Instant from = to.minus(1, ChronoUnit.HOURS);
 

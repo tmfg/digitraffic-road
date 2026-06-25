@@ -4,6 +4,7 @@
 
 # Allow this gitignore file
 !/.gitignore
+!/.gitattributes
 
 # =============================================================================
 # Root level files
@@ -149,6 +150,8 @@
 
 # Mac files
 **/.DS_Store
+# NFS lock files
+**/.!*
 
 # Git submodules file (managed separately)
 .gitmodules

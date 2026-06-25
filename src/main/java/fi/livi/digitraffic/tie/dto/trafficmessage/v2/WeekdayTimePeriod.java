@@ -73,6 +73,7 @@ public class WeekdayTimePeriod extends JsonAdditionalProperties {
         return ToStringHelper.toStringFull(this);
     }
 
+    @Schema(description = "Weekday", name = "WeekdayV2", enumAsRef = true)
     public enum Weekday {
 
         // ma, ti ke to pe -> legacy

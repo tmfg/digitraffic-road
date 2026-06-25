@@ -59,6 +59,7 @@ public class TrafficMessageControllerV2 {
     public static final String TRAFFIC_DATA = "/traffic-data";
 
     public static final String DATEX2_3_5 = "/datex2-3.5.xml";
+    public static final String DATEX2_3_7 = "/datex2-3.7.xml";
     public static final String DATEX2_2_2_3 = "/datex2-2.2.3.xml";
     public static final String HISTORY = "/history";
 
@@ -119,13 +120,10 @@ public class TrafficMessageControllerV2 {
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
                                  description = "Situation not found",
                                  content = @Content) })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficMessageDatex2_35BySituationId(
-            @Parameter(description = "Situation id",
-                       required = true)
-            @PathVariable
-            final String situationId) {
-        final Pair<SituationPublication, Instant> response =
-                datexIIService.findDatexII35Situations(situationId, true);
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficMessageDatexII35BySituationId(
+            @Parameter(description = "Situation id", required = true)
+            @PathVariable final String situationId) {
+        final var response = datexIIService.findDatexII35Situations(situationId, true);
         return ResponseEntityWithLastModifiedHeader.of(response.getLeft(), response.getRight(),
                 API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + DATEX2_3_5);
     }
@@ -140,15 +138,139 @@ public class TrafficMessageControllerV2 {
                                  description = "Situation not found",
                                  content = @Content) })
     public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficMessageDatexII35HistoryBySituationId(
-            @Parameter(description = "Situation id",
-                       required = true)
-            @PathVariable
-            final String situationId) {
-        final Pair<SituationPublication, Instant> response =
-                datexIIService.findDatexII35Situations(situationId, false);
+            @Parameter(description = "Situation id", required = true)
+            @PathVariable final String situationId) {
+        final var response = datexIIService.findDatexII35Situations(situationId, false);
         return ResponseEntityWithLastModifiedHeader.of(response.getLeft(), response.getRight(),
                 API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + HISTORY + DATEX2_3_5);
     }
+
+    @Operation(summary = "Traffic data message by situationId as DatexII 3.5")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE },
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/{situationId}" + DATEX2_3_5 })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of traffic data message"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Situation not found",
+                                 content = @Content) })
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficDataMessageDatexII35BySituationId(
+            @Parameter(description = "Situation id", required = true)
+            @PathVariable final String situationId) {
+        final var situation = datexIIService.findLatestTrafficDataMessage(situationId, true);
+        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/" + situationId + DATEX2_3_5);
+    }
+
+    @Operation(summary = "Traffic data message history by situationId as DatexII 3.5")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE },
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/{situationId}" + HISTORY + DATEX2_3_5 })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of traffic data message history"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Situation not found",
+                                 content = @Content) })
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficDataMessageHistoryDatexII35BySituationId(
+            @Parameter(description = "Situation id", required = true)
+            @PathVariable final String situationId) {
+        final var situation = datexIIService.findLatestTrafficDataMessage(situationId, false);
+        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/" + situationId + HISTORY + DATEX2_3_5);
+    }
+
+    @Operation(summary = "Roadworks as DatexII 3.5")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE },
+                    path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of road works") })
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> roadworksDatexII35(
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant from,
+            @Parameter(description = "Limit validity")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant to,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMax,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMax) {
+        final var publication = datexIIService.findRoadworks35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
+        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
+                API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5);
+    }
+
+    @Operation(summary = "Traffic announcements as DatexII 3.5")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE },
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5 })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of traffic announcements") })
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficAnnouncementsDatexII35(
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant from,
+            @Parameter(description = "Limit validity")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant to,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMax,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMax) {
+        final var publication = datexIIService.findTrafficAnnouncements35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
+        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
+    }
+
+    @Operation(summary = "Weight restrictions as DatexII 3.5")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE },
+                    path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5 })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weight restrictions") })
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> weightRestrictionsDatexII35(
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant from,
+            @Parameter(description = "Limit validity")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant to,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMax,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMax) {
+        final var publication = datexIIService.findWeightRestrictions35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
+        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
+                API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5);
+    }
+
+    @Operation(summary = "Exempted transports as DatexII 3.5")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE },
+                    path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5 })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of exempted transports") })
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> exemptedTransportsDatexII35(
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant from,
+            @Parameter(description = "Limit validity")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant to,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double xMax,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMin,
+            @Parameter(description = "Bounding box") @RequestParam(required = false) final Double yMax) {
+        final var publication = datexIIService.findExemptedTransports35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
+        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
+                API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5);
+    }
+
+    @Operation(summary = "RTTI/SRTI messages as DatexII 3.5")
+    @RequestMapping(method = RequestMethod.GET,
+                    produces = { APPLICATION_XML_VALUE },
+                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5 })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of RTTI/SRTI messages") })
+    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficDataDatexII35(
+            @Parameter(description = "SRTI only") @RequestParam(defaultValue = "false") final boolean srti,
+            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant from,
+            @Parameter(description = "Limit validity")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) final Instant to) {
+        final var publication = datexIIService.findTrafficData35(from, to, srti);
+        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
+                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5);
+    }
+
 
     @Operation(summary = "Traffic message by situationId as json")
     @RequestMapping(method = RequestMethod.GET,
@@ -171,43 +293,6 @@ public class TrafficMessageControllerV2 {
         return datexIIService.findSimppeliSituations(situationId, true, includeAreaGeometry);
     }
 
-    @Operation(summary = "Traffic data message by situationId as DatexII 3.5")
-    @RequestMapping(method = RequestMethod.GET,
-                    produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/{situationId}" + DATEX2_3_5 })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of traffic data message"),
-                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
-                                 description = "Situation not found",
-                                 content = @Content) })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficDataMessageDatexII35BySituationId(
-            @Parameter(description = "Situation id",
-                       required = true)
-            @PathVariable
-            final String situationId) {
-        final Pair<SituationPublication, Instant> situation = datexIIService.findLatestTrafficDataMessage(situationId, true);
-        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/" + situationId + DATEX2_3_5);
-    }
-
-    @Operation(summary = "Traffic data message history by situationId as DatexII 3.5")
-    @RequestMapping(method = RequestMethod.GET,
-                    produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/{situationId}" + HISTORY + DATEX2_3_5 })
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of traffic data message history"),
-                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
-                                 description = "Situation not found",
-                                 content = @Content) })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficDataMessageHistoryDatexII35BySituationId(
-            @Parameter(description = "Situation id",
-                       required = true)
-            @PathVariable
-            final String situationId) {
-        final Pair<SituationPublication, Instant> situation = datexIIService.findLatestTrafficDataMessage(situationId, false);
-        return ResponseEntityWithLastModifiedHeader.of(situation.getLeft(), situation.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/" + situationId + HISTORY + DATEX2_3_5);
-    }
 
     @Operation(summary = "Traffic message history by situationId as json")
     @RequestMapping(method = RequestMethod.GET,
@@ -226,163 +311,6 @@ public class TrafficMessageControllerV2 {
         return ResponseEntityWithLastModifiedHeader.of(featureCollection.getFeatures(), featureCollection.getLastModified(),
                 API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/" + situationId + HISTORY);
     }
-
-    @Operation(summary = "Roadworks as DatexII 3.5")
-    @RequestMapping(method = RequestMethod.GET,
-                    produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of road works") })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> roadworks_35(
-            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant from,
-            @Parameter(description = "Limit validity")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMax,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMax) {
-        final var publication = datexIIService.findRoadworks35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
-
-        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5);
-    }
-
-    @Operation(summary = "Traffic announcements as DatexII 3.5")
-    @RequestMapping(method = RequestMethod.GET,
-            produces = { APPLICATION_XML_VALUE },
-            path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-            description = "Successful retrieval of traffic announcements") })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficAnnouncements_35(
-            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant from,
-            @Parameter(description = "Limit validity")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMax,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMax) {
-        final var publication = datexIIService.findTrafficAnnouncements35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
-
-        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
-    }
-
-    @Operation(summary = "Weight restrictions as DatexII 3.5")
-    @RequestMapping(method = RequestMethod.GET,
-            produces = { APPLICATION_XML_VALUE },
-            path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-            description = "Successful retrieval of weight restrictions") })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> weightRestrictions_35(
-            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant from,
-            @Parameter(description = "Limit validity")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMax,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMax) {
-        final var publication = datexIIService.findWeightRestrictions35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
-
-        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5);
-    }
-
-    @Operation(summary = "Exempted transports as DatexII 3.5")
-    @RequestMapping(method = RequestMethod.GET,
-            produces = { APPLICATION_XML_VALUE },
-            path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-            description = "Successful retrieval of exempted transports") })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> exemptedTransports_35(
-            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant from,
-            @Parameter(description = "Limit validity")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double xMax,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMin,
-            @Parameter(description = "Bounding box")
-            @RequestParam(required = false)
-            final Double yMax) {
-        final var publication = datexIIService.findExemptedTransports35(from, to, getBoundingBox(xMin, xMax, yMin, yMax));
-
-        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5);
-    }
-
-    @Operation(summary = "RTTI/SRTI messages as DatexII 3.5")
-    @RequestMapping(method = RequestMethod.GET,
-                    produces = { APPLICATION_XML_VALUE },
-                    path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5})
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of RTTI/SRTI messages") })
-    public ResponseEntityWithLastModifiedHeader<SituationPublication> trafficData_35(
-            @Parameter(description = "SRTI only")
-            @RequestParam(defaultValue = "false")
-            final boolean srti,
-            @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant from,
-            @Parameter(description = "Limit validity")
-            @RequestParam(required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            final Instant to) {
-        final var publication = datexIIService.findTrafficData35(from, to, srti);
-
-        return ResponseEntityWithLastModifiedHeader.of(publication.getLeft(), publication.getRight(),
-                API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5);
-    }
-
 
     @Operation(summary = "Roadworks as json")
     @RequestMapping(method = RequestMethod.GET,
@@ -516,7 +444,7 @@ public class TrafficMessageControllerV2 {
                     path = { API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of road works") })
-    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> roadworks_223(
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> roadworksDatexII223(
             @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -539,7 +467,7 @@ public class TrafficMessageControllerV2 {
                     path = { API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of traffic announcements") })
-    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficAnnouncements_223(
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> trafficAnnouncementsDatexII223(
             @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -562,7 +490,7 @@ public class TrafficMessageControllerV2 {
                     path = { API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of weight restrictions") })
-    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> weightRestrictions_223(
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> weightRestrictionsDatexII223(
             @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -585,7 +513,7 @@ public class TrafficMessageControllerV2 {
                     path = { API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3})
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
             description = "Successful retrieval of exempted transports") })
-    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> exemptedTransports_223(
+    public ResponseEntityWithLastModifiedHeader<D2LogicalModel> exemptedTransportsDatexII223(
             @Parameter(description = "Return situations active after this time. Defaults to now minus 1 hour if not given.")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

@@ -85,7 +85,7 @@ public class DataDatex2SituationTestHelper {
 
     /**
      * Inserts a situation row <em>without</em> a message. Useful for DAO tests that only
-     * need rows in {@code data_datex2_situation} (e.g. testing {@code findLatestByType}).
+     * need rows in {@code data_datex2_situation} without an attached message.
      *
      * <p>Flushes after saving so subsequent native queries see the data.</p>
      */

@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.API_TRAFFIC_MESSAGE_V2;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.DATEX2_2_2_3;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.DATEX2_3_5;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.DATEX2_3_7;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.EXEMPTED_TRANSPORTS;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.HISTORY;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.MESSAGES;
@@ -629,6 +630,27 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
         });
     }
 
+    private void assertValid37(final MockHttpServletResponse response, final String expectedGuid)
+            throws UnsupportedEncodingException, JacksonException {
+        XmlAsserter.ok(response).expectContent(xmlNode -> {
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").asString());
+
+            final var situation = xmlNode.get("situation");
+            Assertions.assertNotNull(situation);
+            Assertions.assertEquals(expectedGuid, situation.get("id").asString());
+        });
+    }
+
+    private void assertEmpty37(final MockHttpServletResponse response)
+            throws UnsupportedEncodingException, JacksonException {
+        XmlAsserter.ok(response).expectContent(xmlNode -> {
+            Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").asString());
+
+            final var situation = xmlNode.get("situation");
+            Assertions.assertNull(situation);
+        });
+    }
+
     @Test
     public void roadWorks35WithBoundingBoxHits() throws Exception {
         insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
@@ -707,6 +729,86 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5 + BBOX_MISSES);
 
         assertEmpty35(response);
+    }
+
+    @Test
+    public void roadWorks37WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_7 + BBOX_HITS);
+
+        assertValid37(response, "GUID50444616");
+    }
+
+    @Test
+    public void roadWorks37WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_7 + BBOX_MISSES);
+
+        assertEmpty37(response);
+    }
+
+    @Test
+    public void trafficAnnouncements37WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_7 + BBOX_HITS);
+
+        assertValid37(response, "GUID50444616");
+    }
+
+    @Test
+    public void trafficAnnouncements37WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_7 + BBOX_MISSES);
+
+        assertEmpty37(response);
+    }
+
+    @Test
+    public void weightRestrictions37WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_7 + BBOX_HITS);
+
+        assertValid37(response, "GUID50444616");
+    }
+
+    @Test
+    public void weightRestrictions37WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                ROADWORK_DATEXII_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_7 + BBOX_MISSES);
+
+        assertEmpty37(response);
+    }
+
+    @Test
+    public void exemptedTransports37WithBoundingBoxHits() throws Exception {
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                EXEMPTED_TRANSPORT_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_7 + BBOX_HITS);
+
+        assertValid37(response, "GUID50442308");
+    }
+
+    @Test
+    public void exemptedTransports37WithBoundingBoxMisses() throws Exception {
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+                EXEMPTED_TRANSPORT_3_5);
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_7 + BBOX_MISSES);
+
+        assertEmpty37(response);
     }
 
     @Test

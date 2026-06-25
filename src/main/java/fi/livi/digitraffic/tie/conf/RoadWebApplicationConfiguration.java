@@ -93,33 +93,38 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     @Override
     public void configureMessageConverters(final HttpMessageConverters.ServerBuilder builder) {
         // Register JAXB XML converters as custom converters.
-        // Custom converters are considered before default ones.
-        builder.addCustomConverter(xmlHttpMessageConverterForD2LogicalModel());
-        builder.addCustomConverter(xmlHttpMessageConverterForMeasurementSiteTablePublication());
-        builder.addCustomConverter(xmlHttpMessageConverterForMeasuredDataPublication());
-        builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication());
+        // Custom converters are considered before default ones (e.g. MappingJackson2XmlHttpMessageConverter).
+        builder.addCustomConverter(xmlHttpMessageConverterForD2LogicalModel223());
+        builder.addCustomConverter(xmlHttpMessageConverterForMeasurementSiteTablePublication35());
+        builder.addCustomConverter(xmlHttpMessageConverterForMeasuredDataPublication35());
+        builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication35());
+        builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication37());
     }
 
+    /**
+     * extendMessageConverters is deprecated in Spring 7.0 in favour of configureMessageConverters(ServerBuilder),
+     * but MockMvc (webAppContextSetup) still goes through the Spring MVC converter list directly and does not
+     * pick up converters registered only via the ServerBuilder path. Until that gap is closed we must also
+     * prepend the JAXB converters here so that tests see the correct serialisation.
+     */
     @SuppressWarnings("deprecation")
     @Override
     public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
-        // Also register via extendMessageConverters for MockMvc compatibility.
-        converters.addFirst(xmlHttpMessageConverterForSituationPublication());
-        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication());
-        converters.addFirst(xmlHttpMessageConverterForMeasurementSiteTablePublication());
-        converters.addFirst(xmlHttpMessageConverterForD2LogicalModel());
+        converters.addFirst(xmlHttpMessageConverterForSituationPublication37());
+        converters.addFirst(xmlHttpMessageConverterForSituationPublication35());
+        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication35());
+        converters.addFirst(xmlHttpMessageConverterForMeasurementSiteTablePublication35());
+        converters.addFirst(xmlHttpMessageConverterForD2LogicalModel223());
     }
 
-    @SuppressWarnings("unchecked")
-    private HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel() {
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel223() {
         return new Jaxb2RootElementHttpMessageConverter<>(D2LogicalModel.class)
                 .withJaxbSchemaLocations(
                         "https://datex2.eu/schema/2/2_0",
                         dtDomainAndSchemaRootLocation + "/2_2_3_fi/DATEXIISchema_2_2_3_with_definitions_FI.xsd");
     }
 
-    @SuppressWarnings("unchecked")
-    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication() {
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication35() {
         // To return child class in xml as xsi:type attribute we need to use custom implementation
         // telling the child and parent classes
         return new Jaxb2RootElementHttpMessageConverter<>(
@@ -131,8 +136,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
-    @SuppressWarnings("unchecked")
-    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication() {
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication35() {
         // To return child class in xml as xsi:type attribute we need to use custom implementation
         // telling the child and parent classes
         return new Jaxb2RootElementHttpMessageConverter<>(
@@ -144,8 +148,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
-    @SuppressWarnings("unchecked")
-    private HttpMessageConverter<Object> xmlHttpMessageConverterForSituationPublication() {
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForSituationPublication35() {
         // To return child class in xml as xsi:type attribute we need to use custom implementation
         // telling the child and parent classes
         return new Jaxb2RootElementHttpMessageConverter<>(
@@ -153,6 +156,18 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 fi.livi.digitraffic.tie.datex2.v3_5.PayloadPublication.class,
                 "payload")
                 .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
+                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
+    }
+
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForSituationPublication37() {
+        // To return child class in xml as xsi:type attribute we need to use custom implementation
+        // telling the child and parent classes
+        return new Jaxb2RootElementHttpMessageConverter<>(
+                fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication.class,
+                fi.livi.digitraffic.tie.datex2.v3_7.PayloadPublication.class,
+                "payload")
+                .withJaxbSchemaLocations("https://datex2.eu/schema/3/situation")
                 .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }

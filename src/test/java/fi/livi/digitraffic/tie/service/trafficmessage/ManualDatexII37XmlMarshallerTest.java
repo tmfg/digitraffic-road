@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Disabled
-public class ManualDatexII35XmlMarshallerTest extends AbstractServiceTest {
+public class ManualDatexII37XmlMarshallerTest extends AbstractServiceTest {
     @Autowired
-    private DatexII35XmlMarshaller datexII35XmlMarshaller;
+    private DatexII37XmlMarshaller datexII37XmlMarshaller;
 
     private static final String TEST_XML = """
             INSERT XML HERE
@@ -17,7 +17,7 @@ public class ManualDatexII35XmlMarshallerTest extends AbstractServiceTest {
 
     @Test
     public void testMarshall() {
-        datexII35XmlMarshaller.convertToObject(null, TEST_XML);
+        datexII37XmlMarshaller.convertToObject(null, TEST_XML);
     }
 }
 

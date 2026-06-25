@@ -1,9 +1,9 @@
 package fi.livi.digitraffic.tie.service.data;
 
-import fi.livi.digitraffic.tie.datex2.v3_5.InternationalIdentifier;
-import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v3_7.InternationalIdentifier;
+import fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication;
 import fi.livi.digitraffic.tie.model.data.MessageAndModified;
-import fi.livi.digitraffic.tie.service.trafficmessage.DatexII35XmlMarshaller;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII37XmlMarshaller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,22 +15,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class DatexII35Converter {
-    private static final Logger log = LoggerFactory.getLogger(DatexII35Converter.class);
+public class DatexII37Converter {
+    private static final Logger log = LoggerFactory.getLogger(DatexII37Converter.class);
 
-    private final DatexII35XmlMarshaller datex35XmlMarshaller;
+    private final DatexII37XmlMarshaller datex37XmlMarshaller;
 
-    public DatexII35Converter(final DatexII35XmlMarshaller datex35XmlMarshaller) {
-        this.datex35XmlMarshaller = datex35XmlMarshaller;
+    public DatexII37Converter(final DatexII37XmlMarshaller datex37XmlMarshaller) {
+        this.datex37XmlMarshaller = datex37XmlMarshaller;
     }
 
     public SituationPublication createPublication(final List<MessageAndModified> messages) {
         final var publications = messages.stream()
                 .map(m -> {
                     try {
-                        return datex35XmlMarshaller.convertToObject(m.getMessageId(), m.getMessage());
+                        return datex37XmlMarshaller.convertToObject(m.getMessageId(), m.getMessage());
                     } catch (final Exception e) {
-                        log.error("Failed to convert Datex II 3.5 message id={}", m.getMessageId(), e);
+                        log.error("Failed to convert Datex II 3.7 message id={}", m.getMessageId(), e);
                         return null;
                     }
                 })

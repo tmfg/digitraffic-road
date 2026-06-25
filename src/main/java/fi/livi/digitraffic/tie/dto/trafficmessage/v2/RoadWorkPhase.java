@@ -1,4 +1,3 @@
-
 package fi.livi.digitraffic.tie.dto.trafficmessage.v2;
 
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
     "id",
     "location",
     "locationDetails",
+    "locationOpenLr",
     "features",
     "workingHours",
     "comment",
@@ -37,6 +37,9 @@ public class RoadWorkPhase extends JsonAdditionalProperties {
 
     @Schema(description = "locationDetails")
     public LocationDetails locationDetails;
+
+    @Schema(description = "OpenLR encoded location reference, an alternative way to specify the location.")
+    public LocationOpenLr locationOpenLr;
 
     @Schema(description = "The types of work that are carried out")
     @JsonAlias("worktypes")

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:afac="http://datex2.eu/schema/3/afirFacilities" version="3.7" targetNamespace="http://datex2.eu/schema/3/afirFacilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:afac="http://datex2.eu/schema/3/afirFacilities" version="3.7" targetNamespace="http://datex2.eu/schema/3/afirFacilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:aegi="http://datex2.eu/schema/3/afirEnergyInfrastructure" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import namespace="http://datex2.eu/schema/3/locationExtension" schemaLocation="DATEXII_3_LocationExtension.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/afirEnergyInfrastructure" schemaLocation="DATEXII_3_AfirEnergyInfrastructure.xsd" />
   <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
   <xs:complexType name="_CredentialTypeEnum">
     <xs:simpleContent>
@@ -16,6 +17,13 @@
         <xs:attribute name="_extendedValue" type="xs:string" />
       </xs:extension>
     </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_FacilityObjectVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="afac:FacilityObject" />
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="_MeansOfPaymentEnum">
     <xs:simpleContent>
@@ -35,6 +43,13 @@
     <xs:complexContent>
       <xs:extension base="com:VersionedReference">
         <xs:attribute name="targetClass" type="xs:string" use="required" fixed="afac:OperatingHoursTable" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_OrganisationTableVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="afac:OrganisationTable" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -100,6 +115,13 @@
         <xs:attribute name="targetClass" type="xs:string" use="required" fixed="afac:ReferenceableOrganisation" />
       </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_ReservationTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="afac:ReservationTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
   <xs:complexType name="_RightSpecificationVersionedReference">
     <xs:complexContent>
@@ -472,6 +494,23 @@
     </xs:annotation>
     <xs:restriction base="xs:duration" />
   </xs:simpleType>
+  <xs:complexType name="DurationValue">
+    <xs:annotation>
+      <xs:documentation>A measured or calculated value of a period of time.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="com:DataValue">
+        <xs:sequence>
+          <xs:element name="duration" type="com:Seconds" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A period of time expressed in seconds.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_durationValueExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="Eligibility">
     <xs:annotation>
       <xs:documentation>Defines the combination of Eligibility requirements with RateTables and associates this combination to a RightSpecification.</xs:documentation>
@@ -628,6 +667,53 @@
       </xs:element>
       <xs:element name="_externalIdentifierExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Facility" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Provides information about a facility,which may represent any kind of site,building,or structure,and may be a composite facility that includes supplemental facilities.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="afac:FacilityObject">
+        <xs:sequence>
+          <xs:element name="_facilityExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="FacilityObject" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Provides information about a facility object,which may represent any kind of site,building,or structure,including those which supplement a main facility.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="_facilityObjectExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="version" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="FacilityObjectStatus">
+    <xs:annotation>
+      <xs:documentation>Dynamic status information for a facility object.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="reference" type="afac:_FacilityObjectVersionedReference" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Reference to the corresponding static facility object.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_facilityObjectStatusExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FacilityStatus">
+    <xs:annotation>
+      <xs:documentation>Dynamic status information for a facility.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="afac:FacilityObjectStatus">
+        <xs:sequence>
+          <xs:element name="_facilityStatusExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="LinkedRightSpecification">
     <xs:annotation>
@@ -873,6 +959,28 @@
       </xs:element>
       <xs:element name="_organisationExtension" type="com:_ExtensionType" minOccurs="0" />
     </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrganisationByReference">
+    <xs:annotation>
+      <xs:documentation>Organisation information that is based on a reference.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="afac:Organisation">
+        <xs:sequence>
+          <xs:element name="organisationReference" type="afac:_ReferenceableOrganisationVersionedReference" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Organisation information provided by a reference.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="organisationTableReference" type="afac:_OrganisationTableVersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Organisation table in question defined by a reference.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_organisationByReferenceExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:complexType name="OrganisationPublication">
     <xs:annotation>
@@ -1461,6 +1569,20 @@
       <xs:enumeration value="_extended" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="ReferenceableOrganisation">
+    <xs:annotation>
+      <xs:documentation>A versioned identifiable organisation that can be referenced.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="afac:AnOrganisation">
+        <xs:sequence>
+          <xs:element name="_referenceableOrganisationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="version" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="RelativeOffsets">
     <xs:annotation>
       <xs:documentation>Time-based qualification criteria,linked to the possession of a specified Right Specification,defined using relative time offsets from the last use of the identified Right Specification.</xs:documentation>
@@ -1515,6 +1637,44 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:simpleType name="ReservationTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Different types of reservation.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="optional">
+        <xs:annotation>
+          <xs:documentation>Reservation is optional.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="mandatory">
+        <xs:annotation>
+          <xs:documentation>Reservation is mandatory.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="notAvailable">
+        <xs:annotation>
+          <xs:documentation>Reservation is not possible.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="partly">
+        <xs:annotation>
+          <xs:documentation>There is a specific contingent, that can be reserved.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unknown">
+        <xs:annotation>
+          <xs:documentation>Possibility of reservation is unknown,.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unspecified">
+        <xs:annotation>
+          <xs:documentation>Possibility of reservation is not specified.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="RightSpecification">
     <xs:annotation>
       <xs:documentation>A Right Specification explicitly defines what the owner/manager of a Place is granting specific users or vehicles the ability to do (e.g. park,delivery,pick up).</xs:documentation>
@@ -1665,6 +1825,18 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  <xs:complexType name="UndefinedOrganisation">
+    <xs:annotation>
+      <xs:documentation>The organisation for the specified association end (within the specified validity if applicable) is not defined.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="afac:Organisation">
+        <xs:sequence>
+          <xs:element name="_undefinedOrganisationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="UnknownOperatingHours">
     <xs:annotation>
       <xs:documentation>The operating hours are not known.</xs:documentation>
@@ -1673,6 +1845,18 @@
       <xs:extension base="afac:OperatingHours">
         <xs:sequence>
           <xs:element name="_unknownOperatingHoursExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnknownOrganisation">
+    <xs:annotation>
+      <xs:documentation>The organisation for the specified association end (within the specified validity if applicable) is unknown.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="afac:Organisation">
+        <xs:sequence>
+          <xs:element name="_unknownOrganisationExtension" type="com:_ExtensionType" minOccurs="0" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

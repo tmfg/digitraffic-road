@@ -61,7 +61,7 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
             .andExpect(jsonPath("$.components.schemas.RoadAddressLocationV2.properties.direction.enum", hasItems("unknown", "pos", "neg", "both")))
             .andExpect(jsonPath("$.components.schemas.RoadWorkPhaseV2.properties.severity.enum", hasItems("low", "high", "highest")))
             .andExpect(jsonPath("$.components.schemas.RestrictionV2.properties.type.enum", hasItem("speed limit")))
-            .andExpect(jsonPath("$.components.schemas.WeekdayTimePeriodV2.properties.weekday.enum", hasItems("Monday", "Tuesday", "Wednesday")))
+            .andExpect(jsonPath("$.components.schemas.WeekdayV2.enum", hasItems("Monday", "Tuesday", "Wednesday")))
             .andExpect(jsonPath("$.components.schemas.WorkTypeV2.properties.type.enum", hasItems("bridge", "road construction", "resurfacing")));
     }
 

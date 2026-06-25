@@ -1,6 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
-import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication;
 import jakarta.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,20 +18,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class DatexII35XmlMarshaller {
+public class DatexII37XmlMarshaller {
     private final Jaxb2Marshaller marshaller;
-    private static final Logger log = LoggerFactory.getLogger(DatexII35XmlMarshaller.class);
+    private static final Logger log = LoggerFactory.getLogger(DatexII37XmlMarshaller.class);
 
-    public DatexII35XmlMarshaller(
-            @Qualifier("datexII_3_5_jaxb2Marshaller")
+    public DatexII37XmlMarshaller(
+            @Qualifier("datexII_3_7_jaxb2Marshaller")
             final Jaxb2Marshaller marshaller) {
         this.marshaller = marshaller;
     }
 
-    public SituationPublication convertToObject(final Long messageId, final String xmlSting) {
+    public SituationPublication convertToObject(final Long messageId, final String xmlString) {
         try {
             // Trim empty control before and after xml-declaration as they are not allowed
-            final Object object = marshaller.unmarshal(new StringSource(StringUtils.trim(xmlSting)));
+            final Object object = marshaller.unmarshal(new StringSource(StringUtils.trim(xmlString)));
             if (object instanceof JAXBElement) {
                 @SuppressWarnings("unchecked")
                 final JAXBElement<SituationPublication> element = (JAXBElement<SituationPublication>) object;
@@ -39,8 +39,8 @@ public class DatexII35XmlMarshaller {
             }
             return (SituationPublication) object;
         } catch (final Exception e) {
-            safeDebugMessage(messageId, xmlSting);
-            throw new RuntimeException("Could not unmarshal Datex II 3.5 message id=" + messageId, e);
+            safeDebugMessage(messageId, xmlString);
+            throw new RuntimeException("Could not unmarshal Datex II 3.7 message id=" + messageId, e);
         }
     }
 
