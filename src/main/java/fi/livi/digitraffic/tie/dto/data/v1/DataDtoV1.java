@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class DataDtoV1 implements DataUpdatedSupportV1 {
 
-    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Date time of the most recent data update", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant dataUpdatedTime;
 
     public DataDtoV1(final Instant dataUpdatedTime) {

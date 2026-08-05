@@ -22,7 +22,7 @@ public abstract class RoadStationPropertiesSimpleV1<ID_TYPE> extends PropertiesW
     @Schema(description = "Road station state")
     private RoadStationState state;
 
-    @Schema(description = "Data last updated date time")
+    @Schema(description = "Date time of the most recent metadata update")
     private Instant dataUpdatedTime;
 
     public RoadStationPropertiesSimpleV1(final ID_TYPE id) {

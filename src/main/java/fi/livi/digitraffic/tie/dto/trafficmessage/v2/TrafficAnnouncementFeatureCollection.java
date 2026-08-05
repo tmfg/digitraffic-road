@@ -23,7 +23,7 @@ public class TrafficAnnouncementFeatureCollection extends FeatureCollectionV1<Tr
         super(dataUpdatedTime, features);
     }
 
-    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Date time of the most recent data update", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonSerialize(using = V2DateTimeFormat.Serializer.class)
     @JsonDeserialize(using = V2DateTimeFormat.Deserializer.class)
     public Instant getDataUpdatedTime() {

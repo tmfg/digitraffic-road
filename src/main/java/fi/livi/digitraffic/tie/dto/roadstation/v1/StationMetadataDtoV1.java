@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @JsonPropertyOrder({ "dataUpdatedTime", "dataLastCheckedTime", "type", "features" })
 public class StationMetadataDtoV1 implements LastModifiedSupport {
 
-    @Schema(description = "Data last updated date time", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Date time of the most recent metadata update", requiredMode = Schema.RequiredMode.REQUIRED)
     public final Instant dataUpdatedTime;
 
     @Schema(description = "Data last checked date time", requiredMode = Schema.RequiredMode.REQUIRED)
