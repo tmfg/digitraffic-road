@@ -36,13 +36,13 @@ public enum PrecipitationCondition {
 
     public static final String API_DESCRIPTION = """
                     Precipitation condition:<br>
-                    0 = no data available,<br>
-                    1 = rain intensity lt 0.2 mm/h,<br>
-                    2 = rain intensity ge 0.2 mm/h,<br>
-                    3 = rain intensity ge 2.5 mm/h,<br>
-                    4 = rain intensity ge 7.6 mm/h,<br>
-                    5 = snowing intensity ge 0.2 cm/h,<br>
-                    6 = snowing intensity ge 1 cm/h,<br>
-                    7 = snowing intensity ge 3 cm/h<br>
+                    NO_DATA_AVAILABLE(0) = no data available,<br>
+                    NO_RAIN_DRY_WEATHER(1) = rain intensity lt 0.2 mm/h,<br>
+                    LIGHT_RAIN(2) = rain intensity ge 0.2 mm/h,<br>
+                    RAIN(3) = rain intensity ge 2.5 mm/h,<br>
+                    HEAVY_RAIN(4) = rain intensity ge 7.6 mm/h,<br>
+                    LIGHT_SNOWFALL(5) = snowing intensity ge 0.2 cm/h,<br>
+                    SNOWFALL(6) = snowing intensity ge 1 cm/h,<br>
+                    HEAVY_SNOWFALL(7) = snowing intensity ge 3 cm/h<br>
                     (lt = lower than, ge = greater or equal)""";
 }
