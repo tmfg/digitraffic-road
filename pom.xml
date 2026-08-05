@@ -628,6 +628,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Netty calls System.loadLibrary from an unnamed module; enables native access for spring-boot:run to avoid warnings on Java 21+. (Does not affect `java -jar` startup.) -->
+                    <jvmArguments>--enable-native-access=ALL-UNNAMED</jvmArguments>
+                </configuration>
             </plugin>
 
             <plugin>
