@@ -30,10 +30,11 @@
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
         <spring-cloud-config.version>5.0.4</spring-cloud-config.version>
         <spring-cloud-commons.version>5.0.2</spring-cloud-commons.version>
-        <!-- TODO: Remove overrides when Spring Boot includes Netty ≥4.2.13 and Tomcat ≥11.0.22
-             Added 2026-05-22 to fix CVE-2026-42581 (Netty) and CVE-2026-41293 (Tomcat) -->
-        <netty.version>4.2.15.Final</netty.version>
-        <tomcat.version>11.0.23</tomcat.version>
+        <!-- TODO: Remove overrides when Spring Boot includes Netty ≥4.2.16 and Tomcat ≥11.0.24
+             Added 2026-05-22 to fix CVE-2026-42581 (Netty) and CVE-2026-41293 (Tomcat)
+             Updated 2026-08-05 to fix CVE-2026-56819(7.5), CVE-2026-56817(8.3), CVE-2026-55851(8.7), CVE-2026-44891(7.5), CVE-2026-55833(7.5), CVE-2026-56745(8.7), CVE-2026-55831(7.5), CVE-2026-56820(9.1), CVE-2026-56816(7.5) -->
+        <netty.version>4.2.16.Final</netty.version>
+        <tomcat.version>11.0.24</tomcat.version>
         <proj4j.version>1.4.3</proj4j.version>
         <org.jvnet.jaxb.version>4.0.12</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java
@@ -109,7 +110,7 @@
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
-            <version>4.0.2</version>
+            <version>4.1.0</version>
         </dependency>
 
         <dependency>
@@ -305,7 +306,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.11</version>
+            <version>42.7.13</version>
         </dependency>
 
         <dependency>
@@ -447,12 +448,13 @@
             <artifactId>cxf-rt-frontend-jaxws</artifactId>
             <version>${org.apache.cxf.version}</version>
         </dependency>
-        <!-- TODO: Remove neethi override when CXF ≥4.2.1 (which bundles neethi 3.2.2) is adopted.
-             Added 2026-05-22 to fix CVE-2026-42402, CVE-2026-42403, CVE-2026-42404 -->
+        <!-- TODO: Remove neethi override when CXF ≥4.2.1 (which bundles neethi 3.2.3) is adopted.
+             Added 2026-05-22 to fix CVE-2026-42402, CVE-2026-42403, CVE-2026-42404
+             Updated 2026-08-05 to fix add CVE-2026-66143(7.5), CVE-2026-66142(7.5), CVE-2026-66144(7.5) -->
         <dependency>
             <groupId>org.apache.neethi</groupId>
             <artifactId>neethi</artifactId>
-            <version>3.2.2</version>
+            <version>3.2.3</version>
         </dependency>
         <!-- For test WS server -->
         <dependency>
