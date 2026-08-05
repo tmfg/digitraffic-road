@@ -39,7 +39,7 @@
         <org.jvnet.jaxb.version>4.0.12</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java
         </project.digitraffic-common-java.directory>
-        <aws.sdk.version>2.46.17</aws.sdk.version>
+        <aws.sdk.version>2.47.5</aws.sdk.version>
     </properties>
 
     <profiles>
