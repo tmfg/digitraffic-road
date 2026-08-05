@@ -145,7 +145,7 @@ public class ArtemisJMSConfiguration {
      */
     @Bean(name = JMS_LISTENER_CONTAINER_FACTORY_FOR_TOPIC)
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactoryForTopic(
-            @Qualifier("jmsListenerContainerFactoryConfigurer")
+            @Qualifier("defaultJmsListenerContainerFactoryConfigurer")
             final DefaultJmsListenerContainerFactoryConfigurer configurer,
             @Qualifier("jmsConnectionFactory")
             final ConnectionFactory connectionFactory) {
@@ -172,7 +172,7 @@ public class ArtemisJMSConfiguration {
      */
     @Bean(name = JMS_LISTENER_CONTAINER_FACTORY_FOR_QUEUE)
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactoryForQueue(
-            @Qualifier("jmsListenerContainerFactoryConfigurer")
+            @Qualifier("defaultJmsListenerContainerFactoryConfigurer")
             final DefaultJmsListenerContainerFactoryConfigurer configurer,
             @Qualifier("jmsConnectionFactory")
             final ConnectionFactory connectionFactory) {
