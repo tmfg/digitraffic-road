@@ -73,7 +73,7 @@ jobs:
         env:
           SYFT_FILE_METADATA_SELECTION: "none"
         with:
-          image: ${{ secrets.ECR_URL }}/dt-road-mqtt-repository:latest
+          image: ${{ secrets.ECR_URL }}/dt-road-mosquitto-repository:latest
           format: cyclonedx-json
           output-file: mosquitto-sbom.json
       - name: Update road-mqtt task-def
