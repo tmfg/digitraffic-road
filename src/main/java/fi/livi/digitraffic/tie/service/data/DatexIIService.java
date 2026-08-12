@@ -32,6 +32,8 @@ import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
+import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
+
 @Service
 public class DatexIIService {
     private final DataDatex2SituationRepository dataDatex2SituationRepository;
@@ -129,8 +131,8 @@ public class DatexIIService {
             log.info("method=findTrafficData35 RTTI publishing disabled, returning empty SituationPublication");
             return toDatexII35Publication(List.of());
         }
-        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
-        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var from = firstNonNull(fromParameter, defaultFrom());
+        final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
         return toDatexII35Publication(messages);
     }
@@ -141,8 +143,8 @@ public class DatexIIService {
             log.info("method=findTrafficData37 RTTI publishing disabled, returning empty SituationPublication");
             return toDatexII37Publication(List.of());
         }
-        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
-        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var from = firstNonNull(fromParameter, defaultFrom());
+        final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
         return toDatexII37Publication(messages);
     }
@@ -181,22 +183,22 @@ public class DatexIIService {
     }
 
     private Pair<D2LogicalModel, Instant> findDatexII223(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
-        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var from = firstNonNull(fromParameter, defaultFrom());
+        final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, null, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version);
         return toDatexII223Publication(messages);
     }
 
     private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
-        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var from = firstNonNull(fromParameter, defaultFrom());
+        final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version);
         return toDatexII35Publication(messages);
     }
 
     private Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findDatexII37(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
-        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var from = firstNonNull(fromParameter, defaultFrom());
+        final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version);
         return toDatexII37Publication(messages);
     }
@@ -267,8 +269,8 @@ public class DatexIIService {
     }
 
     private TrafficAnnouncementFeatureCollection findSimppeli(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
-        final var from = ObjectUtils.firstNonNull(fromParameter, defaultFrom());
-        final var to = ObjectUtils.firstNonNull(toParameter, TIME_END);
+        final var from = firstNonNull(fromParameter, defaultFrom());
+        final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.SIMPPELI.value(), null);
         return convertSimppeli(messages, true);
     }
@@ -286,7 +288,8 @@ public class DatexIIService {
                     }
                 })
                 .filter(Objects::nonNull)
-                .sorted(Comparator.comparing((TrafficAnnouncementFeature f) -> f.getProperties().releaseTime).reversed())
+                .filter(f -> f.getProperties() != null)
+                .sorted(Comparator.comparing((TrafficAnnouncementFeature f) -> f.getProperties().releaseTime, Comparator.nullsLast(Comparator.reverseOrder())))
                 .toList();
 
         return new TrafficAnnouncementFeatureCollection(maxModifiedAt, features);
