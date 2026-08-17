@@ -244,6 +244,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- semver_array(version): converts a dotted-numeric version string into an int[] for
+-- comparison/ordering (e.g. "0.2.18" → {0,2,18}). Pre-release suffixes like "-beta"
+-- are stripped before parsing so the ::int[] cast never fails on non-numeric parts.
+-- Using varchar (not text) to match how JPA/JDBC binds String parameters.
+CREATE OR REPLACE FUNCTION semver_array(version varchar)
+RETURNS int[] AS $$
+    SELECT string_to_array(regexp_replace(version, '-.*$', ''), '.')::int[]
+$$ LANGUAGE sql IMMUTABLE STRICT;
+
+-- semver_lte(a, b): returns true if semantic version a <= b.
+-- Compares dotted-numeric version strings (e.g. "0.2.9" < "0.2.18") component-by-component
+-- as integers via semver_array().
+CREATE OR REPLACE FUNCTION semver_lte(a varchar, b varchar)
+RETURNS boolean AS $$
+    SELECT semver_array(a) <= semver_array(b)
+$$ LANGUAGE sql IMMUTABLE STRICT;
+
 -- Same pattern for datex2_rtti.
 -- Uses publication_time per situation_id to decide which row is latest.
 -- situation_record_id is stored for future use but not used for grouping yet —

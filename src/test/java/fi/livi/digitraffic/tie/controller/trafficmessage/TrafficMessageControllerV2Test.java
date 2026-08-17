@@ -15,6 +15,7 @@ import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageCo
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Assertions;
@@ -37,7 +38,10 @@ import fi.livi.digitraffic.tie.DataDatex2SituationTestHelper;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
+import fi.livi.digitraffic.tie.DataDatex2SituationTestHelper.MessageSpec;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SimppeliVersion;
+import fi.livi.digitraffic.tie.service.data.DatexIIService;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -969,6 +973,37 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
                 .run();
     }
 
+    /**
+     * When a situation has multiple SIMPPELI versions (e.g. 0.2.17 and 0.2.18),
+     * the history endpoint must return exactly one entry per situation version — no duplicates.
+     */
+    @Test
+    public void messageSimppeliHistory_multipleSimppeliVersions_returnsOnlyNewest() throws Exception {
+        final String simppeli017 = SIMPPELI.replace("Erikoiskuljetus. Satakunta", "Title from version 0.2.17");
+        final String simppeli018 = SIMPPELI.replace("Erikoiskuljetus. Satakunta", "Title from version 0.2.18");
+
+        helper.insertSituationWithMessages(
+                "id1", 1L, SituationType.EXEMPTED_TRANSPORT,
+                Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20),
+                List.of(
+                        new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_17.version, simppeli017),
+                        new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_18.version, simppeli018)
+                ));
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY);
+
+        JsonAsserter.ok(response)
+                .expectLastModifiedHeaderPresent()
+                .expectContent(jsonNode -> {
+                    Assertions.assertEquals(1, jsonNode.size(),
+                            "Expected exactly 1 history entry despite 2 stored SIMPPELI versions");
+                    final var title = jsonNode.get(0)
+                            .get("properties").get("announcements").get(0).get("title").asString();
+                    Assertions.assertEquals("Title from version 0.2.18", title,
+                            "History must show the newest SIMPPELI version");
+                });
+    }
+
     private void assertSimppeliFeatureContent(final MockHttpServletResponse response) throws Exception {
         final var root = new tools.jackson.databind.ObjectMapper().readTree(response.getContentAsString());
         final var feature = root.get("features").get(0);
@@ -981,5 +1016,61 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
         Assertions.assertEquals(1, announcements.size());
         Assertions.assertEquals("Erikoiskuljetus. Satakunta", announcements.get(0).get("title").asString());
         Assertions.assertEquals("fi", announcements.get(0).get("language").asString());
+    }
+
+    /**
+     * When a situation has multiple SIMPPELI versions (e.g. 0.2.17 and 0.2.18),
+     * the API must return exactly one feature and it must reflect the newest allowed version.
+     */
+    @Test
+    public void roadWorksJson_multipleSimppeliVersions_returnsOnlyNewest() throws Exception {
+        // Build two SIMPPELI messages for the same situation, differing only in title so we can
+        // tell which version was picked from the response.
+        final String simppeli017 = SIMPPELI.replace("Erikoiskuljetus. Satakunta", "Title from version 0.2.17");
+        final String simppeli018 = SIMPPELI.replace("Erikoiskuljetus. Satakunta", "Title from version 0.2.18");
+
+        helper.insertSituationWithMessages(
+                "id1", 1L, SituationType.ROAD_WORK,
+                Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20),
+                List.of(
+                        new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_17.version, simppeli017),
+                        new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_18.version, simppeli018)
+                ));
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
+
+        // Exactly one feature — no duplicates despite two stored versions.
+        JsonAsserter.ok(response)
+                .expectType("FeatureCollection")
+                .expectFeatureCount(1)
+                .run();
+
+        // The returned content must come from the newest version (0.2.18).
+        final var root = new tools.jackson.databind.ObjectMapper().readTree(response.getContentAsString());
+        final var title = root.get("features").get(0)
+                .get("properties").get("announcements").get(0).get("title").asString();
+        Assertions.assertEquals("Title from version 0.2.18", title,
+                "Expected the newest SIMPPELI version (" + DatexIIService.MAX_SIMPPELI_VERSION + ") to be returned");
+    }
+
+    /**
+     * When a situation has only a SIMPPELI version newer than MAX_SIMPPELI_VERSION,
+     * it must be excluded entirely from the API response.
+     */
+    @Test
+    public void roadWorksJson_onlyTooNewSimppeliVersion_isExcluded() throws Exception {
+        // "0.2.19" is intentionally NOT in SimppeliVersion — it represents a version newer
+        // than MAX_SIMPPELI_VERSION that the code does not yet support.
+        helper.insertSituationWithMessages(
+                "id1", 1L, SituationType.ROAD_WORK,
+                Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20),
+                List.of(new MessageSpec(MessageTypeEnum.SIMPPELI, "0.2.19", SIMPPELI)));
+
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
+
+        JsonAsserter.ok(response)
+                .expectType("FeatureCollection")
+                .expectFeatureCount(0)
+                .run();
     }
 }

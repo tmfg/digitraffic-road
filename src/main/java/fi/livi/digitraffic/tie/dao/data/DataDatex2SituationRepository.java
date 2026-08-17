@@ -82,6 +82,91 @@ public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2S
         order by s.situation_version desc""", nativeQuery = true)
     List<MessageAndModified> findAllMessagesBySituationId(final String situationId, final String messageType, final String messageVersion);
 
+    /**
+     * Returns all historical situation versions for a single situationId, newest first,
+     * but for each situation version picks only the newest SIMPPELI message version up to
+     * {@code maxMessageVersion}. This prevents duplicates when a single situation version
+     * has been stored with multiple SIMPPELI versions (e.g. 0.2.17 and 0.2.18).
+     *
+     * <p>Uses {@code DISTINCT ON (s.situation_version)} so that exactly one message row is returned
+     * per situation version, ordered by {@code situation_version DESC} (newest first).</p>
+     *
+     * <p>Version comparison is delegated to the {@code semver_lte(a, b)} database function
+     * which compares dotted-numeric version strings correctly (e.g. 0.2.9 &lt; 0.2.10).</p>
+     *
+     * @param situationId       the situation identifier
+     * @param messageType       message type to fetch, e.g. "SIMPPELI"; never null
+     * @param maxMessageVersion maximum allowed version (inclusive), e.g. "0.2.18"; never null
+     */
+    @Query(value = """
+        select distinct on (s.situation_version) m.message_id, m.message, m.modified_at
+        from data_datex2_situation_message m
+        inner join data_datex2_situation s on s.datex2_id = m.datex2_id
+        where s.situation_id = :situationId
+          and m.message_type = :messageType
+          and semver_lte(m.message_version, :maxMessageVersion)
+        order by s.situation_version desc,
+          s.datex2_id desc,
+          semver_array(m.message_version) desc""", nativeQuery = true)
+    List<MessageAndModified> findAllMessagesBySituationIdUpToVersion(final String situationId, final String messageType, final String maxMessageVersion);
+
+    /**
+     * Returns the newest message per situation (by semantic version) for the given type,
+     * considering only versions that are less than or equal to {@code maxMessageVersion}.
+     * Versions newer than the maximum are intentionally excluded until the code is
+     * updated to handle them.
+     *
+     * <p>Uses {@code DISTINCT ON (s.datex2_id)} to return exactly one row per situation.
+     * Version comparison is delegated to the {@code semver_lte(a, b)} database function
+     * which compares dotted-numeric version strings correctly (e.g. 0.2.9 &lt; 0.2.10).</p>
+     *
+     * @param situationType     situation type, e.g. "ROAD_WORK"; never null
+     * @param from              start of the active time window (inclusive); never null
+     * @param to                end of the active time window (exclusive); never null
+     * @param bbox              optional bounding box geometry filter; pass null to skip
+     * @param messageType       message type to fetch, e.g. "SIMPPELI"; never null
+     * @param maxMessageVersion maximum allowed version (inclusive), e.g. "0.2.18"; never null
+     */
+    @Query(value = """
+        select distinct on (s.datex2_id) m.message_id, m.message, m.modified_at
+        from data_datex2_situation_message m
+        inner join data_datex2_situation s on s.datex2_id = m.datex2_id
+        where s.situation_type = :situationType
+          and s.is_latest_version = true
+          and (
+              (s.end_time is null and s.start_time < :to) or
+              (s.end_time is not null and s.end_time > :from and s.start_time < :to)
+          )
+          and (cast(:bbox as text) is null or ST_INTERSECTS(:bbox, s.geometry))
+          and m.message_type = :messageType
+          and semver_lte(m.message_version, :maxMessageVersion)
+        order by s.datex2_id,
+          semver_array(m.message_version) desc""", nativeQuery = true)
+    List<MessageAndModified> findMessagesByTypeUpToVersion(final String situationType, final Instant from, final Instant to,
+                                                           final Geometry bbox, final String messageType, final String maxMessageVersion);
+
+    /**
+     * Returns the newest message (by semantic version) for a single situationId, latest situation version only,
+     * considering only versions that are less than or equal to {@code maxMessageVersion}.
+     *
+     * <p>Version comparison is delegated to the {@code semver_lte(a, b)} database function.</p>
+     *
+     * @param situationId       the situation identifier
+     * @param messageType       message type to fetch, e.g. "SIMPPELI"; never null
+     * @param maxMessageVersion maximum allowed version (inclusive), e.g. "0.2.18"; never null
+     */
+    @Query(value = """
+        select distinct on (s.datex2_id) m.message_id, m.message, m.modified_at
+        from data_datex2_situation_message m
+        inner join data_datex2_situation s on s.datex2_id = m.datex2_id
+        where s.situation_id = :situationId
+          and s.is_latest_version = true
+          and m.message_type = :messageType
+          and semver_lte(m.message_version, :maxMessageVersion)
+        order by s.datex2_id,
+          semver_array(m.message_version) desc""", nativeQuery = true)
+    List<MessageAndModified> findLatestMessagesBySituationIdUpToVersion(final String situationId, final String messageType, final String maxMessageVersion);
+
     // is_latest_version = true ensures only the latest row per situation_id is considered,
     // then the time filter is applied to that latest row only (fixes the filter-before-distinct bug)
     @Query(value = """

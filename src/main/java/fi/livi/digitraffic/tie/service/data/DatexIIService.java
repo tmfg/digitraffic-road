@@ -15,7 +15,6 @@ import fi.livi.digitraffic.tie.model.ModifiedAt;
 
 import fi.livi.digitraffic.tie.model.data.MessageAndModified;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
@@ -29,6 +28,7 @@ import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SimppeliVersion;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SituationType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
@@ -46,6 +46,15 @@ public class DatexIIService {
     private static final Logger log = LoggerFactory.getLogger(DatexIIService.class);
 
     private static final Instant TIME_END = Instant.ofEpochMilli(32503683600000L);
+
+    /**
+     * Maximum SIMPPELI message version accepted by this service.
+     * Versions newer than this are intentionally excluded until the code is updated
+     * to handle any schema changes they may introduce.
+     * Update this constant (and add the new version to {@link SimppeliVersion}) when
+     * support for a newer version is verified and ready.
+     */
+    public static final String MAX_SIMPPELI_VERSION = SimppeliVersion.V_0_2_18.version;
 
     /** Default value for {@code from} when not provided by the caller: current time minus one hour. */
     private static Instant defaultFrom() {
@@ -258,8 +267,8 @@ public class DatexIIService {
     @Transactional(readOnly = true)
     public TrafficAnnouncementFeatureCollection findSimppeliSituations(final String situationId, final boolean latestOnly, final boolean includeAreaGeometry) {
         final var messages = latestOnly
-                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.SIMPPELI.value(), null)
-                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.SIMPPELI.value(), null);
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationIdUpToVersion(situationId, MessageTypeEnum.SIMPPELI.value(), MAX_SIMPPELI_VERSION)
+                : dataDatex2SituationRepository.findAllMessagesBySituationIdUpToVersion(situationId, MessageTypeEnum.SIMPPELI.value(), MAX_SIMPPELI_VERSION);
 
         if (messages.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
@@ -271,7 +280,7 @@ public class DatexIIService {
     private TrafficAnnouncementFeatureCollection findSimppeli(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
-        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.SIMPPELI.value(), null);
+        final var messages = dataDatex2SituationRepository.findMessagesByTypeUpToVersion(situationType.name(), from, to, bbox, MessageTypeEnum.SIMPPELI.value(), MAX_SIMPPELI_VERSION);
         return convertSimppeli(messages, true);
     }
 

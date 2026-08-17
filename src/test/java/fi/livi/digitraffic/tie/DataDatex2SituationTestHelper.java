@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -89,6 +90,7 @@ public class DataDatex2SituationTestHelper {
      *
      * <p>Flushes after saving so subsequent native queries see the data.</p>
      */
+    @SuppressWarnings("unused")
     public void insertSituation(final String situationId,
                                 final long situationVersion,
                                 final SituationType situationType,
@@ -117,6 +119,29 @@ public class DataDatex2SituationTestHelper {
         repo.save(situation);
         repo.flush();
     }
+
+    /**
+     * Inserts a situation row with <em>multiple</em> attached messages (e.g. several SIMPPELI versions).
+     * Use this when you need to verify that the correct version is selected from many available ones.
+     *
+     * @param messages list of (messageType, messageVersion, messageContent) triples to attach
+     */
+    public void insertSituationWithMessages(final String situationId,
+                                            final long situationVersion,
+                                            final SituationType situationType,
+                                            final Instant startTime,
+                                            final Instant endTime,
+                                            final List<MessageSpec> messages) throws ParseException {
+        final var situation = createSituation(situationId, situationVersion, situationType, startTime, endTime);
+        for (final MessageSpec msg : messages) {
+            situation.addMessage(new DataDatex2SituationMessage(msg.version(), msg.messageType().value(), msg.content()));
+        }
+        repo.save(situation);
+        repo.flush();
+    }
+
+    /** Describes a single sub-message to attach to a situation. */
+    public record MessageSpec(MessageTypeEnum messageType, String version, String content) {}
 
     private DataDatex2Situation createSituation(final String situationId,
                                                 final long situationVersion,

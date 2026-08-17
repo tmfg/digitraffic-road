@@ -1,11 +1,15 @@
 package fi.livi.digitraffic.tie.service.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.time.Instant;
 import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,17 @@ class ImsUpdatingServiceTest {
     private static final Instant T2 = Instant.parse("2025-01-01T12:00:00Z");
     private static final Instant T3 = Instant.parse("2025-01-01T14:00:00Z");
     private static final Instant T4 = Instant.parse("2025-01-01T16:00:00Z");
+    private static final Instant VERSION_TIME = Instant.parse("2025-01-01T09:00:00Z");
+
+    // Convenience: call without versionTime (null) for non-cancel tests
+    private Pair<Instant, Instant> getStartAndEndTimes(final List<TrafficAnnouncement> announcements) {
+        return service.getStartAndEndTimes(announcements, null);
+    }
+
+    private Pair<Instant, Instant> getStartAndEndTimes(final List<TrafficAnnouncement> announcements,
+                                                        final Instant versionTime) {
+        return service.getStartAndEndTimes(announcements, versionTime);
+    }
 
     @BeforeEach
     void setUp() {
@@ -47,7 +62,7 @@ class ImsUpdatingServiceTest {
     void singleAnnouncement_withEndTime_returnsEndTime() {
         final var announcements = List.of(announcement(T1, T3));
 
-        final var result = service.getStartAndEndTimes(announcements);
+        final var result = getStartAndEndTimes(announcements);
 
         assertEquals(T1, result.getLeft(),  "startTime should be T1");
         assertEquals(T3, result.getRight(), "endTime should be T3");
@@ -57,7 +72,7 @@ class ImsUpdatingServiceTest {
     void singleAnnouncement_withoutEndTime_returnsNullEndTime() {
         final var announcements = List.of(announcement(T1, null));
 
-        final var result = service.getStartAndEndTimes(announcements);
+        final var result = getStartAndEndTimes(announcements);
 
         assertEquals(T1, result.getLeft(), "startTime should be T1");
         assertNull(result.getRight(), "endTime should be null — announcement is open-ended");
@@ -76,7 +91,7 @@ class ImsUpdatingServiceTest {
                 announcement(T1, T4),  // latest — should win
                 announcement(T1, T3));
 
-        final var result = service.getStartAndEndTimes(announcements);
+        final var result = getStartAndEndTimes(announcements);
 
         assertEquals(T4, result.getRight(), "endTime should be the maximum across all announcements");
     }
@@ -90,7 +105,7 @@ class ImsUpdatingServiceTest {
                 announcement(T1, null)  // open-ended
         );
 
-        final var result = service.getStartAndEndTimes(announcements);
+        final var result = getStartAndEndTimes(announcements);
 
         assertNull(result.getRight(),
                 "endTime must be null when at least one announcement is open-ended");
@@ -102,7 +117,7 @@ class ImsUpdatingServiceTest {
                 announcement(T1, null),
                 announcement(T2, null));
 
-        final var result = service.getStartAndEndTimes(announcements);
+        final var result = getStartAndEndTimes(announcements);
 
         assertNull(result.getRight(), "endTime should be null when no announcement has endTime");
     }
@@ -118,7 +133,7 @@ class ImsUpdatingServiceTest {
                 announcement(T1, T4),  // earliest start — should win
                 announcement(T2, T4));
 
-        final var result = service.getStartAndEndTimes(announcements);
+        final var result = getStartAndEndTimes(announcements);
 
         assertEquals(T1, result.getLeft(), "startTime should be the minimum across all announcements");
     }
@@ -130,7 +145,7 @@ class ImsUpdatingServiceTest {
                 announcement(null, T4),
                 announcement(T2,   T4));
 
-        final var result = service.getStartAndEndTimes(announcements);
+        final var result = getStartAndEndTimes(announcements);
 
         assertEquals(T2, result.getLeft(), "startTime should be the earliest non-null value");
     }
@@ -141,7 +156,7 @@ class ImsUpdatingServiceTest {
 
     @Test
     void emptyAnnouncementList_returnsBothNull() {
-        final var result = service.getStartAndEndTimes(List.of());
+        final var result = getStartAndEndTimes(List.of());
 
         assertNull(result.getLeft(),  "startTime should be null for empty list");
         assertNull(result.getRight(), "endTime should be null for empty list");
@@ -149,7 +164,7 @@ class ImsUpdatingServiceTest {
 
     @Test
     void singleAnnouncement_bothTimesNull_returnsBothNull() {
-        final var result = service.getStartAndEndTimes(List.of(announcement(null, null)));
+        final var result = getStartAndEndTimes(List.of(announcement(null, null)));
 
         assertNull(result.getLeft(),  "startTime should be null");
         assertNull(result.getRight(), "endTime should be null");
@@ -161,7 +176,7 @@ class ImsUpdatingServiceTest {
         // the method must not throw and must treat the announcement as open-ended.
         final var announcement = new TrafficAnnouncement(); // timeAndDuration left null
 
-        final var result = service.getStartAndEndTimes(List.of(announcement));
+        final var result = getStartAndEndTimes(List.of(announcement));
 
         assertNull(result.getLeft(),  "startTime should be null when timeAndDuration is absent");
         assertNull(result.getRight(), "endTime should be null when timeAndDuration is absent");
@@ -174,10 +189,89 @@ class ImsUpdatingServiceTest {
         final var normal  = announcement(T1, T3);
         final var missing = new TrafficAnnouncement(); // no timeAndDuration
 
-        final var result = service.getStartAndEndTimes(List.of(normal, missing));
+        final var result = getStartAndEndTimes(List.of(normal, missing));
 
         assertEquals(T1, result.getLeft(),  "startTime should come from the announcement that has it");
         assertNull(result.getRight(), "endTime must be null when any announcement lacks timeAndDuration");
+    }
+
+    // -------------------------------------------------------------------------
+    // earlyClosing=CANCELED
+    // -------------------------------------------------------------------------
+
+    @Test
+    void singleAnnouncement_earlyClosingCanceled_usesVersionTime() {
+        // When versionTime is provided, it should be used as endTime for a canceled situation.
+        final var announcement = new TrafficAnnouncement()
+                .withTimeAndDuration(new TimeAndDuration(T1, null, null))
+                .withEarlyClosing(TrafficAnnouncement.EarlyClosing.CANCELED);
+
+        final var result = getStartAndEndTimes(List.of(announcement), VERSION_TIME);
+
+        assertEquals(T1, result.getLeft(), "startTime should be preserved when earlyClosing=CANCELED");
+        assertEquals(VERSION_TIME, result.getRight(), "endTime should be versionTime when provided");
+    }
+
+    @Test
+    void singleAnnouncement_earlyClosingCanceled_nullVersionTime_fallsBackToNow() {
+        // When versionTime is null, fall back to Instant.now() as endTime.
+        final var announcement = new TrafficAnnouncement()
+                .withTimeAndDuration(new TimeAndDuration(T1, null, null))
+                .withEarlyClosing(TrafficAnnouncement.EarlyClosing.CANCELED);
+
+        final var before = Instant.now();
+        final var result = getStartAndEndTimes(List.of(announcement), null);
+        final var after = Instant.now();
+
+        assertEquals(T1, result.getLeft(), "startTime should be preserved when earlyClosing=CANCELED");
+        assertNotNull(result.getRight(), "endTime must not be null for a canceled situation");
+        assertTrue(!result.getRight().isBefore(before) && !result.getRight().isAfter(after),
+                "endTime should fall back to approximately now when versionTime is null");
+    }
+
+    @Test
+    void singleAnnouncement_earlyClosingCanceled_nullStartTime_fallsBackToEndTime() {
+        // When earlyClosing=CANCELED and no startTime is available, startTime must fall
+        // back to the canceledEndTime to satisfy the DB NOT NULL constraint on start_time.
+        final var announcement = new TrafficAnnouncement()
+                .withEarlyClosing(TrafficAnnouncement.EarlyClosing.CANCELED); // no timeAndDuration
+
+        final var result = getStartAndEndTimes(List.of(announcement), VERSION_TIME);
+
+        assertEquals(VERSION_TIME, result.getLeft(),
+                "startTime must not be null — falls back to canceledEndTime (versionTime)");
+        assertEquals(VERSION_TIME, result.getRight(), "endTime should be versionTime");
+    }
+
+    @Test
+    void multipleAnnouncements_allHaveEarlyClosingCanceled_usesVersionTime() {
+        // All announcements carry earlyClosing=CANCELED → situation is fully canceled.
+        final var ann1 = new TrafficAnnouncement()
+                .withTimeAndDuration(new TimeAndDuration(T1, null, null))
+                .withEarlyClosing(TrafficAnnouncement.EarlyClosing.CANCELED);
+        final var ann2 = new TrafficAnnouncement()
+                .withTimeAndDuration(new TimeAndDuration(T2, null, null))
+                .withEarlyClosing(TrafficAnnouncement.EarlyClosing.CANCELED);
+
+        final var result = getStartAndEndTimes(List.of(ann1, ann2), VERSION_TIME);
+
+        assertEquals(T1, result.getLeft(), "startTime should be the earliest across all canceled announcements");
+        assertEquals(VERSION_TIME, result.getRight(), "endTime should be versionTime");
+    }
+
+    @Test
+    void multipleAnnouncements_onlyOneHasEarlyClosingCanceled_returnsNullEndTime() {
+        // Consistent with the endTime invariant: a situation is only fully canceled when
+        // ALL its announcements carry earlyClosing=CANCELED.
+        final var normal    = announcement(T1, null);
+        final var cancelled = new TrafficAnnouncement()
+                .withTimeAndDuration(new TimeAndDuration(T2, null, null))
+                .withEarlyClosing(TrafficAnnouncement.EarlyClosing.CANCELED);
+
+        final var result = getStartAndEndTimes(List.of(normal, cancelled), VERSION_TIME);
+
+        assertNull(result.getRight(),
+                "endTime must be null when not all announcements have earlyClosing=CANCELED");
     }
 
     // -------------------------------------------------------------------------

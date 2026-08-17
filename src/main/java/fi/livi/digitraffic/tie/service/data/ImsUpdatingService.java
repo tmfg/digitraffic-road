@@ -166,7 +166,8 @@ public class ImsUpdatingService {
         final var geometry = convertGeometry(objectMapper.valueToTree(feature.getGeometry()).toString());
         //        final Geometry geometry = convertGeometry(simpleRoot.get("geometry").toPrettyString());
         final var publicationTime = feature.getProperties().getReleaseTime();
-        final var times = getStartAndEndTimes(feature.getProperties().getAnnouncements());
+        final var versionTime = feature.getProperties().getVersionTime();
+        final var times = getStartAndEndTimes(feature.getProperties().getAnnouncements(), versionTime);
 
         return new DataDatex2Situation(situationId, situationVersion, situationType,
                 geometry, publicationTime, times.getLeft(), times.getRight());
@@ -201,14 +202,30 @@ public class ImsUpdatingService {
      *       ({@code endTime == null} or {@code timeAndDuration} is absent altogether),
      *       because the situation as a whole cannot be considered ended until every
      *       announcement has ended.</li>
+     *   <li>If ALL announcements carry {@code earlyClosing=CANCELED}, {@code endTime} is
+     *       set to {@code versionTime} (when this cancellation version was published by the
+     *       source system). Falls back to {@code Instant.now()} if {@code versionTime} is
+     *       null.</li>
      * </ul>
+     *
+     * @param versionTime the {@code versionTime} from the SIMPPELI message properties;
+     *                    used as {@code endTime} when the situation is fully canceled.
+     *                    May be {@code null}, in which case {@code Instant.now()} is used.
      */
-    Pair<Instant, Instant> getStartAndEndTimes(final List<TrafficAnnouncement> announcements) {
+    Pair<Instant, Instant> getStartAndEndTimes(final List<TrafficAnnouncement> announcements,
+                                               final Instant versionTime) {
         Instant startTime = null;
         Instant endTime = null;
         boolean anyEndTimeNull = false;
+        boolean allCanceled = !announcements.isEmpty();
 
         for (final TrafficAnnouncement announcement : announcements) {
+            // null earlyClosing means the road work closes normally — not canceled.
+            // Any announcement without CANCELED resets the flag for the whole situation.
+            if (announcement.getEarlyClosing() != TrafficAnnouncement.EarlyClosing.CANCELED) {
+                allCanceled = false;
+            }
+
             final var timeAndDuration = announcement.getTimeAndDuration();
 
             // timeAndDuration is not required by the IMS JSON schema — treat a
@@ -238,6 +255,21 @@ public class ImsUpdatingService {
             }
         }
 
+        // earlyClosing=CANCELED means the road work was canceled before its start time.
+        // Consistent with the endTime invariant: a situation is only fully canceled when
+        // ALL its announcements carry the canceled flag.
+        // Use versionTime (when the source system published this cancellation version) as
+        // end_time. Falls back to Instant.now() if versionTime is null.
+        // startTime may be null if no announcement provided one; fall back to end_time so the
+        // DB NOT NULL constraint on start_time is satisfied.
+        if (allCanceled) {
+            final Instant canceledEndTime = versionTime != null ? versionTime : Instant.now();
+            return Pair.of(startTime != null ? startTime : canceledEndTime, canceledEndTime);
+        }
+
+        // Note: startTime may be null here too (if all announcements lack a startTime).
+        // This is a pre-existing edge case; the caller is responsible for handling it
+        // before persisting to the DB where start_time is NOT NULL.
         return Pair.of(startTime, anyEndTimeNull ? null : endTime);
     }
 }
