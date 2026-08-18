@@ -16,6 +16,15 @@ jobs:
     if: github.repository != 'tmfg/digitraffic-road'
     runs-on: ubuntu-24.04
     steps:
+      - name: Log workflow inputs and environment
+        run: |
+          echo "## Workflow Inputs" >> $GITHUB_STEP_SUMMARY
+          echo "| Name | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| actor | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| env | ${{ github.event.inputs.env }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| config-repo-branch | ${{ github.event.inputs.config-repo-branch }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
       - name: Create parameters.txt
         run: |
           echo "User ${{ github.actor }} started install on $(date)" > parameters.txt

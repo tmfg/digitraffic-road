@@ -35,6 +35,17 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: Log workflow inputs and environment
+        run: |
+          echo "## Workflow Inputs" >> $GITHUB_STEP_SUMMARY
+          echo "| Name | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| actor | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| env | ${{ github.event.inputs.env }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| family-name | ${{ github.event.inputs.family-name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| revision | ${{ github.event.inputs.revision }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| desired-count | ${{ github.event.inputs.desired-count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
       - name: Update
         uses: tmfg/digitraffic-actions@ecs-service-update/v1
         with:
