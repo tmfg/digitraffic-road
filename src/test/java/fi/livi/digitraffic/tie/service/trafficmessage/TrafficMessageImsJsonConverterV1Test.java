@@ -227,7 +227,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
                                Triple.of("Huono ajokeli", null, null));
                 if (version.version >= ImsJsonVersion.V0_2_18.version) {
                     assertNotNull(announcement.locationOpenLr, "locationOpenLr should exist in 0.2.18+");
-                    assertEquals("IxGQjyrPow==", announcement.locationOpenLr.openLrLocationString);
+                    assertEquals("IxGQjyrPow==", announcement.locationOpenLr.binary);
                 } else {
                     assertNull(announcement.locationOpenLr, "locationOpenLr should be null before 0.2.18");
                 }
@@ -343,7 +343,7 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
 
             if (version.version >= ImsJsonVersion.V0_2_18.version) {
                 assertNotNull(rwp.locationOpenLr, "road-work-phase locationOpenLr should exist in 0.2.18+");
-                assertEquals("IxGQjyrPow==", rwp.locationOpenLr.openLrLocationString);
+                assertEquals("IxGQjyrPow==", rwp.locationOpenLr.binary);
             } else {
                 assertNull(rwp.locationOpenLr, "road-work-phase locationOpenLr should be null before 0.2.18");
             }

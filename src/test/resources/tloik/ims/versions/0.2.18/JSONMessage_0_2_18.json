@@ -722,14 +722,14 @@
             "title": "OpenLR location",
             "description": "OpenLR encoded location reference, an alternative way to specify the location.",
             "properties": {
-                "openLrLocationString": {
+                "binary": {
                     "type": "string",
-                    "title": "OpenLR location string",
-                    "description": "Base64-encoded OpenLR binary location reference"
+                    "title": "Location in OpenLR binary",
+                    "description": "OpenLR binary representation of the location"
                 }
             },
             "required": [
-                "openLrLocationString"
+                "binary"
             ]
         }
     }
