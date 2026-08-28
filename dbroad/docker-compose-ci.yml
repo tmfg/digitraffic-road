@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgis/postgis:18-3.6-alpine
+    # align major version with AWS RDS version
+    image: postgis/postgis:16-3.5-alpine
     restart: always
     environment:
       POSTGRES_USER: road
