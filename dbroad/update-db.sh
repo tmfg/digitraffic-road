@@ -55,4 +55,4 @@ docker run --rm \
 --network=dbroad \
 -v ${SCRIPT_DIR}/conf/${ENVIRONMENT}:/flyway/conf \
 -v "${SCRIPT_DIR}/sql:/flyway/sql" \
-flyway/flyway:12.8.1-alpine ${COMMAND} ${OPTIONS}
+flyway/flyway:13.3.0-alpine@sha256:fb13953f16913efd313f202ec4b4ed34fd2ea14cc51401eb36ea9818c0df2918 ${COMMAND} ${OPTIONS}
