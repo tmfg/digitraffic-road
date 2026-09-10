@@ -83,7 +83,7 @@ jobs:
           GIT_SHA=$(git rev-parse --short HEAD)
           echo "sha_short=$GIT_SHA" >> $GITHUB_OUTPUT
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: 25
           distribution: corretto
