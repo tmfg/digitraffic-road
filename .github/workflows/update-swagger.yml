@@ -26,7 +26,7 @@ jobs:
           echo "| env | ${{ github.event.inputs.env }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6.1.2
+        uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
           role-to-assume: ${{ secrets.AWS_SWAGGER_ROLE }}
           role-session-name: gh-actions-update-swagger-road-${{ github.event.inputs.env }}
