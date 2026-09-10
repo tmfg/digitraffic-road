@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:afac="http://datex2.eu/schema/3/afirFacilities" version="3.7" targetNamespace="http://datex2.eu/schema/3/afirFacilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/locationExtension" schemaLocation="DATEXII_3_LocationExtension.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:complexType name="AfirFacilityLocation">
+    <xs:annotation>
+      <xs:documentation>A location for which a time zone,an address and a NUTS-area can be specified.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="timeZone" type="afac:TimeZone" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The time zone the facility is located in.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="address" type="locx:Address" minOccurs="0" />
+      <xs:element name="nutsArea" type="afac:NutsArea" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="NutsArea">
+    <xs:annotation>
+      <xs:documentation>The NUTS-Code representation for the area (Nomenclature of territorial units for statistics) or its LAU code representation (Local Administrative Unit).</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="nutsCodeType" type="loc:_NutsCodeTypeEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The NUTS code type for the named area.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="nutsCode" type="loc:NutsCode" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The NUTS code for the named area.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_nutsAreaExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="TimeZone">
+    <xs:annotation>
+      <xs:documentation>Identifies a time zone by specifying the difference to UTC in hours and minutes,as defined in ISO 8601.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:String">
+      <xs:pattern value="[-+][0-9][0-9]:[0-9][0-9]|Z" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

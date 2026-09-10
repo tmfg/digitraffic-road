@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:tro="http://datex2.eu/schema/3/trafficRegulation" version="1" targetNamespace="http://datex2.eu/schema/3/trafficRegulation" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/commonExtension" schemaLocation="DATEXII_3_CommonExtension.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:complexType name="_UnitOfSpeedEnum">
+    <xs:simpleContent>
+      <xs:extension base="tro:UnitOfSpeedEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:simpleType name="UnitOfSpeedEnum">
+    <xs:annotation>
+      <xs:documentation>Units of speed.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="kilometresPerHour">
+        <xs:annotation>
+          <xs:documentation>Kilometres per hour.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="milesPerHour">
+        <xs:annotation>
+          <xs:documentation>Miles per hour.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

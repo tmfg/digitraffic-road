@@ -558,7 +558,7 @@
             <plugin>
                 <groupId>org.openclover</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
-                <version>4.5.2</version>
+                <version>5.1.0.1</version>
                 <configuration>
                     <excludes>
                         <exclude>fi/livi/digitraffic/tie/RoadApplication.java</exclude>
@@ -766,6 +766,30 @@
                             <generatePackage>fi.livi.digitraffic.tie.tms.datex2.v3_5</generatePackage>
                             <generateDirectory>
                                 ${project.build.directory}/generated-sources/datex2-tms-v3_5-xml
+                            </generateDirectory>
+                        </configuration>
+                    </execution>
+
+                    <!--Datex2 3.7 TMS-->
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <id>DATEXII_3_7_tms</id>
+                        <configuration>
+                            <!--<forceRegenerate>true</forceRegenerate>-->
+                            <schemaDirectory>
+                                ${basedir}/src/main/resources/schemas/datex2/tms/3_7/xml
+                            </schemaDirectory>
+                            <schemaIncludes>DATEXII_3_D2Payload.xsd</schemaIncludes>
+                            <bindingDirectory>${basedir}/src/main/resources/schemas</bindingDirectory>
+                            <bindingIncludes>
+                                <bindingInclude>jaxb-bindings/JAXBBindingsGlobal.xjb</bindingInclude>
+                                <bindingInclude>datex2/tms/3_7/xml/DATEXII_3.xjb</bindingInclude>
+                            </bindingIncludes>
+                            <generatePackage>fi.livi.digitraffic.tie.tms.datex2.v3_7</generatePackage>
+                            <generateDirectory>
+                                ${project.build.directory}/generated-sources/datex2-tms-v3_7-xml
                             </generateDirectory>
                         </configuration>
                     </execution>
@@ -1157,12 +1181,9 @@
                                 <source>${project.digitraffic-common-java.directory}/src/main/java</source>
                                 <source>${project.build.directory}/generated-sources/annotations</source>
                                 <source>${project.build.directory}/generated-sources/cxf</source>
-                                <source>
-                                    ${project.build.directory}/generated-sources/datex2-tms-v3_5-xml
-                                </source>
-                                <source>
-                                    ${project.build.directory}/generated-sources/datex2-v2_2_3_fi-xml
-                                </source>
+                                <source>${project.build.directory}/generated-sources/datex2-tms-v3_5-xml</source>
+                                <source>${project.build.directory}/generated-sources/datex2-tms-v3_7-xml</source>
+                                <source>${project.build.directory}/generated-sources/datex2-v2_2_3_fi-xml</source>
                                 <source>
                                     ${project.build.directory}/generated-sources/datex2-v3_5-json
                                 </source>

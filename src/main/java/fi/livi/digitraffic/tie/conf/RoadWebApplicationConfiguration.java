@@ -96,7 +96,9 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         // Custom converters are considered before default ones (e.g. MappingJackson2XmlHttpMessageConverter).
         builder.addCustomConverter(xmlHttpMessageConverterForD2LogicalModel223());
         builder.addCustomConverter(xmlHttpMessageConverterForMeasurementSiteTablePublication35());
+        builder.addCustomConverter(xmlHttpMessageConverterForMeasurementSiteTablePublication37());
         builder.addCustomConverter(xmlHttpMessageConverterForMeasuredDataPublication35());
+        builder.addCustomConverter(xmlHttpMessageConverterForMeasuredDataPublication37());
         builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication35());
         builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication37());
     }
@@ -112,8 +114,10 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
         converters.addFirst(xmlHttpMessageConverterForSituationPublication37());
         converters.addFirst(xmlHttpMessageConverterForSituationPublication35());
-        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication35());
+        converters.addFirst(xmlHttpMessageConverterForMeasurementSiteTablePublication37());
         converters.addFirst(xmlHttpMessageConverterForMeasurementSiteTablePublication35());
+        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication37());
+        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication35());
         converters.addFirst(xmlHttpMessageConverterForD2LogicalModel223());
     }
 
@@ -136,6 +140,18 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }
 
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasurementSiteTablePublication37() {
+        // To return child class in xml as xsi:type attribute we need to use custom implementation
+        // telling the child and parent classes
+        return new Jaxb2RootElementHttpMessageConverter<>(
+                fi.livi.digitraffic.tie.tms.datex2.v3_7.MeasurementSiteTablePublication.class,
+                fi.livi.digitraffic.tie.tms.datex2.v3_7.PayloadPublication.class,
+                "payload")
+                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload", "https://docs.datex2.eu/_static/data/v3.7/DATEXII_3_D2Payload.xsd")
+                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
+    }
+
     private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication35() {
         // To return child class in xml as xsi:type attribute we need to use custom implementation
         // telling the child and parent classes
@@ -144,6 +160,18 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 PayloadPublication.class,
                 "payload")
                 .withJaxbSchemaLocations("https://datex2.eu/schema/3/d2Payload")
+                .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
+                .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
+    }
+
+    private HttpMessageConverter<Object> xmlHttpMessageConverterForMeasuredDataPublication37() {
+        // To return child class in xml as xsi:type attribute we need to use custom implementation
+        // telling the child and parent classes
+        return new Jaxb2RootElementHttpMessageConverter<>(
+                fi.livi.digitraffic.tie.tms.datex2.v3_7.MeasuredDataPublication.class,
+                fi.livi.digitraffic.tie.tms.datex2.v3_7.PayloadPublication.class,
+                "payload")
+                .withJaxbSchemaLocations("http://datex2.eu/schema/3/d2Payload", "https://docs.datex2.eu/_static/data/v3.7/DATEXII_3_D2Payload.xsd")
                 .withNamespacePrefixMapper(new DatexII_3_NamespacePrefixMapper())
                 .withNamespaceURI("http://datex2.eu/schema/3/d2Payload");
     }

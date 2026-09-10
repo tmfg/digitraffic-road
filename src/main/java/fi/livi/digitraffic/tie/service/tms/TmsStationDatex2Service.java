@@ -9,7 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.tie.controller.RoadStationState;
 import fi.livi.digitraffic.tie.converter.tms.datex2.json.TmsStationMetadata2Datex2JsonConverter;
-import fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStationMetadata2Datex2XmlConverter;
+import fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStationMetadataToDatexII35XmlConverter;
+import fi.livi.digitraffic.tie.converter.tms.datex2.xml.TmsStationMetadataToDatexII37XmlConverter;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
 import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
@@ -18,28 +19,43 @@ import fi.livi.digitraffic.tie.service.tms.v1.TmsStationMetadataWebServiceV1;
 @Service
 public class TmsStationDatex2Service {
 
-    private final TmsStationMetadata2Datex2XmlConverter tmsStationMetadata2Datex2XmlConverter;
+    private final TmsStationMetadataToDatexII35XmlConverter tmsStationMetadataToDatexII35XmlConverter;
+    private final TmsStationMetadataToDatexII37XmlConverter tmsStationMetadataToDatexII37XmlConverter;
     private final TmsStationMetadata2Datex2JsonConverter tmsStationMetadata2Datex2JsonConverter;
     private final TmsStationMetadataWebServiceV1 tmsStationMetadataWebServiceV1;
 
     public TmsStationDatex2Service(final TmsStationMetadataWebServiceV1 tmsStationMetadataWebServiceV1,
-                                   final TmsStationMetadata2Datex2XmlConverter tmsStationMetadata2Datex2XmlConverter,
+                                   final TmsStationMetadataToDatexII35XmlConverter tmsStationMetadataToDatexII35XmlConverter,
+                                   final TmsStationMetadataToDatexII37XmlConverter tmsStationMetadataToDatexII37XmlConverter,
                                    final TmsStationMetadata2Datex2JsonConverter tmsStationMetadata2Datex2JsonConverter) {
         this.tmsStationMetadataWebServiceV1 = tmsStationMetadataWebServiceV1;
-        this.tmsStationMetadata2Datex2XmlConverter = tmsStationMetadata2Datex2XmlConverter;
+        this.tmsStationMetadataToDatexII35XmlConverter = tmsStationMetadataToDatexII35XmlConverter;
+        this.tmsStationMetadataToDatexII37XmlConverter = tmsStationMetadataToDatexII37XmlConverter;
         this.tmsStationMetadata2Datex2JsonConverter = tmsStationMetadata2Datex2JsonConverter;
     }
 
     @Transactional(readOnly = true)
-    public MeasurementSiteTablePublication findAllPublishableTmsStationsAsDatex2Xml(final RoadStationState roadStationState) {
+    public MeasurementSiteTablePublication findAllPublishableTmsStationsAsDatexII35Xml(final RoadStationState roadStationState) {
         final List<TmsStation> stations = tmsStationMetadataWebServiceV1.findPublishableStations(roadStationState);
-        return tmsStationMetadata2Datex2XmlConverter.convertToXml(stations, tmsStationMetadataWebServiceV1.getMetadataLastUpdated());
+        return tmsStationMetadataToDatexII35XmlConverter.convertToXml(stations, tmsStationMetadataWebServiceV1.getMetadataLastUpdated());
     }
 
     @Transactional(readOnly = true)
-    public MeasurementSiteTablePublication getPublishableTmsStationAsDatex2Xml(final long id) {
+    public MeasurementSiteTablePublication getPublishableTmsStationAsDatexII35Xml(final long id) {
         final TmsStation station = tmsStationMetadataWebServiceV1.getPublishableStationById(id);
-        return tmsStationMetadata2Datex2XmlConverter.convertToXml(Collections.singletonList(station), station.getMaxModified());
+        return tmsStationMetadataToDatexII35XmlConverter.convertToXml(Collections.singletonList(station), station.getMaxModified());
+    }
+
+    @Transactional(readOnly = true)
+    public fi.livi.digitraffic.tie.tms.datex2.v3_7.MeasurementSiteTablePublication findAllPublishableTmsStationsAsDatexII37Xml(final RoadStationState roadStationState) {
+        final List<TmsStation> stations = tmsStationMetadataWebServiceV1.findPublishableStations(roadStationState);
+        return tmsStationMetadataToDatexII37XmlConverter.convertToXml(stations, tmsStationMetadataWebServiceV1.getMetadataLastUpdated());
+    }
+
+    @Transactional(readOnly = true)
+    public fi.livi.digitraffic.tie.tms.datex2.v3_7.MeasurementSiteTablePublication getPublishableTmsStationAsDatexII37Xml(final long id) {
+        final TmsStation station = tmsStationMetadataWebServiceV1.getPublishableStationById(id);
+        return tmsStationMetadataToDatexII37XmlConverter.convertToXml(Collections.singletonList(station), station.getMaxModified());
     }
 
     @Transactional(readOnly = true)

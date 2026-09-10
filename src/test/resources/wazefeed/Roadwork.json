@@ -237,7 +237,7 @@
                 "workingHours" : [ ],
                 "timeAndDuration" : {
                     "startTime" : "2024-09-04T18:00:00Z",
-                    "endTime" : "2026-09-05T03:00:00Z"
+                    "endTime" : "2126-09-05T03:00:00Z"
                 },
                 "workTypes" : [ {
                     "type" : "OTHER",
@@ -295,7 +295,7 @@
                 "comment" : "Kiertotie Eureeninkadun ja Kaivokadun kautta.",
                 "timeAndDuration" : {
                     "startTime" : "2024-08-18T18:00:00Z",
-                    "endTime" : "2026-08-19T03:00:00Z"
+                    "endTime" : "2126-08-19T03:00:00Z"
                 },
                 "workTypes" : [ {
                     "type" : "OTHER",

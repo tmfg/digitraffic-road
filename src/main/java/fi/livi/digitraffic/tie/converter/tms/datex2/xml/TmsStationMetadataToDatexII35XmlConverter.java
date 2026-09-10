@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.ComputationMethodEnum;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredOrDerivedDataTypeEnum;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSite;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTable;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
@@ -32,6 +33,7 @@ import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointLocation;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.VehicleCharacteristics;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.VehicleTypeEnum;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5._ComputationMethodEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5._MeasuredOrDerivedDataTypeEnum;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5._MeasurementSiteIndexMeasurementSpecificCharacteristics;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5._VehicleTypeEnum;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationSensor;
@@ -39,13 +41,13 @@ import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
 @ConditionalOnWebApplication
 @Component
-public class TmsStationMetadata2Datex2XmlConverter {
+public class TmsStationMetadataToDatexII35XmlConverter {
     private final TmsStationSensorConstantService tmsStationSensorConstantService;
 
     private final InformationStatusEnum informationStatus;
 
-    public TmsStationMetadata2Datex2XmlConverter(final TmsStationSensorConstantService tmsStationSensorConstantService,
-                                                 @Value("${dt.domain.url}") final String appUrl) {
+    public TmsStationMetadataToDatexII35XmlConverter(final TmsStationSensorConstantService tmsStationSensorConstantService,
+                                                     @Value("${dt.domain.url}") final String appUrl) {
         this.tmsStationSensorConstantService = tmsStationSensorConstantService;
         this.informationStatus = appUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
@@ -116,7 +118,7 @@ public class TmsStationMetadata2Datex2XmlConverter {
     private static List<_MeasurementSiteIndexMeasurementSpecificCharacteristics> getMeasurementSpecificCharacteristics(final List<RoadStationSensor> sensors) {
 
         final List<MeasurementSpecificCharacteristics> measurementSpecificCharacteristics =
-                sensors.stream().map(TmsStationMetadata2Datex2XmlConverter::createMeasurementSpecificCharacteristics).toList();
+                sensors.stream().map(TmsStationMetadataToDatexII35XmlConverter::createMeasurementSpecificCharacteristics).toList();
 
         final List<_MeasurementSiteIndexMeasurementSpecificCharacteristics> indexedMeasurementSpecificCharacteristics = new ArrayList<>();
         for (int i = 0; i < measurementSpecificCharacteristics.size(); i++) {
@@ -134,14 +136,27 @@ public class TmsStationMetadata2Datex2XmlConverter {
 
         final Integer periodSeconds = resolvePeriodSecondsFromSensorName(sensor.getNameFi());
 
+        final _MeasuredOrDerivedDataTypeEnum dataType = resolveMeasuredOrDerivedDataType(sensor);
+
         return new MeasurementSpecificCharacteristics()
                 // accuracy is % value.
                 .withAccuracy((float) TmsDatex2Common.getSensorValueAccuracyPercentage())
                 .withComputationMethod(new _ComputationMethodEnum( computationMethod, null))
-                // Not recommended to use like this
-                //.withSpecificMeasurementValueType(new _MeasuredOrDerivedDataTypeEnum(dataType, sensor.getNameFi()))
+                .withSpecificMeasurementValueType(dataType)
                 .withPeriod(periodSeconds != null ? Float.valueOf(periodSeconds) : null)
                 .withSpecificVehicleCharacteristics(new VehicleCharacteristics()
                         .withVehicleTypes(Collections.singletonList(new _VehicleTypeEnum().withValue(VehicleTypeEnum.ANY_VEHICLE))));
+    }
+
+    private static _MeasuredOrDerivedDataTypeEnum resolveMeasuredOrDerivedDataType(final RoadStationSensor sensor) {
+        if (sensor.isFlowSensor()) {
+            return new _MeasuredOrDerivedDataTypeEnum(MeasuredOrDerivedDataTypeEnum.TRAFFIC_FLOW, null);
+        }
+        if (sensor.isSpeedSensor()) {
+            return new _MeasuredOrDerivedDataTypeEnum(MeasuredOrDerivedDataTypeEnum.TRAFFIC_SPEED, null);
+        }
+
+        // Keep schema-required enum populated for sensors outside the predefined DATEX categories.
+        return new _MeasuredOrDerivedDataTypeEnum(MeasuredOrDerivedDataTypeEnum.__EXTENDED, sensor.getNameFi());
     }
 }

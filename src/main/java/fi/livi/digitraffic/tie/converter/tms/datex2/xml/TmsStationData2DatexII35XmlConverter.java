@@ -53,19 +53,18 @@ import fi.livi.digitraffic.tie.model.tms.TmsStation;
 
 @ConditionalOnWebApplication
 @Component
-public class TmsStationData2Datex2XmlConverter {
+public class TmsStationData2DatexII35XmlConverter {
 
-    private static final Logger log = LoggerFactory.getLogger(TmsStationData2Datex2XmlConverter.class);
+    private static final Logger log = LoggerFactory.getLogger(TmsStationData2DatexII35XmlConverter.class);
 
-    private final fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum informationStatus;
+    private final InformationStatusEnum informationStatus;
 
-    public TmsStationData2Datex2XmlConverter(@Value("${dt.domain.url}") final String camUrl) {
-        this.informationStatus = camUrl.toLowerCase().contains("test") ? fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum.TEST : InformationStatusEnum.REAL;
+    public TmsStationData2DatexII35XmlConverter(@Value("${dt.domain.url}") final String camUrl) {
+        this.informationStatus = camUrl.toLowerCase().contains("test") ? InformationStatusEnum.TEST : InformationStatusEnum.REAL;
     }
 
-    public fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication convertToXml(final Map<TmsStation, List<SensorValueDtoV1>> stations, final Instant updated) {
-
-        final fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication publication =
+    public MeasuredDataPublication convertToXml(final Map<TmsStation, List<SensorValueDtoV1>> stations, final Instant updated) {
+        final MeasuredDataPublication publication =
                 new MeasuredDataPublication()
                         .withPublicationTime(updated)
                         .withPublicationCreator(getInternationalIdentifier())
@@ -86,12 +85,12 @@ public class TmsStationData2Datex2XmlConverter {
         return publication;
     }
 
-    private static fi.livi.digitraffic.tie.tms.datex2.v3_5.SiteMeasurements getSiteMeasurements(
+    private static SiteMeasurements getSiteMeasurements(
             final TmsStation station,
             final List<SensorValueDtoV1> sensorValues,
             final Instant updated) {
 
-        final fi.livi.digitraffic.tie.tms.datex2.v3_5.SiteMeasurements measurementSite =
+        final SiteMeasurements measurementSite =
                 new SiteMeasurements()
                         .withMeasurementSiteReference(new _MeasurementSiteVersionedReference()
                                         .withId(station.getRoadStationNaturalId().toString())
@@ -157,21 +156,21 @@ public class TmsStationData2Datex2XmlConverter {
         return quantity;
     }
 
-    private static fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficData getBasicData(final RoadStationSensor sensor,
-                                                                                         final SensorValueDtoV1 sensorValue) {
+    private static TrafficData getBasicData(final RoadStationSensor sensor,
+                                            final SensorValueDtoV1 sensorValue) {
 
 
         if (sensor.isFlowSensor() || sensor.isSpeedSensor()) {
             final TrafficData trafficData;
             if (sensor.isFlowSensor()) {
-                final fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficFlow trafficFlow = new TrafficFlow();
+                final TrafficFlow trafficFlow = new TrafficFlow();
                 trafficData = trafficFlow;
                 if (sensorValue != null) {
                     final BigInteger value = BigDecimal.valueOf(sensorValue.getValue()).round(MathContext.UNLIMITED).toBigInteger();
                     trafficFlow.withVehicleFlow(new VehicleFlowValue().withVehicleFlowRate(value));
                 }
             } else  { // == sensor.isSpeedSensor()
-                final fi.livi.digitraffic.tie.tms.datex2.v3_5.TrafficSpeed trafficSpeed = new TrafficSpeed();
+                final TrafficSpeed trafficSpeed = new TrafficSpeed();
                 trafficData = trafficSpeed;
                 if (sensorValue != null) {
                     trafficSpeed.withAverageVehicleSpeed(new SpeedValue().withSpeed((float) sensorValue.getValue()));

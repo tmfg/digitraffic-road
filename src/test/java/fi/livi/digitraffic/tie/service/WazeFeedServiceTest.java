@@ -131,13 +131,13 @@ public class WazeFeedServiceTest extends AbstractRestWebTest {
         assertWazeType(incident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
 
         assertEquals("2024-09-04T18:00:00+00:00", incident.starttime);
-        assertEquals("2026-09-05T03:00:00+00:00", incident.endtime);
+        assertEquals("2126-09-05T03:00:00+00:00", incident.endtime);
 
         final WazeFeedIncidentDto secondIncident = announcement.incidents.getLast();
         assertWazeType(secondIncident, WazeFeedIncidentDto.WazeType.ROAD_CLOSED_CONSTRUCTION);
 
         assertEquals("2024-08-18T18:00:00+00:00", secondIncident.starttime);
-        assertEquals("2026-08-19T03:00:00+00:00", secondIncident.endtime);
+        assertEquals("2126-08-19T03:00:00+00:00", secondIncident.endtime);
     }
 
     @Test
