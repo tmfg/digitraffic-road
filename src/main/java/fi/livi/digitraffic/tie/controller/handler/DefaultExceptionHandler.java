@@ -11,6 +11,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import jakarta.xml.bind.MarshalException;
 import org.apache.catalina.connector.ClientAbortException;
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.slf4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.convert.ConversionFailedException;
@@ -121,17 +122,24 @@ public class DefaultExceptionHandler {
             exception);
     }
 
-    @ExceptionHandler({ ObjectNotFoundException.class, ResourceAccessException.class, BadRequestException.class, ConversionFailedException.class,
-                        IllegalArgumentException.class, fi.livi.digitraffic.tie.service.IllegalArgumentException.class, MethodArgumentTypeMismatchException.class })
+    @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleObjectNotFoundException(final Exception exception, final ServletWebRequest request) {
+        return getErrorResponseEntityAndLogException(request, exception.getMessage(), HttpStatus.NOT_FOUND, exception);
+    }
+
+    @ExceptionHandler({ ResourceAccessException.class, BadRequestException.class, ConversionFailedException.class,
+                        IllegalArgumentException.class, fi.livi.digitraffic.tie.service.IllegalArgumentException.class,
+                        MethodArgumentTypeMismatchException.class, InvalidParameterException.class })
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleOtherExceptions(final Exception exception, final ServletWebRequest request) {
         final HttpStatus status;
-        if (exception instanceof ObjectNotFoundException) {
-            status = HttpStatus.NOT_FOUND;
-        } else if (exception instanceof BadRequestException
+        if (exception instanceof BadRequestException
                 || exception instanceof IllegalArgumentException
                 || exception instanceof fi.livi.digitraffic.tie.service.IllegalArgumentException
-                || exception instanceof MethodArgumentTypeMismatchException || exception instanceof ConversionFailedException) {
+                || exception instanceof MethodArgumentTypeMismatchException
+                || exception instanceof ConversionFailedException
+                || exception instanceof InvalidParameterException) {
             status = HttpStatus.BAD_REQUEST;
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;

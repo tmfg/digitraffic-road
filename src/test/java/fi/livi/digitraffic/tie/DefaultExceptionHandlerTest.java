@@ -13,9 +13,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Instant;
 import java.util.Collections;
 
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
+import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -120,5 +123,20 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
     @Test
     public void methodArgumentTypeMismatchException() throws Exception {
         testException(MethodArgumentTypeMismatchException.class, 400, LogMode.INFO);
+    }
+
+    @Test
+    public void typeMismatchException() throws Exception {
+        testException(TypeMismatchException.class, 400, LogMode.INFO);
+    }
+
+    @Test
+    public void conversionFailedException() throws Exception {
+        testException(ConversionFailedException.class, 400, LogMode.INFO);
+    }
+
+    @Test
+    public void invalidParameterException() throws Exception {
+        testException(InvalidParameterException.class, 400, LogMode.INFO);
     }
 }
