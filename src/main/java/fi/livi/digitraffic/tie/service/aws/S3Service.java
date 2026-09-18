@@ -33,9 +33,9 @@ import static fi.livi.digitraffic.tie.service.weathercam.CameraImageS3Writer.LAS
 public class S3Service {
     private static final Logger log = LoggerFactory.getLogger(S3Service.class);
 
-    public record S3ImageObject(byte[] data, Date lastModified, String key, String versionId) {
+    public record S3ImageObject(byte[] data, Instant lastModified, String key, String versionId) {
         public String getCacheKey() {
-            return key + ":" + (versionId != null ? versionId : "") + ":" + lastModified.toInstant().toString();
+            return key + ":" + (versionId != null ? versionId : "") + ":" + lastModified.toString();
         }
     }
 
@@ -81,7 +81,7 @@ public class S3Service {
                     .orTimeout(35, TimeUnit.SECONDS) // orTimeout should be ≤ apiCallAttemptTimeout
                     .thenApply(resp -> new S3ImageObject(
                             resp.asByteArray(),
-                            Date.from(resp.response().lastModified()), key, versionId))
+                            resp.response().lastModified(), key, versionId))
                     // Release permit exactly once
                     .whenComplete((r, e) -> s3Limiter.release());
         } catch (final Exception e) {
@@ -95,7 +95,7 @@ public class S3Service {
             throws IOException {
         final var response = getObject(bucketName, key, versionId);
 
-        return new S3ImageObject(response.readAllBytes(), Date.from(response.response().lastModified()), key, versionId);
+        return new S3ImageObject(response.readAllBytes(), response.response().lastModified(), key, versionId);
     }
 
     @NotTransactionalServiceMethod

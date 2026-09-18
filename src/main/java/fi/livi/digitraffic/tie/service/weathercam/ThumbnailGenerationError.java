@@ -1,18 +1,15 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import java.util.Date;
+import java.time.Instant;
 
 public class ThumbnailGenerationError extends RuntimeException {
     private final String imageName;
     private final String versionId;
-    private final Date lastModified;
+    private final Instant lastModified;
     private final String originalImageHash;
     private final double originalImageSize;
 
-
-    public ThumbnailGenerationError(final String message, final String imageName, final String versionId, final Date lastModified, final String originalImageHash, final double originalImageSize, final Throwable cause
-
-    ) {
+    public ThumbnailGenerationError(final String message, final String imageName, final String versionId, final Instant lastModified, final String originalImageHash, final double originalImageSize, final Throwable cause) {
         super(message, cause);
         this.imageName = imageName;
         this.versionId = versionId;
@@ -29,7 +26,7 @@ public class ThumbnailGenerationError extends RuntimeException {
         return versionId;
     }
 
-    public Date getLastModified() {
+    public Instant getLastModified() {
         return lastModified;
     }
 

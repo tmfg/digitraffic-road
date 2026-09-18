@@ -259,8 +259,8 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     private void mockS3GetObjectWithImageKey(final KuvaProtos.Kuva kuva, final String key) throws IOException {
         final byte[] imageData = imageFilesMap.get(kuva.getKuvaId() + IMAGE_SUFFIX);
 
-        when(s3Service.readImage(anyString(), eq(key), anyString())).thenReturn(new S3Service.S3ImageObject(imageData, new Date(), key, null));
-        when(s3Service.readImage(anyString(), eq(key), isNull())).thenReturn(new S3Service.S3ImageObject(imageData, new Date(), key, null));
+        when(s3Service.readImage(anyString(), eq(key), anyString())).thenReturn(new S3Service.S3ImageObject(imageData, Instant.now(), key, null));
+        when(s3Service.readImage(anyString(), eq(key), isNull())).thenReturn(new S3Service.S3ImageObject(imageData, Instant.now(), key, null));
     }
 
     private void mockS3PutImageVersion(final String versionId, final String versionKey) {

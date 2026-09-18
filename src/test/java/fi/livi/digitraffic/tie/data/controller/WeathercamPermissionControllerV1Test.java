@@ -40,7 +40,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
-
     private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionControllerV1Test.class);
 
     @Autowired
