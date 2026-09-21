@@ -92,7 +92,7 @@ jobs:
           output-file: nginx-sbom.json
       - name: Update nginx task-def
         id: update
-        uses: tmfg/digitraffic-actions@update-task-def/v1
+        uses: tmfg/digitraffic-actions@c173d0b70f7e4b4043342d6a16cf6ff59dc15b88 # update-task-def/v1
         with:
           task-def-file-name: road/${{ github.event.inputs.env }}-nginx
           family-name: road-${{ github.event.inputs.env }}-nginx
@@ -103,7 +103,7 @@ jobs:
           ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
           ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
       - name: Update nginx service
-        uses: tmfg/digitraffic-actions@ecs-service-update/v1
+        uses: tmfg/digitraffic-actions@5ac0b5680d70cdca1893ceaf3c4384f97344bf6e # ecs-service-update/v1
         with:
           aws-role: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}

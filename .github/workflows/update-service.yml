@@ -47,7 +47,7 @@ jobs:
           echo "| desired-count | ${{ github.event.inputs.desired-count }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
       - name: Update
-        uses: tmfg/digitraffic-actions@ecs-service-update/v1
+        uses: tmfg/digitraffic-actions@5ac0b5680d70cdca1893ceaf3c4384f97344bf6e # ecs-service-update/v1
         with:
           revision: ${{ github.event.inputs.revision }}
           service-name: road-${{ github.event.inputs.env }}-${{ github.event.inputs.family-name }}
