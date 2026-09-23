@@ -57,11 +57,11 @@ jobs:
           docker build -t nginx-road-${{ github.event.inputs.env }} --build-arg APPNAME=road --build-arg ENVIRONMENT=${{ github.event.inputs.env }} .
           docker run --rm -t nginx-road-${{ github.event.inputs.env }} nginx -t
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4.3.0
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+        uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4.4.0
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-install-image-road-nginx-${{ github.event.inputs.env }}
@@ -92,7 +92,7 @@ jobs:
           output-file: nginx-sbom.json
       - name: Update nginx task-def
         id: update
-        uses: tmfg/digitraffic-actions@c173d0b70f7e4b4043342d6a16cf6ff59dc15b88 # update-task-def/v1
+        uses: tmfg/digitraffic-actions@fac53ef1caa9cb07fbb5d40c2c1c3738ffa26702 # update-task-def/v2
         with:
           task-def-file-name: road/${{ github.event.inputs.env }}-nginx
           family-name: road-${{ github.event.inputs.env }}-nginx
@@ -103,7 +103,7 @@ jobs:
           ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
           ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
       - name: Update nginx service
-        uses: tmfg/digitraffic-actions@5ac0b5680d70cdca1893ceaf3c4384f97344bf6e # ecs-service-update/v1
+        uses: tmfg/digitraffic-actions@565f5ac417ee66d4aee11bd40423664fd5ee82dc # ecs-service-update/v1
         with:
           aws-role: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
@@ -124,7 +124,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials for SBOM
-        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ fromJson(steps.sbom-config.outputs.common).sbomUploadRoleArn }}
           role-session-name: gh-actions-upload-sbom-road-nginx-${{ github.event.inputs.env }}
