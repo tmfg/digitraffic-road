@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
         <relativePath/>
     </parent>
 
@@ -26,15 +25,14 @@
         <maven.compiler.release>25</maven.compiler.release>
         <!-- https://mvnrepository.com/artifact/com.google.protobuf/protoc -->
         <com.google.protobuf.version>4.35.1</com.google.protobuf.version>
-        <org.apache.cxf.version>4.2.2</org.apache.cxf.version>
+        <org.apache.cxf.version>4.2.3</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
-        <spring-cloud-config.version>5.0.4</spring-cloud-config.version>
+        <spring-cloud-config.version>5.0.5</spring-cloud-config.version>
         <spring-cloud-commons.version>5.0.2</spring-cloud-commons.version>
-        <!-- TODO: Remove overrides when Spring Boot includes Netty ≥4.2.16 and Tomcat ≥11.0.24
-             Added 2026-05-22 to fix CVE-2026-42581 (Netty) and CVE-2026-41293 (Tomcat)
-             Updated 2026-08-05 to fix CVE-2026-56819(7.5), CVE-2026-56817(8.3), CVE-2026-55851(8.7), CVE-2026-44891(7.5), CVE-2026-55833(7.5), CVE-2026-56745(8.7), CVE-2026-55831(7.5), CVE-2026-56820(9.1), CVE-2026-56816(7.5) -->
-        <netty.version>4.2.16.Final</netty.version>
-        <tomcat.version>11.0.24</tomcat.version>
+        <!-- TODO: Remove override when Spring Boot includes Tomcat ≥11.0.26 -->
+        <tomcat.version>11.0.26</tomcat.version>
+        <!-- TODO: Remove override when Spring Boot includes Artemis ≥2.57.0 -->
+        <artemis.version>2.57.0</artemis.version>
         <proj4j.version>1.4.3</proj4j.version>
         <org.jvnet.jaxb.version>4.0.12</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java
@@ -652,8 +650,7 @@
                                     <extraarg>-autoNameResolution</extraarg>
                                 </extraargs>
                             </defaultOptions>
-                            <additionalJvmArgs>
-                                -Dorg.apache.cxf.Logger=null
+                            <additionalJvmArgs> -Dorg.apache.cxf.Logger=null
                             </additionalJvmArgs>
                             <wsdlOptions>
                                 <!-- Tiesääasemien staattiset tiedot / The static information of the
@@ -704,8 +701,7 @@
             </plugin>
 
             <plugin>
-                <!--
-                https://github.com/highsource/jaxb-tools?tab=readme-ov-file#jaxb-maven-plugin-->
+                <!-- https://github.com/highsource/jaxb-tools?tab=readme-ov-file#jaxb-maven-plugin-->
                 <groupId>org.jvnet.jaxb</groupId>
                 <artifactId>jaxb-maven-plugin</artifactId>
                 <version>${org.jvnet.jaxb.version}</version>
@@ -714,19 +710,19 @@
                     <extension>true</extension>
                     <args>
                         <arg>-Xannotate
-                        </arg> <!-- Annotate with XmlRootElement
+                        </arg>                        <!-- Annotate with XmlRootElement
                         with annox, see e.g. DATEXII_3_Bindings.xjb -->
-                        <!--<arg>-XremoveAnnotation</arg>--> <!-- remove annotations defined in
+                        <!--<arg>-XremoveAnnotation</arg>-->                        <!-- remove annotations defined in
                         bindigs file with annox:removeAnnotation -->
                         <arg>-XautoNameResolution
-                        </arg> <!-- Fix: A
+                        </arg>                        <!-- Fix: A
                         class/interface with the same name is already in use. -->
                         <arg>-Xvalue-constructor</arg>
-                        <arg>-Xfluent-api</arg><!-- Generate withProperty methods -->
+                        <arg>-Xfluent-api</arg>                        <!-- Generate withProperty methods -->
                         <arg>-mark-generated</arg>
                         <arg>-Xinheritance</arg>
                         <arg>-Xsimplify
-                        </arg> <!-- Simplify classess and e.g. use
+                        </arg>                        <!-- Simplify classess and e.g. use
                         plural property names where applicable -->
                     </args>
                     <plugins>
