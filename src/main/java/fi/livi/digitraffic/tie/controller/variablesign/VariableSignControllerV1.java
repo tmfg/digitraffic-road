@@ -72,7 +72,8 @@ public class VariableSignControllerV1 {
         return variableSignDataServiceV1.listLatestValue(deviceId);
     }
 
-    @Operation(summary = "Return the history of variable sign data")
+    @Operation(summary = "Return the history of variable sign data.  Only returns history from last 7 days.  " +
+            "If you need older history, use effectiveDate parameter.")
     @RequestMapping(method = RequestMethod.GET, path = API_VS_V1 + API_SIGNS_HISTORY, produces = APPLICATION_JSON_VALUE)
     @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of variable sign history"))
     public ResponseEntityWithLastModifiedHeader<List<TrafficSignHistoryV1>> variableSignHistory(

@@ -41,9 +41,10 @@ public interface DeviceDataRepositoryV1 extends JpaRepository<DeviceData, Long> 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @EntityGraph(attributePaths = "rows")
     List<TrafficSignHistoryV1> getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(final String deviceId, final Instant start, final Instant end);
+
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @EntityGraph(attributePaths = "rows")
-    List<TrafficSignHistoryV1> getDeviceDataByDeviceIdOrderByEffectDateDesc(final String deviceId);
+    List<TrafficSignHistoryV1> getDeviceDataByDeviceIdAndEffectDateGreaterThanEqualOrderByEffectDateDesc(final String deviceId, final Instant start);
 
     @Query(value =
        "select max(modified)\n" +

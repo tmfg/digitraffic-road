@@ -102,7 +102,8 @@ public class VariableSignDataServiceV1 {
 
             history = deviceDataRepositoryV1.getDeviceDataByDeviceIdAndEffectDateBetweenOrderByEffectDateDesc(deviceId, start, end);
         } else {
-            history = deviceDataRepositoryV1.getDeviceDataByDeviceIdOrderByEffectDateDesc(deviceId);
+            final Instant start = Instant.now().minus(Duration.ofDays(7));
+            history = deviceDataRepositoryV1.getDeviceDataByDeviceIdAndEffectDateGreaterThanEqualOrderByEffectDateDesc(deviceId, start);
         }
 
         return testDataFilteringService.filter(deviceId, history);

@@ -8,6 +8,7 @@ import static fi.livi.digitraffic.tie.service.variablesign.v1.TestDataFilteringS
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -159,6 +160,13 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         return getJson(API_SIGNS_HISTORY + "?deviceId=" + FILTERING_ID);
     }
 
+    private ResultActions testRecentHistory() throws Exception {
+        final Instant time = Instant.now().minus(Duration.ofHours(1));
+        insertTestDataForTestData(time);
+
+        return getJson(API_SIGNS_HISTORY + "?deviceId=" + FILTERING_ID);
+    }
+
     @Test
     public void filteringWorksAtStart() throws Exception {
         testFiltering(0)
@@ -198,7 +206,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void historyNoFiltering() throws Exception {
-        testHistoryFiltering(-1)
+        testRecentHistory()
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", Matchers.hasSize(1)));
     }
