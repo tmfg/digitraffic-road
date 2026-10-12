@@ -3,13 +3,17 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_TRAFFIC_MESSAGE;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.TRAFFIC_MESSAGE_TAG_V2;
 import static fi.livi.digitraffic.tie.controller.ApiConstants.V2;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_JSON_VALUE;
+import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_VND_GEO_JSON_VALUE;
 import static fi.livi.digitraffic.tie.controller.DtMediaType.APPLICATION_XML_VALUE;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_NOT_FOUND;
 import static fi.livi.digitraffic.tie.controller.HttpCodeConstants.HTTP_OK;
 import static fi.livi.digitraffic.tie.helper.BoundingBoxUtils.getBoundingBox;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,9 +33,16 @@ import fi.livi.digitraffic.tie.controller.ResponseEntityWithLastModifiedHeader;
 import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
 import fi.livi.digitraffic.tie.datex2.v3_5.SituationPublication;
 import fi.livi.digitraffic.tie.dto.trafficmessage.datex2.SituationPublication35Model;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationFeatureV1;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationTypesDtoV1;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.location.LocationVersionDtoV1;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryFeatureCollection;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncementFeature;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncementFeatureCollection;
 import fi.livi.digitraffic.tie.service.data.DatexIIService;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
+import fi.livi.digitraffic.tie.service.trafficmessage.v1.location.LocationWebServiceV1;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -63,10 +74,23 @@ public class TrafficMessageControllerV2 {
     public static final String DATEX2_2_2_3 = "/datex2-2.2.3.xml";
     public static final String HISTORY = "/history";
 
-    private final DatexIIService datexIIService;
+    public static final String AREA_GEOMETRIES = "/area-geometries";
+    public static final String LOCATIONS = "/locations";
+    public static final String VERSIONS = "/versions";
+    public static final String TYPES = "/types";
 
-    public TrafficMessageControllerV2(final DatexIIService datexIIService) {
+    public static final String API_TRAFFIC_MESSAGE_V2_LOCATIONS = API_TRAFFIC_MESSAGE_V2 + LOCATIONS;
+
+    private final DatexIIService datexIIService;
+    private final RegionGeometryDataServiceV1 regionGeometryDataServiceV1;
+    private final LocationWebServiceV1 locationWebServiceV1;
+
+    public TrafficMessageControllerV2(final DatexIIService datexIIService,
+                                      final RegionGeometryDataServiceV1 regionGeometryDataServiceV1,
+                                      final LocationWebServiceV1 locationWebServiceV1) {
         this.datexIIService = datexIIService;
+        this.regionGeometryDataServiceV1 = regionGeometryDataServiceV1;
+        this.locationWebServiceV1 = locationWebServiceV1;
     }
 
     @Deprecated(forRemoval = true)
@@ -615,5 +639,150 @@ public class TrafficMessageControllerV2 {
 
         return ResponseEntityWithLastModifiedHeader.of(model.getLeft(), model.getRight(),
                 API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3);
+    }
+
+    @Operation(summary = "Traffic messages geometries for regions")
+    @RequestMapping(method = RequestMethod.GET,
+                    path = { API_TRAFFIC_MESSAGE_V2 + AREA_GEOMETRIES },
+                    produces = { APPLICATION_JSON_VALUE,
+                                 APPLICATION_GEO_JSON_VALUE,
+                                 APPLICATION_VND_GEO_JSON_VALUE })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of geometries") })
+    public RegionGeometryFeatureCollection areaLocationRegions(
+            @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
+            @RequestParam(defaultValue = "true")
+            final boolean lastUpdated,
+            @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
+            @RequestParam(defaultValue = "false")
+            final boolean includeGeometry,
+            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned. Format is date-time, e.g. 2024-01-01T00:00:00Z")
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final ZonedDateTime effectiveDate) {
+        return areaLocationRegions(lastUpdated, includeGeometry, effectiveDate, null);
+    }
+
+    @Operation(summary = "Traffic messages geometries for regions")
+    @RequestMapping(method = RequestMethod.GET,
+                    path = { API_TRAFFIC_MESSAGE_V2 + AREA_GEOMETRIES + "/{locationCode}" },
+                    produces = { APPLICATION_JSON_VALUE,
+                                 APPLICATION_GEO_JSON_VALUE,
+                                 APPLICATION_VND_GEO_JSON_VALUE })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of geometries"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Geometry not found",
+                                 content = @Content) })
+    public RegionGeometryFeatureCollection areaLocationRegions(
+            @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
+            @RequestParam(defaultValue = "false")
+            final boolean lastUpdated,
+            @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
+            @RequestParam(defaultValue = "false")
+            final boolean includeGeometry,
+            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned. Format is date-time, e.g. 2024-01-01T00:00:00Z")
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            final ZonedDateTime effectiveDate,
+            @Parameter(description = "Location code id",
+                       required = true)
+            @PathVariable
+            final Integer locationCode) {
+        return regionGeometryDataServiceV1.findAreaLocationRegions(lastUpdated, includeGeometry, effectiveDate != null ?
+                                                                                                 effectiveDate.toInstant() :
+                                                                                                 null, locationCode);
+    }
+
+    /* Alert-C -locations */
+
+    @Operation(summary = "The static information of locations")
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V2_LOCATIONS,
+                    produces = { APPLICATION_JSON_VALUE,
+                                 APPLICATION_GEO_JSON_VALUE,
+                                 APPLICATION_VND_GEO_JSON_VALUE })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of locations"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Location version not found",
+                                 content = @Content) })
+    public LocationFeatureCollectionV1 locations(
+            @Parameter(description = "If parameter is given use this version.")
+            @RequestParam(value = "version",
+                          required = false,
+                          defaultValue = LocationWebServiceV1.LATEST)
+            final String version,
+
+            @Parameter(description = "If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated",
+                          required = false,
+                          defaultValue = "false")
+            final boolean lastUpdated) {
+
+        return locationWebServiceV1.findLocations(lastUpdated, version);
+    }
+
+    @Operation(summary = "The static information of one location")
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V2_LOCATIONS + "/{id}",
+                    produces = { APPLICATION_JSON_VALUE,
+                                 APPLICATION_GEO_JSON_VALUE,
+                                 APPLICATION_VND_GEO_JSON_VALUE })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of location"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Location or location version not found",
+                                 content = @Content) })
+    public LocationFeatureV1 locationById(
+            @Parameter(description = "If parameter is given use this version.")
+            @RequestParam(value = "version",
+                          required = false,
+                          defaultValue = LocationWebServiceV1.LATEST)
+            final String version,
+
+            @PathVariable("id")
+            final int id) {
+        return locationWebServiceV1.getLocationById(id, version);
+    }
+
+    @Operation(summary = "List available location versions")
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V2_LOCATIONS + VERSIONS,
+                    produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of location versions") })
+    public ResponseEntityWithLastModifiedHeader<List<LocationVersionDtoV1>> locationVersions() {
+        final List<LocationVersionDtoV1> versions = locationWebServiceV1.findLocationVersions();
+        final Instant lastModified =
+                versions.stream().map(LocationVersionDtoV1::getLastModified).max(Comparator.naturalOrder())
+                        .orElse(null);
+        return ResponseEntityWithLastModifiedHeader.of(versions, lastModified,
+                API_TRAFFIC_MESSAGE_V2_LOCATIONS + VERSIONS);
+
+    }
+
+    @Operation(summary = "The static information of location types and location subtypes")
+    @RequestMapping(method = RequestMethod.GET,
+                    path = API_TRAFFIC_MESSAGE_V2_LOCATIONS + TYPES,
+                    produces = APPLICATION_JSON_VALUE)
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
+                                 description = "Successful retrieval of location types and location subtypes"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Location version not found",
+                                 content = @Content) })
+    public LocationTypesDtoV1 locationTypes(
+            @Parameter(description = "If parameter is given use this version.")
+            @RequestParam(value = "version",
+                          required = false,
+                          defaultValue = LocationWebServiceV1.LATEST)
+            final String version,
+
+            @Parameter(description = "If parameter is given result will only contain update status.")
+            @RequestParam(value = "lastUpdated",
+                          required = false,
+                          defaultValue = "false")
+            final boolean lastUpdated) {
+        return locationWebServiceV1.findLocationTypes(lastUpdated, version);
     }
 }

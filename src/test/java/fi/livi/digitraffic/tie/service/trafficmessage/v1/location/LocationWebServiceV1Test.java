@@ -116,7 +116,7 @@ public class LocationWebServiceV1Test extends AbstractServiceTest {
         assertNotNull(metadata);
         assertNotNull(metadata.dataUpdatedTime);
         assertNotNull(metadata.locationsVersion);
-        assertNull(metadata.getFeatures());
+        assertThat(metadata.getFeatures(), empty());
     }
 
     @Test

@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie.service.trafficmessage.v1;
 import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
 import static fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper.readRegionGeometry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,6 +34,7 @@ import fi.livi.digitraffic.tie.dto.trafficmessage.v1.region.RegionGeometryProper
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
 import fi.livi.digitraffic.tie.model.trafficmessage.RegionGeometry;
 import fi.livi.digitraffic.tie.service.DataStatusService;
+import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryTestHelper;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateJobTestHelper;
 import fi.livi.digitraffic.tie.service.trafficmessage.RegionGeometryUpdateService;
@@ -157,6 +159,19 @@ public class RegionGeometryDataServiceServiceV1Test extends AbstractWebServiceTe
             regionGeometryDataServiceV1.findAreaLocationRegions(false, false, commit2EffectiveDate, null);
         assertCollectionSize(3, commit2All.getFeatures());
         commit2All.getFeatures().forEach(f -> assertEquals(commit2EffectiveDate, f.getProperties().effectiveDate));
+    }
+
+    @Test
+    public void findAreaLocationRegionsWithUpdateInfoAndUnknownIdThrowsNotFound() {
+        final Instant effectiveDate = Instant.now();
+        final String commitId = RandomStringUtils.secure().nextAlphanumeric(32);
+        when(regionGeometryGitClientMock.getChangesAfterCommit(eq(null))).thenReturn(createCommit(commitId, effectiveDate, 1, 2));
+        v3RegionGeometryTestHelper.runUpdateJob();
+        regionGeometryDataServiceV1.refreshCache();
+
+        assertThrows(ObjectNotFoundException.class, () -> regionGeometryDataServiceV1.findAreaLocationRegions(true, false, null, 999));
+        assertThrows(ObjectNotFoundException.class, () -> regionGeometryDataServiceV1.findAreaLocationRegions(false, false, null, 999));
+        assertTrue(regionGeometryDataServiceV1.findAreaLocationRegions(true, false, null, 1).getFeatures().isEmpty());
     }
 
     @Test

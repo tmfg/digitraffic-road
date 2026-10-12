@@ -286,7 +286,7 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
                 .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.features").doesNotExist())
+                .andExpect(jsonPath("$.features", org.hamcrest.Matchers.hasSize(0)))
                 .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
         ;
     }

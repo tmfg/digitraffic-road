@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.controller.weather;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -125,5 +126,26 @@ public class WeatherControllerV2ForecastTest extends AbstractRestWebTest {
     @Test
     public void forecastsByUnknownIdIsNotFound() throws Exception {
         mockMvc.perform(get(PATH + "/UNKNOWN" + WeatherControllerV2.FORECASTS)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void forecastSectionsMetadata() throws Exception {
+        mockMvc.perform(get(PATH))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.type", is("FeatureCollection")))
+            .andExpect(jsonPath("$.features", hasSize(greaterThan(0))))
+            .andExpect(jsonPath("$.features[?(@.id == '" + ID + "')]", hasSize(1)));
+        mockMvc.perform(get(PATH + "?lastUpdated=true"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.features", hasSize(0)));
+    }
+
+    @Test
+    public void forecastSectionMetadataById() throws Exception {
+        mockMvc.perform(get(PATH + "/" + ID))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.type", is("Feature")))
+            .andExpect(jsonPath("$.id", is(ID)));
+        mockMvc.perform(get(PATH + "/UNKNOWN")).andExpect(status().isNotFound());
     }
 }

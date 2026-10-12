@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
@@ -57,10 +58,10 @@ public class LocationWebServiceV1 {
             return new LocationFeatureCollectionV1(updated, lVersion);
         }
 
-        final List<LocationFeatureV1> features =
-                locationRepository.findAllByVersion(lVersion)
-                        .parallel().map((LocationDtoV1 l) -> new LocationFeatureV1(l, updated, lVersion)).sorted()
-                        .collect(Collectors.toList());
+        final List<LocationFeatureV1> features;
+        try (final Stream<LocationDtoV1> locations = locationRepository.findAllByVersion(lVersion)) {
+            features = locations.parallel().map((LocationDtoV1 l) -> new LocationFeatureV1(l, updated, lVersion)).sorted().toList();
+        }
         return new LocationFeatureCollectionV1(updated, lVersion, features);
     }
 
@@ -104,7 +105,7 @@ public class LocationWebServiceV1 {
     public List<LocationVersionDtoV1> findLocationVersions() {
         return locationVersionRepository.findAll(Sort.by(asc("version")))
             .stream()
-            .map(v -> new LocationVersionDtoV1(v.getVersion(), v.getModified()))
+            .map(v -> new LocationVersionDtoV1(v.getVersion(), withoutMillis(v.getModified())))
             .sorted()
             .collect(Collectors.toList());
     }

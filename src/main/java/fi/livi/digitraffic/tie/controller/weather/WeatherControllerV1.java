@@ -117,7 +117,9 @@ public class WeatherControllerV1 {
 
     /* METADATA */
 
-    @Operation(summary = "The static information of weather stations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "The static information of weather stations" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_WEATHER_V1 + STATIONS,
                     produces = { APPLICATION_JSON_VALUE,
@@ -135,7 +137,9 @@ public class WeatherControllerV1 {
         return weatherStationMetadataWebServiceV1.findAllPublishableWeatherStationsAsSimpleFeatureCollection(lastUpdated, state);
     }
 
-    @Operation(summary = "The static information of one weather station")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "The static information of one weather station" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_WEATHER_V1 + STATIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE,
@@ -152,7 +156,9 @@ public class WeatherControllerV1 {
         return weatherStationMetadataWebServiceV1.getWeatherStationById(id);
     }
 
-    @Operation(summary = "The static information of available sensors of weather stations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "The static information of available sensors of weather stations" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path =  API_WEATHER_V1 + SENSORS,
                     produces = APPLICATION_JSON_VALUE)
@@ -167,7 +173,9 @@ public class WeatherControllerV1 {
 
     /* DATA */
 
-    @Operation(summary = "Current data of weather stations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Current data of weather stations" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_WEATHER_V1 + STATIONS + DATA,
                     produces = APPLICATION_JSON_VALUE)
@@ -181,13 +189,16 @@ public class WeatherControllerV1 {
         return weatherDataWebServiceV1.findPublishableWeatherData(lastUpdated);
     }
 
-    @Operation(summary = "Current data of one weather station")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Current data of one weather station" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_WEATHER_V1 + STATIONS + "/{id}" + DATA,
                     produces = APPLICATION_JSON_VALUE)
-    @ApiResponses(@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"))
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Weather station not found", content = @Content) })
     public WeatherStationDataDtoV1 weatherDataById(
-        @Parameter(description = "TMS Station id", required = true)
+        @Parameter(description = "Weather station id", required = true)
         @PathVariable
         final long id) {
         return weatherDataWebServiceV1.findPublishableWeatherData(id);
@@ -306,7 +317,8 @@ public class WeatherControllerV1 {
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
     @Operation(summary = "The static information of weather forecast sections" + ApiDeprecations.API_NOTE_2027_04_13)
-    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
+    @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Forecast section not found", content = @Content) })
     public ForecastSectionFeatureV1 forecastSectionById(
 
         @Parameter(description = "If parameter is given with true value, result geometry will be smaller in size.")
@@ -428,7 +440,10 @@ public class WeatherControllerV1 {
         return forecastWebDataServiceV1.getForecastSectionWeatherDataById(ForecastSectionApiVersion.V2, id);
     }
 
-    @Operation(summary = "List the history of sensor values from the weather road station. Maximum history of 24h.")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "List the history of sensor values from the weather road station. Maximum history of 24h." + ApiDeprecations.API_NOTE_2027_04_13,
+               description = "If from and to are not given, history of the last hour is returned.")
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + STATIONS + "/{id}" + HISTORY, produces = APPLICATION_JSON_VALUE)
     @ApiResponses({@ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of weather station data"),
             @ApiResponse(responseCode = HTTP_NOT_FOUND, description = "Station not found"),

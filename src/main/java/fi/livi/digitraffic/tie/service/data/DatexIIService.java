@@ -143,7 +143,7 @@ public class DatexIIService {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
-        return toDatexII35Publication(messages);
+        return toDatexII35Publication(messages, getTrafficDataLastModified(messages));
     }
 
     @Transactional(readOnly = true)
@@ -155,7 +155,7 @@ public class DatexIIService {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findAllTrafficData(from, to, srtiOnly);
-        return toDatexII37Publication(messages);
+        return toDatexII37Publication(messages, getTrafficDataLastModified(messages));
     }
 
     private Instant getMaxModified(final List<? extends ModifiedAt> messages) {
@@ -163,16 +163,37 @@ public class DatexIIService {
                 .map(ModifiedAt::getModifiedAt)
                 .max(Instant::compareTo);
 
-        return maxModifiedAt.orElse(Instant.now());
+        // Epoch is a stable value for empty result and means unknown time, so no Last-Modified header is sent
+        return maxModifiedAt.orElse(Instant.EPOCH);
+    }
+
+    private Instant getTrafficDataLastModified(final List<? extends ModifiedAt> messages) {
+        final Instant lastModified = dataDatex2SituationRepository.getTrafficDataLastModified();
+        return lastModified != null ? lastModified : getMaxModified(messages);
+    }
+
+    /**
+     * Time when the latest change of the situation type was received. Does not depend on the returned messages, so it
+     * doesn't change with the request filters or when messages leave the active time window.
+     */
+    private Instant getTypeLastModified(final SituationType situationType, final List<? extends ModifiedAt> messages) {
+        final Instant lastModified = dataDatex2SituationRepository.getLastModified(situationType.name());
+        return lastModified != null ? lastModified : getMaxModified(messages);
     }
 
     private Pair<D2LogicalModel, Instant> toDatexII223Publication(final List<MessageAndModified> messages) {
-        final var maxModifiedAt = getMaxModified(messages);
+        return toDatexII223Publication(messages, getMaxModified(messages));
+    }
+
+    private Pair<D2LogicalModel, Instant> toDatexII223Publication(final List<MessageAndModified> messages, final Instant maxModifiedAt) {
         return Pair.of(datexII223Converter.createD2LogicalModel(messages), maxModifiedAt);
     }
 
     private Pair<SituationPublication, Instant> toDatexII35Publication(final List<MessageAndModified> messages) {
-        final var maxModifiedAt = getMaxModified(messages);
+        return toDatexII35Publication(messages, getMaxModified(messages));
+    }
+
+    private Pair<SituationPublication, Instant> toDatexII35Publication(final List<MessageAndModified> messages, final Instant maxModifiedAt) {
         try {
             return Pair.of(datexII35Converter.createPublication(messages), maxModifiedAt);
         } catch (final Exception e) {
@@ -182,7 +203,11 @@ public class DatexIIService {
     }
 
     private Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> toDatexII37Publication(final List<MessageAndModified> messages) {
-        final var maxModifiedAt = getMaxModified(messages);
+        return toDatexII37Publication(messages, getMaxModified(messages));
+    }
+
+    private Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> toDatexII37Publication(final List<MessageAndModified> messages,
+                                                                                                          final Instant maxModifiedAt) {
         try {
             return Pair.of(datexII37Converter.createPublication(messages), maxModifiedAt);
         } catch (final Exception e) {
@@ -195,21 +220,21 @@ public class DatexIIService {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, null, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version);
-        return toDatexII223Publication(messages);
+        return toDatexII223Publication(messages, getTypeLastModified(situationType, messages));
     }
 
     private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version);
-        return toDatexII35Publication(messages);
+        return toDatexII35Publication(messages, getTypeLastModified(situationType, messages));
     }
 
     private Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findDatexII37(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version);
-        return toDatexII37Publication(messages);
+        return toDatexII37Publication(messages, getTypeLastModified(situationType, messages));
     }
 
     @Transactional(readOnly = true)
@@ -281,11 +306,15 @@ public class DatexIIService {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
         final var messages = dataDatex2SituationRepository.findMessagesByTypeUpToVersion(situationType.name(), from, to, bbox, MessageTypeEnum.SIMPPELI.value(), MAX_SIMPPELI_VERSION);
-        return convertSimppeli(messages, true);
+        return convertSimppeli(messages, true, getTypeLastModified(situationType, messages));
     }
 
     private TrafficAnnouncementFeatureCollection convertSimppeli(final List<MessageAndModified> messages, final boolean includeAreaGeometry) {
-        final var maxModifiedAt = getMaxModified(messages);
+        return convertSimppeli(messages, includeAreaGeometry, getMaxModified(messages));
+    }
+
+    private TrafficAnnouncementFeatureCollection convertSimppeli(final List<MessageAndModified> messages, final boolean includeAreaGeometry,
+                                                                 final Instant maxModifiedAt) {
 
         final var features = messages.stream()
                 .map(m -> {

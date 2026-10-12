@@ -104,12 +104,12 @@ public class RegionGeometryDataServiceV1 {
     @NotTransactionalServiceMethod
     public RegionGeometryFeatureCollection findAreaLocationRegions(final boolean onlyUpdateInfo, final boolean includeGeometry, final Instant effectiveDate, final Integer id) {
         awaitDataPopulation();
+        if (id != null && CollectionUtils.isEmpty(regionStatus.getRegionVersionsInDescOrder(id))) {
+            throw new ObjectNotFoundException("RegionGeometry", id);
+        }
         final List<RegionGeometryFeature> geometries =
             onlyUpdateInfo ? Collections.emptyList() : filterRegionsAndConvertToDto(effectiveDate, includeGeometry,
                                                                                     (id != null ? new Integer[] { id } : new Integer[0]));
-        if (geometries.isEmpty() && id != null && !onlyUpdateInfo) {
-            throw new ObjectNotFoundException("RegionGeometry", id);
-        }
         return new RegionGeometryFeatureCollection(regionStatus.updated, geometries);
     }
 

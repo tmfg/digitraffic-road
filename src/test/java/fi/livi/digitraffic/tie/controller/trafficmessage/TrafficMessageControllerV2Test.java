@@ -272,6 +272,30 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
     }
 
     @Test
+    public void lastModifiedIsNotSetWhenNoData() throws Exception {
+        final var urls = List.of(WEIGHT_RESTRICTIONS + DATEX2_3_5, WEIGHT_RESTRICTIONS + DATEX2_3_7, TRAFFIC_DATA + DATEX2_3_5,
+                TRAFFIC_DATA + DATEX2_3_7);
+        for (final String url : urls) {
+            Assertions.assertNull(getResponse(API_TRAFFIC_MESSAGE_V2 + url).getHeader("Last-Modified"), url);
+        }
+    }
+
+    @Test
+    public void lastModifiedOfListIsTimeOfLatestChangeOfTypeEvenWhenNothingIsActive() throws Exception {
+        // Situation has ended, so it is not part of the response
+        helper.insertSituation("id1", 1L, SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+                ROADWORK_DATEXII_3_5, Instant.now().minusSeconds(60 * 60 * 5), Instant.now().minusSeconds(60 * 60 * 4));
+        final Instant changed = dataDatex2SituationRepository.getLastModified(SituationType.WEIGHT_RESTRICTION.name());
+        Assertions.assertNotNull(changed);
+
+        Thread.sleep(1100);
+        final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5);
+
+        Assertions.assertEquals(changed.truncatedTo(ChronoUnit.SECONDS).toEpochMilli(),
+                Instant.ofEpochMilli(response.getDateHeader("Last-Modified")).toEpochMilli());
+    }
+
+    @Test
     public void noMessages_35() throws Exception {
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-3.5.xml");
 

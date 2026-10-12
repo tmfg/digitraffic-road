@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
@@ -21,6 +23,7 @@ import fi.livi.digitraffic.common.util.TimeUtil;
 /**
  * Appends Last-Modified -header to response if supported by returned object
  */
+@NullMarked
 @ControllerAdvice
 public class LastModifiedAppenderControllerAdvice implements ResponseBodyAdvice<Object> {
 
@@ -36,7 +39,7 @@ public class LastModifiedAppenderControllerAdvice implements ResponseBodyAdvice<
 
 
     @Override
-    public Object beforeBodyWrite(final Object body, final MethodParameter returnType, final MediaType selectedContentType,
+    public @Nullable Object beforeBodyWrite(final @Nullable Object body, final MethodParameter returnType, final MediaType selectedContentType,
                                   final Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   final ServerHttpRequest request, final ServerHttpResponse response) {
 
@@ -45,8 +48,9 @@ public class LastModifiedAppenderControllerAdvice implements ResponseBodyAdvice<
             if (lastModified != null) {
                 response.getHeaders().add(LAST_MODIFIED_HEADER, TimeUtil.getInLastModifiedHeaderFormat(lastModified));
             } else if (lms.shouldContainLastModified()) {
-                log.error(String.format("method=beforeBodyWrite lmsClass=%s. Entity implementing LastModifiedSupport.getLastModified() should return non null value. Null value for request uri: %s",
-                                        lms.getClass().getSimpleName(), request.getURI()));
+                log.error(
+                        "method=beforeBodyWrite lmsClass={}. Entity implementing LastModifiedSupport.getLastModified() should return non null value. Null value for request uri: {}",
+                        lms.getClass().getSimpleName(), request.getURI());
             }
         }
 

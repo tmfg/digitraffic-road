@@ -206,7 +206,9 @@ public class TrafficMessageControllerV1 {
         return trafficMessageDataServiceV1.findBySituationIdJson(situationId, includeAreaGeometry, latest);
     }
 
-    @Operation(summary = "Traffic messages geometries for regions")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Traffic messages geometries for regions" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES },
                     produces = { APPLICATION_JSON_VALUE,
@@ -221,14 +223,16 @@ public class TrafficMessageControllerV1 {
             @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
             @RequestParam(defaultValue = "false")
             final boolean includeGeometry,
-            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
+            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned. Format is date-time, e.g. 2024-01-01T00:00:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime effectiveDate) {
         return areaLocationRegions(lastUpdated, includeGeometry, effectiveDate, null);
     }
 
-    @Operation(summary = "Traffic messages geometries for regions")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Traffic messages geometries for regions" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = { API_TRAFFIC_MESSAGE_V1 + AREA_GEOMETRIES + "/{locationCode}" },
                     produces = { APPLICATION_JSON_VALUE,
@@ -237,7 +241,7 @@ public class TrafficMessageControllerV1 {
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
                                  description = "Successful retrieval of geometries"),
                     @ApiResponse(responseCode = HTTP_NOT_FOUND,
-                                 description = "Geometry not not found",
+                                 description = "Geometry not found",
                                  content = @Content) })
     public RegionGeometryFeatureCollection areaLocationRegions(
             @Parameter(description = "If the parameter value is true, then the result will only contain update status.")
@@ -246,7 +250,7 @@ public class TrafficMessageControllerV1 {
             @Parameter(description = "If the parameter value is false, then the result will not contain also geometries.")
             @RequestParam(defaultValue = "false")
             final boolean includeGeometry,
-            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned")
+            @Parameter(description = "When effectiveDate parameter is given only effective geometries on that date are returned. Format is date-time, e.g. 2024-01-01T00:00:00Z")
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             final ZonedDateTime effectiveDate,
@@ -261,14 +265,19 @@ public class TrafficMessageControllerV1 {
 
     /* Alert-C -locations */
 
-    @Operation(summary = "The static information of locations")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "The static information of locations" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_TRAFFIC_MESSAGE_V1_LOCATIONS,
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of locations") })
+                                 description = "Successful retrieval of locations"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Location version not found",
+                                 content = @Content) })
     public LocationFeatureCollectionV1 locations(
             @Parameter(description = "If parameter is given use this version.")
             @RequestParam(value = "version",
@@ -285,14 +294,19 @@ public class TrafficMessageControllerV1 {
         return locationWebServiceV1.findLocations(lastUpdated, version);
     }
 
-    @Operation(summary = "The static information of one location")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "The static information of one location" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + "/{id}",
                     produces = { APPLICATION_JSON_VALUE,
                                  APPLICATION_GEO_JSON_VALUE,
                                  APPLICATION_VND_GEO_JSON_VALUE })
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of location") })
+                                 description = "Successful retrieval of location"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Location or location version not found",
+                                 content = @Content) })
     public LocationFeatureV1 locationById(
             @Parameter(description = "If parameter is given use this version.")
             @RequestParam(value = "version",
@@ -305,7 +319,9 @@ public class TrafficMessageControllerV1 {
         return locationWebServiceV1.getLocationById(id, version);
     }
 
-    @Operation(summary = "List available location versions")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "List available location versions" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + VERSIONS,
                     produces = APPLICATION_JSON_VALUE)
@@ -321,12 +337,17 @@ public class TrafficMessageControllerV1 {
 
     }
 
-    @Operation(summary = "The static information of location types and locationsubtypes")
+    @Deprecated(forRemoval = true)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "The static information of location types and location subtypes" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = API_TRAFFIC_MESSAGE_V1_LOCATIONS + TYPES,
                     produces = APPLICATION_JSON_VALUE)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK,
-                                 description = "Successful retrieval of location types and location subtypes") })
+                                 description = "Successful retrieval of location types and location subtypes"),
+                    @ApiResponse(responseCode = HTTP_NOT_FOUND,
+                                 description = "Location version not found",
+                                 content = @Content) })
     public LocationTypesDtoV1 locationTypes(
             @Parameter(description = "If parameter is given use this version.")
             @RequestParam(value = "version",

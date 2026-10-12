@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.API_TRAFFIC_MESSAGE_V2;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.DATEX2_3_5;
+import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.DATEX2_3_7;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.HISTORY;
 import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2.TRAFFIC_DATA;
 
@@ -46,6 +47,17 @@ public class TrafficMessageControllerV2RttiDisabledTest extends AbstractRestWebT
             Assertions.assertNull(xmlNode.get("situation"),
                     "Expected no situations when RTTI is disabled");
         });
+    }
+
+    @Test
+    public void trafficData_rttiDisabled_lastModifiedIsNotSet() throws Exception {
+        for (final String format : new String[] { DATEX2_3_5, DATEX2_3_7 }) {
+            final var response = mockMvc
+                    .perform(MockMvcRequestBuilders.get(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + format)
+                            .contentType(MediaType.APPLICATION_XML))
+                    .andReturn().getResponse();
+            Assertions.assertNull(response.getHeader("Last-Modified"), format);
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.dto.trafficmessage.v1.location;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -26,6 +27,6 @@ public final class LocationFeatureCollectionV1 extends FeatureCollectionV1<Locat
     }
 
     public LocationFeatureCollectionV1(final Instant locationsUpdateTime, final String locationsVersion) {
-        this(locationsUpdateTime, locationsVersion, null);
+        this(locationsUpdateTime, locationsVersion, Collections.emptyList());
     }
 }

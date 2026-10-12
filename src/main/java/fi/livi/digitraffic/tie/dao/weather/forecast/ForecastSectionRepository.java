@@ -53,17 +53,6 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="10000"))
     @Query(value =
-        "with link_ids as (\n" +
-        "    select li.forecast_section_id" +
-        "         , string_agg(cast(li.link_id as text), ',' ORDER BY li.order_number) as linkIdsAsString\n" +
-        "    from link_id li\n" +
-        "    group by li.forecast_section_id\n" +
-        "), road_segments as (\n" +
-        "    select rs.forecast_section_id" +
-        "         , cast(json_agg(json_build_object('startDistance', rs.start_distance, 'endDistance', rs.end_distance, 'carriageway', rs.carriageway) order by rs.order_number) as text) as roadSegmentsAsJsonString\n" +
-        "    from road_segment rs\n" +
-        "    group by rs.forecast_section_id\n" +
-        ")\n" +
         "select f.natural_id as naturalId\n" +
         "     , f.description as description\n" +
         "     , f.length as length\n" +
@@ -75,8 +64,16 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "     , li.linkIdsAsString\n" +
         "     , rs.roadSegmentsAsJsonString\n" +
         "from forecast_section f\n" +
-        "left outer join link_ids li on f.id = li.forecast_section_id\n" +
-        "left outer join road_segments rs on f.id = rs.forecast_section_id\n" +
+        "left join lateral (\n" +
+        "    select string_agg(cast(l.link_id as text), ',' ORDER BY l.order_number) as linkIdsAsString\n" +
+        "    from link_id l\n" +
+        "    where l.forecast_section_id = f.id\n" +
+        ") li on true\n" +
+        "left join lateral (\n" +
+        "    select cast(json_agg(json_build_object('startDistance', r.start_distance, 'endDistance', r.end_distance, 'carriageway', r.carriageway) order by r.order_number) as text) as roadSegmentsAsJsonString\n" +
+        "    from road_segment r\n" +
+        "    where r.forecast_section_id = f.id\n" +
+        ") rs on true\n" +
         "where f.type = :#{T(fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType).DETAILED.name()}\n" +
         "  AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
         "  AND (cast(:roadNumber as numeric) IS NULL OR f.road_number = cast(:roadNumber as numeric))\n" +

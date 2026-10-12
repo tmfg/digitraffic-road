@@ -1,6 +1,7 @@
 package fi.livi.digitraffic.tie.dto.weather.v1;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -19,6 +20,6 @@ public class WeatherStationsDataDtoV1 extends StationsDataV1<Long, WeatherStatio
     }
 
     public WeatherStationsDataDtoV1(final Instant updated) {
-        this(null, updated);
+        this(Collections.emptyList(), updated);
     }
 }

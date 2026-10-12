@@ -55,4 +55,14 @@ public interface DeviceDataRepositoryV1 extends JpaRepository<DeviceData, Long> 
        "select max(modified)\n" +
        "from device_data_datex2", nativeQuery = true)
     Instant getDatex2LastUpdated();
+
+    @Query(value = """
+            SELECT max(ddd.modified)
+            FROM device_data_datex2 ddd
+            INNER JOIN device d ON d.id = ddd.device_id
+            WHERE d.deleted_date IS NULL
+              AND ddd.version = :version
+              AND ddd.type = :type""",
+           nativeQuery = true)
+    Instant getDatex2LastUpdated(final String version, final String type);
 }

@@ -178,6 +178,20 @@ public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2S
           and (:srtiOnly = false or is_srti = true)""", nativeQuery = true)
     List<MessageAndModified> findAllTrafficData(final Instant from, final Instant to, final boolean srtiOnly);
 
+    @Query(value = """
+        select max(modified_at)
+        from datex2_rtti
+        where is_latest_version = true""", nativeQuery = true)
+    Instant getTrafficDataLastModified();
+
+    // Situation and its messages are inserted in the same transaction, so they share modified_at
+    @Query(value = """
+        select max(s.modified_at)
+        from data_datex2_situation s
+        where s.situation_type = :situationType
+          and s.is_latest_version = true""", nativeQuery = true)
+    Instant getLastModified(final String situationType);
+
     // Uses is_latest_version = true — no DISTINCT ON needed
     @Query(value = """
         select datex2_id as message_id, message, modified_at

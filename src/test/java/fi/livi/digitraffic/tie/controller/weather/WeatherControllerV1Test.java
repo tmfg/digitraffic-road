@@ -236,6 +236,14 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
             .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
     }
 
+    @Test
+    public void weatherDataLastUpdatedContainsEmptyStations() throws Exception {
+        mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA + "?lastUpdated=true"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
+            .andExpect(jsonPath("$.stations", Matchers.hasSize(0)));
+    }
+
     private ResultActions performAndLogLastModifiedHeader(final String url) throws Exception {
         final ResultActions result = mockMvc.perform(get(url));
         log.info("LAST-MODIFIED: {},  id: {}", result.andReturn().getResponse().getHeader(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER), weatherStation.getRoadStationNaturalId());
