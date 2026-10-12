@@ -48,6 +48,7 @@ public final class ApiConstants {
     public static final String API_TMS = API + "/tms";
 
     public static final String WEATHER_TAG_V1 = "Weather V1";
+    public static final String WEATHER_TAG_V2 = "Weather V2";
     public static final String API_WEATHER = API + "/weather";
 
     /* Variable Sign */

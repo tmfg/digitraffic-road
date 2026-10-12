@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionWeatherForecastDtoV1;
+import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionWeather;
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionWeatherPK;
 import jakarta.annotation.Nullable;
@@ -40,25 +41,25 @@ public interface ForecastSectionWeatherRepository extends JpaRepository<Forecast
             FROM FORECAST_SECTION fs
             INNER JOIN FORECAST_SECTION_WEATHER fsw ON fsw.forecast_section_id = fs.id
             LEFT OUTER JOIN FORECAST_CONDITION_REASON fcr ON fsw.forecast_section_id = fcr.forecast_section_id AND fsw.forecast_name = fcr.forecast_name
-            WHERE fs.version = :version
+            WHERE fs.type = :#{#type.name()}
               AND (cast(:area AS geometry) IS NULL OR ST_INTERSECTS(cast(:area AS geometry), fs.geometry) = TRUE)
               AND (cast(:id as varchar) IS NULL OR fs.natural_id = :id)
               AND (cast(:roadNumber as integer) IS NULL OR fs.road_number = :roadNumber)
             ORDER BY fs.natural_id, fsw.time""", nativeQuery = true)
-    List<ForecastSectionWeatherForecastDtoV1> findForecastSectionWeatherOrderByIdAndTime(final int version,
+    List<ForecastSectionWeatherForecastDtoV1> findForecastSectionWeatherOrderByIdAndTime(final ForecastSectionType type,
                                                                                          final Geometry area,
                                                                                          final Integer roadNumber,
                                                                                          final String id);
 
-    default List<ForecastSectionWeatherForecastDtoV1> findForecastSectionWeatherOrderByIdAndTime(final int version,
+    default List<ForecastSectionWeatherForecastDtoV1> findForecastSectionWeatherOrderByIdAndTime(final ForecastSectionType type,
                                                                                                  final Geometry area,
                                                                                                  final Integer roadNumber) {
-        return findForecastSectionWeatherOrderByIdAndTime(version, area, roadNumber, null);
+        return findForecastSectionWeatherOrderByIdAndTime(type, area, roadNumber, null);
     }
 
-    default List<ForecastSectionWeatherForecastDtoV1> findForecastSectionWeatherOrderByTime(final int version,
+    default List<ForecastSectionWeatherForecastDtoV1> findForecastSectionWeatherOrderByTime(final ForecastSectionType type,
                                                                                             final String id) {
-        return findForecastSectionWeatherOrderByIdAndTime(version, null, null, id);
+        return findForecastSectionWeatherOrderByIdAndTime(type, null, null, id);
     }
 
     @Query(value = """
@@ -67,7 +68,7 @@ public interface ForecastSectionWeatherRepository extends JpaRepository<Forecast
                 FROM FORECAST_SECTION_WEATHER fsw
                 INNER JOIN forecast_section fs ON fsw.forecast_section_id = fs.id
                 LEFT OUTER JOIN FORECAST_CONDITION_REASON fcr ON fsw.forecast_section_id = fcr.forecast_section_id AND fsw.forecast_name = fcr.forecast_name
-                WHERE fs.version = :version
+                WHERE fs.type = :#{#type.name()}
                   AND (cast(:area AS geometry) IS NULL OR ST_INTERSECTS(cast(:area AS geometry), fs.geometry) = TRUE)
                   AND (cast(:id as varchar) IS NULL OR fs.natural_id = :id)
                   AND (cast(:roadNumber as integer) IS NULL OR fs.road_number = :roadNumber)
@@ -81,19 +82,19 @@ public interface ForecastSectionWeatherRepository extends JpaRepository<Forecast
             )
             SELECT coalesce(max_with_filter.modified, max_from_all.modified)
             FROM max_with_filter, max_from_all""", nativeQuery = true)
-    Instant getLastModified(final int version,
+    Instant getLastModified(final ForecastSectionType type,
                             @Nullable final Geometry area,
                             @Nullable final Integer roadNumber,
                             @Nullable final String id);
 
-    default Instant getLastModified(final int version,
+    default Instant getLastModified(final ForecastSectionType type,
                                     final Geometry area,
                                     final Integer roadNumber) {
-        return getLastModified(version, area, roadNumber, null);
+        return getLastModified(type, area, roadNumber, null);
     }
 
-    default Instant getLastModified(final int version,
+    default Instant getLastModified(final ForecastSectionType type,
                                     final String id) {
-        return getLastModified(version, null, null, id);
+        return getLastModified(type, null, null, id);
     }
 }

@@ -32,7 +32,7 @@ public class ForecastSectionClientIntegrationTest extends AbstractServiceTest {
     public ForecastSectionClientIntegrationTest(final WebClient webClient, final ObjectMapper objectMapper) {
         this.forecastSectionClient = new ForecastSectionClient(webClient, objectMapper,
             // fill in correct values for testing
-            "", "", "", "");
+            "", "", "", "", "", "");
     }
 
     @Test

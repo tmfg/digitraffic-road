@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.http.async.SdkAsyncHttpClient;
@@ -20,6 +21,7 @@ import java.time.Duration;
 public class AmazonS3ClientConfiguration {
 
     @Bean
+    @Primary
     public S3Client s3Client(final @Value("${dt.amazon.s3.region}") String region) {
         return build(region);
     }

@@ -20,13 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.weather.forecast.V2ForecastSectionMetadataDao;
-import fi.livi.digitraffic.tie.dto.weather.forecast.ForecastSectionApiVersion;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.Coordinate;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionV2Dto;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSection;
+import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 @ConditionalOnNotWebApplication
@@ -55,7 +55,7 @@ public class ForecastSectionMetadataUpdateService {
     @PerformanceMonitor(maxWarnExcecutionTime = 5000)
     @Transactional
     public void updateForecastSectionsV1Metadata(final List<ForecastSectionCoordinatesDto> forecastSectionCoordinates) {
-        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByVersionIsAndObsoleteDateIsNullOrderByNaturalIdAsc(1);
+        final List<ForecastSection> forecastSections = forecastSectionRepository.findDistinctByTypeIsAndObsoleteDateIsNullOrderByNaturalIdAsc(ForecastSectionType.SIMPLE);
         final Set<String> existingForecastSections = forecastSections.stream().map(ForecastSection::getNaturalId).collect(Collectors.toSet());
 
         printLogInfo(forecastSectionCoordinates, forecastSections);
@@ -94,14 +94,14 @@ public class ForecastSectionMetadataUpdateService {
     public void updateForecastSectionsV2Metadata(final ForecastSectionV2Dto metadata) {
         final List<String> naturalIds = metadata.getFeatures().stream().map(f -> f.getProperties().getId()).collect(Collectors.toList());
 
-        forecastSectionRepository.deleteAllNotIn(naturalIds, ForecastSectionApiVersion.V2.getVersion());
+        forecastSectionRepository.deleteAllNotIn(naturalIds, ForecastSectionType.DETAILED);
 
         v2ForecastSectionMetadataDao.upsertForecastSections(metadata.getFeatures());
 
-        forecastSectionRepository.deleteRoadSegments(ForecastSectionApiVersion.V2.getVersion());
+        forecastSectionRepository.deleteRoadSegments(ForecastSectionType.DETAILED);
         v2ForecastSectionMetadataDao.insertRoadSegments(metadata.getFeatures());
 
-        forecastSectionRepository.deleteLinkIds(ForecastSectionApiVersion.V2.getVersion());
+        forecastSectionRepository.deleteLinkIds(ForecastSectionType.DETAILED);
         v2ForecastSectionMetadataDao.insertLinkIds(metadata.getFeatures());
 
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_V2_METADATA_CHECK);
@@ -114,7 +114,7 @@ public class ForecastSectionMetadataUpdateService {
 
             final ForecastSectionCoordinatesDto forecastSection = fs.getValue();
 
-            final ForecastSection newForecastSection = new ForecastSection(forecastSection.getNaturalId(), 1, forecastSection.getName());
+            final ForecastSection newForecastSection = new ForecastSection(forecastSection.getNaturalId(), ForecastSectionType.SIMPLE, forecastSection.getName());
             updateGeometry(newForecastSection, fs.getValue().getCoordinates());
             forecastSectionRepository.saveAndFlush(newForecastSection);
             forecastSections.put(fs.getValue().getNaturalId(), newForecastSection);

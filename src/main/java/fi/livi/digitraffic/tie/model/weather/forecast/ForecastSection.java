@@ -15,6 +15,8 @@ import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -50,6 +52,11 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
     @JsonProperty("roadId")
     private String naturalId;
 
+    @JsonIgnore
+    @Enumerated(EnumType.STRING)
+    private ForecastSectionType type;
+
+    /** Kept in sync with type until the column is dropped, so that old application versions work */
     @JsonIgnore
     private Integer version;
 
@@ -96,12 +103,12 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
     public ForecastSection() {
     }
 
-    public ForecastSection(final String naturalId, final int version, final String description) {
+    public ForecastSection(final String naturalId, final ForecastSectionType type, final String description) {
         this.naturalId = naturalId;
         this.roadNumber = ForecastSectionNaturalIdHelper.getRoadNumber(naturalId);
         this.roadSectionNumber = ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId);
-        this.version = version;
-        if (version == 1) {
+        setType(type);
+        if (type == ForecastSectionType.SIMPLE) {
             this.roadSectionVersionNumber = ForecastSectionNaturalIdHelper.getRoadSectionVersionNumber(naturalId);
         } else {
             this.roadSectionVersionNumber = 0;
@@ -122,12 +129,13 @@ public class ForecastSection extends ReadOnlyCreatedAndModifiedFields {
         this.naturalId = naturalId;
     }
 
-    public Integer getVersion() {
-        return version;
+    public ForecastSectionType getType() {
+        return type;
     }
 
-    public void setVersion(final Integer version) {
-        this.version = version;
+    public void setType(final ForecastSectionType type) {
+        this.type = type;
+        this.version = type == ForecastSectionType.SIMPLE ? 1 : 2;
     }
 
     public String getDescription() {

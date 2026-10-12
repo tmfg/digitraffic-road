@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionV2FeatureDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.RoadSegmentDto;
+import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
 import fi.livi.digitraffic.tie.helper.ForecastSectionNaturalIdHelper;
 import fi.livi.digitraffic.tie.helper.GeometryConstants;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
@@ -24,9 +25,9 @@ public class V2ForecastSectionMetadataDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final String INSERT_FORECAST_SECTION =
-        "INSERT INTO forecast_section(id, natural_id, description, length, version, geometry, geometry_simplified," +
+        "INSERT INTO forecast_section(id, natural_id, description, length, version, type, geometry, geometry_simplified," +
         "                             road_number, road_section_number, road_section_version_number) " +
-        "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version, " +
+        "VALUES(nextval('seq_forecast_section'), :naturalId, :description, :length, :version, :type, " +
         "       ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometry), " + GeometryConstants.SRID + ")), ST_Force3D(ST_SetSRID(ST_GeomFromText(:geometrySimplified), " + GeometryConstants.SRID + "))," +
         "       :roadNumber, :roadSectionNumber, :roadSectionVersionNumber)" +
         "ON CONFLICT ON CONSTRAINT forecast_section_unique " +
@@ -41,7 +42,7 @@ public class V2ForecastSectionMetadataDao {
         "  road_number = :roadNumber," +
         "  road_section_number = :roadSectionNumber," +
         "  road_section_version_number = :roadSectionVersionNumber " +
-        "WHERE natural_id = :naturalId AND version = :version AND obsolete_date IS null";
+        "WHERE natural_id = :naturalId AND type = :type AND obsolete_date IS null";
 
     private static final String INSERT_ROAD_SEGMENT =
         "INSERT INTO road_segment(forecast_section_id, order_number, start_distance, end_distance, carriageway) " +
@@ -76,6 +77,7 @@ public class V2ForecastSectionMetadataDao {
         args.put("description", feature.getProperties().getDescription());
         args.put("length", feature.getProperties().getTotalLengthKm() * 1000);
         args.put("version", 2);
+        args.put("type", ForecastSectionType.DETAILED.name());
 
         args.put("roadNumber", ForecastSectionNaturalIdHelper.getRoadNumber(naturalId));
         args.put("roadSectionNumber", ForecastSectionNaturalIdHelper.getRoadSectionNumber(naturalId));

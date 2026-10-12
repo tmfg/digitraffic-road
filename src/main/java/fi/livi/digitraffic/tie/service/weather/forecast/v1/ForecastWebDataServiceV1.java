@@ -29,6 +29,7 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionsWeatherDt
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSection;
+import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 
 @Service
@@ -64,7 +65,7 @@ public class ForecastWebDataServiceV1 {
 
         final StopWatch dbTime = StopWatch.createStarted();
         final Geometry area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
-        final Instant lastModified = forecastSectionRepository.getLastModified(1, area, roadNumber);
+        final Instant lastModified = forecastSectionRepository.getLastModified(ForecastSectionType.SIMPLE, area, roadNumber);
 
         if (lastUpdated) {
             return new ForecastSectionFeatureCollectionSimpleV1(lastModified);
@@ -99,7 +100,7 @@ public class ForecastWebDataServiceV1 {
 
         final StopWatch dbTime = StopWatch.createStarted();
         final Geometry area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
-        final Instant lastModified = forecastSectionRepository.getLastModified(2, area, roadNumber);
+        final Instant lastModified = forecastSectionRepository.getLastModified(ForecastSectionType.DETAILED, area, roadNumber);
 
         if (lastUpdated) {
             return new ForecastSectionFeatureCollectionV1(lastModified);
@@ -127,13 +128,13 @@ public class ForecastWebDataServiceV1 {
                                                                       final Double xMin, final Double yMin,
                                                                       final Double xMax, final Double yMax) {
         final Geometry area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
-        final Instant lastModified = forecastSectionWeatherRepository.getLastModified(version.getVersion(), area, roadNumber);
+        final Instant lastModified = forecastSectionWeatherRepository.getLastModified(version.getType(), area, roadNumber);
         if (lastUpdated) {
             return new ForecastSectionsWeatherDtoV1(lastModified);
         }
         final StopWatch time = StopWatch.createStarted();
         final List<ForecastSectionWeatherForecastDtoV1> data =
-            forecastSectionWeatherRepository.findForecastSectionWeatherOrderByIdAndTime(version.getVersion(), area, roadNumber);
+            forecastSectionWeatherRepository.findForecastSectionWeatherOrderByIdAndTime(version.getType(), area, roadNumber);
         log.info("method=getForecastSectionWeatherData db tookMs={}", time.getDuration().toMillis());
 
         return new ForecastSectionsWeatherDtoV1(lastModified, createForecastSectionWeatherDtos(data, lastModified));
@@ -143,11 +144,11 @@ public class ForecastWebDataServiceV1 {
     public ForecastSectionWeatherDtoV1 getForecastSectionWeatherDataById(final ForecastSectionApiVersion version,
                                                                          final String id) {
 
-        final Instant lastModified = forecastSectionWeatherRepository.getLastModified(version.getVersion(), id);
+        final Instant lastModified = forecastSectionWeatherRepository.getLastModified(version.getType(), id);
 
         final StopWatch time = StopWatch.createStarted();
         final List<ForecastSectionWeatherForecastDtoV1> data =
-            forecastSectionWeatherRepository.findForecastSectionWeatherOrderByTime(version.getVersion(), id);
+            forecastSectionWeatherRepository.findForecastSectionWeatherOrderByTime(version.getType(), id);
         log.info("method=getForecastSectionWeatherData db tookMs={}", time.getDuration().toMillis());
         final List<ForecastSectionWeatherDtoV1> dtos = createForecastSectionWeatherDtos(data, lastModified);
         if (dtos.isEmpty()) {

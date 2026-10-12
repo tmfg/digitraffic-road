@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSection;
+import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
 import jakarta.persistence.QueryHint;
 
@@ -19,13 +20,13 @@ import jakarta.persistence.QueryHint;
 public interface ForecastSectionRepository extends JpaRepository<ForecastSection, Long> {
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="1000"))
-    List<ForecastSection> findDistinctByVersionIsAndObsoleteDateIsNullOrderByNaturalIdAsc(final int version);
+    List<ForecastSection> findDistinctByTypeIsAndObsoleteDateIsNullOrderByNaturalIdAsc(final ForecastSectionType type);
 
     @QueryHints(@QueryHint(name="org.hibernate.fetchSize", value="400"))
     @Query(value =
         "select f\n" +
         "from ForecastSection f\n" +
-        "where f.version = 1\n" +
+        "where f.type = fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType.SIMPLE\n" +
         " AND (cast(:roadNumber as integer) IS NULL OR f.roadNumber = :roadNumber)\n" +
         // cast to geometry not working, so use text
         " AND (cast(:area as text) IS NULL OR ST_INTERSECTS(:area, f.geometry) = TRUE)\n" +
@@ -76,7 +77,7 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
         "from forecast_section f\n" +
         "left outer join link_ids li on f.id = li.forecast_section_id\n" +
         "left outer join road_segments rs on f.id = rs.forecast_section_id\n" +
-        "where f.version = 2\n" +
+        "where f.type = :#{T(fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType).DETAILED.name()}\n" +
         "  AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
         "  AND (cast(:roadNumber as numeric) IS NULL OR f.road_number = cast(:roadNumber as numeric))\n" +
         "  AND (cast(:id as varchar) IS NULL OR f.natural_id = cast(:id as varchar))\n" +
@@ -105,51 +106,51 @@ public interface ForecastSectionRepository extends JpaRepository<ForecastSection
 
     @Modifying
     @Query(value = "DELETE FROM road_segment WHERE forecast_section_id IN " +
-                   "(SELECT forecast_section_id FROM forecast_section WHERE version = :version AND obsolete_date IS NULL)",
+                   "(SELECT forecast_section_id FROM forecast_section WHERE type = :#{#type.name()} AND obsolete_date IS NULL)",
            nativeQuery = true)
-    void deleteRoadSegments(@Param("version") final int version);
+    void deleteRoadSegments(@Param("type") final ForecastSectionType type);
 
     @Modifying
-    @Query(value = "DELETE FROM link_id WHERE forecast_section_id IN (SELECT forecast_section_id FROM forecast_section WHERE version = :version)",
+    @Query(value = "DELETE FROM link_id WHERE forecast_section_id IN (SELECT forecast_section_id FROM forecast_section WHERE type = :#{#type.name()})",
            nativeQuery = true)
-    void deleteLinkIds(@Param("version") final int version);
+    void deleteLinkIds(@Param("type") final ForecastSectionType type);
 
     @Modifying
-    @Query(value = "DELETE FROM forecast_section WHERE natural_id NOT IN (:naturalIds) AND version = :version", nativeQuery = true)
-    void deleteAllNotIn(@Param("naturalIds") final List<String> naturalIds, @Param("version") final int version);
+    @Query(value = "DELETE FROM forecast_section WHERE natural_id NOT IN (:naturalIds) AND type = :#{#type.name()}", nativeQuery = true)
+    void deleteAllNotIn(@Param("naturalIds") final List<String> naturalIds, @Param("type") final ForecastSectionType type);
 
     @Query(value =
         "with max_with_filter as (\n" +
         "    SELECT max(f.modified) as modified\n" +
         "    FROM forecast_section f\n" +
-        "    WHERE version = :version\n" +
+        "    WHERE type = :#{#type.name()}\n" +
         "      AND (cast(:area as geometry) IS NULL OR ST_INTERSECTS(cast(:area as geometry), f.geometry) = TRUE)\n" +
         "      AND (cast(:id as varchar) IS NULL OR f.natural_id = :id)\n" +
         "      AND (cast(:roadNumber as numeric) IS NULL OR f.road_number = :roadNumber)\n" +
         "), max_from_all as (\n" +
-        "    SELECT max(f.modified) as modified FROM forecast_section f WHERE version = :version\n" +
+        "    SELECT max(f.modified) as modified FROM forecast_section f WHERE type = :#{#type.name()}\n" +
         ")\n" +
         "select coalesce(max_with_filter.modified, max_from_all.modified)\n" +
         "from max_with_filter, max_from_all",
         nativeQuery = true) // don't filter with "obsolete_date IS NULL" as if updated to obsoleted -> data is modified
-    Instant getLastModified(final int version,
+    Instant getLastModified(final ForecastSectionType type,
                             final Geometry area,
                             final Integer roadNumber,
                             final String id);
 
-    default Instant getLastModified(final int version,
+    default Instant getLastModified(final ForecastSectionType type,
                                     final Geometry area,
                                     final Integer roadNumber) {
-        return getLastModified(version, area, roadNumber,  null);
+        return getLastModified(type, area, roadNumber,  null);
     }
 
-    default Instant getLastModified(final int version,
+    default Instant getLastModified(final ForecastSectionType type,
                                     final String id) {
-        return getLastModified(version, null,null, id);
+        return getLastModified(type, null,null, id);
     }
 
-    default Instant getLastModified(final int version) {
-        return getLastModified(version, null, null, null);
+    default Instant getLastModified(final ForecastSectionType type) {
+        return getLastModified(type, null, null, null);
     }
 
 }

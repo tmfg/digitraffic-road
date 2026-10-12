@@ -10,6 +10,7 @@ set -euo pipefail  # Exit on error, undefined variable, or pipe failure
 # 3. Converts the diagram to SVG format
 #
 # Prerequisites:
+# - Node.js (npx)
 # - PostgreSQL database running on localhost:54322
 # - Database: road, User: road, Password: road
 #
@@ -68,7 +69,9 @@ fi
 if [ "${MERMAID_CHANGED_IN_GIT}" = true ] || [ ! -f "${SVG_FILE}" ]; then
   # Step 3: Convert mermaid diagram to SVG with deterministic output
   echo "3. Converting diagram to SVG..."
-  npx --yes @mermaid-js/mermaid-cli@11.12.0 \
+  # mermaid-cli 12.0.0 needs puppeteer 25.x, which needs this exact browser version. Skipped when already installed.
+  npx --yes puppeteer@25.12.0 browsers install chrome-headless-shell@154.0.8037.57
+  npx --yes @mermaid-js/mermaid-cli@12.0.0 \
     -i "${MERMAID_FILE}" \
     -o "${SVG_FILE}" \
     -c mermaid-config.json \

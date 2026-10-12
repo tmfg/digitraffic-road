@@ -31,6 +31,7 @@ import fi.livi.digitraffic.tie.controller.tms.TmsControllerV1;
 import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV1;
 import fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageControllerV2;
 import fi.livi.digitraffic.tie.controller.weather.WeatherControllerV1;
+import fi.livi.digitraffic.tie.controller.weather.WeatherControllerV2;
 import fi.livi.digitraffic.tie.controller.weathercam.WeathercamControllerV1;
 import fi.livi.digitraffic.tie.dao.DataUpdatedRepository;
 import fi.livi.digitraffic.tie.dao.maintenance.MaintenanceTrackingRepository;
@@ -352,25 +353,33 @@ public class DataStatusService {
 
         final UpdateInfoDtoV1 forecastSectionsSimpleForecastsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS_SIMPLE + WeatherControllerV1.FORECASTS,
-                forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V1.getVersion(), null, null),
+                forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V1.getType(), null, null),
                 findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA_CHECK),
                 forecastSectionsForecastInfo.getUpdateInterval(), forecastSectionsForecastInfo.getRecommendedFetchInterval());
 
         final UpdateInfoDtoV1 forecastSectionsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS,
-                forecastSectionRepository.getLastModified(ForecastSectionApiVersion.V2.getVersion()),
+                forecastSectionRepository.getLastModified(ForecastSectionApiVersion.V2.getType()),
                 findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_METADATA_CHECK),
                 forecastSectionInfo.getUpdateInterval(), forecastSectionInfo.getRecommendedFetchInterval());
 
         final UpdateInfoDtoV1 forecastSectionsForecastsInfo =
             new UpdateInfoDtoV1(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.FORECAST_SECTIONS + WeatherControllerV1.FORECASTS,
-                forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V2.getVersion(), null, null),
+                forecastSectionWeatherRepository.getLastModified(ForecastSectionApiVersion.V2.getType(), null, null),
                 findDataUpdatedInstant(DataType.FORECAST_SECTION_V2_WEATHER_DATA_CHECK),
                 forecastSectionsForecastInfo.getUpdateInterval(), forecastSectionsForecastInfo.getRecommendedFetchInterval());
 
+        final DataSourceInfoDtoV1 forecastSectionsForecastV2Info =
+            dataUpdatedRepository.getDataSourceInfo(DataSource.FORECAST_SECTION_FORECAST_V2);
+        final UpdateInfoDtoV1 forecastSectionsForecastsV2Info =
+            new UpdateInfoDtoV1(WeatherControllerV2.API_WEATHER_V2 + WeatherControllerV2.FORECAST_SECTIONS + WeatherControllerV2.FORECASTS,
+                findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA_V2),
+                findDataUpdatedInstant(DataType.FORECAST_SECTION_WEATHER_DATA_V2_CHECK),
+                forecastSectionsForecastV2Info.getUpdateInterval(), forecastSectionsForecastV2Info.getRecommendedFetchInterval());
+
         return Arrays.asList(stationsInfo, sensorsInfo, stationsDatasInfo,
             forecastSectionsSimpleInfo, forecastSectionsSimpleForecastsInfo,
-            forecastSectionsInfo, forecastSectionsForecastsInfo);
+            forecastSectionsInfo, forecastSectionsForecastsInfo, forecastSectionsForecastsV2Info);
     }
 
     private List<UpdateInfoDtoV1> getWeathercamInfos() {

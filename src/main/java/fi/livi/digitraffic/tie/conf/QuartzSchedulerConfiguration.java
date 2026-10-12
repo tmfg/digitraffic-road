@@ -50,6 +50,7 @@ import fi.livi.digitraffic.tie.scheduler.AutowiringSpringBeanJobFactory;
 import fi.livi.digitraffic.tie.scheduler.CameraHistoryDeleteJob;
 import fi.livi.digitraffic.tie.scheduler.CameraStationMetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.CameraStationsStatusMetadataUpdateJob;
+import fi.livi.digitraffic.tie.scheduler.ForecastSectionDataUpdateJobV2;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV1DataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV1MetadataUpdateJob;
 import fi.livi.digitraffic.tie.scheduler.ForecastSectionV2DataUpdateJob;
@@ -218,6 +219,11 @@ public class QuartzSchedulerConfiguration {
     }
 
     @Bean
+    public JobDetailFactoryBean forecastSectionDataUpdateJobV2() {
+        return createJobDetail(ForecastSectionDataUpdateJobV2.class);
+    }
+
+    @Bean
     public JobDetailFactoryBean weatherHistoryUpdateJob() { return createJobDetail(WeatherHistoryUpdateJob.class); }
 
     @Bean
@@ -286,6 +292,11 @@ public class QuartzSchedulerConfiguration {
     @Bean
     public FactoryBean<? extends Trigger> forecastSectionV1DataUpdateJobTrigger(final JobDetail forecastSectionV1DataUpdateJob) {
         return createTrigger(forecastSectionV1DataUpdateJob);
+    }
+
+    @Bean
+    public FactoryBean<? extends Trigger> forecastSectionDataUpdateJobV2Trigger(final JobDetail forecastSectionDataUpdateJobV2) {
+        return createTrigger(forecastSectionDataUpdateJobV2);
     }
 
     @Bean

@@ -152,6 +152,8 @@ Mermaid source: [DATABASE.mermaid](./DATABASE.mermaid)
 ### `forecast_section`
 
 - `forecast_section_geometry_i`
+- `forecast_section_type_modified_i`
+- `forecast_section_type_natural_id_i`
 - `forecast_section_ui`
 - `forecast_section_unique`
 - `forecast_section_version_modified_i`
@@ -161,6 +163,10 @@ Mermaid source: [DATABASE.mermaid](./DATABASE.mermaid)
 ### `forecast_section_weather`
 
 - `foresec_weather_pk`
+
+### `forecast_section_weather_v2`
+
+- `forecast_section_weather_v2_pk`
 
 ### `link_id`
 

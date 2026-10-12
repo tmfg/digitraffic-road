@@ -21,6 +21,7 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCol
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureV1;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 import fi.livi.digitraffic.tie.metadata.geojson.Geometry;
+import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
 import fi.livi.digitraffic.tie.service.weather.forecast.v1.ForecastWebDataServiceV1;
 import okhttp3.mockwebserver.MockWebServer;
 
@@ -71,7 +72,7 @@ public class ForecastSectionMetadataUpdaterTest extends AbstractDaemonTest {
             v2ForecastSectionMetadataService.findForecastSections(false,false, null,
                                                                   X_MIN_DOUBLE, Y_MIN_DOUBLE,
                                                                   X_MAX_DOUBLE, Y_MAX_DOUBLE);
-        final Instant lastModified = forecastSectionRepository.getLastModified(2, AREA, null);
+        final Instant lastModified = forecastSectionRepository.getLastModified(ForecastSectionType.DETAILED, AREA, null);
         assertEquals(lastModified, featureCollection.dataUpdatedTime);
 
         final ForecastSectionFeatureV1 feature = featureCollection.getFeatures().getFirst();

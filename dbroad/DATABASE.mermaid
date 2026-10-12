@@ -291,6 +291,7 @@ erDiagram
     forecast_section {
         id numeric PK "not null"
         natural_id character_varying "not null"
+        type character_varying "not null"
         description text "not null"
         created timestamp_with_time_zone "not null"
         modified timestamp_with_time_zone "not null"
@@ -322,6 +323,24 @@ erDiagram
         modified timestamp_with_time_zone "not null"
         time timestamp_with_time_zone "not null"
         type character_varying "null"
+    }
+
+    forecast_section_weather_v2 {
+        forecast_name character_varying PK "not null"
+        forecast_section_id numeric PK "not null"
+        forecast_section_id numeric FK "not null"
+        daylight boolean "not null"
+        type character_varying "not null"
+        created_at timestamp_with_time_zone "not null"
+        modified_at timestamp_with_time_zone "not null"
+        time timestamp_with_time_zone "not null"
+        overall_road_condition character_varying "null"
+        road_condition character_varying "null"
+        weather_symbol integer "null"
+        wind_direction integer "null"
+        road_temperature numeric "null"
+        temperature numeric "null"
+        wind_speed numeric "null"
     }
 
     link_id {
@@ -625,7 +644,6 @@ erDiagram
 
     pg_stat_statements {
         calls bigint "null"
-        jit_deform_count bigint "null"
         jit_emission_count bigint "null"
         jit_functions bigint "null"
         jit_inlining_count bigint "null"
@@ -634,8 +652,6 @@ erDiagram
         local_blks_hit bigint "null"
         local_blks_read bigint "null"
         local_blks_written bigint "null"
-        parallel_workers_launched bigint "null"
-        parallel_workers_to_launch bigint "null"
         plans bigint "null"
         queryid bigint "null"
         rows bigint "null"
@@ -645,25 +661,21 @@ erDiagram
         shared_blks_written bigint "null"
         temp_blks_read bigint "null"
         temp_blks_written bigint "null"
-        wal_buffers_full bigint "null"
         wal_fpi bigint "null"
         wal_records bigint "null"
         toplevel boolean "null"
-        jit_deform_time double_precision "null"
+        blk_read_time double_precision "null"
+        blk_write_time double_precision "null"
         jit_emission_time double_precision "null"
         jit_generation_time double_precision "null"
         jit_inlining_time double_precision "null"
         jit_optimization_time double_precision "null"
-        local_blk_read_time double_precision "null"
-        local_blk_write_time double_precision "null"
         max_exec_time double_precision "null"
         max_plan_time double_precision "null"
         mean_exec_time double_precision "null"
         mean_plan_time double_precision "null"
         min_exec_time double_precision "null"
         min_plan_time double_precision "null"
-        shared_blk_read_time double_precision "null"
-        shared_blk_write_time double_precision "null"
         stddev_exec_time double_precision "null"
         stddev_plan_time double_precision "null"
         temp_blk_read_time double_precision "null"
@@ -674,8 +686,6 @@ erDiagram
         dbid oid "null"
         userid oid "null"
         query text "null"
-        minmax_stats_since timestamp_with_time_zone "null"
-        stats_since timestamp_with_time_zone "null"
     }
 
     pg_stat_statements_info {
@@ -1037,6 +1047,7 @@ erDiagram
     datex2_situation_record ||--o{ situation_record_comment_i18n : "situation_record_comment_i18n(datex2_situation_record_id) -> datex2_situation_record(id)"
     device_data ||--o{ device_data_row : "device_data_row(device_data_id) -> device_data(id)"
     forecast_section ||--o{ forecast_section_weather : "forecast_section_weather(forecast_section_id) -> forecast_section(id)"
+    forecast_section ||--o{ forecast_section_weather_v2 : "forecast_section_weather_v2(forecast_section_id) -> forecast_section(id)"
     forecast_section ||--o{ link_id : "link_id(forecast_section_id) -> forecast_section(id)"
     forecast_section ||--o{ road_segment : "road_segment(forecast_section_id) -> forecast_section(id)"
     forecast_section_weather ||--o{ forecast_condition_reason : "forecast_condition_reason(forecast_name, forecast_section_id) -> forecast_section_weather(forecast_name, forecast_section_id)"

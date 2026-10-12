@@ -54,7 +54,7 @@ public class ForecastSectionTestHelper {
     }
 
     public ForecastSectionClient createForecastSectionClient(final MockWebServer server) {
-        return new ForecastSectionClient(webClient, objectMapper, server.url("").toString(), suid, user, pass);
+        return new ForecastSectionClient(webClient, objectMapper, server.url("").toString(), suid, user, pass, "", "");
     }
 
     public void serveGzippedMetadata(final MockWebServer server, final int version) throws IOException {

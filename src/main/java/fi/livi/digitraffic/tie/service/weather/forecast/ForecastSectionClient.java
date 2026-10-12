@@ -5,6 +5,7 @@ import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordi
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionCoordinatesEntry;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDto;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionV2Dto;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +38,9 @@ public class ForecastSectionClient {
     private static final String KEY_DATA_AND_VERSION = "dataAndVersion";
 
     private final Map<String, String> keyValues;
+    // If simpleMetadataUrl is set, detailedMetadataUrl is not used
+    private final String simpleMetadataUrl;
+    private final String detailedMetadataUrl;
     private final ObjectMapper objectMapper;
 
     private final WebClient webClient;
@@ -45,7 +50,11 @@ public class ForecastSectionClient {
                                  @Value("${roadConditions.baseUrl}") final String baseUrl,
                                  @Value("${roadConditions.suid}") final String suid,
                                  @Value("${roadConditions.user}") final String user,
-                                 @Value("${roadConditions.pass}") final String pass) {
+                                 @Value("${roadConditions.pass}") final String pass,
+                                 @Value("${roadConditions.metadata.v2.simple.url:}") final String simpleMetadataUrl,
+                                 @Value("${roadConditions.metadata.v2.detailed.url:}") final String detailedMetadataUrl) {
+        this.simpleMetadataUrl = simpleMetadataUrl;
+        this.detailedMetadataUrl = detailedMetadataUrl;
         this.objectMapper = objectMapper;
         this.webClient = webClient;
 
@@ -62,12 +71,15 @@ public class ForecastSectionClient {
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve().bodyToMono(DataBuffer.class).block();
 
-        // ok, DataBuffer holds the response that is gzipped
+        // DataBuffer holds the response that is gzipped, or plain json when fetched from a configured metadata url
 
-        try(final InputStream dbIs = db.asInputStream(); final GZIPInputStream gis = new GZIPInputStream(dbIs)) {
-            final T object = objectMapper.readerFor(clazz).readValue(gis);
-
-            return object;
+        try(final InputStream is = new BufferedInputStream(db.asInputStream())) {
+            is.mark(2);
+            final boolean gzipped = is.read() == 0x1f && is.read() == 0x8b;
+            is.reset();
+            try (final InputStream jsonIs = gzipped ? new GZIPInputStream(is) : is) {
+                return objectMapper.readerFor(clazz).readValue(jsonIs);
+            }
         } catch (final Exception e) {
             log.error("Error converting response", e);
 
@@ -79,14 +91,14 @@ public class ForecastSectionClient {
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public List<ForecastSectionCoordinatesDto> getForecastSectionV1Metadata() {
-        final LinkedHashMap<String, Object> response = getFromUrl(getMetadataUrl(1), LinkedHashMap.class);
+        final LinkedHashMap<String, Object> response = getFromUrl(StringUtils.defaultIfBlank(simpleMetadataUrl, getMetadataUrl(1)), LinkedHashMap.class);
 
         return response == null ? Collections.emptyList() : response.entrySet().stream().map(this::mapForecastSectionCoordinates).collect(Collectors.toList());
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
     public ForecastSectionV2Dto getForecastSectionV2Metadata() {
-        return getFromUrl(getMetadataUrl(2), ForecastSectionV2Dto.class);
+        return getFromUrl(StringUtils.defaultIfBlank(detailedMetadataUrl, getMetadataUrl(2)), ForecastSectionV2Dto.class);
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 30000))
