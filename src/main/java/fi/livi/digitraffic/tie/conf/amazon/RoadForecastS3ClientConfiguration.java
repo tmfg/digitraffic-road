@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.conf.amazon;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,13 +13,15 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 /**
  * S3 client for the road forecast bucket. Separate from the default client,
- * as the bucket is read with its own access key. The client is created only if bucketName, accessKeyId and
+ * as the bucket is read with its own access key. The client is created only in the daemon (non-web application) and only if bucketName, region, accessKeyId and
  * secretAccessKey are all set; otherwise forecast reading is disabled (see ForecastSectionDataUpdaterV2).
  */
 @ConditionalOnExpression("'${config.test}' != 'true' " +
                          "and !'${dt.amazon.s3.roadforecast.bucketName:}'.isBlank() " +
+                         "and !'${dt.amazon.s3.roadforecast.region:}'.isBlank() " +
                          "and !'${dt.amazon.s3.roadforecast.accessKeyId:}'.isBlank() " +
                          "and !'${dt.amazon.s3.roadforecast.secretAccessKey:}'.isBlank()")
+@ConditionalOnNotWebApplication
 @Configuration
 public class RoadForecastS3ClientConfiguration {
 
