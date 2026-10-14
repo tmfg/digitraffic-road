@@ -446,11 +446,23 @@ public class DataStatusService {
         final UpdateInfoDtoV1 forecastSectionsV2Info = new UpdateInfoDtoV1(WeatherControllerV2.API_WEATHER_V2 + WeatherControllerV2.FORECAST_SECTIONS,
             forecastSectionsInfo.getDataUpdatedTime(), forecastSectionsInfo.dataCheckedTime,
             forecastSectionsInfo.dataUpdateInterval, forecastSectionsInfo.recommendedFetchInterval);
+        // Same time as in the response
+        final UpdateInfoDtoV1 forecastSectionsSimpleV2Info =
+            new UpdateInfoDtoV1(WeatherControllerV2.API_WEATHER_V2 + WeatherControllerV2.FORECAST_SECTIONS_SIMPLE,
+                forecastSectionRepository.getLastModified(ForecastSectionApiVersion.V1.getType()),
+                findDataUpdatedInstant(DataType.FORECAST_SECTION_METADATA_CHECK),
+                forecastSectionInfo.getUpdateInterval(), forecastSectionInfo.getRecommendedFetchInterval());
+        final UpdateInfoDtoV1 forecastSectionsSimpleForecastsV2Info =
+            new UpdateInfoDtoV1(WeatherControllerV2.API_WEATHER_V2 + WeatherControllerV2.FORECAST_SECTIONS_SIMPLE + WeatherControllerV2.FORECASTS,
+                findDataUpdatedInstant(DataType.FORECAST_SECTION_SIMPLE_WEATHER_DATA_V2),
+                findDataUpdatedInstant(DataType.FORECAST_SECTION_SIMPLE_WEATHER_DATA_V2_CHECK),
+                forecastSectionsForecastV2Info.getUpdateInterval(), forecastSectionsForecastV2Info.getRecommendedFetchInterval());
 
         return Arrays.asList(stationsInfo, sensorsInfo, stationsDatasInfo,
             forecastSectionsSimpleInfo, forecastSectionsSimpleForecastsInfo,
             forecastSectionsInfo, forecastSectionsForecastsInfo,
-            stationsV2Info, sensorsV2Info, stationsDatasV2Info, forecastSectionsV2Info, forecastSectionsForecastsV2Info);
+            stationsV2Info, sensorsV2Info, stationsDatasV2Info, forecastSectionsV2Info, forecastSectionsForecastsV2Info,
+            forecastSectionsSimpleV2Info, forecastSectionsSimpleForecastsV2Info);
     }
 
     private List<UpdateInfoDtoV1> getWeathercamInfos() {

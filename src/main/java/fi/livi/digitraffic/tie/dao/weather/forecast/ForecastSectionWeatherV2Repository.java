@@ -19,11 +19,20 @@ public interface ForecastSectionWeatherV2Repository extends JpaRepository<Foreca
     @Query("SELECT w FROM ForecastSectionWeatherV2 w WHERE w.id.forecastSectionId IN (:forecastSectionIds)")
     List<ForecastSectionWeatherV2> findByForecastSectionIds(final List<Long> forecastSectionIds);
 
+    /** Forecasts of all forecast sections of the given type (ForecastSectionType name) */
+    @Query(value = """
+            SELECT fsw.*
+            FROM forecast_section_weather_v2 fsw
+            INNER JOIN forecast_section fs ON fs.id = fsw.forecast_section_id
+            WHERE fs.type = :sectionType""",
+           nativeQuery = true)
+    List<ForecastSectionWeatherV2> findBySectionType(final String sectionType);
+
     @Modifying
     @Query("DELETE FROM ForecastSectionWeatherV2 w WHERE w.id.forecastSectionId = :forecastSectionId AND w.id.forecastName NOT IN (:forecastNames)")
     int deleteByForecastSectionIdAndForecastNameNotIn(final long forecastSectionId, final List<String> forecastNames);
 
-    /** Forecasts of detailed forecast sections (forecast_section.type = DETAILED) */
+    /** Forecasts of non-obsolete forecast sections of the given type (ForecastSectionType name) */
     @Query(value = """
             SELECT fs.natural_id AS id
                  , fsw.forecast_name AS forecastName
@@ -39,11 +48,11 @@ public interface ForecastSectionWeatherV2Repository extends JpaRepository<Foreca
                  , fsw.weather_symbol AS weatherSymbol
             FROM forecast_section fs
             INNER JOIN forecast_section_weather_v2 fsw ON fsw.forecast_section_id = fs.id
-            WHERE fs.type = :#{T(fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType).DETAILED.name()}
+            WHERE fs.type = :sectionType
               AND fs.obsolete_date IS NULL
               AND (cast(:area AS geometry) IS NULL OR ST_INTERSECTS(cast(:area AS geometry), fs.geometry) = TRUE)
               AND (cast(:id as varchar) IS NULL OR fs.natural_id = :id)
               AND (cast(:roadNumber as integer) IS NULL OR fs.road_number = :roadNumber)
             ORDER BY fs.natural_id, fsw.time""", nativeQuery = true)
-    List<ForecastSectionWeatherForecastDtoV2> findDetailedForecasts(final Geometry area, final Integer roadNumber, final String id);
+    List<ForecastSectionWeatherForecastDtoV2> findForecasts(final String sectionType, final Geometry area, final Integer roadNumber, final String id);
 }

@@ -19,16 +19,14 @@ import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Repo
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDtoV2;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionForecastDtoV2;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionWeatherDtoV2;
-import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSection;
-import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
 import fi.livi.digitraffic.tie.model.weather.forecast.v2.ForecastSectionWeatherV2;
 import fi.livi.digitraffic.tie.model.weather.forecast.v2.ForecastSectionWeatherV2PK;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 /**
- * Writes forecast data to the database. Forecast sections (metadata) are not touched,
- * only the weather of already known detailed (version 2) sections is stored.
+ * Writes forecast data of a data set to the database. Forecast sections (metadata) are not touched,
+ * only the weather of already known sections of the data set's type (detailed or simple) is stored.
  */
 @ConditionalOnNotWebApplication
 @Service
@@ -54,24 +52,24 @@ public class ForecastSectionDataUpdateServiceV2 {
      */
     @PerformanceMonitor(maxWarnExcecutionTime = 20000, maxErrorExcecutionTime = 60000)
     @Transactional
-    public boolean updateForecastSectionWeatherData(final ForecastSectionDataDtoV2 data) {
+    public boolean updateForecastSectionWeatherData(final ForecastDataSetV2 dataSet, final ForecastSectionDataDtoV2 data) {
         if (data.dataUpdatedTime == null) {
-            log.error("method=updateForecastSectionWeatherData Forecast data has no dataUpdatedTime, skipping");
+            log.error("method=updateForecastSectionWeatherData dataSet={} Forecast data has no dataUpdatedTime, skipping", dataSet);
             return false;
         }
-        final Instant previous = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2);
+        final Instant previous = dataStatusService.findDataUpdatedTime(dataSet.dataUpdatedType);
         if (previous != null && !data.dataUpdatedTime.isAfter(previous)) {
-            log.info("method=updateForecastSectionWeatherData Skipping data dataUpdatedTime={} not after previousDataUpdatedTime={}",
-                     data.dataUpdatedTime, previous);
+            log.info("method=updateForecastSectionWeatherData dataSet={} Skipping data dataUpdatedTime={} not after previousDataUpdatedTime={}",
+                     dataSet, data.dataUpdatedTime, previous);
             return false;
         }
 
         final Map<String, Long> sectionIdsByNaturalId = forecastSectionRepository
-            .findDistinctByTypeIsAndObsoleteDateIsNullOrderByNaturalIdAsc(ForecastSectionType.DETAILED).stream()
+            .findDistinctByTypeIsAndObsoleteDateIsNullOrderByNaturalIdAsc(dataSet.sectionType).stream()
             .collect(Collectors.toMap(ForecastSection::getNaturalId, ForecastSection::getId));
 
         final Map<ForecastSectionWeatherV2PK, ForecastSectionWeatherV2> existing = new HashMap<>();
-        forecastSectionWeatherV2Repository.findAll().forEach(w -> existing.put(w.getId(), w));
+        forecastSectionWeatherV2Repository.findBySectionType(dataSet.sectionType.name()).forEach(w -> existing.put(w.getId(), w));
 
         final List<ForecastSectionWeatherV2> toSave = new ArrayList<>();
         final List<ForecastSectionWeatherV2> toDelete = new ArrayList<>();
@@ -119,29 +117,29 @@ public class ForecastSectionDataUpdateServiceV2 {
         forecastSectionWeatherV2Repository.deleteAll(toDelete);
         forecastSectionWeatherV2Repository.saveAll(toSave);
         forecastSectionWeatherV2Repository.flush();
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA_V2, data.dataUpdatedTime);
+        dataStatusService.updateDataUpdated(dataSet.dataUpdatedType, data.dataUpdatedTime);
 
-        log.info("method=updateForecastSectionWeatherData dataUpdatedTime={} sections={} forecastsStored={} forecastsDeleted={} " +
-                 "sectionsInDatabase={}", data.dataUpdatedTime, stats.sections, toSave.size(), toDelete.size(), sectionIdsByNaturalId.size());
+        log.info("method=updateForecastSectionWeatherData dataSet={} dataUpdatedTime={} sections={} forecastsStored={} forecastsDeleted={} " +
+                 "sectionsInDatabase={}", dataSet, data.dataUpdatedTime, stats.sections, toSave.size(), toDelete.size(), sectionIdsByNaturalId.size());
         if (stats.unknownSections > 0) {
-            log.error("method=updateForecastSectionWeatherData Ignored unknown forecast sections count={} firstId={}",
-                     stats.unknownSections, stats.firstUnknownSection);
+            log.error("method=updateForecastSectionWeatherData dataSet={} Ignored unknown forecast sections count={} firstId={}",
+                     dataSet, stats.unknownSections, stats.firstUnknownSection);
         }
         if (stats.invalidForecasts > 0) {
-            log.error("method=updateForecastSectionWeatherData Ignored forecasts with missing or unknown required values (time, forecastName up to 50 chars, type, daylight) count={} first={}",
-                      stats.invalidForecasts, stats.firstInvalid);
+            log.error("method=updateForecastSectionWeatherData dataSet={} Ignored forecasts with missing or unknown required values (time, forecastName up to 50 chars, type, daylight) count={} first={}",
+                      dataSet, stats.invalidForecasts, stats.firstInvalid);
         }
         if (stats.unknownTypes > 0) {
-            log.error("method=updateForecastSectionWeatherData Unknown forecast type in source data, forecasts skipped count={} first={}",
-                      stats.unknownTypes, stats.firstUnknownType);
+            log.error("method=updateForecastSectionWeatherData dataSet={} Unknown forecast type in source data, forecasts skipped count={} first={}",
+                      dataSet, stats.unknownTypes, stats.firstUnknownType);
         }
         if (stats.unknownConditions > 0) {
-            log.error("method=updateForecastSectionWeatherData Unknown road condition codes in source data, stored as null count={} first={}",
-                      stats.unknownConditions, stats.firstUnknownCondition);
+            log.error("method=updateForecastSectionWeatherData dataSet={} Unknown road condition codes in source data, stored as null count={} first={}",
+                      dataSet, stats.unknownConditions, stats.firstUnknownCondition);
         }
         if (stats.reliabilityValues > 0) {
-            log.warn("method=updateForecastSectionWeatherData Source data has reliability values, which are not stored count={} first={}",
-                     stats.reliabilityValues, stats.firstReliability);
+            log.warn("method=updateForecastSectionWeatherData dataSet={} Source data has reliability values, which are not stored count={} first={}",
+                     dataSet, stats.reliabilityValues, stats.firstReliability);
         }
         return true;
     }

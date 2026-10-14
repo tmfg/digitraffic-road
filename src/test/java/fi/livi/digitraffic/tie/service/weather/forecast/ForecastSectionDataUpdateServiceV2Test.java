@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,6 +47,7 @@ import tools.jackson.databind.ObjectMapper;
 public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest {
     private static final String KNOWN = "TEST_V2_KNOWN";
     private static final String OBSOLETE_VERSION = "TEST_V2_V1SECTION";
+    private static final String SIMPLE = OBSOLETE_VERSION;
 
     @Autowired
     private ForecastSectionRepository forecastSectionRepository;
@@ -58,13 +62,15 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
 
     private ForecastSectionDataUpdateServiceV2 service;
     private long knownId;
+    private long simpleId;
 
     @BeforeEach
     public void init() {
         service = new ForecastSectionDataUpdateServiceV2(forecastSectionRepository, weatherRepository, dataStatusService);
         knownId = createSection(KNOWN, ForecastSectionType.DETAILED);
-        createSection(OBSOLETE_VERSION, ForecastSectionType.SIMPLE);
+        simpleId = createSection(OBSOLETE_VERSION, ForecastSectionType.SIMPLE);
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA_V2, Instant.parse("2000-01-01T00:00:00Z"));
+        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_SIMPLE_WEATHER_DATA_V2, Instant.parse("2000-01-01T00:00:00Z"));
     }
 
     private long createSection(final String naturalId, final ForecastSectionType type) {
@@ -98,7 +104,7 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
 
     @Test
     public void insertsKnownSectionsAndIgnoresUnknownAndOtherNetworkSections() {
-        assertTrue(service.updateForecastSectionWeatherData(
+        assertTrue(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED,
             data("2026-10-07T11:05:48Z", "10.5", List.of("0h", "2h", "4h"), "TEST_V2_UNKNOWN", OBSOLETE_VERSION)));
 
         assertEquals(3, stored().size());
@@ -112,8 +118,8 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
 
     @Test
     public void updatesExistingAndDeletesMissingForecasts() {
-        service.updateForecastSectionWeatherData(data("2026-10-07T11:05:48Z", "10.5", List.of("0h", "2h", "4h")));
-        assertTrue(service.updateForecastSectionWeatherData(data("2026-10-07T12:05:48Z", "-3.0", List.of("0h", "2h"))));
+        service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T11:05:48Z", "10.5", List.of("0h", "2h", "4h")));
+        assertTrue(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T12:05:48Z", "-3.0", List.of("0h", "2h"))));
 
         final List<ForecastSectionWeatherV2> rows = stored();
         assertEquals(List.of("0h", "2h"), rows.stream().map(ForecastSectionWeatherV2::getForecastName).sorted().toList());
@@ -123,9 +129,9 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
 
     @Test
     public void skipsOldOrSameData() {
-        service.updateForecastSectionWeatherData(data("2026-10-07T11:05:48Z", "10.5", List.of("0h")));
-        assertFalse(service.updateForecastSectionWeatherData(data("2026-10-07T11:05:48Z", "1.0", List.of("0h"))));
-        assertFalse(service.updateForecastSectionWeatherData(data("2026-10-07T10:00:00Z", "1.0", List.of("0h"))));
+        service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T11:05:48Z", "10.5", List.of("0h")));
+        assertFalse(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T11:05:48Z", "1.0", List.of("0h"))));
+        assertFalse(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T10:00:00Z", "1.0", List.of("0h"))));
 
         assertEquals(0, new BigDecimal("10.5").compareTo(stored().getFirst().getTemperature()));
     }
@@ -136,7 +142,7 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
             {"dataUpdatedTime":"2026-10-07T11:05:48Z","forecastSections":[{"id":"%s","forecasts":[
               {"time":"2026-10-07T12:00:00Z","type":"FORECAST","forecastName":"2h"},
               %s]}]}""".formatted(KNOWN, forecast("4h", "FORECAST", "1.0", 1)), ForecastSectionDataDtoV2.class);
-        assertTrue(service.updateForecastSectionWeatherData(d));
+        assertTrue(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, d));
         assertEquals(List.of("4h"), stored().stream().map(ForecastSectionWeatherV2::getForecastName).toList());
     }
 
@@ -146,7 +152,7 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
             {"dataUpdatedTime":"2026-10-07T11:05:48Z","forecastSections":[{"id":"%s","forecasts":[
               %s,
               %s]}]}""".formatted(KNOWN, forecast("2h", "PREDICTION", "1.0", 1), forecast("4h", "FORECAST", "1.0", 999)), ForecastSectionDataDtoV2.class);
-        assertTrue(service.updateForecastSectionWeatherData(d));
+        assertTrue(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, d));
 
         final List<ForecastSectionWeatherV2> rows = stored();
         assertEquals(List.of("4h"), rows.stream().map(ForecastSectionWeatherV2::getForecastName).toList());
@@ -161,25 +167,65 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
             new ForecastSectionS3ClientV2(s3, objectMapper, new RoadForecastS3Properties("bucket", "eu-north-1", "forecast/", 24)), service, dataStatusService);
 
         assertNull(dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2_CHECK));
-        assertNull(updater.updateForecastSectionWeatherData());
+        assertNull(updater.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED));
         assertNotNull(dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2_CHECK));
     }
 
     @Test
     public void updaterReadsLatestFileFromS3AndSkipsProcessedOnes() {
         final S3Client s3 = mock(S3Client.class);
-        final String key = "forecast/roadweather_forecast_public_20261007T120000Z_20261007T110548Z.json";
+        final String key = "forecast/roadweather_forecast_public_full_20261007T120000Z_20261007T110548Z.json";
         when(s3.listObjectsV2(any(ListObjectsV2Request.class))).thenReturn(
             ListObjectsV2Response.builder().contents(S3Object.builder().key(key).build()).build());
         final String json = "{\"dataUpdatedTime\":\"2026-10-07T11:05:48Z\",\"forecastSections\":[{\"id\":\"" + KNOWN + "\",\"forecasts\":["
             + forecast("0h", "OBSERVATION", "5.0", 2) + "]}]}";
-        when(s3.getObject(any(GetObjectRequest.class), any(ResponseTransformer.class)))
+        when(s3.getObject(any(GetObjectRequest.class), ArgumentMatchers.<ResponseTransformer<GetObjectResponse, ResponseBytes<GetObjectResponse>>>any()))
             .thenReturn(ResponseBytes.fromByteArray(GetObjectResponse.builder().build(), json.getBytes(StandardCharsets.UTF_8)));
         final ForecastSectionDataUpdaterV2 updater = new ForecastSectionDataUpdaterV2(
             new ForecastSectionS3ClientV2(s3, objectMapper, new RoadForecastS3Properties("bucket", "eu-north-1", "forecast/", 24)), service, dataStatusService);
 
-        assertEquals(Instant.parse("2026-10-07T11:05:48Z"), updater.updateForecastSectionWeatherData());
+        assertEquals(Instant.parse("2026-10-07T11:05:48Z"), updater.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED));
         assertEquals(RoadConditionV2.MOIST, stored().getFirst().getRoadCondition());
-        assertNull(updater.updateForecastSectionWeatherData());
+        assertNull(updater.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED));
+    }
+
+    @Test
+    public void simpleDataSetStoresOnlySimpleSectionsAndKeepsDetailedData() {
+        assertTrue(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T11:05:48Z", "10.5", List.of("0h", "2h"))));
+        final ForecastSectionDataDtoV2 simple = objectMapper.readValue("""
+            {"dataUpdatedTime":"2026-10-07T11:00:00Z","forecastSections":[
+              {"id":"%s","forecasts":[%s]},
+              {"id":"%s","forecasts":[%s]}]}""".formatted(SIMPLE, forecast("0h", "OBSERVATION", "2.0", 1), KNOWN, forecast("0h", "OBSERVATION", "2.0", 1)),
+            ForecastSectionDataDtoV2.class);
+        assertTrue(service.updateForecastSectionWeatherData(ForecastDataSetV2.SIMPLE, simple));
+
+        // Detailed section in the simple file is ignored and detailed data is not touched
+        assertEquals(2, stored().size());
+        stored().forEach(w -> assertEquals(0, new BigDecimal("10.5").compareTo(w.getTemperature())));
+        final List<ForecastSectionWeatherV2> simpleRows = weatherRepository.findByForecastSectionIds(List.of(simpleId));
+        assertEquals(List.of("0h"), simpleRows.stream().map(ForecastSectionWeatherV2::getForecastName).toList());
+        assertEquals(Instant.parse("2026-10-07T11:05:48Z"), dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2));
+        assertEquals(Instant.parse("2026-10-07T11:00:00Z"), dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_SIMPLE_WEATHER_DATA_V2));
+
+        // New detailed data does not delete simple rows
+        assertTrue(service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T12:05:48Z", "1.0", List.of("0h"))));
+        entityManager.flush();
+        entityManager.clear();
+        assertEquals(1, weatherRepository.findByForecastSectionIds(List.of(simpleId)).size());
+    }
+
+    @Test
+    public void updaterListsFilesOfTheDataSet() {
+        final S3Client s3 = mock(S3Client.class);
+        when(s3.listObjectsV2(any(ListObjectsV2Request.class))).thenReturn(ListObjectsV2Response.builder().build());
+        final ForecastSectionDataUpdaterV2 updater = new ForecastSectionDataUpdaterV2(
+            new ForecastSectionS3ClientV2(s3, objectMapper, new RoadForecastS3Properties("bucket", "eu-north-1", "forecast/", 24)), service, dataStatusService);
+
+        assertNull(updater.updateForecastSectionWeatherData(ForecastDataSetV2.SIMPLE));
+        final ArgumentCaptor<ListObjectsV2Request> req = ArgumentCaptor.forClass(ListObjectsV2Request.class);
+        verify(s3).listObjectsV2(req.capture());
+        assertEquals("forecast/roadweather_forecast_public_simple_", req.getValue().prefix());
+        assertNotNull(dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_SIMPLE_WEATHER_DATA_V2_CHECK));
+        assertNull(dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2_CHECK));
     }
 }

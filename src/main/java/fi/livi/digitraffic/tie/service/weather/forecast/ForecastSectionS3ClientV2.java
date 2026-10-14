@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import fi.livi.digitraffic.tie.conf.amazon.RoadForecastS3ClientConfiguration;
 import fi.livi.digitraffic.tie.conf.amazon.RoadForecastS3Properties;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDtoV2;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -36,19 +37,24 @@ import tools.jackson.databind.ObjectMapper;
 
 /**
  * Reads road forecast files from S3. File name:
- * {@code <prefix>roadweather_forecast_public_<first_timestep>_<production_timestamp>.json}, timestamps {@code yyyyMMdd'T'HHmmss'Z'}.
+ * {@code <prefix><data set file name prefix><forecast_time>_<created_time>.json}, timestamps {@code yyyyMMdd'T'HHmmss'Z'}.
+ * Data set file name prefixes are defined in {@link ForecastDataSetV2}.
  */
 @ConditionalOnNotWebApplication
 @Component
 public class ForecastSectionS3ClientV2 {
     private static final Logger log = LoggerFactory.getLogger(ForecastSectionS3ClientV2.class);
 
-    static final String FILE_NAME_PREFIX = "roadweather_forecast_public_";
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'").withZone(ZoneOffset.UTC);
-    private static final Pattern KEY_PATTERN = Pattern.compile(
-        "^.*" + FILE_NAME_PREFIX + "(\\d{8}T\\d{6}Z)_(\\d{8}T\\d{6}Z)\\.json$");
+    // File name part after the data set prefix: <forecast_time>_<created_time>.json
+    // group 1: time the forecast is for (start of the forecast), group 2: time when the forecast was created
+    // Matches the part after the prefix of ie. roadweather_forecast_public_full_20261014T080000Z_20261014T064827Z.json
+    // -> 20261014T080000Z_20261014T064827Z.json
+    private static final Pattern FILE_NAME_TIMES_PATTERN = Pattern.compile("^(\\d{8}T\\d{6}Z)_(\\d{8}T\\d{6}Z)\\.json$");
 
-    public record ForecastFile(String key, Instant firstTimestep, Instant productionTime) {}
+    /** @param forecastStartTime time the forecast is for (start of the forecast)
+     *  @param createdTime time when the forecast was created, the latest file is chosen by this */
+    public record ForecastFile(String key, Instant forecastStartTime, Instant createdTime) {}
 
     private final S3Client s3Client;
     private final ObjectMapper objectMapper;
@@ -91,31 +97,38 @@ public class ForecastSectionS3ClientV2 {
     /**
      * @return the file with the latest production time within the window, or empty if none found
      */
-    public Optional<ForecastFile> findLatestFile(final Instant now) {
-        final String keyPrefix = prefix + FILE_NAME_PREFIX;
+    public Optional<ForecastFile> findLatestFile(final ForecastDataSetV2 dataSet, final Instant now) {
+        final String keyPrefix = prefix + dataSet.fileNamePrefix;
         // startAfter is just a key to start listing from, it does not have to exist
         final String startAfter = keyPrefix + TIMESTAMP_FORMAT.format(now.minus(window));
 
         final List<ForecastFile> files = new ArrayList<>();
         String continuationToken = null;
         do {
-            final ListObjectsV2Response response = s3Client.listObjectsV2(ListObjectsV2Request.builder()
-                .bucket(bucketName)
-                .prefix(keyPrefix)
-                .startAfter(startAfter)
-                .continuationToken(continuationToken)
-                .build());
+            final ListObjectsV2Response response;
+            try {
+                response = s3Client.listObjectsV2(ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .prefix(keyPrefix)
+                    .startAfter(startAfter)
+                    .continuationToken(continuationToken)
+                    .build());
+            } catch (final SdkException e) {
+                throw new IllegalStateException("Listing forecast files from S3 failed bucket=" + bucketName + " prefix=" + keyPrefix
+                    + ": " + e.getMessage(), e);
+            }
             for (final S3Object object : response.contents()) {
-                parse(object.key()).ifPresent(files::add);
+                parse(keyPrefix, object.key()).ifPresent(files::add);
             }
             continuationToken = Boolean.TRUE.equals(response.isTruncated()) ? response.nextContinuationToken() : null;
         } while (continuationToken != null);
 
-        return files.stream().max(Comparator.comparing(ForecastFile::productionTime).thenComparing(ForecastFile::key));
+        return files.stream().max(Comparator.comparing(ForecastFile::createdTime).thenComparing(ForecastFile::key));
     }
 
-    static Optional<ForecastFile> parse(final String key) {
-        final Matcher m = KEY_PATTERN.matcher(key);
+    static Optional<ForecastFile> parse(final String keyPrefix, final String key) {
+        // Strip the data set prefix, an empty string never matches
+        final Matcher m = FILE_NAME_TIMES_PATTERN.matcher(key.startsWith(keyPrefix) ? key.substring(keyPrefix.length()) : "");
         if (!m.matches()) {
             log.warn("method=parse Skipping S3 key with unexpected name key={}", key);
             return Optional.empty();
@@ -129,8 +142,14 @@ public class ForecastSectionS3ClientV2 {
     }
 
     public ForecastSectionDataDtoV2 read(final ForecastFile file) {
-        final byte[] bytes = s3Client.getObject(GetObjectRequest.builder().bucket(bucketName).key(file.key()).build(),
-                                                ResponseTransformer.toBytes()).asByteArray();
+        final byte[] bytes;
+        try {
+            bytes = s3Client.getObject(GetObjectRequest.builder().bucket(bucketName).key(file.key()).build(),
+                                       ResponseTransformer.toBytes()).asByteArray();
+        } catch (final SdkException e) {
+            throw new IllegalStateException("Reading forecast file from S3 failed bucket=" + bucketName + " key=" + file.key()
+                + ": " + e.getMessage(), e);
+        }
         return objectMapper.readValue(bytes, ForecastSectionDataDtoV2.class);
     }
 }

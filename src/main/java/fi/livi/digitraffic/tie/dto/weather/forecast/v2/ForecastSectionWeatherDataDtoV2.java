@@ -10,8 +10,8 @@ import fi.livi.digitraffic.common.dto.data.v1.DataUpdatedSupportV1;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonPropertyOrder({ "id", "forecasts" })
-@Schema(description = "Weather forecasts of a detailed forecast section")
-public class ForecastSectionWeatherDetailedDtoV2 implements DataUpdatedSupportV1 {
+@Schema(description = "Weather forecasts of a forecast section")
+public class ForecastSectionWeatherDataDtoV2 implements DataUpdatedSupportV1 {
 
     @Schema(description = ForecastSectionsWeatherDtoV2.ID_DESCRIPTION)
     @JsonProperty("id")
@@ -22,7 +22,7 @@ public class ForecastSectionWeatherDetailedDtoV2 implements DataUpdatedSupportV1
 
     private final Instant dataUpdatedTime;
 
-    public ForecastSectionWeatherDetailedDtoV2(final String naturalId, final List<ForecastSectionWeatherForecastDtoV2> forecasts,
+    public ForecastSectionWeatherDataDtoV2(final String naturalId, final List<ForecastSectionWeatherForecastDtoV2> forecasts,
                                                final Instant dataUpdatedTime) {
         this.id = naturalId;
         this.forecasts = forecasts;

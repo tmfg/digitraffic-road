@@ -13,12 +13,11 @@ import org.springframework.stereotype.Service;
 import fi.livi.digitraffic.common.annotation.NotTransactionalServiceMethod;
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDtoV2;
-import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.weather.forecast.ForecastSectionS3ClientV2.ForecastFile;
 
 /**
- * Fetches the latest forecast file from S3 and passes it to {@link ForecastSectionDataUpdateServiceV2}.
+ * Fetches the latest forecast file of a data set from S3 and passes it to {@link ForecastSectionDataUpdateServiceV2}.
  */
 @ConditionalOnNotWebApplication
 @Service
@@ -42,33 +41,34 @@ public class ForecastSectionDataUpdaterV2 {
      */
     @PerformanceMonitor(maxWarnExcecutionTime = 20000, maxErrorExcecutionTime = 60000)
     @NotTransactionalServiceMethod
-    public Instant updateForecastSectionWeatherData() {
+    public Instant updateForecastSectionWeatherData(final ForecastDataSetV2 dataSet) {
         if (!s3Client.isConfigured()) {
-            log.warn("method=updateForecastSectionWeatherData Forecast S3 reading is disabled: {}", s3Client.describeMissingConfiguration());
+            log.warn("method=updateForecastSectionWeatherData dataSet={} Forecast S3 reading is disabled: {}",
+                     dataSet, s3Client.describeMissingConfiguration());
             return null;
         }
         final StopWatch time = StopWatch.createStarted();
-        final Optional<ForecastFile> latest = s3Client.findLatestFile(Instant.now());
+        final Optional<ForecastFile> latest = s3Client.findLatestFile(dataSet, Instant.now());
         // S3 was reachable and listing worked, even if there is nothing new to read
-        dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA_V2_CHECK);
+        dataStatusService.updateDataUpdated(dataSet.dataCheckedType);
         if (latest.isEmpty()) {
-            log.warn("method=updateForecastSectionWeatherData No forecast files found from S3 in the search window");
+            log.warn("method=updateForecastSectionWeatherData dataSet={} No forecast files found from S3 in the search window", dataSet);
             return null;
         }
         final ForecastFile file = latest.get();
 
-        final Instant previous = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2);
-        if (previous != null && !file.productionTime().isAfter(previous.truncatedTo(ChronoUnit.SECONDS))) {
-            log.debug("method=updateForecastSectionWeatherData Skipping already processed file key={} productionTime={} previousDataUpdatedTime={}",
-                      file.key(), file.productionTime(), previous);
+        final Instant previous = dataStatusService.findDataUpdatedTime(dataSet.dataUpdatedType);
+        if (previous != null && !file.createdTime().isAfter(previous.truncatedTo(ChronoUnit.SECONDS))) {
+            log.debug("method=updateForecastSectionWeatherData dataSet={} Skipping already processed file key={} createdTime={} previousDataUpdatedTime={}",
+                      dataSet, file.key(), file.createdTime(), previous);
             return null;
         }
 
         final ForecastSectionDataDtoV2 data = s3Client.read(file);
         final long fetchMs = time.getDuration().toMillis();
-        final boolean updated = updateService.updateForecastSectionWeatherData(data);
-        log.info("method=updateForecastSectionWeatherData key={} updated={} fetchTookMs={} totalTimeMs={}",
-                 file.key(), updated, fetchMs, time.getDuration().toMillis());
+        final boolean updated = updateService.updateForecastSectionWeatherData(dataSet, data);
+        log.info("method=updateForecastSectionWeatherData dataSet={} key={} updated={} fetchTookMs={} totalTimeMs={}",
+                 dataSet, file.key(), updated, fetchMs, time.getDuration().toMillis());
         return updated ? data.dataUpdatedTime : null;
     }
 }

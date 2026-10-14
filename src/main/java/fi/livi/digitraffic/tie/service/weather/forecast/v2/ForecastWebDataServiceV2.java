@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.service.weather.forecast.v2;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -16,15 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.livi.digitraffic.tie.converter.weather.v1.forecast.ForecastSectionToFeatureCollectionConverterV1;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Repository;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureCollectionV1;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureSimpleV1;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v1.ForecastSectionFeatureV1;
 import fi.livi.digitraffic.tie.model.weather.forecast.ForecastSectionType;
-import fi.livi.digitraffic.tie.dto.weather.forecast.v2.ForecastSectionWeatherDetailedDtoV2;
+import fi.livi.digitraffic.tie.dto.weather.forecast.v2.ForecastSectionWeatherDataDtoV2;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v2.ForecastSectionWeatherForecastDtoV2;
 import fi.livi.digitraffic.tie.dto.weather.forecast.v2.ForecastSectionsWeatherDtoV2;
-import fi.livi.digitraffic.tie.model.DataType;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
+import fi.livi.digitraffic.tie.service.weather.forecast.ForecastDataSetV2;
 import fi.livi.digitraffic.tie.helper.PostgisGeometryUtils;
 
 @Service
@@ -66,38 +67,59 @@ public class ForecastWebDataServiceV2 {
     }
 
     @Transactional(readOnly = true)
-    public ForecastSectionsWeatherDtoV2 getDetailedForecastSectionWeatherData(final boolean lastUpdated,
-                                                                              final Integer roadNumber,
-                                                                              final Double xMin, final Double yMin,
-                                                                              final Double xMax, final Double yMax) {
-        final Instant dataUpdatedTime = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2);
+    public ForecastSectionFeatureCollectionSimpleV1 findSimpleForecastSections(final boolean lastUpdated, final Integer roadNumber,
+                                                                               final Double xMin, final Double yMin,
+                                                                               final Double xMax, final Double yMax) {
+        final Geometry area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
+        final Instant lastModified = forecastSectionRepository.getLastModified(ForecastSectionType.SIMPLE, area, roadNumber);
+        if (lastUpdated) {
+            return new ForecastSectionFeatureCollectionSimpleV1(lastModified);
+        }
+        return forecastSectionToFeatureCollectionConverter.convertToSimpleFeatureCollection(
+            forecastSectionRepository.findForecastSectionsOrderById(area, roadNumber), lastModified);
+    }
+
+    @Transactional(readOnly = true)
+    public ForecastSectionFeatureSimpleV1 getSimpleForecastSectionById(final String id) {
+        return forecastSectionToFeatureCollectionConverter.convertToSimpleFeature(forecastSectionRepository.getForecastSection(id));
+    }
+
+    @Transactional(readOnly = true)
+    public ForecastSectionsWeatherDtoV2 getForecastSectionWeatherData(final ForecastDataSetV2 dataSet,
+                                                                      final boolean lastUpdated,
+                                                                      final Integer roadNumber,
+                                                                      final Double xMin, final Double yMin,
+                                                                      final Double xMax, final Double yMax) {
+        final Instant dataUpdatedTime = dataStatusService.findDataUpdatedTime(dataSet.dataUpdatedType);
         if (lastUpdated) {
             return new ForecastSectionsWeatherDtoV2(dataUpdatedTime);
         }
         final Geometry area = PostgisGeometryUtils.createSquarePolygonFromMinMax(xMin, xMax, yMin, yMax);
         final StopWatch time = StopWatch.createStarted();
-        final List<ForecastSectionWeatherForecastDtoV2> data = forecastSectionWeatherV2Repository.findDetailedForecasts(area, roadNumber, null);
-        log.debug("method=getDetailedForecastSectionWeatherData db tookMs={}", time.getDuration().toMillis());
+        final List<ForecastSectionWeatherForecastDtoV2> data =
+            forecastSectionWeatherV2Repository.findForecasts(dataSet.sectionType.name(), area, roadNumber, null);
+        log.debug("method=getForecastSectionWeatherData dataSet={} db tookMs={}", dataSet, time.getDuration().toMillis());
         return new ForecastSectionsWeatherDtoV2(dataUpdatedTime, createDtos(data, dataUpdatedTime));
     }
 
     @Transactional(readOnly = true)
-    public ForecastSectionWeatherDetailedDtoV2 getDetailedForecastSectionWeatherDataById(final String id) {
-        final Instant dataUpdatedTime = dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2);
-        final List<ForecastSectionWeatherForecastDtoV2> data = forecastSectionWeatherV2Repository.findDetailedForecasts(null, null, id);
-        final List<ForecastSectionWeatherDetailedDtoV2> dtos = createDtos(data, dataUpdatedTime);
+    public ForecastSectionWeatherDataDtoV2 getForecastSectionWeatherDataById(final ForecastDataSetV2 dataSet, final String id) {
+        final Instant dataUpdatedTime = dataStatusService.findDataUpdatedTime(dataSet.dataUpdatedType);
+        final List<ForecastSectionWeatherForecastDtoV2> data =
+            forecastSectionWeatherV2Repository.findForecasts(dataSet.sectionType.name(), null, null, id);
+        final List<ForecastSectionWeatherDataDtoV2> dtos = createDtos(data, dataUpdatedTime);
         if (dtos.isEmpty()) {
             throw new ObjectNotFoundException("Forecast section data", id);
         }
         return dtos.getFirst();
     }
 
-    private static List<ForecastSectionWeatherDetailedDtoV2> createDtos(final List<ForecastSectionWeatherForecastDtoV2> data,
+    private static List<ForecastSectionWeatherDataDtoV2> createDtos(final List<ForecastSectionWeatherForecastDtoV2> data,
                                                                        final Instant dataUpdatedTime) {
         return data.stream()
             .collect(Collectors.groupingBy(ForecastSectionWeatherForecastDtoV2::getId))
             .entrySet().stream()
-            .map(entry -> new ForecastSectionWeatherDetailedDtoV2(
+            .map(entry -> new ForecastSectionWeatherDataDtoV2(
                 entry.getKey(),
                 entry.getValue().stream().sorted(Comparator.comparing(ForecastSectionWeatherForecastDtoV2::getTime)).toList(),
                 dataUpdatedTime))
