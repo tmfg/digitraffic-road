@@ -14,4 +14,14 @@
         <inheritance:implements>fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalMessage</inheritance:implements>
     </jaxb:bindings>
 
+    <!-- Without this the generated constant would be DATEX_2 while the schema value stays DATEX2,
+         giving the same message type two spellings: Jackson writes the constant name into
+         data_incoming and the database column holds the schema value. Naming the constant after the
+         schema value keeps one spelling through the whole pipeline. -->
+    <jaxb:bindings schemaLocation="ImsXmlMessage_1_2_2.xsd" node="//xs:simpleType[@name='MessageTypeEnum']">
+        <jaxb:typesafeEnumClass>
+            <jaxb:typesafeEnumMember value="DATEX2" name="DATEX2"/>
+        </jaxb:typesafeEnumClass>
+    </jaxb:bindings>
+
 </jaxb:bindings>

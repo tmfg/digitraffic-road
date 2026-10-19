@@ -283,7 +283,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
     @Test
     public void lastModifiedOfListIsTimeOfLatestChangeOfTypeEvenWhenNothingIsActive() throws Exception {
         // Situation has ended, so it is not part of the response
-        helper.insertSituation("id1", 1L, SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        helper.insertSituation("id1", 1L, SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5, Instant.now().minusSeconds(60 * 60 * 5), Instant.now().minusSeconds(60 * 60 * 4));
         final Instant changed = dataDatex2SituationRepository.getLastModified(SituationType.WEIGHT_RESTRICTION.name());
         Assertions.assertNotNull(changed);
@@ -304,7 +304,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void withMessages_35() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-3.5.xml");
@@ -317,7 +317,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void message223() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_2_2_3.version,
                 ROADWORK_DATEXII_2_2_3);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-2.2.3.xml");
@@ -331,7 +331,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void message223NotFound() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + "/messages/id1/datex2-2.2.3.xml");
@@ -348,7 +348,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void message223History() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_2_2_3.version,
                 ROADWORK_DATEXII_2_2_3);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY + DATEX2_2_2_3);
@@ -391,7 +391,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void trafficAnnouncement35() throws Exception {
-        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5);
@@ -517,7 +517,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks35LimitFromHits() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response =
@@ -536,7 +536,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks35LimitFromMisses() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response =
@@ -552,7 +552,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks35LimitToHits() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response =
@@ -568,7 +568,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks35LimitToMisses() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 +
@@ -599,7 +599,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks223() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_2_2_3.version,
                 ROADWORK_DATEXII_2_2_3);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_2_2_3);
@@ -609,7 +609,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void trafficAnnouncement223() throws Exception {
-        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version,
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX2, Datex2Version.V_2_2_3.version,
                 ROADWORK_DATEXII_2_2_3);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_2_2_3);
@@ -619,7 +619,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void weightRestriction223() throws Exception {
-        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version,
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX2, Datex2Version.V_2_2_3.version,
                 ROADWORK_DATEXII_2_2_3);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_2_2_3);
@@ -629,7 +629,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void exemptedTransport223() throws Exception {
-        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_2_2_3.version,
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX2, Datex2Version.V_2_2_3.version,
                 ROADWORK_DATEXII_2_2_3);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_2_2_3);
@@ -681,7 +681,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks35WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + BBOX_HITS);
@@ -691,7 +691,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks35WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5 + BBOX_MISSES);
@@ -701,7 +701,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void trafficAnnouncements35WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5 + BBOX_HITS);
@@ -711,7 +711,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void trafficAnnouncements35WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_5 + BBOX_MISSES);
@@ -721,7 +721,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void weightRestrictions35WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5 + BBOX_HITS);
@@ -731,7 +731,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void weightRestrictions35WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5 + BBOX_MISSES);
@@ -741,7 +741,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void exemptedTransports35WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 EXEMPTED_TRANSPORT_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5 + BBOX_HITS);
@@ -751,7 +751,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void exemptedTransports35WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 EXEMPTED_TRANSPORT_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5 + BBOX_MISSES);
@@ -761,7 +761,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks37WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_7 + BBOX_HITS);
@@ -771,7 +771,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks37WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_7 + BBOX_MISSES);
@@ -781,7 +781,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void trafficAnnouncements37WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_7 + BBOX_HITS);
@@ -791,7 +791,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void trafficAnnouncements37WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.TRAFFIC_ANNOUNCEMENT, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_ANNOUNCEMENTS + DATEX2_3_7 + BBOX_MISSES);
@@ -801,7 +801,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void weightRestrictions37WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_7 + BBOX_HITS);
@@ -811,7 +811,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void weightRestrictions37WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_7 + BBOX_MISSES);
@@ -821,7 +821,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void exemptedTransports37WithBoundingBoxHits() throws Exception {
-        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 EXEMPTED_TRANSPORT_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_7 + BBOX_HITS);
@@ -831,7 +831,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void exemptedTransports37WithBoundingBoxMisses() throws Exception {
-        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_7.version,
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX2, Datex2Version.V_3_7.version,
                 EXEMPTED_TRANSPORT_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_7 + BBOX_MISSES);
@@ -841,7 +841,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void weightRestrictionsWorks35() throws Exception {
-        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.WEIGHT_RESTRICTION, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + WEIGHT_RESTRICTIONS + DATEX2_3_5);
@@ -851,7 +851,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void exemptedTransports35() throws Exception {
-        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.EXEMPTED_TRANSPORT, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 EXEMPTED_TRANSPORT_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + EXEMPTED_TRANSPORTS + DATEX2_3_5);
@@ -861,7 +861,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void roadWorks35() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS + DATEX2_3_5);
@@ -878,7 +878,7 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void message35History() throws Exception {
-        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX_2, Datex2Version.V_3_5.version,
+        insertSituation(SituationType.ROAD_WORK, MessageTypeEnum.DATEX2, Datex2Version.V_3_5.version,
                 ROADWORK_DATEXII_3_5);
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + MESSAGES + "/id1" + HISTORY + DATEX2_3_5);

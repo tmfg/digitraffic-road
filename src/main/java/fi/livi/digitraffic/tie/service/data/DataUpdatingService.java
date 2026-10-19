@@ -5,6 +5,7 @@ import fi.livi.digitraffic.tie.model.data.DataIncoming;
 
 import fi.livi.digitraffic.tie.model.data.IncomingDataTypes;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +40,19 @@ public class DataUpdatingService {
                     if (data.getType().equals(IncomingDataTypes.DataType.IMS)) {
                         imsUpdatingService.handleIms(data);
                         // handle datex2, with version
-                        data.setProcessed();
+                        data.markProcessed();
                     } else {
-                        log.error("method=handleNewData invalid type: {}", data.getType());
-                        data.setFailed();
+                        log.error("method=handleNewData invalid type: {} dataId={} messageId={}",
+                                data.getType(), data.getDataId(), data.getMessageId());
+                        data.markFailed("Invalid data type " + data.getType());
                     }
                 } catch (final Exception e) {
-                    log.error("method=handleNewData failed", e);
-                    data.setFailed();
+                    // Some exceptions carry no message, so fall back to the type to avoid an empty reason.
+                    final String reason = StringUtils.defaultIfBlank(e.getMessage(), e.toString());
+
+                    log.error("method=handleNewData failed dataId={} messageId={} reason={}",
+                            data.getDataId(), data.getMessageId(), reason, e);
+                    data.markFailed(reason);
                 }
             });
         } finally {

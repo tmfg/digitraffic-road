@@ -41,7 +41,7 @@ public class DatexII35XmlMarshallerTest extends AbstractServiceTest {
      * @throws IOException if reading files fails
      */
     private List<Pair<String, String>> readDatexIIMessages() throws IOException {
-        final List<Resource> resources = loadResources("classpath:/lotju/datex2/3.5/*.xml");
+        final List<Resource> resources = loadResources("classpath:/tloik/ims/datex2/3.5/*.xml");
         log.info("Found {} DatexII 3.5 messages", resources.size());
         AssertUtil.assertGe(resources.size(), 1);
         final List<Pair<String, String>> datexIIMessages = new ArrayList<>();
@@ -71,7 +71,7 @@ public class DatexII35XmlMarshallerTest extends AbstractServiceTest {
      */
     @Test
     public void allDatesInUtc() throws IOException {
-        final String fromXml = readResourceContent("classpath:lotju/datex2/3.5/GUID50456943.xml");
+        final String fromXml = readResourceContent("classpath:tloik/ims/datex2/3.5/GUID50456943.xml");
         final var object = datexII35XmlMarshaller.convertToObject(null, fromXml);
         final String toXml = datexII35XmlMarshaller.convertToString(object);
 

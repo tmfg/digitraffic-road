@@ -28,10 +28,24 @@ public abstract class WazeAnnouncementDurationConverter {
         return p.restrictions.stream().anyMatch(r -> r.type == Restriction.Type.ROAD_CLOSED);
     }
 
-    public static boolean isActive(final RoadWorkPhase phase) {
-        final var now = Instant.now();
-        return now.isAfter(phase.timeAndDuration.startTime) && (
-                phase.timeAndDuration.endTime == null || now.isBefore(phase.timeAndDuration.endTime));
+    /**
+     * A phase stays relevant until it has ended; a missing end time means it is valid indefinitely.
+     * The start time is deliberately ignored, because CIFS treats every period of disruption as its
+     * own incident and expects planned closures to be published in advance:
+     * "You can use the Waze Partner feed to provide planned and real time road closures. The planned
+     * closures you send to Waze [...] will appear on the Waze app during the actual time of the
+     * closure." Waze schedules them itself from the starttime we send.
+     *
+     * <p>The caller passes the time in so that every decision made about one announcement is made at
+     * the same instant. Reading the clock separately in each check would let a phase end midway
+     * through the conversion, after which the incident type says the road is closed but no phase is
+     * left to publish, and the announcement would be published as a closure as a whole.</p>
+     *
+     * @see <a href="https://developers.google.com/waze/data-feed/road-closure-information">Waze road closure information</a>
+     */
+    public static boolean hasNotEnded(final RoadWorkPhase phase, final Instant now) {
+        final Instant endTime = phase.timeAndDuration.endTime;
+        return endTime == null || now.isBefore(endTime);
     }
 
     public static Pair<String, String> createDuration(final Instant startTime, final Instant endTime) {
@@ -45,10 +59,12 @@ public abstract class WazeAnnouncementDurationConverter {
 
         return Pair.of(starttime, endtime);
     }
-    public static Pair<String, String> getAnnouncementDuration(final TrafficAnnouncement announcement, final Optional<WazeFeedIncidentDto.WazeType> maybeType) {
+    public static Pair<String, String> getAnnouncementDuration(final TrafficAnnouncement announcement,
+                                                               final Optional<WazeFeedIncidentDto.WazeType> maybeType,
+                                                               final Instant now) {
         if(maybeType.isPresent() && maybeType.get() == ROAD_CLOSED_CONSTRUCTION) {
             final Optional<RoadWorkPhase> maybePhase = announcement.roadWorkPhases.stream()
-                    .filter(WazeAnnouncementDurationConverter::isActive)
+                    .filter(phase -> hasNotEnded(phase, now))
                     .filter(WazeAnnouncementDurationConverter::hasRoadClosed).findFirst();
             // get from phases
 

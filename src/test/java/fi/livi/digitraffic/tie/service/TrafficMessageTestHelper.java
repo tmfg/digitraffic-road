@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
+import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsUpdateService;
 import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
@@ -91,12 +91,14 @@ public class TrafficMessageTestHelper {
     @Autowired
     private Datex2Repository datex2Repository;
     @Autowired
+    private DataDatex2SituationRepository dataDatex2SituationRepository;
+    @Autowired
     @Qualifier("imsJaxb2Marshaller")
     private Jaxb2Marshaller imsJaxb2Marshaller;
 
-    @BeforeEach
     public void cleanDb() {
         datex2Repository.deleteAll();
+        dataDatex2SituationRepository.deleteAll();
     }
 
     public ImsUpdateService getImsUpdateService() {

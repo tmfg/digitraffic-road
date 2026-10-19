@@ -2,7 +2,9 @@ package fi.livi.digitraffic.tie.service.data;
 
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
 import fi.livi.digitraffic.tie.model.data.SituationMqttMessage;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -23,7 +25,8 @@ public class MqttService {
 
     @Transactional(readOnly = true)
     public Pair<Instant, List<SituationMqttMessage>> findMessagesAfter(final Instant lastUpdated) {
-        final var messages = dataDatex2SituationRepository.findMessagesForMqtt(lastUpdated);
+        final var messages = dataDatex2SituationRepository.findMessagesForMqtt(lastUpdated,
+            MessageTypeEnum.SIMPPELI.value(), DatexIIService.MAX_SIMPPELI_VERSION);
 
         // messages are sorted with latest first
         final Instant latestCreated = messages.isEmpty() ? null : messages.getFirst().getModifiedAt();

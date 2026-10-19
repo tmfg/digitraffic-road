@@ -20,7 +20,6 @@ import jakarta.validation.constraints.NotNull;
     "version",
     "releaseTime",
     "versionTime",
-    "locationToDisplay",
     "announcements",
     "contact"
 })

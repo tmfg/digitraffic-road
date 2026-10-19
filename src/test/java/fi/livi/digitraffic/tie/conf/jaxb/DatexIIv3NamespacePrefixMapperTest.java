@@ -22,6 +22,16 @@ public class DatexIIv3NamespacePrefixMapperTest {
         validateMapperAgainstResourceDirSchemas("classpath*:schemas/datex2/tms/3_5/xml/*.xsd");
     }
 
+    @Test
+    public void DatexII_v3_7_Announcements() throws Exception {
+        validateMapperAgainstResourceDirSchemas("classpath*:schemas/datex2/announcements/3_7/*.xsd");
+    }
+
+    @Test
+    public void DatexII_v3_7_Tms() throws Exception {
+        validateMapperAgainstResourceDirSchemas("classpath*:schemas/datex2/tms/3_7/xml/*.xsd");
+    }
+
     private void validateMapperAgainstResourceDirSchemas(final String resourceDir) throws Exception {
         final Map<String, String> namespaces =
                 DatexIINamespaceExtractor.extractNamespaces(resourceDir);

@@ -1,81 +1,78 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<d2LogicalModel modelBaseVersion="2" xmlns="http://datex2.eu/schema/2/2_0">
-    <exchange>
-        <supplierIdentification>
-            <country>fi</country>
-            <nationalIdentifier>FTA</nationalIdentifier>
-        </supplierIdentification>
-    </exchange>
-    <payloadPublication xsi:type="SituationPublication" lang="fi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <publicationTime>2022-02-15T12:15:46.916Z</publicationTime>
-        <publicationCreator>
-            <country>fi</country>
-            <nationalIdentifier>FTA</nationalIdentifier>
-        </publicationCreator>
-        <situation id="GUID50394151" version="61">
-            <headerInformation>
-                <confidentiality>restrictedToAuthoritiesTrafficOperatorsAndPublishers</confidentiality>
-                <informationStatus>real</informationStatus>
-            </headerInformation>
-            <situationRecord xsi:type="RoadOrCarriagewayOrLaneManagement" id="GUID5039508001" version="61">
-                <situationRecordCreationTime>2022-02-09T04:38:30.323Z</situationRecordCreationTime>
-                <situationRecordVersionTime>2022-02-15T12:17:40.180Z</situationRecordVersionTime>
-                <situationRecordFirstSupplierVersionTime>2022-02-15T12:15:46.916Z</situationRecordFirstSupplierVersionTime>
-                <probabilityOfOccurrence>certain</probabilityOfOccurrence>
-                <severity>low</severity>
-                <validity>
-                    <validityStatus>active</validityStatus>
-                    <validityTimeSpecification>
-                        <overallStartTime>2022-02-15T12:16:00.000Z</overallStartTime>
-                    </validityTimeSpecification>
-                </validity>
-                <generalPublicComment>
-                    <comment>
-                        <values>
-                            <value lang="fi">Tie 816, Hailuoto, Oulu. Liikennetiedote. Tilanne muuttunut.
+<d2:payload xsi:type="sit:SituationPublication" lang="fi" xmlns:com="http://datex2.eu/schema/3/common"
+            xmlns:loc="http://datex2.eu/schema/3/locationReferencing"
+            xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" xmlns:fst="http://datex2.eu/schema/3/faultAndStatus"
+            xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" xmlns:prk="http://datex2.eu/schema/3/parking"
+            xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:ubx="http://datex2.eu/schema/3/urbanExtensions"
+            xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:d2="http://datex2.eu/schema/3/d2Payload"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan"
+            xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:vms="http://datex2.eu/schema/3/vms"
+            xmlns:rer="http://datex2.eu/schema/3/reroutingManagementEnhanced"
+            xmlns:sit="http://datex2.eu/schema/3/situation">
+    <com:publicationTime>2026-03-19T10:23:46.545Z</com:publicationTime>
+    <com:publicationCreator>
+        <com:country>FI</com:country>
+        <com:nationalIdentifier>FTA</com:nationalIdentifier>
+    </com:publicationCreator>
+    <sit:situation id="GUID50460693">
+        <sit:headerInformation>
+            <com:confidentiality>restrictedToAuthoritiesAndTrafficOperators</com:confidentiality>
+            <com:informationStatus>real</com:informationStatus>
+        </sit:headerInformation>
+        <sit:situationRecord xsi:type="sit:RoadOrCarriagewayOrLaneManagement" id="GUID5046340701" version="17">
+            <sit:situationRecordCreationTime>2026-02-02T15:19:46.342Z</sit:situationRecordCreationTime>
+            <sit:situationRecordVersionTime>2026-03-19T10:23:45.963Z</sit:situationRecordVersionTime>
+            <sit:situationRecordFirstSupplierVersionTime>2026-02-02T15:19:46.342Z
+            </sit:situationRecordFirstSupplierVersionTime>
+            <sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence>
+            <sit:severity>high</sit:severity>
+            <sit:validity>
+                <com:validityStatus>definedByValidityTimeSpec</com:validityStatus>
+                <com:validityTimeSpecification>
+                    <com:overallStartTime>2026-03-19T10:00:00.000Z</com:overallStartTime>
+                    <com:overallEndTime>2026-03-23T11:00:00.000Z</com:overallEndTime>
+                </com:validityTimeSpecification>
+            </sit:validity>
+            <sit:generalPublicComment>
+                <sit:comment>
+                    <com:values>
+                        <com:value lang="fi">Tie 5075, eli Tolkintie, Lieksa. Liikennetiedote. Tilanne muuttunut.
 
-                                Tie 816 välillä Kempele - Hailuoto.
-                                Tarkempi paikka: Välillä Riutunkari-Hailuodon lautta, Oulu - Huikun lauttalaituri, Hailuoto.
+                            Tie 5075, eli Tolkintie, Lieksa.
+                            Tarkempi paikka: laivalaituri. Koli - Vuonislahti jäätie.
 
-                                Jäätie suljettu.
+                            Jäätie suljettu.
 
-                                Ajankohta: 15.02.2022 klo 14:16 alkaen toistaiseksi.
+                            Ajankohta: 19.03.2026 klo 12:00.
 
-                                Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+                            Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
 
-                                Fintraffic Tieliikennekeskus Oulu
-                                Puh: 02002100
-                                Sähköposti: oulu.liikennekeskus@fintraffic.fi
-                            </value>
-                        </values>
-                    </comment>
-                </generalPublicComment>
-                <groupOfLocations xsi:type="Linear">
-                    <alertCLinear xsi:type="AlertCMethod2Linear">
-                        <alertCLocationCountryCode>6</alertCLocationCountryCode>
-                        <alertCLocationTableNumber>17</alertCLocationTableNumber>
-                        <alertCLocationTableVersion>1.11.42</alertCLocationTableVersion>
-                        <alertCDirection>
-                            <alertCDirectionCoded>unknown</alertCDirectionCoded>
-                        </alertCDirection>
-                        <alertCMethod2PrimaryPointLocation>
-                            <alertCLocation>
-                                <specificLocation>9991</specificLocation>
-                            </alertCLocation>
-                        </alertCMethod2PrimaryPointLocation>
-                        <alertCMethod2SecondaryPointLocation>
-                            <alertCLocation>
-                                <specificLocation>9993</specificLocation>
-                            </alertCLocation>
-                        </alertCMethod2SecondaryPointLocation>
-                    </alertCLinear>
-                </groupOfLocations>
-                <complianceOption>mandatory</complianceOption>
-                <roadOrCarriagewayOrLaneManagementType>other</roadOrCarriagewayOrLaneManagementType>
-                <roadOrCarriagewayOrLaneManagementExtension>
-                    <roadOrCarriagewayOrLaneManagementType>iceRoadClosed</roadOrCarriagewayOrLaneManagementType>
-                </roadOrCarriagewayOrLaneManagementExtension>
-            </situationRecord>
-        </situation>
-    </payloadPublication>
-</d2LogicalModel>
+                            Fintraffic Tieliikennekeskus Tampere
+                            Puh: 02002100
+                            Sähköposti: tampere.liikennekeskus@fintraffic.fi
+                        </com:value>
+                    </com:values>
+                </sit:comment>
+            </sit:generalPublicComment>
+            <sit:locationReference xsi:type="loc:PointLocation">
+                <loc:alertCPoint xsi:type="loc:AlertCMethod2Point">
+                    <loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode>
+                    <loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber>
+                    <loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion>
+                    <loc:alertCDirection>
+                        <loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded>
+                        <loc:alertCAffectedDirection>unknown</loc:alertCAffectedDirection>
+                    </loc:alertCDirection>
+                    <loc:alertCMethod2PrimaryPointLocation>
+                        <loc:alertCLocation>
+                            <loc:specificLocation>20722</loc:specificLocation>
+                        </loc:alertCLocation>
+                    </loc:alertCMethod2PrimaryPointLocation>
+                </loc:alertCPoint>
+            </sit:locationReference>
+            <sit:complianceOption>mandatory</sit:complianceOption>
+            <sit:roadOrCarriagewayOrLaneManagementType>other</sit:roadOrCarriagewayOrLaneManagementType>
+        </sit:situationRecord>
+    </sit:situation>
+</d2:payload>

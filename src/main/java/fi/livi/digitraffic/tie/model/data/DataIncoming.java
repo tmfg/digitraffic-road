@@ -6,8 +6,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
 
 import static fi.livi.digitraffic.tie.model.data.IncomingDataTypes.IMS_122;
@@ -15,6 +15,13 @@ import static fi.livi.digitraffic.tie.model.data.IncomingDataTypes.IMS_122;
 @Entity
 @DynamicUpdate
 public class DataIncoming {
+    /**
+     * Upper bound for the stored reason. Database errors run to several hundred characters and
+     * parse errors include a part of the message itself, so the limit is only here to stop an
+     * unbounded error text from being stored.
+     */
+    private static final int FAILURE_REASON_MAX_LENGTH = 4000;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dataId;
@@ -35,6 +42,9 @@ public class DataIncoming {
     @Enumerated(EnumType.STRING)
     private IncomingDataTypes.DataStatus status;
 
+    /// Why processing failed. Null while the status is NEW or PROCESSED.
+    private String failureReason;
+
     protected DataIncoming(final String messageId, final String version, final IncomingDataTypes.DataType type, final String data) {
         this.messageId = messageId;
         this.version = version;
@@ -51,16 +61,36 @@ public class DataIncoming {
     protected DataIncoming() {
     }
 
-    public void setFailed() {
+    /**
+     * Marks the message as failed and records why, so the row can be found and understood
+     * without digging through application logs.
+     *
+     * @param failureReason human readable reason, truncated to fit the column
+     */
+    public void markFailed(final String failureReason) {
         this.status = IncomingDataTypes.DataStatus.FAILED;
+        this.failureReason = StringUtils.abbreviate(failureReason, FAILURE_REASON_MAX_LENGTH);
     }
 
-    public void setProcessed() {
+    /**
+     * Marks the message as handled. Any reason left over from an earlier failed attempt is
+     * cleared, so a processed row never carries a stale explanation.
+     */
+    public void markProcessed() {
         this.status = IncomingDataTypes.DataStatus.PROCESSED;
+        this.failureReason = null;
     }
 
     public IncomingDataTypes.DataStatus getStatus() {
         return status;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public String getMessageId() {
+        return messageId;
     }
 
     public String getVersion() {

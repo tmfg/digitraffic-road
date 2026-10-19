@@ -1,17 +1,10 @@
 package fi.livi.digitraffic.tie.service.jms;
 
-import static fi.livi.digitraffic.common.util.TimeUtil.withoutMillis;
-import static fi.livi.digitraffic.test.util.AssertUtil.assertCollectionSize;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomString;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQTextMessage;
 import org.junit.jupiter.api.Assertions;
@@ -24,26 +17,19 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.data.DataIncomingRepository;
-import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationRecord;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
+import fi.livi.digitraffic.tie.model.data.IncomingDataTypes;
 import fi.livi.digitraffic.tie.service.TrafficMessageTestHelper;
+import fi.livi.digitraffic.tie.service.data.DataUpdatingService;
 import fi.livi.digitraffic.tie.service.jms.marshaller.ImsJMSMessageMarshaller;
-import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 import jakarta.jms.JMSException;
 
 public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
     @Autowired
-    private Datex2Repository datex2Repository;
+    private DataIncomingRepository dataIncomingRepository;
 
     @Autowired
-    private DataIncomingRepository dataIncomingRepository;
+    private DataUpdatingService dataUpdatingService;
 
     @Autowired
     @Qualifier("imsJaxb2Marshaller")
@@ -55,81 +41,52 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     @BeforeEach
     public void cleanDbAndInit() {
         dataIncomingRepository.deleteAll();
-        datex2Repository.deleteAll();
     }
 
+    /**
+     * Every message is persisted, including one with an unknown type. Deciding whether the content
+     * is usable is left to the processing stage, which records the reason on the row.
+     *
+     * <p>The type is stored with the spelling it arrived with, because the generated enum constants
+     * are named after the schema values. A type that is not in the schema is stored as null.</p>
+     */
     @ParameterizedTest
-    @CsvSource(value = {"DATEX2:3.5:1", "DATEX2:2.3:1", "DATEX2:1.1:1", "DATEX:3.5:0"}, delimiter = ':')
-    public void handeDatex2(final String messageType, final String version, final int expectedCount) throws IOException {
+    @CsvSource(value = {"DATEX2:3.5:DATEX2", "DATEX2:2.3:DATEX2", "DATEX2:1.1:DATEX2", "DATEX:3.5:"}, delimiter = ':')
+    public void handeDatex2(final String messageType, final String version, final String storedType) throws IOException {
         final JMSMessageHandler<ExternalIMSMessage> imsJMSMessageHandler = createImsJMSMessageHandler();
 
         sendJmsMessage(imsJMSMessageHandler, messageType, version);
-        checkIncomingData("50003469", expectedCount);
+
+        final var stored = dataIncomingRepository.findByMessageId("50003469");
+        assertEquals(1, stored.size());
+
+        final String expected = "\"type\":" + (storedType == null ? "null" : "\"" + storedType + "\"")
+                + ",\"version\":\"" + version + "\"";
+        Assertions.assertTrue(stored.getFirst().getData().contains(expected),
+                "Stored message should contain " + expected + ", was: " + stored.getFirst().getData());
     }
 
-    private void checkIncomingData(final String messageId, final long expectedCount) {
-        final var incomingData = dataIncomingRepository.findByMessageId(messageId);
+    /**
+     * A message that cannot be processed is no longer dropped silently. It is kept in the database
+     * and marked FAILED with the reason, so it can be found without digging through application logs.
+     *
+     * <p>The test template carries a single sub-message and no SIMPPELI part, so processing stops at
+     * the missing simple json. The content checks in
+     * {@link fi.livi.digitraffic.tie.service.data.ImsUpdatingService} are covered by
+     * {@link fi.livi.digitraffic.tie.service.data.DataServiceTest}.</p>
+     */
+    @ParameterizedTest
+    @CsvSource(value = {"DATEX", "DATEX2"}, delimiter = ':')
+    public void unprocessableMessageIsKeptAndMarkedFailed(final String messageType) throws IOException {
+        sendJmsMessage(createImsJMSMessageHandler(), messageType, "3.5");
 
-        Assertions.assertEquals(expectedCount, incomingData.size());
-    }
+        dataUpdatingService.handleNewData();
 
-    private void checkActiveSituations(final SituationType type, final String... situationIdsToFind) {
-        final List<Situation> situations = getSituations(
-                Objects.requireNonNull(getV2Datex2DataService().findActive(0, type).getLeft()));
-
-        final List<TrafficAnnouncementFeature> features =
-                getV2Datex2DataService().findActiveJson(0, false, type).getFeatures();
-
-        assertCollectionSize("Situations size won't match for type " + type, situationIdsToFind.length, situations);
-        assertCollectionSize("GeoJSON features size won't match for type " + type, situationIdsToFind.length, features);
-
-        for (final String id : situationIdsToFind) {
-            assertTrue(situations.stream().anyMatch(s -> s.getId().equals(id)),
-                    String.format("Situation %s not found in situations", id));
-            assertTrue(features.stream().anyMatch(f -> f.getProperties().situationId.equals(id)),
-                    String.format("Situation %s not found in features", id));
-        }
-
-        checkDatex2MatchJson(situations, features);
-    }
-
-    private List<Situation> getSituations(final D2LogicalModel d2) {
-        if (d2.getPayloadPublication() == null) {
-            return Collections.emptyList();
-        }
-        final List<Situation> situations = ((SituationPublication) d2.getPayloadPublication()).getSituations();
-        return situations != null ? situations : Collections.emptyList();
-    }
-
-    private void checkDatex2MatchJson(final List<Situation> situations,
-                                      final List<TrafficAnnouncementFeature> features) {
-        // Assert both contains each other
-        for (final Situation s : situations) {
-            assertTrue(features.stream().anyMatch(f -> f.getProperties().situationId.equals(s.getId())),
-                    String.format("Situation %s was not found in features.", s.getId()));
-        }
-        for (final TrafficAnnouncementFeature f : features) {
-            assertTrue(situations.stream().anyMatch(s -> s.getId().equals(f.getProperties().situationId)),
-                    String.format("Feature %s was not found in situations.", f.getProperties().situationId));
-        }
-        // Check Datex2 vs Json content
-        for (final Situation s : situations) {
-            final Optional<TrafficAnnouncementFeature> feature =
-                    features.stream().filter(f -> f.getProperties().situationId.equals(s.getId())).findFirst();
-            assertTrue(feature.isPresent());
-
-            final TrafficAnnouncement announcement = feature.get().getProperties().announcements.getFirst();
-            final SituationRecord situationRecord = s.getSituationRecords().getFirst();
-            final String situationComment =
-                    situationRecord.getGeneralPublicComments().getFirst().getComment().getValues().getValues().getFirst()
-                            .getValue();
-
-            assertTrue(situationComment.contains(announcement.title),
-                    String.format("Feature title \"%s\" should exist in situation comment \"%s\"", announcement.title,
-                            situationComment));
-            assertEquals(withoutMillis(announcement.timeAndDuration.startTime),
-                    withoutMillis(situationRecord.getValidity().getValidityTimeSpecification().getOverallStartTime()));
-        }
+        final var stored = dataIncomingRepository.findByMessageId("50003469");
+        assertEquals(1, stored.size());
+        assertEquals(IncomingDataTypes.DataStatus.FAILED, stored.getFirst().getStatus());
+        Assertions.assertTrue(stored.getFirst().getFailureReason().startsWith("No Simple-json found"),
+                "Failure reason should be stored, was: " + stored.getFirst().getFailureReason());
     }
 
     private JMSMessageHandler<ExternalIMSMessage> createImsJMSMessageHandler() {
@@ -154,9 +111,5 @@ public class ImsJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
         } catch (final JMSException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private TrafficMessageDataServiceV1 getV2Datex2DataService() {
-        return trafficMessageTestHelper.getTrafficMessageDataServiceV1();
     }
 }

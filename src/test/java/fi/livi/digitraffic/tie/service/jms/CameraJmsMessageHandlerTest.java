@@ -20,11 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQBytesMessage;
 import org.apache.commons.io.FileUtils;
@@ -62,7 +62,11 @@ import jakarta.jms.JMSException;
 import jakarta.persistence.EntityManager;
 
 @TestPropertySource(properties = {
-        "metadata.server.addresses=http://localhost:8898" // Overlaps with another test port
+        "metadata.server.addresses=http://localhost:8898", // Overlaps with another test port
+        // The production 1 s connect timeout is far too tight against the embedded WireMock when the
+        // machine is loaded: a single slow TCP accept exhausts the retries, the image transfer is marked
+        // failed and the preset's pictureLastModified is left untouched. Give the local stub ample headroom.
+        "camera-image-uploader.http.connectTimeout=5000"
 })
 public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
     private static final Logger log = LoggerFactory.getLogger(CameraJmsMessageHandlerTest.class);
@@ -103,6 +107,9 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
     private final int stationsCount = 50;
     private final int presetsPerStationCount = 5;
+
+    /** Counts how many weathercam images the data updater reported as successfully updated. */
+    private final AtomicInteger totalUpdatedCount = new AtomicInteger();
 
     @BeforeEach
     public void initData() throws IOException {
@@ -186,7 +193,7 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
 
                 final String key = preset.getPresetId() + ".jpg";
                 final String versionKey = preset.getPresetId() + "-versions.jpg";
-                final String versionId = preset.getPresetId() + "-version-" + RandomStringUtils.insecure().next(10);
+                final String versionId = preset.getPresetId() + "-version-" + RandomStringUtils.insecure().nextAlphanumeric(10);
 
                 mockS3PutImageVersion(versionKey, versionId);
                 mockS3GetObjectWithImageKey(kuva, key);
@@ -206,6 +213,11 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
             final StopWatch drain = StopWatch.createStarted();
             cameraJmsMessageListener.drainQueueScheduled();
             handleDataTotalTime += drain.getDuration().toMillis();
+
+            // Fail here rather than later on a confusing pictureLastModified mismatch: a failed image
+            // transfer leaves the preset untouched, but the mocked S3 read still returns the image.
+            assertEquals(jmsKuvaMessages.size(), totalUpdatedCount.get(),
+                    "Image update failed for some presets, see preceding ERROR log for the cause");
 
             // send data with 1 s intervall
             final long sleep = 1000 - generation;
@@ -263,8 +275,8 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
         when(s3Service.readImage(anyString(), eq(key), isNull())).thenReturn(new S3Service.S3ImageObject(imageData, Instant.now(), key, null));
     }
 
-    private void mockS3PutImageVersion(final String versionId, final String versionKey) {
-        when(s3Service.putImage(anyString(), eq(versionId), anyLong(), isA(byte[].class))).thenReturn(versionKey);
+    private void mockS3PutImageVersion(final String versionKey, final String versionId) {
+        when(s3Service.putImage(anyString(), eq(versionKey), anyLong(), isA(byte[].class))).thenReturn(versionId);
     }
 
     private static KuvaProtos.Kuva createKuvaMessage(final CameraPreset preset, final Instant time) {
@@ -310,6 +322,7 @@ public class CameraJmsMessageHandlerTest extends AbstractJMSMessageHandlerTest {
             }
             TestTransaction.flagForCommit();
             TestTransaction.end();
+            totalUpdatedCount.addAndGet(updated);
             log.info("handleData tookMs={}", start.getDuration().toMillis());
             return updated;
         };

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<d2:payload xmlns:d2="http://datex2.eu/schema/3/d2Payload" xmlns:com="http://datex2.eu/schema/3/common"
+            xmlns:loc="http://datex2.eu/schema/3/locationReferencing"
+            xmlns:sit="http://datex2.eu/schema/3/situation"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="fi" xsi:type="sit:SituationPublication">
+    <com:publicationTime>2025-11-27T06:24:59.805Z</com:publicationTime>
+    <com:publicationCreator>
+        <com:country>FI</com:country>
+        <com:nationalIdentifier>FTA</com:nationalIdentifier>
+    </com:publicationCreator>
+    <sit:situation id="GUID50456943">
+        <sit:headerInformation>
+            <com:confidentiality>restrictedToAuthoritiesAndTrafficOperators</com:confidentiality>
+            <com:informationStatus>real</com:informationStatus>
+        </sit:headerInformation>
+        <sit:situationRecord id="GUID5046133001" version="1" xsi:type="sit:TransitInformation">
+            <sit:situationRecordCreationTime>2025-11-27T06:24:59.094Z</sit:situationRecordCreationTime>
+            <sit:situationRecordVersionTime>2025-11-27T06:24:59.065Z</sit:situationRecordVersionTime>
+            <sit:situationRecordFirstSupplierVersionTime>2025-11-27T06:24:59.094Z
+            </sit:situationRecordFirstSupplierVersionTime>
+            <sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence>
+            <sit:severity>high</sit:severity>
+            <sit:validity>
+                <com:validityStatus>definedByValidityTimeSpec</com:validityStatus>
+                <com:validityTimeSpecification>
+                    <com:overallStartTime>2025-11-27T07:20:00.000Z</com:overallStartTime>
+                    <com:overallEndTime>2025-11-27T07:50:00.000Z</com:overallEndTime>
+                </com:validityTimeSpecification>
+            </sit:validity>
+            <sit:generalPublicComment>
+                <sit:comment>
+                    <com:values>
+                        <com:value lang="fi">Tie 15358, eli Pihlajaniementie, Savonlinna. Liikennetiedote.s
+
+                            Tie 15358, eli Pihlajaniementie, Savonlinna.
+                            Tarkempi paikka: Koivukannan lossi.s
+
+                            Lauttaliikenne keskeytetään puutavaran uiton vuoksi.s
+
+                            Ajankohta: 27.11.2025 klo 09:20 - 09:50.
+
+                            Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                            Fintraffic Tieliikennekeskus Tampere
+                            Puh: 02002100
+                            Sähköposti: tampere.liikennekeskus@fintraffic.fi
+                        </com:value>
+                    </com:values>
+                </sit:comment>
+            </sit:generalPublicComment>
+            <sit:locationReference xsi:type="loc:PointLocation">
+                <loc:alertCPoint xsi:type="loc:AlertCMethod2Point">
+                    <loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode>
+                    <loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber>
+                    <loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion>
+                    <loc:alertCDirection>
+                        <loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded>
+                        <loc:alertCAffectedDirection>unknown</loc:alertCAffectedDirection>
+                    </loc:alertCDirection>
+                    <loc:alertCMethod2PrimaryPointLocation>
+                        <loc:alertCLocation>
+                            <loc:specificLocation>36973</loc:specificLocation>
+                        </loc:alertCLocation>
+                    </loc:alertCMethod2PrimaryPointLocation>
+                </loc:alertCPoint>
+            </sit:locationReference>
+            <sit:transitServiceInformation>delaysDueToFlotsam</sit:transitServiceInformation>
+            <sit:transitServiceType>ferry</sit:transitServiceType>
+        </sit:situationRecord>
+    </sit:situation>
+</d2:payload>

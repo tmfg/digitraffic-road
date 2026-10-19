@@ -219,21 +219,21 @@ public class DatexIIService {
     private Pair<D2LogicalModel, Instant> findDatexII223(final SituationType situationType, final Instant fromParameter, final Instant toParameter) {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
-        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, null, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version);
+        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, null, MessageTypeEnum.DATEX2.value(), Datex2Version.V_2_2_3.version);
         return toDatexII223Publication(messages, getTypeLastModified(situationType, messages));
     }
 
     private Pair<SituationPublication, Instant> findDatexII35(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
-        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version);
+        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX2.value(), Datex2Version.V_3_5.version);
         return toDatexII35Publication(messages, getTypeLastModified(situationType, messages));
     }
 
     private Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findDatexII37(final SituationType situationType, final Instant fromParameter, final Instant toParameter, final Polygon bbox) {
         final var from = firstNonNull(fromParameter, defaultFrom());
         final var to = firstNonNull(toParameter, TIME_END);
-        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version);
+        final var messages = dataDatex2SituationRepository.findMessagesByType(situationType.name(), from, to, bbox, MessageTypeEnum.DATEX2.value(), Datex2Version.V_3_7.version);
         return toDatexII37Publication(messages, getTypeLastModified(situationType, messages));
     }
 
@@ -319,7 +319,7 @@ public class DatexIIService {
         final var features = messages.stream()
                 .map(m -> {
                     try {
-                        return messageConverter.convertToFeature(m.getMessage(), includeAreaGeometry);
+                        return messageConverter.convertToFeature(m.getMessage(), includeAreaGeometry, m.getModifiedAt());
                     } catch (final Exception e) {
                         log.error("method=convertSimppeli Failed to convert message id={}", m.getMessageId(), e);
                         return null;
@@ -337,8 +337,8 @@ public class DatexIIService {
     @Transactional(readOnly = true)
     public Pair<D2LogicalModel, Instant> findDatexII223Situations(final String situationId, final boolean latestOnly) {
         final var messages = latestOnly
-                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version)
-                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_2_2_3.version);
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX2.value(), Datex2Version.V_2_2_3.version)
+                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX2.value(), Datex2Version.V_2_2_3.version);
 
         if (messages.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
@@ -356,8 +356,8 @@ public class DatexIIService {
     @Transactional(readOnly = true)
     public Pair<SituationPublication, Instant> findDatexII35Situations(final String situationId, final boolean latestOnly) {
         final var messages = latestOnly
-                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version)
-                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_5.version);
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX2.value(), Datex2Version.V_3_5.version)
+                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX2.value(), Datex2Version.V_3_5.version);
 
         if (messages.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);
@@ -369,8 +369,8 @@ public class DatexIIService {
     @Transactional(readOnly = true)
     public Pair<fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication, Instant> findDatexII37Situations(final String situationId, final boolean latestOnly) {
         final var messages = latestOnly
-                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version)
-                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX_2.value(), Datex2Version.V_3_7.version);
+                ? dataDatex2SituationRepository.findLatestMessagesBySituationId(situationId, MessageTypeEnum.DATEX2.value(), Datex2Version.V_3_7.version)
+                : dataDatex2SituationRepository.findAllMessagesBySituationId(situationId, MessageTypeEnum.DATEX2.value(), Datex2Version.V_3_7.version);
 
         if (messages.isEmpty()) {
             throw new ObjectNotFoundException("Traffic message", situationId);

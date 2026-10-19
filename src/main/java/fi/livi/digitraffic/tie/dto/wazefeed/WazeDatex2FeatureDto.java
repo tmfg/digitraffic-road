@@ -1,17 +1,25 @@
 package fi.livi.digitraffic.tie.dto.wazefeed;
 
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
+import fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication;
+import fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType;
 import fi.livi.digitraffic.tie.dto.trafficmessage.v1.TrafficAnnouncementFeature;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2;
 
 public class WazeDatex2FeatureDto {
-    public final Datex2 datex2;
-    public final D2LogicalModel d2LogicalModel;
+    public final String situationId;
+    public final SituationType situationType;
+    public final String datex2Message;
+    public final SituationPublication situationPublication;
     public final TrafficAnnouncementFeature feature;
 
-    public WazeDatex2FeatureDto(final Datex2 datex2, final D2LogicalModel d2LogicalModel, final TrafficAnnouncementFeature feature) {
-        this.datex2 = datex2;
-        this.d2LogicalModel = d2LogicalModel;
+    public WazeDatex2FeatureDto(final String situationId,
+                                final SituationType situationType,
+                                final String datex2Message,
+                                final SituationPublication situationPublication,
+                                final TrafficAnnouncementFeature feature) {
+        this.situationId = situationId;
+        this.situationType = situationType;
+        this.datex2Message = datex2Message;
+        this.situationPublication = situationPublication;
         this.feature = feature;
     }
 }

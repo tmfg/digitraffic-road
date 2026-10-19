@@ -77,4 +77,12 @@ public class DataDatex2Situation {
     public TrafficAnnouncementProperties.SituationType getSituationType() {
         return situationType;
     }
+
+    public String getSituationId() {
+        return situationId;
+    }
+
+    public long getSituationVersion() {
+        return situationVersion;
+    }
 }

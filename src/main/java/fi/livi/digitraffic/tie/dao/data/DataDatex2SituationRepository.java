@@ -5,6 +5,7 @@ import java.util.List;
 
 import fi.livi.digitraffic.tie.model.data.MessageAndModified;
 
+import fi.livi.digitraffic.tie.model.data.SituationMessage;
 import fi.livi.digitraffic.tie.model.data.SituationMqttMessage;
 
 import org.locationtech.jts.geom.Geometry;
@@ -16,7 +17,6 @@ import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
 
 @Repository
 public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2Situation, Long> {
-
 
     /**
      * Returns messages of the given type (and optionally version) for the latest situation version
@@ -167,6 +167,51 @@ public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2S
           semver_array(m.message_version) desc""", nativeQuery = true)
     List<MessageAndModified> findLatestMessagesBySituationIdUpToVersion(final String situationId, final String messageType, final String maxMessageVersion);
 
+
+    /**
+     * Returns the messages needed to build a paired view of each active situation: one SIMPPELI message
+     * and one DATEX2 3.7 message per situation. Only the latest situation version is considered.
+     *
+     * <p>The message type and version values are resolved with SpEL directly from
+     * {@link fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum} and
+     * {@link fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version}, so they stay in sync
+     * with the values written by {@code ImsUpdatingService}. See
+     * {@link fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage} for why the type must be
+     * read with {@code value()} and not {@code name()}.</p>
+     *
+     * <p>A situation is commonly stored with several SIMPPELI versions (e.g. 0.2.17 and 0.2.18), all
+     * written in the same transaction and therefore sharing an identical {@code modified_at}. Ordering by
+     * time alone would be a tie and the caller would pick a version at random, so the rows are ordered by
+     * {@code semver_array(message_version) desc} and bounded with {@code semver_lte} — the same convention
+     * the Simppeli REST and MQTT queries use. The caller keeps the first row per message type, which is
+     * then deterministically the newest allowed version.</p>
+     *
+     * @param situationTypes      situation types to include, e.g. "TRAFFIC_ANNOUNCEMENT", "ROAD_WORK"; never empty
+     * @param from                start of the active time window (inclusive); never null
+     * @param to                  end of the active time window (exclusive); never null
+     * @param maxSimppeliVersion  maximum allowed SIMPPELI version (inclusive), e.g. "0.2.18"; never null
+     */
+    @Query(value = """
+        select s.situation_id, s.situation_type, m.message_type, m.message_version, m.message, m.modified_at
+        from data_datex2_situation_message m
+        inner join data_datex2_situation s on s.datex2_id = m.datex2_id
+        where s.situation_type in (:situationTypes)
+          and s.is_latest_version = true
+          and (
+              (s.end_time is null and s.start_time < :to) or
+              (s.end_time is not null and s.end_time > :from and s.start_time < :to)
+          )
+          and (
+              (m.message_type = :#{T(fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum).SIMPPELI.value()} and
+               semver_lte(m.message_version, :maxSimppeliVersion)) or
+              (m.message_type = :#{T(fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum).DATEX2.value()} and
+               m.message_version = :#{T(fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version).V_3_7.version})
+          )
+        order by s.situation_id, m.message_type, semver_array(m.message_version) desc
+        """, nativeQuery = true)
+    List<SituationMessage> findActiveSituationMessages(final List<String> situationTypes, final Instant from, final Instant to,
+                                                       final String maxSimppeliVersion);
+
     // is_latest_version = true ensures only the latest row per situation_id is considered,
     // then the time filter is applied to that latest row only (fixes the filter-before-distinct bug)
     @Query(value = """
@@ -208,12 +253,40 @@ public interface DataDatex2SituationRepository extends JpaRepository<DataDatex2S
         order by publication_time desc""", nativeQuery = true)
     List<MessageAndModified> findTrafficDataMessagesBySituationId(final String situationId);
 
+    /**
+     * Returns messages modified after {@code lastUpdated} for MQTT publishing.
+     *
+     * <p>SIMPPELI messages are deduplicated so that only the newest version up to
+     * {@code maxSimppeliVersion} is returned per situation, because every SIMPPELI version maps to the
+     * same MQTT topic and would otherwise be published twice. DATEX2 messages are published to
+     * version-specific topics, so all supported versions are returned as-is.</p>
+     *
+     * @param lastUpdated        return only messages modified after this instant; never null
+     * @param simppeliType       SIMPPELI message type value; never null
+     * @param maxSimppeliVersion maximum allowed SIMPPELI version (inclusive), e.g. "0.2.18"; never null
+     */
     @Query(value = """
-    select message, m.modified_at, situation_type, message_type, message_version
-    from data_datex2_situation_message m
-    left join data_datex2_situation on m.datex2_id = data_datex2_situation.datex2_id
-    where m.modified_at > :lastUpdated
-    order by m.modified_at desc
+    select message, modified_at, situation_type, message_type, message_version
+    from (
+        select m.message, m.modified_at, s.situation_type, m.message_type, m.message_version
+        from data_datex2_situation_message m
+        left join data_datex2_situation s on s.datex2_id = m.datex2_id
+        where m.modified_at > :lastUpdated
+          and m.message_type <> :simppeliType
+        union all
+        (
+            select distinct on (m.datex2_id)
+                   m.message, m.modified_at, s.situation_type, m.message_type, m.message_version
+            from data_datex2_situation_message m
+            left join data_datex2_situation s on s.datex2_id = m.datex2_id
+            where m.modified_at > :lastUpdated
+              and m.message_type = :simppeliType
+              and semver_lte(m.message_version, :maxSimppeliVersion)
+            order by m.datex2_id, semver_array(m.message_version) desc
+        )
+    ) all_messages
+    order by modified_at desc
 """, nativeQuery = true)
-    List<SituationMqttMessage> findMessagesForMqtt(final Instant lastUpdated);
+    List<SituationMqttMessage> findMessagesForMqtt(final Instant lastUpdated, final String simppeliType,
+                                                   final String maxSimppeliVersion);
 }

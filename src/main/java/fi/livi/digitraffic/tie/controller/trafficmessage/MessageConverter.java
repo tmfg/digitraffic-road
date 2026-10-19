@@ -2,6 +2,8 @@ package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import fi.livi.digitraffic.tie.dto.trafficmessage.v2.TrafficAnnouncement;
 
+import java.time.Instant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,11 +26,21 @@ public class MessageConverter {
         this.featureReader = this.objectMapper.readerFor(TrafficAnnouncementFeature.class);
     }
 
-    public TrafficAnnouncementFeature convertToFeature(final String message, final boolean includeAreaGeometry) throws JacksonException {
+    /**
+     * The stored message does not carry an update timestamp, so it is taken from the database row
+     * the message was read from. Without it the documented and required {@code dataUpdatedTime}
+     * would always be null.
+     */
+    public TrafficAnnouncementFeature convertToFeature(final String message, final boolean includeAreaGeometry,
+                                                       final Instant modifiedAt) throws JacksonException {
         final TrafficAnnouncementFeature feature = featureReader.readValue(message);
 
         if (!includeAreaGeometry && hasAnyAreaGeometries(feature)) {
             feature.setGeometry(null);
+        }
+
+        if (feature.getProperties() != null) {
+            feature.getProperties().setLastModified(modifiedAt);
         }
 
         return feature;

@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +39,8 @@ import fi.livi.digitraffic.tie.service.data.DataUpdatingService;
  *       │  Jackson deserialize: JSON  →  ImsMessage
  *       │  Extract per-message content strings:
  *       │    • SIMPPELI  → content is a JSON string  (ImsGeoJsonFeature / SIMPPELI schema)
- *       │    • DATEX_2   → content is an XML string  (Datex II 2.2.3 / 3.5 / 3.7)
+ *       │    • DATEX2    → content is an XML string  (Datex II 2.2.3 / 3.5 / 3.7)
  *       │  Persist DataDatex2Situation + DataDatex2SituationMessage rows
- *       │  If DATEX_2 v2.2.3 present → also update legacy Datex II 2.2.3 tables
  *       ▼
  *  Done
  * </pre>
@@ -56,8 +54,8 @@ import fi.livi.digitraffic.tie.service.data.DataUpdatingService;
  *   "messageId": 12345,
  *   "messageContent": {
  *     "messages": [
- *       { "type": "DATEX_2",  "version": "2.2.3",  "content": "&lt;?xml ...&gt;&lt;d2LogicalModel ...&gt;...&lt;/d2LogicalModel&gt;" },
- *       { "type": "DATEX_2",  "version": "3.5",    "content": "&lt;?xml ...&gt;&lt;d2:payload ...&gt;...&lt;/d2:payload&gt;"    },
+ *       { "type": "DATEX2",   "version": "2.2.3",  "content": "&lt;?xml ...&gt;&lt;d2LogicalModel ...&gt;...&lt;/d2LogicalModel&gt;" },
+ *       { "type": "DATEX2",   "version": "3.5",    "content": "&lt;?xml ...&gt;&lt;d2:payload ...&gt;...&lt;/d2:payload&gt;"    },
  *       { "type": "SIMPPELI", "version": "0.2.17", "content": "{\"geometry\":{...}, \"properties\":{...}}"                      }
  *     ]
  *   }
@@ -112,11 +110,10 @@ public class ImsUpdateService {
                 final var messageAsString = objectMapper.writeValueAsString(imsMessage);
                 final var data = DataIncoming.ims122(String.valueOf(imsMessage.getMessageId()), messageAsString);
 
-                if(validate(imsMessage)) {
-                    dataUpdatingService.insertData(data);
-                } else {
-                    log.error("method=handleTrafficDatex2ImsMessage invalid ims {}", messageAsString);
-                }
+                // Everything is persisted, including unusable content. The processing stage validates
+                // the sub-messages and records the reason on the row, so a broken message can be found
+                // in the database instead of only in the logs.
+                dataUpdatingService.insertData(data);
             } catch (final JacksonException e) {
                 throw new RuntimeException(e);
             }
@@ -125,18 +122,5 @@ public class ImsUpdateService {
         }).sum();
         log.info("method=handleTrafficDatex2ImsMessages updateCount={} tookMs={}", newAndUpdated, sw.getDuration().toMillis());
         return newAndUpdated;
-    }
-
-    /**
-     * Validates that every sub-message inside the IMS envelope has a non-blank
-     * {@code content} string, a non-null {@code type}, and a non-null {@code version}.
-     *
-     * <p>These are the minimum fields required by the downstream
-     * {@link fi.livi.digitraffic.tie.service.data.ImsUpdatingService} to route and
-     * parse each sub-message (SIMPPELI JSON or DATEX_2 XML).</p>
-     */
-    private boolean validate(final ExternalIMSMessage imsMessage) {
-        return imsMessage.getMessageContent().getMessages().stream()
-                .noneMatch(m -> StringUtils.isBlank(m.getContent()) || m.getType() == null || m.getVersion() == null);
     }
 }

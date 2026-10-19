@@ -5,6 +5,7 @@ import static fi.livi.digitraffic.tie.model.data.IncomingDataTypes.IMS_122;
 import java.time.Instant;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ import tools.jackson.databind.json.JsonMapper;
  * <table border="1">
  *   <tr><th>type</th><th>content format</th><th>example version</th></tr>
  *   <tr><td>SIMPPELI</td><td>JSON string – {@link ImsGeoJsonFeature} (GeoJSON Feature with traffic announcement properties)</td><td>0.2.x</td></tr>
- *   <tr><td>DATEX_2</td><td>XML string – Datex II d2LogicalModel / d2:payload</td><td>2.2.3, 3.5, 3.7</td></tr>
+ *   <tr><td>DATEX2</td><td>XML string – Datex II d2LogicalModel / d2:payload</td><td>2.2.3, 3.5, 3.7</td></tr>
  * </table>
  *
  * <h2>Processing steps</h2>
@@ -51,7 +52,7 @@ import tools.jackson.databind.json.JsonMapper;
  *       and time window → create {@link DataDatex2Situation}.</li>
  *   <li>Iterate all sub-messages; persist each as {@link DataDatex2SituationMessage}
  *       (stores the raw content string together with type and version).</li>
- *   <li>If a {@code DATEX_2 v2.2.3} sub-message is present, also forward it together
+ *   <li>If a {@code DATEX2 v2.2.3} sub-message is present, also forward it together
  *       with the SIMPPELI content to {@link DatexII223UpdateService} to maintain
  *       backwards-compatible legacy Datex II 2.2.3 tables.</li>
  * </ol>
@@ -63,17 +64,23 @@ import tools.jackson.databind.json.JsonMapper;
  */
 @Service
 public class ImsUpdatingService {
-    private final DatexII223UpdateService datexII223UpdateService;
+    /// The source has been seen to send this text in place of a message, see {@link #validateContent}.
+    private static final String NULL_CONTENT = "null";
+
+    private static final int CONTENT_LOG_MAX_LENGTH = 200;
+
     private final DataDatex2SituationRepository dataDatex2SituationRepository;
+
+    private final DatexII223UpdateService datexII223UpdateService;
 
     private final ObjectMapper objectMapper = JsonMapper.builder().build();
 
     private static final Logger log = LoggerFactory.getLogger(ImsUpdatingService.class);
 
-    public ImsUpdatingService(final DatexII223UpdateService datexII223UpdateService,
-                              final DataDatex2SituationRepository dataDatex2SituationRepository) {
-        this.datexII223UpdateService = datexII223UpdateService;
+    public ImsUpdatingService(final DataDatex2SituationRepository dataDatex2SituationRepository,
+                              final DatexII223UpdateService datexII223UpdateService) {
         this.dataDatex2SituationRepository = dataDatex2SituationRepository;
+        this.datexII223UpdateService = datexII223UpdateService;
     }
 
     /**
@@ -100,7 +107,7 @@ public class ImsUpdatingService {
         final var simpleJson = simpleOptional.get();
 
         final var situation = createSituationFromSimple(simpleJson);
-        handleDatexMessages(situation, message.getMessageContent());
+        handleDatexMessages(data, situation, message.getMessageContent());
 
         dataDatex2SituationRepository.save(situation);
     }
@@ -110,25 +117,32 @@ public class ImsUpdatingService {
      * and, if a Datex II 2.2.3 XML sub-message is present, also writes it to the legacy tables.
      *
      * <p>Sub-messages are stored with their raw {@code content} string (XML or JSON),
-     * {@code type} (DATEX_2 / SIMPPELI) and {@code version}.  The content is never
-     * re-parsed here – only the routing logic (which legacy table to update) requires
-     * inspecting type and version.</p>
+     * {@code type} (DATEX2 / SIMPPELI) and {@code version}. The content is never re-parsed here –
+     * only the routing logic (which legacy table to update) requires inspecting type and version.</p>
+     *
+     * <p>Every sub-message is checked by {@link #validateContent} before anything is persisted.
+     * An unusable content aborts the whole envelope, which marks the {@link DataIncoming} row
+     * as {@code FAILED} and leaves it in the database for inspection and replay.</p>
+     *
+     * @throws IllegalArgumentException if any sub-message content is unusable
      */
-    private void handleDatexMessages(final DataDatex2Situation situation,
+    private void handleDatexMessages(final DataIncoming data,
+                                     final DataDatex2Situation situation,
                                      final ImsMessage.MessageContent messageContent) {
+        messageContent.getMessages().forEach(m -> validateContent(data, situation, m));
+
         ImsMessage.MessageContent.Message d223Message = null;
         ImsMessage.MessageContent.Message simpleMessage = null;
 
         for (final ImsMessage.MessageContent.Message message : messageContent.getMessages()) {
             if (message.getType() == MessageTypeEnum.SIMPPELI) {
                 simpleMessage = message;
-            } else if (message.getType() == MessageTypeEnum.DATEX_2 &&
+            } else if (message.getType() == MessageTypeEnum.DATEX2 &&
                     message.getVersion().equals(Datex2Version.V_2_2_3.version)) {
                 d223Message = message;
             }
         }
 
-        // add all messages
         messageContent.getMessages().forEach(m -> {
             final DataDatex2SituationMessage message = new DataDatex2SituationMessage(
                     m.getVersion(), m.getType().value(), m.getContent());
@@ -145,12 +159,61 @@ public class ImsUpdatingService {
      * Forwards a Datex II 2.2.3 XML string and the corresponding SIMPPELI GeoJSON string
      * to {@link DatexII223UpdateService} to keep the legacy Datex II 2.2.3 tables in sync.
      *
-     * <p>This is only called when the IMS envelope contains a {@code DATEX_2 v2.2.3}
+     * <p>This is only called when the IMS envelope contains a {@code DATEX2 v2.2.3}
      * sub-message in addition to the mandatory {@code SIMPPELI} sub-message.</p>
      */
     private void handle223(final String d223Message, final String simpleMessage) {
         final var models = datexII223UpdateService.createModels(d223Message, simpleMessage, Instant.now());
         datexII223UpdateService.updateTrafficDatex2Messages(models);
+    }
+
+    /**
+     * Rejects sub-message content that cannot be served later.
+     *
+     * <p>The source has been seen to send the literal four-character text {@code null} in place of a
+     * Datex II message. Such content is not blank, so it passes the sender-side check in
+     * {@link fi.livi.digitraffic.tie.service.trafficmessage.ImsUpdateService} and used to be stored
+     * verbatim, producing a row that is valid in the database but unusable as XML. Rejecting it here
+     * keeps the broken message out of the situation history.</p>
+     *
+     * @throws IllegalArgumentException if the content is blank, the text {@code null},
+     *                                  or a Datex II message that does not start with an XML tag
+     */
+    private void validateContent(final DataIncoming data,
+                                 final DataDatex2Situation situation,
+                                 final ExternalMessage subMessage) {
+        final String content = subMessage.getContent();
+        final String reason;
+
+        if (subMessage.getType() == null) {
+            reason = "message type is missing";
+        } else if (subMessage.getVersion() == null) {
+            reason = "message version is missing";
+        } else if (StringUtils.isBlank(content)) {
+            reason = "content is blank";
+        } else if (NULL_CONTENT.equalsIgnoreCase(content.trim())) {
+            reason = "content is the literal text 'null'";
+        } else if (subMessage.getType() == MessageTypeEnum.DATEX2 && !content.trim().startsWith("<")) {
+            reason = "Datex II content does not start with an XML tag";
+        } else {
+            return;
+        }
+
+        // Logged with every identifier needed to find both the incoming row and the situation it belongs to.
+        log.error("method=validateContent Rejecting IMS message, {}. " +
+                        "dataId={} messageId={} situationId={} situationVersion={} " +
+                        "messageType={} messageVersion={} contentLength={} content=\"{}\"",
+                reason, data.getDataId(), data.getMessageId(),
+                situation.getSituationId(), situation.getSituationVersion(),
+                subMessage.getType(), subMessage.getVersion(),
+                content == null ? 0 : content.length(),
+                StringUtils.abbreviate(content, CONTENT_LOG_MAX_LENGTH));
+
+        throw new IllegalArgumentException(
+                "Unusable %s %s content in situation %s version %d (dataId %d): %s".formatted(
+                        subMessage.getType(), subMessage.getVersion(),
+                        situation.getSituationId(), situation.getSituationVersion(),
+                        data.getDataId(), reason));
     }
 
     private DataDatex2Situation createSituationFromSimple(final ExternalMessage message)

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2:payload xsi:type="sit:SituationPublication" lang="fi" xmlns:com="http://datex2.eu/schema/3/common"
+            xmlns:loc="http://datex2.eu/schema/3/locationReferencing"
+            xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" xmlns:fst="http://datex2.eu/schema/3/faultAndStatus"
+            xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" xmlns:prk="http://datex2.eu/schema/3/parking"
+            xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:ubx="http://datex2.eu/schema/3/urbanExtensions"
+            xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:d2="http://datex2.eu/schema/3/d2Payload"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan"
+            xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:vms="http://datex2.eu/schema/3/vms"
+            xmlns:rer="http://datex2.eu/schema/3/reroutingManagementEnhanced"
+            xmlns:sit="http://datex2.eu/schema/3/situation">
+    <com:publicationTime>2026-02-02T15:19:47.113Z</com:publicationTime>
+    <com:publicationCreator>
+        <com:country>FI</com:country>
+        <com:nationalIdentifier>FTA</com:nationalIdentifier>
+    </com:publicationCreator>
+    <sit:situation id="GUID50460693">
+        <sit:headerInformation>
+            <com:confidentiality>restrictedToAuthoritiesAndTrafficOperators</com:confidentiality>
+            <com:informationStatus>real</com:informationStatus>
+        </sit:headerInformation>
+        <sit:situationRecord xsi:type="sit:RoadOrCarriagewayOrLaneManagement" id="GUID5046340701" version="1">
+            <sit:situationRecordCreationTime>2026-02-02T15:19:46.342Z</sit:situationRecordCreationTime>
+            <sit:situationRecordVersionTime>2026-02-02T15:19:46.320Z</sit:situationRecordVersionTime>
+            <sit:situationRecordFirstSupplierVersionTime>2026-02-02T15:19:46.342Z
+            </sit:situationRecordFirstSupplierVersionTime>
+            <sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence>
+            <sit:severity>high</sit:severity>
+            <sit:validity>
+                <com:validityStatus>active</com:validityStatus>
+                <com:validityTimeSpecification>
+                    <com:overallStartTime>2026-02-02T15:00:00.000Z</com:overallStartTime>
+                </com:validityTimeSpecification>
+            </sit:validity>
+            <sit:generalPublicComment>
+                <sit:comment>
+                    <com:values>
+                        <com:value lang="fi">Tie 5075, eli Tolkintie, Lieksa. Liikennetiedote.
+
+                            Tie 5075, eli Tolkintie, Lieksa.
+                            Tarkempi paikka: laivalaituri. Koli - Vuonislahti jäätie.
+
+                            Jäätie auki.
+                            Nopeusrajoitus: 50 km/h.
+
+                            Lisätieto: Kolin jäätie on auki liikenteelle.
+                            Painorajoitus 3 tonnia,
+                            Ajoneuvojen minimietäisyys 50 m.
+                            Pysähtyminen kielletty.
+                            Nopeusrajoitus max 50 km/h.
+
+                            Ajankohta: 02.02.2026 klo 17:00 alkaen toistaiseksi.
+
+                            Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                            Fintraffic Tieliikennekeskus Tampere
+                            Puh: 02002100
+                            Sähköposti: tampere.liikennekeskus@fintraffic.fi
+                        </com:value>
+                    </com:values>
+                </sit:comment>
+            </sit:generalPublicComment>
+            <sit:locationReference xsi:type="loc:PointLocation">
+                <loc:alertCPoint xsi:type="loc:AlertCMethod2Point">
+                    <loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode>
+                    <loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber>
+                    <loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion>
+                    <loc:alertCDirection>
+                        <loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded>
+                        <loc:alertCAffectedDirection>unknown</loc:alertCAffectedDirection>
+                    </loc:alertCDirection>
+                    <loc:alertCMethod2PrimaryPointLocation>
+                        <loc:alertCLocation>
+                            <loc:specificLocation>20722</loc:specificLocation>
+                        </loc:alertCLocation>
+                    </loc:alertCMethod2PrimaryPointLocation>
+                </loc:alertCPoint>
+            </sit:locationReference>
+            <sit:complianceOption>mandatory</sit:complianceOption>
+            <sit:roadOrCarriagewayOrLaneManagementType>other</sit:roadOrCarriagewayOrLaneManagementType>
+        </sit:situationRecord>
+        <sit:situationRecord xsi:type="sit:SpeedManagement" id="GUID5046340702" version="1">
+            <sit:situationRecordCreationTime>2026-02-02T15:19:46.342Z</sit:situationRecordCreationTime>
+            <sit:situationRecordVersionTime>2026-02-02T15:19:46.320Z</sit:situationRecordVersionTime>
+            <sit:situationRecordFirstSupplierVersionTime>2026-02-02T15:19:46.342Z
+            </sit:situationRecordFirstSupplierVersionTime>
+            <sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence>
+            <sit:severity>high</sit:severity>
+            <sit:validity>
+                <com:validityStatus>active</com:validityStatus>
+                <com:validityTimeSpecification>
+                    <com:overallStartTime>2026-02-02T15:00:00.000Z</com:overallStartTime>
+                </com:validityTimeSpecification>
+            </sit:validity>
+            <sit:locationReference xsi:type="loc:PointLocation">
+                <loc:alertCPoint xsi:type="loc:AlertCMethod2Point">
+                    <loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode>
+                    <loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber>
+                    <loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion>
+                    <loc:alertCDirection>
+                        <loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded>
+                        <loc:alertCAffectedDirection>unknown</loc:alertCAffectedDirection>
+                    </loc:alertCDirection>
+                    <loc:alertCMethod2PrimaryPointLocation>
+                        <loc:alertCLocation>
+                            <loc:specificLocation>20722</loc:specificLocation>
+                        </loc:alertCLocation>
+                    </loc:alertCMethod2PrimaryPointLocation>
+                </loc:alertCPoint>
+            </sit:locationReference>
+            <sit:complianceOption>mandatory</sit:complianceOption>
+            <sit:speedManagementType/>
+            <sit:temporarySpeedLimit>50.0</sit:temporarySpeedLimit>
+        </sit:situationRecord>
+    </sit:situation>
+</d2:payload>

@@ -2,8 +2,10 @@ package fi.livi.digitraffic.tie.helper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
@@ -246,6 +248,105 @@ public class PostgisGeometryUtilsTest extends AbstractTest {
     }
 
 
+    /*
+     * fixGeometry is called by ImsUpdatingService for every TLOIK IMS feature whose geometry JTS reports
+     * as invalid. The cases below are reduced reproductions of real malformed geometries that have arrived
+     * from TLOIK.
+     */
+
+    @Test
+    public void fixGeometryDropsDegenerateLineStringFromMultiLineString() throws ParseException {
+        // MultiLineString with one real LineString and one collapsed to two identical points
+        final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(
+            "{\"type\":\"MultiLineString\",\"coordinates\":[" +
+                "[[22.625357,63.241086],[22.62597,63.241248],[22.62624,63.241315]]," +
+                "[[22.7,63.3],[22.7,63.3]]]}");
+
+        assertEquals("LineString", fixed.getGeometryType());
+        assertEquals(PostgisGeometryUtils.convertWktToGeomety("LINESTRING (22.625357 63.241086, 22.62624 63.241315)"), fixed);
+    }
+
+    @Test
+    public void fixGeometryCollapsesDegenerateMultiLineStringToPoint() throws ParseException {
+        // MultiLineString with a single LineString whose both points are equal
+        final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(
+            "{\"type\":\"MultiLineString\",\"coordinates\":[[[24.913058,60.164489],[24.913058,60.164489]]]}");
+
+        assertEquals("Point", fixed.getGeometryType());
+        assertEquals(PostgisGeometryUtils.convertWktToGeomety("POINT (24.913058 60.164489)"), fixed);
+    }
+
+    @Test
+    public void fixGeometryMergesOverlappingMultiPolygonToPolygon() throws ParseException {
+        final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(
+            "{\"type\":\"MultiPolygon\",\"coordinates\":[" +
+                "[[[0,0],[0,2],[2,2],[2,0],[0,0]]]," +
+                "[[[1,1],[1,3],[3,3],[3,1],[1,1]]]]}");
+
+        assertEquals("Polygon", fixed.getGeometryType());
+        assertEquals(PostgisGeometryUtils.convertWktToGeomety("POLYGON ((0 0, 0 2, 1 2, 1 3, 3 3, 3 1, 2 1, 2 0, 0 0))"), fixed);
+    }
+
+    @Test
+    public void fixGeometryRepairsSelfIntersectingPolygon() throws ParseException {
+        // "Bowtie" polygon, the classic self intersection
+        final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(
+            "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[2,2],[2,0],[0,2],[0,0]]]}");
+
+        assertEquals("Polygon", fixed.getGeometryType());
+        assertEquals(PostgisGeometryUtils.convertWktToGeomety("POLYGON ((1 1, 2 2, 2 0, 1 1))"), fixed);
+    }
+
+    @Test
+    public void fixGeometryReturnsEmptyPolygonForZeroAreaPolygon() throws ParseException {
+        // Polygon whose vertices are all on the same line has no area left after fixing
+        final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(
+            "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[1,1],[2,2],[0,0]]]}");
+
+        assertEquals("Polygon", fixed.getGeometryType());
+        assertTrue(fixed.isEmpty());
+    }
+
+    @Test
+    public void fixGeometryNeverReturnsGeometryCollection() throws ParseException {
+        // GeometryCollection is not supported downstream, mixed valid and collapsed parts must not produce one
+        final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(
+            "{\"type\":\"MultiPolygon\",\"coordinates\":[" +
+                "[[[0,0],[2,2],[2,0],[0,2],[0,0]]]," +
+                "[[[10,10],[10,11],[11,11],[11,10],[10,10]]]]}");
+
+        assertNotEquals(org.locationtech.jts.geom.Geometry.TYPENAME_GEOMETRYCOLLECTION, fixed.getGeometryType());
+        assertTrue(fixed.isValid());
+    }
+
+    @Test
+    public void fixGeometryResultIsAlwaysValid() throws ParseException {
+        final String[] invalidGeometries = {
+            "{\"type\":\"MultiLineString\",\"coordinates\":[[[22.7,63.3],[22.7,63.3]]]}",
+            "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[2,2],[2,0],[0,2],[0,0]]]}",
+            "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[0,0],[0,2],[2,2],[2,0],[0,0]]],[[[1,1],[1,3],[3,3],[3,1],[1,1]]]]}"
+        };
+        for (final String json : invalidGeometries) {
+            final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(json);
+            assertTrue(fixed.isValid(), "fixGeometry returned invalid geometry for " + json);
+        }
+    }
+
+    @Test
+    public void fixGeometrySimplifiesValidGeometry() throws ParseException {
+        // Collinear midpoint is dropped by Douglas-Peucker even though the input is already valid
+        final org.locationtech.jts.geom.Geometry fixed = fixGeoJson(
+            "{\"type\":\"LineString\",\"coordinates\":[[22.0,63.0],[22.1,63.1],[22.2,63.2]]}");
+
+        assertEquals(PostgisGeometryUtils.convertWktToGeomety("LINESTRING (22 63, 22.2 63.2)"), fixed);
+    }
+
+    private org.locationtech.jts.geom.Geometry fixGeoJson(final String geoJson) throws ParseException {
+        final org.locationtech.jts.geom.Geometry geometry = PostgisGeometryUtils.convertGeoJsonGeometryToGeometry(geoJson);
+        final org.locationtech.jts.geom.Geometry fixed = PostgisGeometryUtils.fixGeometry(geometry);
+        log.info("fixGeometry {} -> {}", geometry, fixed);
+        return fixed;
+    }
 
     private void checkCoordinate(final Coordinate coordinate, final double x, final double y, final double z) {
         final double ALLOWED_COORDINATE_DELTA = 0.00002;

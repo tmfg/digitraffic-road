@@ -42,21 +42,17 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
     }
 
     @Test
-    public void testTrafficMessagesV1VsV2EnumsInOpenApi() throws Exception {
+    public void testTrafficMessagesV2EnumsInOpenApi() throws Exception {
         mockMvc.perform(get("/v3/api-docs/road-api"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(restContentType))
-            // Top-level enums - V2 lowercase, V1 uppercase
+            // Top-level enums - V2 lowercase
             .andExpect(jsonPath("$.components.schemas.SituationTypeV2.enum", hasItems("traffic announcement", "exempted transport", "weight restriction", "road work")))
             .andExpect(jsonPath("$.components.schemas.SituationTypeV2.enum", not(hasItem("TRAFFIC_ANNOUNCEMENT"))))
-            .andExpect(jsonPath("$.components.schemas.SituationTypeV1.enum", hasItems("TRAFFIC_ANNOUNCEMENT", "EXEMPTED_TRANSPORT", "WEIGHT_RESTRICTION", "ROAD_WORK")))
             .andExpect(jsonPath("$.components.schemas.AreaTypeV2.enum", hasItems("municipality", "province", "country")))
-            .andExpect(jsonPath("$.components.schemas.AreaTypeV1.enum", hasItems("MUNICIPALITY", "PROVINCE", "COUNTRY")))
             // Inline enums in V2 properties
             .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementPropertiesV2.properties.trafficAnnouncementType.enum", hasItems("general", "preliminary accident report", "accident report")))
-            .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementPropertiesV1.properties.trafficAnnouncementType.enum", hasItems("GENERAL", "PRELIMINARY_ACCIDENT_REPORT", "ACCIDENT_REPORT")))
             .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementV2.properties.language.enum", hasItem("fi")))
-            .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementV1.properties.language.enum", hasItem("FI")))
             .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementV2.properties.earlyClosing.enum", hasItems("closed", "canceled")))
             .andExpect(jsonPath("$.components.schemas.RoadAddressLocationV2.properties.direction.enum", hasItems("unknown", "pos", "neg", "both")))
             .andExpect(jsonPath("$.components.schemas.RoadWorkPhaseV2.properties.severity.enum", hasItems("low", "high", "highest")))

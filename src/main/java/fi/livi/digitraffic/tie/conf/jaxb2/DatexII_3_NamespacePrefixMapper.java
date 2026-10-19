@@ -32,7 +32,11 @@ public class DatexII_3_NamespacePrefixMapper extends NamespacePrefixMapper {
             Map.entry("http://datex2.eu/schema/3/vms", "vms"),
             Map.entry("http://datex2.eu/schema/3/trafficManagementPlan", "tmp"),
             Map.entry("http://datex2.eu/schema/3/urbanExtensions", "ubx"),
-            Map.entry("http://datex2.eu/schema/3/reroutingManagementEnhanced", "rer")
+            Map.entry("http://datex2.eu/schema/3/reroutingManagementEnhanced", "rer"),
+            Map.entry("http://datex2.eu/schema/3/openLrBinary", "olrb"),
+            Map.entry("http://datex2.eu/schema/3/controlledZone", "cz"),
+            Map.entry("http://datex2.eu/schema/3/afirEnergyInfrastructure", "aegi"),
+            Map.entry("http://datex2.eu/schema/3/afirFacilities", "afac")
     );
 
     @Override

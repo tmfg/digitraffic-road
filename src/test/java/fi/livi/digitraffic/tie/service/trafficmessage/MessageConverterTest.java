@@ -56,7 +56,7 @@ public class MessageConverterTest extends AbstractServiceTest {
                 false
         );
 
-        final TrafficAnnouncementFeature feature = messageConverter.convertToFeature(json, false);
+        final TrafficAnnouncementFeature feature = messageConverter.convertToFeature(json, false, Instant.now());
         final RoadWorkPhase phase = feature.getProperties().announcements.getFirst().roadWorkPhases.getFirst();
 
         // "worktypes" (lowercase) from source must deserialize into workTypes, while API output remains "workTypes"

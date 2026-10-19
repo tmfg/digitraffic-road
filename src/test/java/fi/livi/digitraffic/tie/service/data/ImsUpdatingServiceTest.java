@@ -15,9 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223UpdateService;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TimeAndDuration;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncement;
-import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223UpdateService;
 
 /**
  * Unit tests for {@link ImsUpdatingService#getStartAndEndTimes}.
@@ -49,9 +49,8 @@ class ImsUpdatingServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new ImsUpdatingService(
-                mock(DatexII223UpdateService.class),
-                mock(DataDatex2SituationRepository.class));
+        service = new ImsUpdatingService(mock(DataDatex2SituationRepository.class),
+                mock(DatexII223UpdateService.class));
     }
 
     // -------------------------------------------------------------------------

@@ -5,10 +5,16 @@ import fi.livi.digitraffic.tie.AbstractSpringJUnitTest;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.dao.data.DataIncomingRepository;
 
+import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
+import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
+import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.data.DataIncoming;
+import fi.livi.digitraffic.tie.model.data.IncomingDataTypes;
+
+import java.time.Instant;
+import java.util.regex.Pattern;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,7 +40,7 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
 
     @BeforeEach
     void cleanup() {
-        transactionTemplate.executeWithoutResult(status -> {
+        transactionTemplate.executeWithoutResult(_ -> {
             entityManager.createNativeQuery("DELETE FROM data_datex2_situation_message").executeUpdate();
             entityManager.createNativeQuery("DELETE FROM data_datex2_situation").executeUpdate();
             dataIncomingRepository.deleteAll();
@@ -121,7 +127,7 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
     public void handleDatex2_35() {
         insertNewData(createImsMessage(
                 createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
-                createMessage("DATEX_2", "3.5", DATEX_3_5)));
+                createMessage("DATEX2", "3.5", DATEX_3_5)));
         assertIncomingData(1, 0, 0);
 
         dataUpdatingService.handleNewData();
@@ -133,7 +139,7 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
     public void handleDatex2_23() {
         insertNewData(createImsMessage(
                 createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
-                createMessage("DATEX_2", "2.3", DATEX_2_3)));
+                createMessage("DATEX2", "2.3", DATEX_2_3)));
         assertIncomingData(1, 0, 0);
 
         dataUpdatingService.handleNewData();
@@ -154,8 +160,8 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
     public void handleUpdateWithTwoVersions() {
         insertNewData(createImsMessage(
                 createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
-                createMessage("DATEX_2", "3.5", DATEX_3_5),
-                createMessage("DATEX_2", "2.3", DATEX_2_3)));
+                createMessage("DATEX2", "3.5", DATEX_3_5),
+                createMessage("DATEX2", "2.3", DATEX_2_3)));
         dataUpdatingService.handleNewData();
         assertDataDatex2(1, "3.5");
         assertDataDatex2(1, "2.3");
@@ -170,7 +176,7 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
         // First: insert and process a message normally
         insertNewData(createImsMessage(
                 createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
-                createMessage("DATEX_2", "3.5", DATEX_3_5)));
+                createMessage("DATEX2", "3.5", DATEX_3_5)));
         dataUpdatingService.handleNewData();
         assertIncomingData(0, 0, 1);
 
@@ -178,15 +184,153 @@ public class DataServiceTest extends AbstractSpringJUnitTest {
         final String simppeli2 = SIMPPELI_0_2_17.replace("GUID50000221", "GUID50000222");
         insertNewData(createImsMessage(
                 createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
-                createMessage("DATEX_2", "3.5", DATEX_3_5)));
+                createMessage("DATEX2", "3.5", DATEX_3_5)));
         insertNewData(createImsMessage(
                 createMessage("SIMPPELI", "0.2.17", simppeli2),
-                createMessage("DATEX_2", "3.5", DATEX_3_5)));
+                createMessage("DATEX2", "3.5", DATEX_3_5)));
 
         dataUpdatingService.handleNewData();
 
         // The duplicate should be marked FAILED, the valid one PROCESSED
         // Total: 1 processed (first run) + 1 failed (duplicate) + 1 processed (new situation) = 3
         assertIncomingData(0, 1, 2);
+    }
+
+    private void assertFailedWithReason(final String expectedReasonPart) {
+        final var failed = dataIncomingRepository.findAll().stream()
+                .filter(d -> d.getStatus() == IncomingDataTypes.DataStatus.FAILED)
+                .toList();
+
+        Assertions.assertEquals(1, failed.size(), "Exactly one row should have failed");
+        Assertions.assertNotNull(failed.getFirst().getFailureReason(), "Failure reason should be stored");
+        Assertions.assertTrue(failed.getFirst().getFailureReason().contains(expectedReasonPart),
+                "Failure reason should mention '" + expectedReasonPart + "' but was: "
+                        + failed.getFirst().getFailureReason());
+    }
+
+    private void assertNoSituationsStored() {
+        transactionTemplate.executeWithoutResult(status ->
+                Assertions.assertEquals(0, dataDatex2SituationRepository.findAll().size(),
+                        "Nothing should be stored when the message is rejected"));
+    }
+
+    /**
+     * The source has been seen to send the literal text {@code null} instead of a Datex II message.
+     * Such content is not blank, so it used to pass validation and be stored verbatim, producing a row
+     * that is valid in the database but unusable as XML.
+     */
+    @Test
+    public void literalNullContentIsRejectedAndReasonStored() {
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
+                createMessage("DATEX2", "3.5", DATEX_3_5),
+                createMessage("DATEX2", "3.7", "null")));
+
+        dataUpdatingService.handleNewData();
+
+        assertIncomingData(0, 1, 0);
+        assertFailedWithReason("literal text 'null'");
+        assertNoSituationsStored();
+    }
+
+    @Test
+    public void blankContentIsRejectedAndReasonStored() {
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
+                createMessage("DATEX2", "3.7", "   ")));
+
+        dataUpdatingService.handleNewData();
+
+        assertIncomingData(0, 1, 0);
+        assertFailedWithReason("content is blank");
+        assertNoSituationsStored();
+    }
+
+    @Test
+    public void datexContentThatIsNotXmlIsRejectedAndReasonStored() {
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
+                createMessage("DATEX2", "3.7", "Internal server error")));
+
+        dataUpdatingService.handleNewData();
+
+        assertIncomingData(0, 1, 0);
+        assertFailedWithReason("does not start with an XML tag");
+        assertNoSituationsStored();
+    }
+
+    /**
+     * The simple json part is mandatory: without it the situation cannot be created. The reason comes
+     * from the exception message rather than from the content checks, so it is worth verifying that it
+     * reaches the database too.
+     */
+    @Test
+    public void messageWithoutSimpleJsonIsMarkedFailedWithReason() {
+        insertNewData(createImsMessage(createMessage("DATEX2", "3.5", DATEX_3_5)));
+
+        dataUpdatingService.handleNewData();
+
+        assertIncomingData(0, 1, 0);
+        assertFailedWithReason("No Simple-json found");
+        assertNoSituationsStored();
+    }
+
+    /**
+     * A rejected message must stay in the database so the broken content can be inspected,
+     * and it must not be picked up again by the processing job.
+     */
+    @Test
+    public void rejectedMessageIsKeptAndNotRetried() {
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
+                createMessage("DATEX2", "3.7", "null")));
+
+        dataUpdatingService.handleNewData();
+        dataUpdatingService.handleNewData();
+
+        assertIncomingData(0, 1, 0);
+        Assertions.assertTrue(dataIncomingRepository.findAll().getFirst().getData().contains("null"),
+                "The original message must still be available for inspection");
+    }
+
+    /**
+     * The situation is created from the simple json alone and the Datex II content is stored without
+     * being parsed, so nothing in the write path notices if the two messages of one incoming message
+     * describe different situations. This reads both stored messages back and compares them.
+     */
+    @Test
+    public void datex2AndSimpleJsonDescribeTheSameSituation() {
+        insertNewData(createImsMessage(
+                createMessage("SIMPPELI", "0.2.17", SIMPPELI_0_2_17),
+                createMessage("DATEX2", "3.5", DATEX_3_5)));
+
+        dataUpdatingService.handleNewData();
+
+        transactionTemplate.executeWithoutResult(status -> {
+            final var situation = dataDatex2SituationRepository.findAll().getFirst();
+            final var datex2 = storedMessage(situation, MessageTypeEnum.DATEX2.value());
+            final var simpleJson = storedMessage(situation, MessageTypeEnum.SIMPPELI.value());
+
+            Assertions.assertEquals(situation.getSituationId(), valueOf(datex2, "situation id=\"([^\"]+)\""),
+                    "The situation id of the Datex II content should be the one the situation was created with");
+            Assertions.assertEquals(
+                    Instant.parse(valueOf(simpleJson, "\"startTime\":\"([^\"]+)\"")),
+                    Instant.parse(valueOf(datex2, "overallStartTime>([^<]+)<")),
+                    "Both messages should state the same start time");
+        });
+    }
+
+    private static String storedMessage(final DataDatex2Situation situation, final String messageType) {
+        return situation.getMessages().stream()
+                .filter(m -> m.getMessageType().equals(messageType))
+                .findFirst()
+                .map(DataDatex2SituationMessage::getMessage)
+                .orElseThrow(() -> new AssertionError("No " + messageType + " message stored"));
+    }
+
+    private static String valueOf(final String message, final String pattern) {
+        final var matcher = Pattern.compile(pattern).matcher(message);
+        Assertions.assertTrue(matcher.find(), "Pattern " + pattern + " not found in the stored message");
+        return matcher.group(1);
     }
 }

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<d2:payload xsi:type="sit:SituationPublication" lang="fi" xmlns:com="http://datex2.eu/schema/3/common"
+            xmlns:loc="http://datex2.eu/schema/3/locationReferencing"
+            xmlns:roa="http://datex2.eu/schema/3/roadTrafficData" xmlns:fst="http://datex2.eu/schema/3/faultAndStatus"
+            xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" xmlns:prk="http://datex2.eu/schema/3/parking"
+            xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:ubx="http://datex2.eu/schema/3/urbanExtensions"
+            xmlns:locx="http://datex2.eu/schema/3/locationExtension" xmlns:d2="http://datex2.eu/schema/3/d2Payload"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:tmp="http://datex2.eu/schema/3/trafficManagementPlan"
+            xmlns:comx="http://datex2.eu/schema/3/commonExtension" xmlns:vms="http://datex2.eu/schema/3/vms"
+            xmlns:rer="http://datex2.eu/schema/3/reroutingManagementEnhanced"
+            xmlns:sit="http://datex2.eu/schema/3/situation">
+    <com:publicationTime>2025-12-22T16:49:53.748Z</com:publicationTime>
+    <com:publicationCreator>
+        <com:country>FI</com:country>
+        <com:nationalIdentifier>FTA</com:nationalIdentifier>
+    </com:publicationCreator>
+    <sit:situation id="GUID50459556">
+        <sit:headerInformation>
+            <com:confidentiality>restrictedToAuthoritiesAndTrafficOperators</com:confidentiality>
+            <com:informationStatus>real</com:informationStatus>
+        </sit:headerInformation>
+        <sit:situationRecord xsi:type="sit:EquipmentOrSystemFault" id="GUID5046226501" version="11">
+            <sit:situationRecordCreationTime>2025-12-22T06:19:26.820Z</sit:situationRecordCreationTime>
+            <sit:situationRecordVersionTime>2025-12-22T16:49:52.285Z</sit:situationRecordVersionTime>
+            <sit:situationRecordFirstSupplierVersionTime>2025-12-22T06:19:26.820Z
+            </sit:situationRecordFirstSupplierVersionTime>
+            <sit:probabilityOfOccurrence>certain</sit:probabilityOfOccurrence>
+            <sit:severity>high</sit:severity>
+            <sit:validity>
+                <com:validityStatus>definedByValidityTimeSpec</com:validityStatus>
+                <com:validityTimeSpecification>
+                    <com:overallStartTime>2025-12-22T07:00:00.000Z</com:overallStartTime>
+                    <com:overallEndTime>2025-12-22T16:49:53.748Z</com:overallEndTime>
+                </com:validityTimeSpecification>
+            </sit:validity>
+            <sit:generalPublicComment>
+                <sit:comment>
+                    <com:values>
+                        <com:value lang="fi">Tie 110, Kaarina. Liikennetiedote. Tilanne ohi.
+
+                            Tie 110 välillä Salo - Turku, Kaarina.
+                            Tarkempi paikka: Paikasta Paraistentie 400 m, suuntaan Poikluoman risteyssilta.
+
+                            Liikennevalot.
+                            Korjattu.
+
+                            Ajankohta: 22.12.2025 klo 09:00 - 18:49.
+
+                            Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/
+
+                            Fintraffic Tieliikennekeskus Turku
+                            Puh: 02002100
+                            Sähköposti: turku.liikennekeskus@fintraffic.fi
+                        </com:value>
+                    </com:values>
+                </sit:comment>
+            </sit:generalPublicComment>
+            <sit:locationReference xsi:type="loc:SingleRoadLinearLocation">
+                <loc:alertCLinear xsi:type="loc:AlertCMethod4Linear">
+                    <loc:alertCLocationCountryCode>6</loc:alertCLocationCountryCode>
+                    <loc:alertCLocationTableNumber>17</loc:alertCLocationTableNumber>
+                    <loc:alertCLocationTableVersion>1.11.44</loc:alertCLocationTableVersion>
+                    <loc:alertCDirection>
+                        <loc:alertCDirectionCoded>positive</loc:alertCDirectionCoded>
+                        <loc:alertCAffectedDirection>unknown</loc:alertCAffectedDirection>
+                    </loc:alertCDirection>
+                    <loc:alertCMethod4PrimaryPointLocation>
+                        <loc:alertCLocation>
+                            <loc:specificLocation>3626</loc:specificLocation>
+                        </loc:alertCLocation>
+                        <loc:offsetDistance>
+                            <loc:offsetDistance>431</loc:offsetDistance>
+                        </loc:offsetDistance>
+                    </loc:alertCMethod4PrimaryPointLocation>
+                    <loc:alertCMethod4SecondaryPointLocation>
+                        <loc:alertCLocation>
+                            <loc:specificLocation>3627</loc:specificLocation>
+                        </loc:alertCLocation>
+                        <loc:offsetDistance>
+                            <loc:offsetDistance>1169</loc:offsetDistance>
+                        </loc:offsetDistance>
+                    </loc:alertCMethod4SecondaryPointLocation>
+                </loc:alertCLinear>
+            </sit:locationReference>
+            <sit:equipmentOrSystemFaultType>outOfService</sit:equipmentOrSystemFaultType>
+            <sit:faultyEquipmentOrSystemType>trafficLightSets</sit:faultyEquipmentOrSystemType>
+        </sit:situationRecord>
+    </sit:situation>
+</d2:payload>

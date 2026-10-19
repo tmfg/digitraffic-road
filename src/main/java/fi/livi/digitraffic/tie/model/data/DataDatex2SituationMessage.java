@@ -10,7 +10,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Generated;
-import org.hibernate.generator.EventType;
 
 import java.time.Instant;
 
@@ -26,6 +25,16 @@ public class DataDatex2SituationMessage implements ModifiedAt {
     private DataDatex2Situation situation;
 
     private String messageVersion;
+
+    /**
+     * The message type as TLOIK sends it: {@code "DATEX2"}, {@code "SIMPPELI"}, {@code "INFOXML"} or
+     * {@code "OTHER"}.
+     *
+     * <p>Write and query this with
+     * {@link fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum}, which is generated
+     * from the IMS schema. A binding in {@code ImsXmlMessage_1_2_2.xjb} names the constants after
+     * the schema values, so {@code name()} and {@code value()} always agree.</p>
+     */
     private String messageType;
     private String message;
 

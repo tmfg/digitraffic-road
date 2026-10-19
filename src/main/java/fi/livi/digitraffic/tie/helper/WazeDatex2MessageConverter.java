@@ -1,257 +1,247 @@
 package fi.livi.digitraffic.tie.helper;
 
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTrafficTypeEnum.HEAVY_TRAFFIC;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTrafficTypeEnum.QUEUING_TRAFFIC;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTrafficTypeEnum.SLOW_TRAFFIC;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTrafficTypeEnum.STATIONARY_TRAFFIC;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTrafficTypeEnum.UNSPECIFIED_ABNORMAL_TRAFFIC;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.ACCIDENT_INVOLVING_BUSES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.ACCIDENT_INVOLVING_HAZARDOUS_MATERIALS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.ACCIDENT_INVOLVING_HEAVY_LORRIES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.EARLIER_ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.MULTIVEHICLE_ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.OVERTURNED_HEAVY_LORRY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.REAR_COLLISION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum.VEHICLE_SPUN_AROUND;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceTypeEnum.ANIMALS_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceTypeEnum.HERD_OF_ANIMALS_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceTypeEnum.LARGE_ANIMALS_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.CROWD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.DEMONSTRATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.MARCH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.PUBLIC_DISTURBANCE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.RIOT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.STRIKE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum.UNSPECIFIED_ALERT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.AVALANCHES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.EARTHQUAKE_DAMAGE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.FALLEN_TREES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.FALLING_ICE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.FALLING_LIGHT_ICE_OR_SNOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.FLASH_FLOODS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.FLOODING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.FOREST_FIRE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.GRASS_FIRE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.LANDSLIPS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.MUD_SLIDE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.ROCKFALLS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.SERIOUS_FIRE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.SEWER_OVERFLOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.SMOKE_OR_FUMES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.STORM_DAMAGE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum.SUBSIDENCE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemFaultTypeEnum.NOT_WORKING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemFaultTypeEnum.OUT_OF_SERVICE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemFaultTypeEnum.WORKING_INCORRECTLY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemFaultTypeEnum.WORKING_INTERMITTENTLY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.ANPR_CAMERAS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.AUTOMATED_TOLL_SYSTEM;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.CCTV_CAMERAS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.EMERGENCY_ROADSIDE_TELEPHONES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.GALLERY_LIGHTS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.LANE_CONTROL_SIGNS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.LEVEL_CROSSING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.MATRIX_SIGNS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.RAMP_CONTROLS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.ROADSIDE_COMMUNICATIONS_SYSTEM;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.ROADSIDE_POWER_SYSTEM;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.SPEED_CONTROL_SIGNS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.TOLL_GATES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.TRAFFIC_LIGHT_SETS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.TRAFFIC_SIGNALS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.TUNNEL_LIGHTS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.TUNNEL_VENTILATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum.VARIABLE_MESSAGE_SIGNS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_CLOSED;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum.ICE_ROAD_OPEN;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.BRIDGE_SWING_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.CONVOY_SERVICE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.OBSTACLE_SIGNALLING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.RAMP_METERING_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.TEMPORARY_TRAFFIC_LIGHTS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.TOLL_GATES_OPEN;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.TRAFFIC_BEING_MANUALLY_DIRECTED;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum.TRAFFIC_HELD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.BURST_PIPE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.BURST_WATER_MAIN;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.COLLAPSED_SEWER;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_BRIDGE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_CRASH_BARRIER;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_FLYOVER;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_GALLERY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_GANTRY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_ROAD_SURFACE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_TUNNEL;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.DAMAGED_VIADUCT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.FALLEN_POWER_CABLES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.GAS_LEAK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum.WEAK_BRIDGE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.DIESEL_ON_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.LEAVES_ON_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.LOOSE_CHIPPINGS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.LOOSE_SAND_ON_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.MUD_ON_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.OIL_ON_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.PETROL_ON_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.ROAD_SURFACE_IN_POOR_CONDITION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum.SLIPPERY_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.AIR_CRASH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.CHILDREN_ON_ROADWAY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.CLEARANCE_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.CRANE_OPERATING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.CYCLISTS_ON_ROADWAY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.DEBRIS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.EXPLOSION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.EXPLOSION_HAZARD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.HAZARDS_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.HIGH_SPEED_CHASE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.HOUSE_FIRE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.INCIDENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.INDUSTRIAL_ACCIDENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.OBJECTS_FALLING_FROM_MOVING_VEHICLE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.OBJECT_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.OBSTRUCTION_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.PEOPLE_ON_ROADWAY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.RAIL_CRASH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.RECKLESS_DRIVER;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.RESCUE_AND_RECOVERY_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.SEVERE_FROST_DAMAGED_ROADWAY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.SHED_LOAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.SNOW_AND_ICE_DEBRIS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.SPILLAGE_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum.UNPROTECTED_ACCIDENT_AREA;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.AGRICULTURAL_SHOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.AIR_SHOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.ATHLETICS_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BALL_GAME;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BASEBALL_GAME;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BASKETBALL_GAME;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BICYCLE_RACE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BOAT_RACE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BOAT_SHOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BOXING_TOURNAMENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.BULL_FIGHT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.CEREMONIAL_EVENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.COMMERCIAL_EVENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.CONCERT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.CRICKET_MATCH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.CULTURAL_EVENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.EXHIBITION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.FAIR;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.FESTIVAL;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.FILM_TV_MAKING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.FOOTBALL_MATCH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.FUNFAIR;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.GARDENING_OR_FLOWER_SHOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.GOLF_TOURNAMENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.HOCKEY_GAME;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.HORSE_RACE_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.INTERNATIONAL_SPORTS_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.MAJOR_EVENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.MARATHON;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.MARKET;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.MATCH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.MOTOR_SHOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.MOTOR_SPORT_RACE_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.PARADE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.PROCESSION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.RACE_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.RUGBY_MATCH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.SEVERAL_MAJOR_EVENTS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.SHOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.SHOW_JUMPING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.SPORTS_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.STATE_OCCASION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.TENNIS_TOURNAMENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.TOURNAMENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.TRADE_FAIR;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.WATER_SPORTS_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum.WINTER_SPORTS_MEETING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.DO_NOT_FOLLOW_DIVERSION_SIGNS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.DO_NOT_USE_ENTRY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.DO_NOT_USE_EXIT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.DO_NOT_USE_INTERSECTION_OR_JUNCTION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.FOLLOW_DIVERSION_SIGNS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.FOLLOW_LOCAL_DIVERSION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.FOLLOW_SPECIAL_MARKERS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.USE_ENTRY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.USE_EXIT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum.USE_INTERSECTION_OR_JUNCTION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.GRASS_CUTTING_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.MAINTENANCE_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.OTHER;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.RESURFACING_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.ROADSIDE_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.ROADWORKS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.ROADWORKS_CLEARANCE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.ROAD_MARKING_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum.TREE_AND_VEGETATION_CUTTING_WORK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.CARRIAGEWAY_CLOSURES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.CAR_POOL_LANE_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.CLEAR_A_LANE_FOR_EMERGENCY_VEHICLES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.CLEAR_A_LANE_FOR_SNOWPLOUGHS_AND_GRITTING_VEHICLES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.CLOSED_PERMANENTLY_FOR_THE_WINTER;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.CONTRAFLOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.DO_NOT_USE_SPECIFIED_LANES_OR_CARRIAGEWAYS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.HARD_SHOULDER_RUNNING_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.HEIGHT_RESTRICTION_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.INTERMITTENT_SHORT_TERM_CLOSURES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.KEEP_TO_THE_LEFT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.KEEP_TO_THE_RIGHT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.LANES_DEVIATED;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.LANE_CLOSURES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.NARROW_LANES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.NEW_ROADWORKS_LAYOUT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.OVERNIGHT_CLOSURES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.ROAD_CLEARED;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.ROAD_CLOSED;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.ROLLING_ROAD_BLOCK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.RUSH_HOUR_LANE_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.SINGLE_ALTERNATE_LINE_TRAFFIC;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.TIDAL_FLOW_LANE_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.TURN_AROUND_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.USE_OF_SPECIFIED_LANES_OR_CARRIAGEWAYS_ALLOWED;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.USE_SPECIFIED_LANES_OR_CARRIAGEWAYS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.VEHICLE_STORAGE_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum.WEIGHT_RESTRICTION_IN_OPERATION;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficFlowCharacteristicsEnum.ERRATIC_FLOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficFlowCharacteristicsEnum.SMOOTH_FLOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficFlowCharacteristicsEnum.STOP_AND_GO;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficFlowCharacteristicsEnum.TRAFFIC_BLOCKED;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficTrendTypeEnum.TRAFFIC_BUILDING_UP;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficTrendTypeEnum.TRAFFIC_EASING;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficTrendTypeEnum.TRAFFIC_STABLE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.ABNORMAL_LOAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.BROKEN_DOWN_HEAVY_LORRY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.BROKEN_DOWN_VEHICLE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.DAMAGED_VEHICLE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.MILITARY_CONVOY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.SALTING_OR_GRITTING_VEHICLE_IN_USE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.SLOW_MOVING_MAINTENANCE_VEHICLE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.SNOWPLOUGH;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_ON_FIRE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_ON_WRONG_CARRIAGEWAY;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_STUCK;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_WITH_OVERHEIGHT_LOAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum.VEHICLE_WITH_OVERWIDE_LOAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.BLACK_ICE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.FREEZING_OF_WET_ROADS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.FREEZING_PAVEMENTS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.FREEZING_RAIN;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.FRESH_SNOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.ICE;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.ICE_BUILD_UP;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.ICY_PATCHES;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.NORMAL_WINTER_CONDITIONS_FOR_PEDESTRIANS;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.PACKED_SNOW;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.SLUSH_ON_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.SNOW_ON_PAVEMENT;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.SNOW_ON_THE_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.SURFACE_WATER;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.WET_AND_ICY_ROAD;
-import static fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum.WET_ICY_PAVEMENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AbnormalTrafficTypeEnum.HEAVY_TRAFFIC;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AbnormalTrafficTypeEnum.QUEUING_TRAFFIC;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AbnormalTrafficTypeEnum.SLOW_TRAFFIC;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AbnormalTrafficTypeEnum.STATIONARY_TRAFFIC;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AbnormalTrafficTypeEnum.UNSPECIFIED_ABNORMAL_TRAFFIC;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AccidentTypeEnum.ACCIDENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AccidentTypeEnum.ACCIDENT_INVOLVING_MASS_TRANSIT_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AccidentTypeEnum.ACCIDENT_INVOLVING_HAZARDOUS_MATERIALS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AccidentTypeEnum.ACCIDENT_INVOLVING_HEAVY_LORRIES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AccidentTypeEnum.SECONDARY_ACCIDENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AccidentTypeEnum.MULTIPLE_VEHICLE_ACCIDENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AnimalPresenceTypeEnum.ANIMALS_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AnimalPresenceTypeEnum.HERD_OF_ANIMALS_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.AnimalPresenceTypeEnum.LARGE_ANIMALS_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum.CROWD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum.DEMONSTRATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum.MARCH;
+import static fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum.PUBLIC_DISTURBANCE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum.RIOT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum.STRIKE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum.UNSPECIFIED_ALERT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.AVALANCHES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.EARTHQUAKE_DAMAGE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.FALLEN_TREES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.FALLING_ICE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.FALLING_LIGHT_ICE_OR_SNOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.FLASH_FLOODS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.FLOODING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.FOREST_FIRE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.GRASS_FIRE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.LANDSLIPS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.MUD_SLIDE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.ROCKFALLS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.SERIOUS_FIRE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.SEWER_OVERFLOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.SMOKE_OR_FUMES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.STORM_DAMAGE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum.SUBSIDENCE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemFaultTypeEnum.NOT_WORKING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemFaultTypeEnum.OUT_OF_SERVICE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemFaultTypeEnum.WORKING_INCORRECTLY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemFaultTypeEnum.WORKING_INTERMITTENTLY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.ANPR_CAMERAS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.AUTOMATED_TOLL_SYSTEM;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.CCTV_CAMERAS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.EMERGENCY_ROADSIDE_TELEPHONES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.GALLERY_LIGHTS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.LANE_CONTROL_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.LEVEL_CROSSING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.MATRIX_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.RAMP_CONTROLS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.ROADSIDE_COMMUNICATIONS_SYSTEM;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.ROADSIDE_POWER_SYSTEM;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.SPEED_CONTROL_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.TOLL_GATES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.TRAFFIC_LIGHT_SETS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.TRAFFIC_SIGNALS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.TUNNEL_LIGHTS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.TUNNEL_VENTILATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum.VARIABLE_MESSAGE_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.BRIDGE_SWING_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.CONVOY_SERVICE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.OBSTACLE_SIGNALLING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.RAMP_METERING_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.TEMPORARY_TRAFFIC_LIGHTS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.TOLL_GATES_OPEN;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.TRAFFIC_BEING_MANUALLY_DIRECTED;
+import static fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum.TRAFFIC_HELD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.BURST_PIPE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.BURST_WATER_MAIN;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.COLLAPSED_SEWER;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_BRIDGE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_CRASH_BARRIER;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_FLYOVER;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_GALLERY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_GANTRY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_ROAD_SURFACE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_TUNNEL;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.DAMAGED_VIADUCT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.FALLEN_POWER_CABLES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.GAS_LEAK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum.WEAK_BRIDGE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.DIESEL_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.LEAVES_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.LOOSE_CHIPPINGS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.LOOSE_SAND_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.MUD_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.OIL_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.PETROL_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.ROAD_SURFACE_IN_POOR_CONDITION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum.SLIPPERY_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.AIR_CRASH;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.CHILDREN_ON_ROADWAY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.CLEARANCE_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.CRANE_OPERATING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.CYCLISTS_ON_ROADWAY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.DEBRIS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.EXPLOSION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.EXPLOSION_HAZARD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.HAZARDS_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.INCIDENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.INDUSTRIAL_ACCIDENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.OBJECTS_FALLING_FROM_MOVING_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.OBJECT_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.OBSTRUCTION_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.PEOPLE_ON_ROADWAY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.RAIL_CRASH;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.RESCUE_AND_RECOVERY_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.SEVERE_FROST_DAMAGED_ROADWAY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.SHED_LOAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.SNOW_AND_ICE_DEBRIS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.SPILLAGE_OCCURRING_FROM_MOVING_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.SPILLAGE_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum.UNPROTECTED_ACCIDENT_AREA;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.AGRICULTURAL_SHOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.AIR_SHOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.ATHLETICS_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BALL_GAME;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BASEBALL_GAME;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BASKETBALL_GAME;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BICYCLE_RACE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BOAT_RACE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BOAT_SHOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BOXING_TOURNAMENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.BULL_FIGHT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.CEREMONIAL_EVENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.COMMERCIAL_EVENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.CONCERT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.CRICKET_MATCH;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.CULTURAL_EVENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.EXHIBITION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.FAIR;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.FESTIVAL;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.FILM_TV_MAKING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.FOOTBALL_MATCH;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.FUNFAIR;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.GARDENING_OR_FLOWER_SHOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.GOLF_TOURNAMENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.HOCKEY_GAME;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.HORSE_RACE_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.INTERNATIONAL_SPORTS_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.MAJOR_EVENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.MARATHON;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.MARKET;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.MATCH;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.MOTOR_SHOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.MOTOR_SPORT_RACE_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.PARADE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.PROCESSION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.RACE_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.RUGBY_MATCH;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.SEVERAL_MAJOR_EVENTS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.SHOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.SHOW_JUMPING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.SPORTS_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.STATE_OCCASION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.TENNIS_TOURNAMENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.TOURNAMENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.TRADE_FAIR;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.WATER_SPORTS_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum.WINTER_SPORTS_MEETING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.DO_NOT_FOLLOW_DIVERSION_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.DO_NOT_USE_ENTRY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.DO_NOT_USE_EXIT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.DO_NOT_USE_INTERSECTION_OR_JUNCTION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.FOLLOW_DIVERSION_SIGNS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.FOLLOW_LOCAL_DIVERSION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.FOLLOW_SPECIAL_MARKERS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.USE_ENTRY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.USE_EXIT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum.USE_INTERSECTION_OR_JUNCTION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.GRASS_CUTTING_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.MAINTENANCE_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.OTHER;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.RESURFACING_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.ROADSIDE_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.ROADWORKS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.ROADWORKS_CLEARANCE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.ROAD_MARKING_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum.TREE_AND_VEGETATION_CUTTING_WORK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.CARRIAGEWAY_CLOSURES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.CAR_POOL_LANE_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.CLEAR_A_LANE_FOR_EMERGENCY_VEHICLES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.CLEAR_A_LANE_FOR_SNOWPLOUGHS_AND_GRITTING_VEHICLES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.CLOSED_PERMANENTLY_FOR_THE_WINTER;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.CONTRAFLOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.DO_NOT_USE_SPECIFIED_LANES_OR_CARRIAGEWAYS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.HARD_SHOULDER_RUNNING_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.HEIGHT_RESTRICTION_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.INTERMITTENT_SHORT_TERM_CLOSURES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.KEEP_TO_THE_LEFT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.KEEP_TO_THE_RIGHT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.LANES_DEVIATED;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.LANE_CLOSURES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.NARROW_LANES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.NEW_ROADWORKS_LAYOUT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.OVERNIGHT_CLOSURES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.ROAD_CLEARED;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.ROAD_CLOSED;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.ROLLING_ROAD_BLOCK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.RUSH_HOUR_LANE_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.SINGLE_ALTERNATE_LINE_TRAFFIC;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.TIDAL_FLOW_LANE_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.TURN_AROUND_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.USE_OF_SPECIFIED_LANES_OR_CARRIAGEWAYS_ALLOWED;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.USE_SPECIFIED_LANES_OR_CARRIAGEWAYS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.VEHICLE_STORAGE_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum.WEIGHT_RESTRICTION_IN_OPERATION;
+import static fi.livi.digitraffic.tie.datex2.v3_7.TrafficFlowCharacteristicsEnum.ERRATIC_FLOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.TrafficFlowCharacteristicsEnum.SMOOTH_FLOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.TrafficFlowCharacteristicsEnum.STOP_AND_GO;
+import static fi.livi.digitraffic.tie.datex2.v3_7.TrafficFlowCharacteristicsEnum.TRAFFIC_BLOCKED;
+import static fi.livi.digitraffic.tie.datex2.v3_7.TrafficTrendTypeEnum.TRAFFIC_BUILDING_UP;
+import static fi.livi.digitraffic.tie.datex2.v3_7.TrafficTrendTypeEnum.TRAFFIC_EASING;
+import static fi.livi.digitraffic.tie.datex2.v3_7.TrafficTrendTypeEnum.TRAFFIC_STABLE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.ABNORMAL_LOAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.BROKEN_DOWN_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.DAMAGED_VEHICLE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.HIGH_SPEED_CHASE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.MILITARY_CONVOY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.RECKLESS_DRIVER;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.VEHICLE_ON_FIRE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.VEHICLE_ON_WRONG_CARRIAGEWAY;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.VEHICLE_STUCK;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.VEHICLE_WITH_OVERHEIGHT_LOAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum.VEHICLE_WITH_OVERWIDE_LOAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.BLACK_ICE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.FREEZING_OF_WET_ROADS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.FREEZING_PAVEMENTS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.FREEZING_RAIN;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.FRESH_SNOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.ICE;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.ICE_BUILD_UP;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.ICY_PATCHES;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.NORMAL_WINTER_CONDITIONS_FOR_PEDESTRIANS;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.PACKED_SNOW;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.SLUSH_ON_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.SNOW_ON_PAVEMENT;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.SNOW_ON_THE_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.SURFACE_WATER;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.WET_AND_ICY_ROAD;
+import static fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum.WET_ICY_PAVEMENT;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -271,59 +261,82 @@ import org.springframework.oxm.UnmarshallingFailureException;
 import org.springframework.stereotype.Component;
 
 import fi.livi.digitraffic.tie.converter.waze.WazeDatex2Converter;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTraffic;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AbnormalTrafficTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Accident;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AccidentTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceObstruction;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AnimalPresenceTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.AuthorityOperation;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ConstructionWorkTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ConstructionWorks;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.D2LogicalModel;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivity;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.DisturbanceActivityTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstruction;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EnvironmentalObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemFault;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.EquipmentOrSystemTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ExtendedEquipmentOrSystemFaultTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ExtendedTrafficTrendTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagement;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralNetworkManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.GeneralObstruction;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageObstruction;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.InfrastructureDamageTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.MaintenanceWorks;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.NonWeatherRelatedRoadConditions;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PoorEnvironmentConditions;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PoorEnvironmentTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEvent;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.PublicEventTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagement;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.ReroutingManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadMaintenanceTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagement;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.RoadOrCarriagewayOrLaneManagementTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.Situation;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationPublication;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SituationRecord;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.SpeedManagement;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficFlowCharacteristicsEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TrafficTrendTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.TransitInformation;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstruction;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.VehicleObstructionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditionTypeEnum;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi.WeatherRelatedRoadConditions;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi._AbnormalTrafficExtensionType;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi._EquipmentOrSystemFaultExtensionType;
-import fi.livi.digitraffic.tie.datex2.v2_2_3_fi._RoadOrCarriagewayOrLaneManagementExtensionType;
-import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
+import fi.livi.digitraffic.tie.datex2.v3_7.AbnormalTraffic;
+import fi.livi.digitraffic.tie.datex2.v3_7.AbnormalTrafficTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.Accident;
+import fi.livi.digitraffic.tie.datex2.v3_7.AccidentTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.CollisionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.AnimalPresenceObstruction;
+import fi.livi.digitraffic.tie.datex2.v3_7.AnimalPresenceTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.AuthorityOperation;
+import fi.livi.digitraffic.tie.datex2.v3_7.ConstructionWorkTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.ConstructionWorks;
+import fi.livi.digitraffic.tie.datex2.v3_7.SituationPublication;
+import fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivity;
+import fi.livi.digitraffic.tie.datex2.v3_7.DisturbanceActivityTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstruction;
+import fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemFault;
+import fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemFaultTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.EquipmentOrSystemTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagement;
+import fi.livi.digitraffic.tie.datex2.v3_7.GeneralObstruction;
+import fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageObstruction;
+import fi.livi.digitraffic.tie.datex2.v3_7.MaintenanceWorks;
+import fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.NonWeatherRelatedRoadConditions;
+import fi.livi.digitraffic.tie.datex2.v3_7.ObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.PoorEnvironmentConditions;
+import fi.livi.digitraffic.tie.datex2.v3_7.PoorEnvironmentTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.PublicEvent;
+import fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagement;
+import fi.livi.digitraffic.tie.datex2.v3_7.ReroutingManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.RoadMaintenanceTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagement;
+import fi.livi.digitraffic.tie.datex2.v3_7.RoadOrCarriagewayOrLaneManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.Situation;
+import fi.livi.digitraffic.tie.datex2.v3_7.SituationRecord;
+import fi.livi.digitraffic.tie.datex2.v3_7.SpeedManagement;
+import fi.livi.digitraffic.tie.datex2.v3_7.TrafficFlowCharacteristicsEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.TrafficTrendTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.TransitInformation;
+import fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstruction;
+import fi.livi.digitraffic.tie.datex2.v3_7.VehicleObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.VehicleStatusEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.VehicleTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.WeatherRelatedRoadConditions;
+import fi.livi.digitraffic.tie.service.trafficmessage.DatexII37XmlMarshaller;
+import fi.livi.digitraffic.tie.datex2.v3_7._AbnormalTrafficTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._AccidentTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._AnimalPresenceTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._CollisionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._ConstructionWorkTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._DisturbanceActivityTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._EnvironmentalObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._EquipmentOrSystemFaultTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._EquipmentOrSystemTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._GeneralNetworkManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._InfrastructureDamageTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._NonWeatherRelatedRoadConditionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._ObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._PoorEnvironmentTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._PublicEventTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._ReroutingManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._RoadMaintenanceTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._RoadOrCarriagewayOrLaneManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._TrafficFlowCharacteristicsEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._TrafficTrendTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._TransitServiceInformationEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._TransitServiceTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._VehicleObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._VehicleStatusEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._VehicleTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7._WeatherRelatedRoadConditionTypeEnum;
+import java.util.function.Function;
+import fi.livi.digitraffic.tie.datex2.v3_7.EnvironmentalObstructionTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.GeneralNetworkManagementTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.InfrastructureDamageTypeEnum;
+import fi.livi.digitraffic.tie.datex2.v3_7.PublicEventTypeEnum;
 
 @Component
 public class WazeDatex2MessageConverter {
@@ -332,16 +345,17 @@ public class WazeDatex2MessageConverter {
     // use this string, when you want to skip some type-enum without error
     private static final String SKIP_SUBTYPE = "SKIP_SUBTYPE-5O7jh8ytZjQLKCurmFwYowFBaghhMk3U-SKIP_SUBTYPE";
 
-    private final DatexII223XmlMarshaller datex2XmlStringToObjectMarshaller;
+    private final DatexII37XmlMarshaller datex2XmlStringToObjectMarshaller;
 
     private final Map<AbnormalTrafficTypeEnum, String> abnormalTrafficTypeEnumStringMap = new HashMap<>();
     private final Map<AccidentTypeEnum, String> accidentTypeMap = new HashMap<>();
+    private final Map<CollisionTypeEnum, String> collisionTypeMap = new HashMap<>();
+    private final Map<VehicleStatusEnum, String> vehicleStatusMap = new HashMap<>();
     private final Map<AnimalPresenceTypeEnum, String> animalPresenceTypeEnumStringMap = new HashMap<>();
     private final Map<DisturbanceActivityTypeEnum, String> disturbanceActivityTypeEnumStringMap = new HashMap<>();
     private final Map<EnvironmentalObstructionTypeEnum, String> environmentalObstructionTypeEnumStringMap = new HashMap<>();
     private final Map<EquipmentOrSystemFaultTypeEnum, String> equipmentOrSystemFaultTypeMap = new HashMap<>();
     private final Map<EquipmentOrSystemTypeEnum, String> equipmentOrSystemTypeMap = new HashMap<>();
-    private final Map<ExtendedRoadOrCarriagewayOrLaneManagementTypeEnum, String> extendedRoadOrCarriagewayOrLaneManagementTypeMap = new HashMap<>();
     private final Map<GeneralNetworkManagementTypeEnum, String> generalNetworkManagementTypeEnumStringMap = new HashMap<>();
     private final Map<InfrastructureDamageTypeEnum, String> infrastructureDamageTypeEnumStringMap = new HashMap<>();
     private final Map<NonWeatherRelatedRoadConditionTypeEnum, String> nonWeatherRelatedRoadConditionTypeEnumStringMap = new HashMap<>();
@@ -353,13 +367,37 @@ public class WazeDatex2MessageConverter {
     private final Map<TrafficFlowCharacteristicsEnum, String> trafficFlowCharacteristicsEnumStringMap = new HashMap<>();
     private final Map<TrafficTrendTypeEnum, String> trafficTrendTypeEnumMap = new HashMap<>();
     private final Map<VehicleObstructionTypeEnum, String> vehicleObstructionTypeMap = new HashMap<>();
+    private final Map<VehicleTypeEnum, String> brokenDownVehicleTypeMap = new HashMap<>();
     private final Map<WeatherRelatedRoadConditionTypeEnum, String> weatherRelatedRoadConditionTypeMap = new HashMap<>();
     private final Map<ConstructionWorkTypeEnum, String> constructionWorksTypeMap = new HashMap<>();
     private final Map<RoadMaintenanceTypeEnum, String> maintenanceWorksTypeMap = new HashMap<>();
 
 
+    /**
+     * Unwraps a Datex II 3.7 {@code _XxxEnum} wrapper to the enum constant and returns its
+     * {@code name()}. The 2.2.3 model exposed the enum directly, so {@code toString()} was enough;
+     * in 3.7 it would yield the wrapper's default {@code Object.toString()}.
+     */
+    private static <W, E extends Enum<E>> String enumName(final W wrapper, final Function<W, E> unwrap) {
+        final E value = unwrap(wrapper, unwrap);
+        return value != null ? value.name() : null;
+    }
+
+    /**
+     * Looks up a description for a Datex II 3.7 {@code _XxxEnum} wrapper. Keeping the maps keyed by
+     * the enum type means a value from the wrong enum is a compile error rather than a silent miss.
+     */
+    private static <W, E extends Enum<E>> String lookup(final Map<E, String> map, final W wrapper, final Function<W, E> unwrap) {
+        final E key = unwrap(wrapper, unwrap);
+        return key != null ? map.get(key) : null;
+    }
+
+    private static <W, E extends Enum<E>> E unwrap(final W wrapper, final Function<W, E> unwrap) {
+        return wrapper != null ? unwrap.apply(wrapper) : null;
+    }
+
     @Autowired
-    public WazeDatex2MessageConverter(final DatexII223XmlMarshaller datex2XmlStringToObjectMarshaller) {
+    public WazeDatex2MessageConverter(final DatexII37XmlMarshaller datex2XmlStringToObjectMarshaller) {
         this.datex2XmlStringToObjectMarshaller = datex2XmlStringToObjectMarshaller;
 
         constructMaps();
@@ -374,15 +412,19 @@ public class WazeDatex2MessageConverter {
         abnormalTrafficTypeEnumStringMap.put(AbnormalTrafficTypeEnum.OTHER, "Abnormal traffic");
 
         accidentTypeMap.put(ACCIDENT, "Accident");
-        accidentTypeMap.put(ACCIDENT_INVOLVING_BUSES, "Accident involving busses");
+        accidentTypeMap.put(ACCIDENT_INVOLVING_MASS_TRANSIT_VEHICLE, "Accident involving busses");
         accidentTypeMap.put(ACCIDENT_INVOLVING_HAZARDOUS_MATERIALS, "Accident involving hazardous materials");
         accidentTypeMap.put(ACCIDENT_INVOLVING_HEAVY_LORRIES, "Accident involving heavy lorries");
-        accidentTypeMap.put(EARLIER_ACCIDENT, "Earlier accident");
-        accidentTypeMap.put(MULTIVEHICLE_ACCIDENT, "Accident involving multiple vehicles");
-        accidentTypeMap.put(OVERTURNED_HEAVY_LORRY, "Overturned heavy lorry");
-        accidentTypeMap.put(REAR_COLLISION, "Rear collision");
-        accidentTypeMap.put(VEHICLE_SPUN_AROUND, "Vehicle spun around");
+        accidentTypeMap.put(SECONDARY_ACCIDENT, "Earlier accident");
+        accidentTypeMap.put(MULTIPLE_VEHICLE_ACCIDENT, "Accident involving multiple vehicles");
         accidentTypeMap.put(AccidentTypeEnum.OTHER, "Accident");
+
+        // Datex II 3.7 moved these from accidentType to Accident.collisionType
+        collisionTypeMap.put(CollisionTypeEnum.REAR_COLLISION, "Rear collision");
+
+        // Datex II 3.7 moved these from accidentType to Vehicle.vehicleStatus
+        vehicleStatusMap.put(VehicleStatusEnum.OVERTURNED, "Overturned vehicle");
+        vehicleStatusMap.put(VehicleStatusEnum.SPUN_AROUND, "Vehicle spun around");
 
         animalPresenceTypeEnumStringMap.put(ANIMALS_ON_THE_ROAD, "Animals on the road");
         animalPresenceTypeEnumStringMap.put(HERD_OF_ANIMALS_ON_THE_ROAD, "Herd of animals on the road");
@@ -441,9 +483,6 @@ public class WazeDatex2MessageConverter {
         equipmentOrSystemFaultTypeMap.put(WORKING_INTERMITTENTLY, "working intermittently");
         equipmentOrSystemFaultTypeMap.put(WORKING_INCORRECTLY, "working incorrectly");
 
-        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_OPEN, "Ice road open");
-        extendedRoadOrCarriagewayOrLaneManagementTypeMap.put(ICE_ROAD_CLOSED, "Ice road closed");
-
         generalNetworkManagementTypeEnumStringMap.put(BRIDGE_SWING_IN_OPERATION, "Bridge swing in operation");
         generalNetworkManagementTypeEnumStringMap.put(CONVOY_SERVICE, "Convoy service");
         generalNetworkManagementTypeEnumStringMap.put(OBSTACLE_SIGNALLING, "Obstacle signaling");
@@ -490,8 +529,6 @@ public class WazeDatex2MessageConverter {
         obstructionTypeMap.put(EXPLOSION, "Explosion");
         obstructionTypeMap.put(EXPLOSION_HAZARD, "Explosion hazard");
         obstructionTypeMap.put(HAZARDS_ON_THE_ROAD, "Hazards on the road");
-        obstructionTypeMap.put(HIGH_SPEED_CHASE, "High speed chase");
-        obstructionTypeMap.put(HOUSE_FIRE, "House on fire");
         obstructionTypeMap.put(INCIDENT, "Incident on roadway");
         obstructionTypeMap.put(INDUSTRIAL_ACCIDENT, "Industrial accident");
         obstructionTypeMap.put(OBJECT_ON_THE_ROAD, "Object on the road");
@@ -499,7 +536,6 @@ public class WazeDatex2MessageConverter {
         obstructionTypeMap.put(OBSTRUCTION_ON_THE_ROAD, "Obstruction on the road");
         obstructionTypeMap.put(PEOPLE_ON_ROADWAY, "People on roadway");
         obstructionTypeMap.put(RAIL_CRASH, "Rail crash");
-        obstructionTypeMap.put(RECKLESS_DRIVER, "Recless driver");
         obstructionTypeMap.put(RESCUE_AND_RECOVERY_WORK, "Rescue and recovery work");
         obstructionTypeMap.put(SEVERE_FROST_DAMAGED_ROADWAY, "Severe frost damaged roadway");
         obstructionTypeMap.put(SHED_LOAD, "Shed load");
@@ -662,15 +698,18 @@ public class WazeDatex2MessageConverter {
         vehicleObstructionTypeMap.put(VEHICLE_ON_FIRE, "Vehicle on fire");
         vehicleObstructionTypeMap.put(VEHICLE_STUCK, "Vehicle stuck");
         vehicleObstructionTypeMap.put(BROKEN_DOWN_VEHICLE, "Broken down vehicle");
-        vehicleObstructionTypeMap.put(BROKEN_DOWN_HEAVY_LORRY, "Broken down heavy lorry");
         vehicleObstructionTypeMap.put(DAMAGED_VEHICLE, "Damaged vehicle");
+        vehicleObstructionTypeMap.put(HIGH_SPEED_CHASE, "High speed chase");
         vehicleObstructionTypeMap.put(MILITARY_CONVOY, "Military convoy");
-        vehicleObstructionTypeMap.put(SALTING_OR_GRITTING_VEHICLE_IN_USE, "Salting or gritting vehicle in use");
-        vehicleObstructionTypeMap.put(SLOW_MOVING_MAINTENANCE_VEHICLE, "Slow moving maintenance vehicle");
-        vehicleObstructionTypeMap.put(SNOWPLOUGH, "Snowplough");
+        vehicleObstructionTypeMap.put(RECKLESS_DRIVER, "Reckless driver");
         vehicleObstructionTypeMap.put(VEHICLE_WITH_OVERHEIGHT_LOAD, "Vehicle with oversize load");
         vehicleObstructionTypeMap.put(VEHICLE_WITH_OVERWIDE_LOAD, "Vehicle with oversize load");
         vehicleObstructionTypeMap.put(VehicleObstructionTypeEnum.OTHER, "Vehicle obstruction");
+
+        // Datex II 2.2.3 had its own value for a broken down heavy lorry. In 3.7 the type of the
+        // vehicle moved to the separate involvedVehicleType field, so it has to be read together
+        // with the obstruction type to keep the description as accurate as it was.
+        brokenDownVehicleTypeMap.put(VehicleTypeEnum.HEAVY_VEHICLE, "Broken down heavy lorry");
 
         weatherRelatedRoadConditionTypeMap.put(BLACK_ICE, "Black ice");
         weatherRelatedRoadConditionTypeMap.put(FREEZING_OF_WET_ROADS, "Freezing of wet roads");
@@ -705,10 +744,10 @@ public class WazeDatex2MessageConverter {
     }
 
     public String export(final String situationId, final String datex2Message) {
-        final D2LogicalModel d2LogicalModel;
+        final SituationPublication d2LogicalModel;
 
         try {
-            d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(datex2Message);
+            d2LogicalModel = datex2XmlStringToObjectMarshaller.convertToObject(null, datex2Message);
         } catch (final UnmarshallingFailureException e) {
             logger.error("method=export situation {} did not have a proper datex2 message, error: {}", situationId, e.getMessage());
             return "";
@@ -717,7 +756,7 @@ public class WazeDatex2MessageConverter {
         return export(situationId, d2LogicalModel);
     }
 
-    public String exportPhase(final String situationId, final String phaseId, final D2LogicalModel d2logicalModel) {
+    public String exportPhase(final String situationId, final String phaseId, final SituationPublication d2logicalModel) {
         return getDescriptions(situationId, d2logicalModel)
                 .filter(p -> isSamePhase(phaseId, p.getLeft()))
                 .findFirst()
@@ -731,14 +770,14 @@ public class WazeDatex2MessageConverter {
         return candidate.startsWith(phaseId);
     }
 
-    public String export(final String situationId, final D2LogicalModel d2LogicalModel) {
+    public String export(final String situationId, final SituationPublication d2LogicalModel) {
         return getDescriptions(situationId, d2LogicalModel)
                 .map(Pair::getRight)
                 .collect(Collectors.joining(". ", "", "."));
     }
 
-    private Stream<Pair<String, String>> getDescriptions(final String situationId, final D2LogicalModel d2logicalModel) {
-        final SituationPublication situationPublication = (SituationPublication) d2logicalModel.getPayloadPublication();
+    private Stream<Pair<String, String>> getDescriptions(final String situationId, final SituationPublication d2logicalModel) {
+        final SituationPublication situationPublication = d2logicalModel;
         if (situationPublication == null) {
             logger.info("method=export situation {} did not have a situation publication payload", situationId);
             return Stream.empty();
@@ -760,19 +799,15 @@ public class WazeDatex2MessageConverter {
 
     private Optional<String> accept(final AbnormalTraffic abnormalTraffic) {
         final Optional<String> trafficTrendTypeOptional = Optional.ofNullable(abnormalTraffic.getTrafficTrendType())
-            .map(x -> trafficTrendTypeEnumMap.getOrDefault(x, null));
+            .map(x -> lookup(trafficTrendTypeEnumMap, x, _TrafficTrendTypeEnum::getValue));
 
         final Optional<String> abnormalTrafficTypeOptional = Optional.ofNullable(abnormalTraffic.getAbnormalTrafficType())
-            .map(x -> abnormalTrafficTypeEnumStringMap.getOrDefault(x, null));
-
-        final Optional<String> extendedTrafficTrendType = Optional.ofNullable(abnormalTraffic.getAbnormalTrafficExtension())
-                .map(_AbnormalTrafficExtensionType::getTrafficTrendType)
-                .map(x -> x.equals(ExtendedTrafficTrendTypeEnum.TRAFFIC_MAY_BUILD_UP) ? "Traffic may build up" : null);
+            .map(x -> lookup(abnormalTrafficTypeEnumStringMap, x, _AbnormalTrafficTypeEnum::getValue));
 
         final Optional<String> trafficFlowCharacteristicsOptional = Optional.ofNullable(abnormalTraffic.getTrafficFlowCharacteristics())
-            .map(x -> trafficFlowCharacteristicsEnumStringMap.getOrDefault(x, null));
+            .map(x -> lookup(trafficFlowCharacteristicsEnumStringMap, x, _TrafficFlowCharacteristicsEnum::getValue));
 
-        return Stream.of(trafficTrendTypeOptional, abnormalTrafficTypeOptional, extendedTrafficTrendType, trafficFlowCharacteristicsOptional)
+        return Stream.of(trafficTrendTypeOptional, abnormalTrafficTypeOptional, trafficFlowCharacteristicsOptional)
                 .flatMap(Optional::stream)
                 .findFirst();
     }
@@ -781,59 +816,65 @@ public class WazeDatex2MessageConverter {
         return accident.getAccidentTypes()
             .stream()
             .findFirst()
-            .map(x -> accidentTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(accidentTypeMap, x, _AccidentTypeEnum::getValue))
+            .or(() -> Optional.ofNullable(lookup(collisionTypeMap, accident.getCollisionType(), _CollisionTypeEnum::getValue)))
+            .or(() -> accident.getVehicleInvolveds()
+                .stream()
+                .map(v -> lookup(vehicleStatusMap, v.getVehicleStatus(), _VehicleStatusEnum::getValue))
+                .filter(Objects::nonNull)
+                .findFirst());
     }
 
     private Optional<String> accept(final AnimalPresenceObstruction animalPresenceObstruction) {
-        return Optional.of(animalPresenceTypeEnumStringMap.getOrDefault(animalPresenceObstruction.getAnimalPresenceType(), null));
+        return Optional.of(lookup(animalPresenceTypeEnumStringMap, animalPresenceObstruction.getAnimalPresenceType(), _AnimalPresenceTypeEnum::getValue));
     }
 
     private Optional<String> accept(final AuthorityOperation authorityOperation) {
         return Optional.of(SKIP_SUBTYPE);
     }
     private Optional<String> accept(final DisturbanceActivity disturbanceActivity) {
-        return Optional.of(disturbanceActivityTypeEnumStringMap.getOrDefault(disturbanceActivity.getDisturbanceActivityType(), null));
+        return Optional.of(lookup(disturbanceActivityTypeEnumStringMap, disturbanceActivity.getDisturbanceActivityType(), _DisturbanceActivityTypeEnum::getValue));
     }
     private Optional<String> accept(final EnvironmentalObstruction environmentalObstruction) {
-        final Optional<EnvironmentalObstructionTypeEnum> environmentalObstructionTypeEnumOptional = Optional.ofNullable(environmentalObstruction.getEnvironmentalObstructionType());
-        return environmentalObstructionTypeEnumOptional.map(x -> environmentalObstructionTypeEnumStringMap.getOrDefault(x, null));
+        final var environmentalObstructionTypeEnumOptional = Optional.ofNullable(environmentalObstruction.getEnvironmentalObstructionType());
+        return environmentalObstructionTypeEnumOptional.map(x -> lookup(environmentalObstructionTypeEnumStringMap, x, _EnvironmentalObstructionTypeEnum::getValue));
     }
 
     private Optional<String> accept(final EquipmentOrSystemFault equipmentOrSystemFault) {
         final Optional<String> equipmentOrSystemType = Optional.ofNullable(equipmentOrSystemFault.getFaultyEquipmentOrSystemType())
-            .map(x -> equipmentOrSystemTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(equipmentOrSystemTypeMap, x, _EquipmentOrSystemTypeEnum::getValue));
 
-        return Optional.ofNullable(equipmentOrSystemFault.getEquipmentOrSystemFaultExtension())
-            .map(_EquipmentOrSystemFaultExtensionType::getEquipmentOrSystemFaultType)
-            .map(x -> x == ExtendedEquipmentOrSystemFaultTypeEnum.REPAIRED ? "repaired" : null)
-            .or(() -> Optional.ofNullable(equipmentOrSystemFault.getEquipmentOrSystemFaultType())
-                .map(x -> equipmentOrSystemFaultTypeMap.getOrDefault(x, null)))
-            .flatMap(x ->
-                equipmentOrSystemType.map(y -> y + " " + x));
+        // A repaired equipment still carries its original fault type, so the free text has to be
+        // read first. Otherwise the description would state the fault that was just fixed.
+        final Optional<String> fault = WazeDatex2Converter.isRepairedRecord(equipmentOrSystemFault)
+            ? Optional.of("repaired")
+            : Optional.ofNullable(equipmentOrSystemFault.getEquipmentOrSystemFaultType())
+                .map(x -> lookup(equipmentOrSystemFaultTypeMap, x, _EquipmentOrSystemFaultTypeEnum::getValue));
 
+        return fault.flatMap(x -> equipmentOrSystemType.map(y -> y + " " + x));
     }
 
     private Optional<String> accept(final GeneralNetworkManagement generalNetworkManagement) {
-        final Optional<GeneralNetworkManagementTypeEnum> generalNetworkManagementTypeEnumOptional = Optional.ofNullable(generalNetworkManagement.getGeneralNetworkManagementType());
+        final var generalNetworkManagementTypeEnumOptional = Optional.ofNullable(generalNetworkManagement.getGeneralNetworkManagementType());
 
         return generalNetworkManagementTypeEnumOptional
-            .map(x -> generalNetworkManagementTypeEnumStringMap.getOrDefault(x, null));
+            .map(x -> lookup(generalNetworkManagementTypeEnumStringMap, x, _GeneralNetworkManagementTypeEnum::getValue));
     }
 
     private Optional<String> accept(final GeneralObstruction generalObstruction) {
         return generalObstruction.getObstructionTypes()
             .stream()
             .findFirst()
-            .map(x -> obstructionTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(obstructionTypeMap, x, _ObstructionTypeEnum::getValue));
     }
 
     private Optional<String> accept(final InfrastructureDamageObstruction infrastructureDamageObstruction) {
-        final InfrastructureDamageTypeEnum damageType = infrastructureDamageObstruction.getInfrastructureDamageType();
-        return Optional.ofNullable(infrastructureDamageTypeEnumStringMap.getOrDefault(damageType, null));
+        final var damageType = infrastructureDamageObstruction.getInfrastructureDamageType();
+        return Optional.ofNullable(lookup(infrastructureDamageTypeEnumStringMap, damageType, _InfrastructureDamageTypeEnum::getValue));
     }
     private Optional<String> accept(final NonWeatherRelatedRoadConditions nonWeatherRelatedRoadConditions) {
         final String nonweatherRelatedRoadConditionTypes = nonWeatherRelatedRoadConditions.getNonWeatherRelatedRoadConditionTypes().stream()
-            .map(x -> nonWeatherRelatedRoadConditionTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> lookup(nonWeatherRelatedRoadConditionTypeEnumStringMap, x, _NonWeatherRelatedRoadConditionTypeEnum::getValue))
             .collect(Collectors.joining(". "));
 
         if (nonweatherRelatedRoadConditionTypes.isEmpty()) {
@@ -845,7 +886,7 @@ public class WazeDatex2MessageConverter {
 
     private Optional<String> accept(final PoorEnvironmentConditions poorEnvironmentConditions) {
         final var environmentConditions = poorEnvironmentConditions.getPoorEnvironmentTypes().stream()
-            .map(x -> poorEnvironmentTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> lookup(poorEnvironmentTypeEnumStringMap, x, _PoorEnvironmentTypeEnum::getValue))
             .filter(Objects::nonNull)
             .collect(Collectors.joining(". "));
 
@@ -853,9 +894,9 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final PublicEvent publicEvent) {
-        final Optional<PublicEventTypeEnum> publicEventOptional = Optional.ofNullable(publicEvent.getPublicEventType());
+        final var publicEventOptional = Optional.ofNullable(publicEvent.getPublicEventType());
         return publicEventOptional
-            .map(x -> publicEventTypeEnumStringMap.getOrDefault(x, null))
+            .map(x -> lookup(publicEventTypeEnumStringMap, x, _PublicEventTypeEnum::getValue))
             .map(x -> String.format("Public event: %s", x));
     }
 
@@ -863,18 +904,28 @@ public class WazeDatex2MessageConverter {
         return reroutingManagement.getReroutingManagementTypes()
             .stream()
             .findFirst()
-            .map(x -> reroutingManagementTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(reroutingManagementTypeMap, x, _ReroutingManagementTypeEnum::getValue));
     }
 
     private Optional<String> accept(final RoadOrCarriagewayOrLaneManagement roadOrCarriagewayOrLaneManagement) {
-        final Optional<RoadOrCarriagewayOrLaneManagementTypeEnum> optionalManagementType = Optional.ofNullable(roadOrCarriagewayOrLaneManagement.getRoadOrCarriagewayOrLaneManagementType());
-        final Optional<_RoadOrCarriagewayOrLaneManagementExtensionType> optionalManagementExtension = Optional.ofNullable(roadOrCarriagewayOrLaneManagement.getRoadOrCarriagewayOrLaneManagementExtension());
+        final var managementType = roadOrCarriagewayOrLaneManagement.getRoadOrCarriagewayOrLaneManagementType();
+        return iceRoadDescription(roadOrCarriagewayOrLaneManagement)
+            .or(() -> Optional.ofNullable(lookup(roadOrCarriagewayOrLaneManagementTypeMap, managementType, _RoadOrCarriagewayOrLaneManagementTypeEnum::getValue)));
+    }
 
-        return optionalManagementExtension
-            .map(_RoadOrCarriagewayOrLaneManagementExtensionType::getRoadOrCarriagewayOrLaneManagementType)
-            .map(x -> extendedRoadOrCarriagewayOrLaneManagementTypeMap.getOrDefault(x, null))
-            .or(() -> optionalManagementType
-                .map((x) -> roadOrCarriagewayOrLaneManagementTypeMap.getOrDefault(x, null)));
+    /**
+     * Datex II 3.7 has no coded value for an ice road, so TLOIK sends {@code other} and states the
+     * status only in the Finnish free text. Without this the record would fall back to the generic
+     * "Road or carriageway or lane management" description.
+     */
+    private static Optional<String> iceRoadDescription(final RoadOrCarriagewayOrLaneManagement management) {
+        if (WazeDatex2Converter.isIceRoadOpenRecord(management)) {
+            return Optional.of("Ice road open");
+        }
+        if (WazeDatex2Converter.isIceRoadClosedRecord(management)) {
+            return Optional.of("Ice road closed");
+        }
+        return Optional.empty();
     }
 
     private Optional<String> accept(final SpeedManagement speedManagement) {
@@ -885,38 +936,52 @@ public class WazeDatex2MessageConverter {
     }
 
     private Optional<String> accept(final TransitInformation transitInformation) {
-        return Optional.ofNullable(transitInformation)
-            .map((transitInformation1) -> {
-                final String type = transitInformation1.getTransitServiceType().toString().toLowerCase().replace("_", " ");
-                final String info = transitInformation1.getTransitServiceInformation().toString().toLowerCase().replace("_", " ");
-                return String.format("%s: %s", type, info);
-            })
-            .map(StringUtils::capitalize);
+        final String type = enumName(transitInformation.getTransitServiceType(), _TransitServiceTypeEnum::getValue);
+        final String info = enumName(transitInformation.getTransitServiceInformation(), _TransitServiceInformationEnum::getValue);
+
+        if (type == null || info == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(StringUtils.capitalize(String.format("%s: %s", humanize(type), humanize(info))));
+    }
+
+    private static String humanize(final String enumName) {
+        return enumName.toLowerCase().replace("_", " ");
     }
 
     private Optional<String> accept(final VehicleObstruction vehicleObstruction) {
 
         // skip obstructingVehicle and numberOfObstructions
+        if (unwrap(vehicleObstruction.getVehicleObstructionType(), _VehicleObstructionTypeEnum::getValue)
+            == VehicleObstructionTypeEnum.BROKEN_DOWN_VEHICLE) {
+            final String byVehicleType =
+                lookup(brokenDownVehicleTypeMap, vehicleObstruction.getInvolvedVehicleType(), _VehicleTypeEnum::getValue);
+            if (byVehicleType != null) {
+                return Optional.of(byVehicleType);
+            }
+        }
+
         return Optional.ofNullable(vehicleObstruction.getVehicleObstructionType())
-            .map(x -> vehicleObstructionTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(vehicleObstructionTypeMap, x, _VehicleObstructionTypeEnum::getValue));
     }
 
     private Optional<String> accept(final WeatherRelatedRoadConditions weatherRelatedRoadConditions) {
         return weatherRelatedRoadConditions.getWeatherRelatedRoadConditionTypes()
             .stream()
             .findFirst()
-            .map(x -> weatherRelatedRoadConditionTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(weatherRelatedRoadConditionTypeMap, x, _WeatherRelatedRoadConditionTypeEnum::getValue));
     }
 
     private Optional<String> accept(final ConstructionWorks constructionWorks) {
         return Optional.ofNullable(constructionWorks.getConstructionWorkType())
-            .map(x -> constructionWorksTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(constructionWorksTypeMap, x, _ConstructionWorkTypeEnum::getValue));
     }
 
     private Optional<String> accept(final MaintenanceWorks maintenanceWorks) {
         return maintenanceWorks.getRoadMaintenanceTypes().stream()
             .findFirst()
-            .map(x -> maintenanceWorksTypeMap.getOrDefault(x, null));
+            .map(x -> lookup(maintenanceWorksTypeMap, x, _RoadMaintenanceTypeEnum::getValue));
     }
 
     private Optional<Pair<String, String>> accept(final String situationId, final SituationRecord situationRecord) {

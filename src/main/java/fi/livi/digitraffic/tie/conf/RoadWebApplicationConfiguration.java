@@ -15,6 +15,8 @@ import jakarta.servlet.Filter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
-import org.springframework.lang.NonNull;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
@@ -38,7 +39,6 @@ import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.resource.TransformedResource;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -61,21 +61,16 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
     public RoadWebApplicationConfiguration(final ConfigurableApplicationContext applicationContext,
                                            final @Value("${dt.domain.url}") String domainUrl) {
 
-        try {
-            // For some reason @Value is not working on test
-            final String schemaDomainUrl =
-                    StringUtils.isNotBlank(domainUrl) && StringUtils.containsNone(domainUrl, "${") ?
-                            domainUrl :
-                            applicationContext.getEnvironment().getProperty("dt.domain.url");
+        // For some reason @Value is not working on test
+        final String schemaDomainUrl =
+                StringUtils.isNotBlank(domainUrl) && StringUtils.containsNone(domainUrl, "${") ?
+                        domainUrl :
+                        applicationContext.getEnvironment().getProperty("dt.domain.url");
 
-            this.dtDomain =
-                    Objects.requireNonNull(schemaDomainUrl).replaceAll("https", "http"); // Schema is always http
-            this.dtDomainAndSchemaRootLocation =
-                    new URI(StringUtil.format("{}/{}", dtDomain, DATEX2_SCHEMA_ROOT_PATH)).normalize().toString();
-        } catch (final URISyntaxException e) {
-            log.error("Failed to create dtDomainAndSchemaRootLocation {}", e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+        this.dtDomain =
+                Objects.requireNonNull(schemaDomainUrl).replace("https", "http"); // Schema is always http
+        this.dtDomainAndSchemaRootLocation =
+                URI.create(StringUtil.format("{}/{}", dtDomain, DATEX2_SCHEMA_ROOT_PATH)).normalize().toString();
     }
 
     /**
@@ -109,7 +104,7 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
      * pick up converters registered only via the ServerBuilder path. Until that gap is closed we must also
      * prepend the JAXB converters here so that tests see the correct serialisation.
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     @Override
     public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
         converters.addFirst(xmlHttpMessageConverterForSituationPublication37());
@@ -266,11 +261,11 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
                 // By default many client's sends long list of accepted types or */* etc.
                 // If specific path is asked, then check if json is in accepted formats return json otherwise xml.
                 final String path = ((ServletWebRequest) webRequest).getRequest().getRequestURI();
-                if (StringUtils.endsWith(path, ".json")) {
+                if (Strings.CS.endsWith(path, ".json")) {
                     return Collections.singletonList(DtMediaType.APPLICATION_JSON);
-                } else if (StringUtils.endsWith(path, ".xml")) {
+                } else if (Strings.CS.endsWith(path, ".xml")) {
                     return Collections.singletonList(DtMediaType.APPLICATION_XML);
-                } else if (StringUtils.contains(path, ".datex2")) {
+                } else if (Strings.CS.contains(path, ".datex2")) {
                     if (containsJson(fromHeaders)) {
                         log.info("method=resolveMediaTypes type=json for path={} mediaTypes: {}", path, fromHeaders);
                     }

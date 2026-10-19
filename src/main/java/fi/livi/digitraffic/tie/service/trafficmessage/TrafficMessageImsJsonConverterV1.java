@@ -71,7 +71,10 @@ public class TrafficMessageImsJsonConverterV1 {
                 featureJsonReader_V1.readValue(imsJsonV3);
         feature.getProperties().setLastModified(lastModified);
 
-        // Older
+        // Only SIMPPELI versions below 0.2.9 omit the type fields from the JSON, so the first branch is
+        // reached only by messages stored before that version. Callers that have no separate source for
+        // the type pass null for trafficAnnouncementType and it is left unset. The second branch is an
+        // integrity check that catches a situation stored under a type other than the one in its own JSON.
         if (feature.getProperties().getSituationType() == null) {
             feature.getProperties().setSituationType(
                     fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.fromValue(situationType.name()));
