@@ -12,10 +12,6 @@ public class LocationOpenLr {
     @Schema(description = "Base64-encoded OpenLR binary location reference")
     public String binary;
 
-    public LocationOpenLr() {
-    }
-
-    public LocationOpenLr(final String binary) {
-        this.binary = binary;
-    }
+    @Schema(description = "Base64-encoded secondary OpenLR binary location reference, representing an additional related location.")
+    public String secondaryBinary;
 }

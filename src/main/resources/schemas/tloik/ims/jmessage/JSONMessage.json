@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "javaType": "fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties",
-  "$id": "https://raw.githubusercontent.com/tmfg/metadata/JSONMessage_0.2.18/schema/JSONMessage.json",
+  "$id": "https://raw.githubusercontent.com/tmfg/metadata/JSONMessage_0.2.19/schema/JSONMessage.json",
   "type": "object",
   "title": "TrafficSituation announcement.",
   "description": "Structural representation of a traffic situation containing its key elements and all the language versions of announcements sent by Finnish Transportation Agency.",
@@ -226,6 +226,11 @@
           "type": "string",
           "title": "Location in OperLR binary",
           "description": "OpenLR binary representation of the location"
+        },
+        "secondaryBinary": {
+          "type": "string",
+          "title": "Secondary location in OperLR binary",
+          "description": "Secondary OpenLR binary representation of the location, representing additional related location"
         }
       },
       "required": [

@@ -333,10 +333,10 @@ public class WeatherControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_15)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS_SIMPLE + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
-    @Operation(summary = "Current data of simple weather forecast sections" + ApiDeprecations.API_NOTE_2026_10_15)
+    @Operation(summary = "Current data of simple weather forecast sections" + ApiDeprecations.API_NOTE_2026_11_17)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionsWeatherDtoV1 forecastSectionsSimpleForecasts(
 
@@ -372,10 +372,10 @@ public class WeatherControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_15)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
-    @Operation(summary = "Current data of detailed weather forecast sections" + ApiDeprecations.API_NOTE_2026_10_15)
+    @Operation(summary = "Current data of detailed weather forecast sections" + ApiDeprecations.API_NOTE_2026_11_17)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionsWeatherDtoV1 forecastSectionsForecasts(
 
@@ -411,10 +411,10 @@ public class WeatherControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_15)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS_SIMPLE + "/{id}" + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
-    @Operation(summary = "Current data of simple weather forecast sections" + ApiDeprecations.API_NOTE_2026_10_15)
+    @Operation(summary = "Current data of simple weather forecast sections" + ApiDeprecations.API_NOTE_2026_11_17)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionWeatherDtoV1 forecastSectionSimpleForecastsById(
 
@@ -426,10 +426,10 @@ public class WeatherControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_15)
+    @Sunset(date = ApiDeprecations.SUNSET_2026_11_17)
     @RequestMapping(method = RequestMethod.GET, path = API_WEATHER_V1 + FORECAST_SECTIONS + "/{id}" + FORECASTS,
                     produces = { APPLICATION_JSON_VALUE, APPLICATION_GEO_JSON_VALUE, APPLICATION_VND_GEO_JSON_VALUE })
-    @Operation(summary = "Current data of weather forecast sections" + ApiDeprecations.API_NOTE_2026_10_15)
+    @Operation(summary = "Current data of weather forecast sections" + ApiDeprecations.API_NOTE_2026_11_17)
     @ApiResponses({ @ApiResponse(responseCode = HTTP_OK, description = "Successful retrieval of Forecast Sections") })
     public ForecastSectionWeatherDtoV1 forecastSectionForecastsById(
 

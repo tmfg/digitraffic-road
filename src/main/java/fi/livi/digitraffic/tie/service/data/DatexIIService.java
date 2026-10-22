@@ -51,10 +51,13 @@ public class DatexIIService {
      * Maximum SIMPPELI message version accepted by this service.
      * Versions newer than this are intentionally excluded until the code is updated
      * to handle any schema changes they may introduce.
-     * Update this constant (and add the new version to {@link SimppeliVersion}) when
-     * support for a newer version is verified and ready.
+     *
+     * <p>Follows the newest constant of {@link SimppeliVersion}, so adding a version there is
+     * enough. Keeping the two in step matters: the same limit decides both what the queries
+     * return and when {@code ImsUpdatingService} reports an unsupported version, and a mismatch
+     * would leave newer messages dropped without any sign of it.</p>
      */
-    public static final String MAX_SIMPPELI_VERSION = SimppeliVersion.V_0_2_18.version;
+    public static final String MAX_SIMPPELI_VERSION = SimppeliVersion.newestSupported().version;
 
     /** Default value for {@code from} when not provided by the caller: current time minus one hour. */
     private static Instant defaultFrom() {

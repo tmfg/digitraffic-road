@@ -228,6 +228,12 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
                 if (version.version >= ImsJsonVersion.V0_2_18.version) {
                     assertNotNull(announcement.locationOpenLr, "locationOpenLr should exist in 0.2.18+");
                     assertEquals("IxGQjyrPow==", announcement.locationOpenLr.binary);
+                    if (version.version >= ImsJsonVersion.V0_2_19.version) {
+                        assertEquals("IxGQjyrQpA==", announcement.locationOpenLr.secondaryBinary);
+                    } else {
+                        assertNull(announcement.locationOpenLr.secondaryBinary,
+                                   "locationOpenLr.secondaryBinary should be null before 0.2.19");
+                    }
                 } else {
                     assertNull(announcement.locationOpenLr, "locationOpenLr should be null before 0.2.18");
                 }
@@ -344,6 +350,12 @@ public class TrafficMessageImsJsonConverterV1Test extends AbstractWebServiceTest
             if (version.version >= ImsJsonVersion.V0_2_18.version) {
                 assertNotNull(rwp.locationOpenLr, "road-work-phase locationOpenLr should exist in 0.2.18+");
                 assertEquals("IxGQjyrPow==", rwp.locationOpenLr.binary);
+                if (version.version >= ImsJsonVersion.V0_2_19.version) {
+                    assertEquals("IxGQjyrQpA==", rwp.locationOpenLr.secondaryBinary);
+                } else {
+                    assertNull(rwp.locationOpenLr.secondaryBinary,
+                               "road-work-phase locationOpenLr.secondaryBinary should be null before 0.2.19");
+                }
             } else {
                 assertNull(rwp.locationOpenLr, "road-work-phase locationOpenLr should be null before 0.2.18");
             }

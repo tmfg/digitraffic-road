@@ -25,6 +25,7 @@ import fi.livi.digitraffic.tie.model.data.DataDatex2Situation;
 import fi.livi.digitraffic.tie.model.data.DataDatex2SituationMessage;
 import fi.livi.digitraffic.tie.model.data.DataIncoming;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
+import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SimppeliVersion;
 import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223UpdateService;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -137,6 +138,7 @@ public class ImsUpdatingService {
         for (final ImsMessage.MessageContent.Message message : messageContent.getMessages()) {
             if (message.getType() == MessageTypeEnum.SIMPPELI) {
                 simpleMessage = message;
+                logIfSimppeliVersionUnsupported(message.getVersion(), situation.getSituationId());
             } else if (message.getType() == MessageTypeEnum.DATEX2 &&
                     message.getVersion().equals(Datex2Version.V_2_2_3.version)) {
                 d223Message = message;
@@ -153,6 +155,23 @@ public class ImsUpdatingService {
         if (d223Message != null && simpleMessage != null) {
             handle223(d223Message.getContent(), simpleMessage.getContent());
         }
+    }
+
+    /// Writes an error when TLOIK sends a SIMPPELI version that is not listed in [SimppeliVersion].
+    ///
+    /// The message is still stored, but [DatexIIService#MAX_SIMPPELI_VERSION] bounds the queries,
+    /// so a version newer than that is left out of the v2 API, the v3 MQTT topics and the Waze feed.
+    ///
+    /// To act on this, check what the schema changed and add the version to [SimppeliVersion],
+    /// which also raises `MAX_SIMPPELI_VERSION`.
+    private void logIfSimppeliVersionUnsupported(final String version, final String situationId) {
+        if (version == null || SimppeliVersion.isSupported(version)) {
+            return;
+        }
+        log.error("method=logIfSimppeliVersionUnsupported Received unsupported SIMPPELI version={} " +
+                        "situationId={}. The data is stored but only versions up to " +
+                        "maxSimppeliVersion={} are published in the v2 API, the v3 MQTT topics and the Waze feed.",
+                version, situationId, DatexIIService.MAX_SIMPPELI_VERSION);
     }
 
     /**
@@ -246,8 +265,7 @@ public class ImsUpdatingService {
 
             return PostgisGeometryUtils.fixGeometry(geometry);
         } catch (final Exception e) {
-            log.error(String.format("method=convertGeometry Failed to fix feature json: %s",
-                    geometryString), e);
+            log.error("method=convertGeometry Failed to fix feature json: {}", geometryString, e);
 
             return null;
         }

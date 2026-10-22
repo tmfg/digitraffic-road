@@ -19,20 +19,15 @@ public final class ApiDeprecations {
     public static final String SUNSET_FUTURE = "TBD";
     public static final String API_NOTE_FUTURE = " Will be removed in the future ";
 
-    public static final String SUNSET_2026_10_20 = "2026-10-20";
-    public static final String  API_NOTE_2026_11_17 = SUNSET_TEXT + SUNSET_2026_10_20;
+    // Weather V1 forecast data: replaced by Weather V2 forecasts. Sunset is a Tuesday (production release day)
+    public static final String SUNSET_2026_11_17 = "2026-11-17";
+    public static final String API_NOTE_2026_11_17 = SUNSET_TEXT + SUNSET_2026_11_17 + ".";
 
-    // Weather V1 forecast data: replaced by Weather V2 forecasts
-    public static final String SUNSET_2026_10_15 = "2026-10-15";
-    public static final String API_NOTE_2026_10_15 = SUNSET_TEXT + SUNSET_2026_10_15 + ".";
-
-    // Weather V1 stations, sensors, history and forecast metadata: replaced by Weather V2 endpoints. Sunset is a Tuesday (production release day)
+    // Weather V1 stations, sensors, history and forecast metadata: replaced by Weather V2 endpoints.
+    // Traffic message V1 endpoints and the DATEX II 2.2.3 endpoints: replaced by Traffic message V2 and DATEX II 3.5 and 3.7 endpoints.
+    // Sunset is a Tuesday (production release day)
     public static final String SUNSET_2027_04_13 = "2027-04-13";
     public static final String API_NOTE_2027_04_13 = SUNSET_TEXT + SUNSET_2027_04_13 + ".";
 
     private ApiDeprecations() {}
-
-    public static String willBeDeprecated(final String sinceDate) {
-        return "Will be deprecated from " + sinceDate;
-    }
 }

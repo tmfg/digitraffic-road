@@ -81,6 +81,10 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
                                  "locationTableVersion": "1.11.37",
                                  "description": "Erikoiskuljetus alueella Kankaanpää Kuljetus liikkuu 12.01.2021 klo 19:00 - 21:00 reitillä: Kankaanpään katuverkko Liikenne pysäytetään ajoittain. Kuljetuksen leveys: 9,5 m Kuljetuksen korkeus: 10,8 m Kuljetuksen pituus: 40 m Kuljetuksen kokonaismassa: 167 t Kuljetus on perillä 13.01.2021 klo 06:00 mennessä"
                              },
+                             "locationOpenLr": {
+                                 "binary": "IxGQjyrPow==",
+                                 "secondaryBinary": "IxGQjyrQpA=="
+                             },
                              "locationDetails": {
                                  "areaLocation": {
                                      "areas": [
@@ -1040,40 +1044,47 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
         Assertions.assertEquals(1, announcements.size());
         Assertions.assertEquals("Erikoiskuljetus. Satakunta", announcements.get(0).get("title").asString());
         Assertions.assertEquals("fi", announcements.get(0).get("language").asString());
+
+        // Both OpenLR references must survive the conversion into the v2 response
+        final var locationOpenLr = announcements.get(0).get("locationOpenLr");
+        Assertions.assertEquals("IxGQjyrPow==", locationOpenLr.get("binary").asString());
+        Assertions.assertEquals("IxGQjyrQpA==", locationOpenLr.get("secondaryBinary").asString());
     }
 
     /**
-     * When a situation has multiple SIMPPELI versions (e.g. 0.2.17 and 0.2.18),
+     * When a situation has multiple SIMPPELI versions (e.g. 0.2.17, 0.2.18 and 0.2.19),
      * the API must return exactly one feature and it must reflect the newest allowed version.
      */
     @Test
     public void roadWorksJson_multipleSimppeliVersions_returnsOnlyNewest() throws Exception {
-        // Build two SIMPPELI messages for the same situation, differing only in title so we can
+        // Build SIMPPELI messages for the same situation, differing only in title so we can
         // tell which version was picked from the response.
         final String simppeli017 = SIMPPELI.replace("Erikoiskuljetus. Satakunta", "Title from version 0.2.17");
         final String simppeli018 = SIMPPELI.replace("Erikoiskuljetus. Satakunta", "Title from version 0.2.18");
+        final String simppeli019 = SIMPPELI.replace("Erikoiskuljetus. Satakunta", "Title from version 0.2.19");
 
         helper.insertSituationWithMessages(
                 "id1", 1L, SituationType.ROAD_WORK,
                 Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20),
                 List.of(
                         new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_17.version, simppeli017),
-                        new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_18.version, simppeli018)
+                        new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_18.version, simppeli018),
+                        new MessageSpec(MessageTypeEnum.SIMPPELI, SimppeliVersion.V_0_2_19.version, simppeli019)
                 ));
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
 
-        // Exactly one feature — no duplicates despite two stored versions.
+        // Exactly one feature — no duplicates despite several stored versions.
         JsonAsserter.ok(response)
                 .expectType("FeatureCollection")
                 .expectFeatureCount(1)
                 .run();
 
-        // The returned content must come from the newest version (0.2.18).
+        // The returned content must come from the newest version (0.2.19).
         final var root = new tools.jackson.databind.ObjectMapper().readTree(response.getContentAsString());
         final var title = root.get("features").get(0)
                 .get("properties").get("announcements").get(0).get("title").asString();
-        Assertions.assertEquals("Title from version 0.2.18", title,
+        Assertions.assertEquals("Title from version 0.2.19", title,
                 "Expected the newest SIMPPELI version (" + DatexIIService.MAX_SIMPPELI_VERSION + ") to be returned");
     }
 
@@ -1083,12 +1094,12 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
      */
     @Test
     public void roadWorksJson_onlyTooNewSimppeliVersion_isExcluded() throws Exception {
-        // "0.2.19" is intentionally NOT in SimppeliVersion — it represents a version newer
+        // "0.2.20" is intentionally NOT in SimppeliVersion — it represents a version newer
         // than MAX_SIMPPELI_VERSION that the code does not yet support.
         helper.insertSituationWithMessages(
                 "id1", 1L, SituationType.ROAD_WORK,
                 Instant.now().minusSeconds(60 * 30), Instant.now().plusSeconds(60 * 20),
-                List.of(new MessageSpec(MessageTypeEnum.SIMPPELI, "0.2.19", SIMPPELI)));
+                List.of(new MessageSpec(MessageTypeEnum.SIMPPELI, "0.2.20", SIMPPELI)));
 
         final var response = getResponse(API_TRAFFIC_MESSAGE_V2 + ROADWORKS);
 

@@ -101,8 +101,8 @@ public class TrafficMessageControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
-    @Operation(summary = "Active traffic messages as Datex2" + ApiDeprecations.API_NOTE_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Active traffic messages as Datex2" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + DATEX2 })
@@ -125,8 +125,8 @@ public class TrafficMessageControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
-    @Operation(summary = "Traffic messages by situationId as Datex2" + ApiDeprecations.API_NOTE_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Traffic messages by situationId as Datex2" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     produces = { APPLICATION_XML_VALUE, APPLICATION_JSON_VALUE },
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" + DATEX2 })
@@ -150,8 +150,8 @@ public class TrafficMessageControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
-    @Operation(summary = "Active traffic messages as simple JSON" + ApiDeprecations.API_NOTE_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Active traffic messages as simple JSON" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES },
                     produces = { APPLICATION_JSON_VALUE,
@@ -178,8 +178,8 @@ public class TrafficMessageControllerV1 {
     }
 
     @Deprecated(forRemoval = true)
-    @Sunset(date = ApiDeprecations.SUNSET_2026_10_20)
-    @Operation(summary = "Traffic messages history by situation id as simple JSON" + ApiDeprecations.API_NOTE_2026_11_17)
+    @Sunset(date = ApiDeprecations.SUNSET_2027_04_13)
+    @Operation(summary = "Traffic messages history by situation id as simple JSON" + ApiDeprecations.API_NOTE_2027_04_13)
     @RequestMapping(method = RequestMethod.GET,
                     path = { API_TRAFFIC_MESSAGE_V1_MESSAGES + "/{situationId}" },
                     produces = { APPLICATION_JSON_VALUE,

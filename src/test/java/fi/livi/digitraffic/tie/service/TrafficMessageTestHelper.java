@@ -21,10 +21,6 @@ import fi.livi.digitraffic.tie.conf.kca.artemis.jms.message.ExternalIMSMessage;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.dao.trafficmessage.datex2.Datex2Repository;
 import fi.livi.digitraffic.tie.service.trafficmessage.ImsUpdateService;
-import fi.livi.digitraffic.tie.service.trafficmessage.DatexII223XmlMarshaller;
-import fi.livi.digitraffic.tie.service.trafficmessage.TrafficMessageImsJsonConverterV1;
-import fi.livi.digitraffic.tie.service.trafficmessage.v1.RegionGeometryDataServiceV1;
-import fi.livi.digitraffic.tie.service.trafficmessage.v1.TrafficMessageDataServiceV1;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -57,7 +53,8 @@ public class TrafficMessageTestHelper {
         V0_2_15(2.15, 215),
         V0_2_16(2.16, 216),
         V0_2_17(2.17, 217),
-        V0_2_18(2.18, 218);
+        V0_2_18(2.18, 218),
+        V0_2_19(2.19, 219);
 
         public final double version;
         public final int intVersion;
@@ -86,7 +83,6 @@ public class TrafficMessageTestHelper {
     protected GenericApplicationContext applicationContext;
 
     private ImsUpdateService imsUpdateService;
-    private TrafficMessageDataServiceV1 trafficMessageDataServiceV1;
 
     @Autowired
     private Datex2Repository datex2Repository;
@@ -106,22 +102,6 @@ public class TrafficMessageTestHelper {
             imsUpdateService = applicationContext.getAutowireCapableBeanFactory().createBean(ImsUpdateService.class);
         }
         return imsUpdateService;
-    }
-
-    public TrafficMessageDataServiceV1 getTrafficMessageDataServiceV1() {
-        if (trafficMessageDataServiceV1 == null) {
-            final RegionGeometryDataServiceV1 regionGeometryDataServiceV1 =
-                applicationContext.getAutowireCapableBeanFactory().createBean(RegionGeometryDataServiceV1.class);
-            applicationContext.getBeanFactory().registerSingleton(
-                regionGeometryDataServiceV1.getClass().getCanonicalName(), regionGeometryDataServiceV1);
-
-            trafficMessageDataServiceV1 = new TrafficMessageDataServiceV1(
-                applicationContext.getBean(Datex2Repository.class),
-                applicationContext.getBean(DatexII223XmlMarshaller.class),
-                applicationContext.getBean(TrafficMessageImsJsonConverterV1.class)
-            );
-        }
-        return trafficMessageDataServiceV1;
     }
 
 
