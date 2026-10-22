@@ -9,7 +9,6 @@ import fi.livi.digitraffic.tie.model.roadstation.CollectionStatus;
 import fi.livi.digitraffic.tie.model.roadstation.RoadAddress;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationState;
-import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.service.AbstractRoadStationAttributeUpdater;
 
 public abstract class AbstractWeatherStationAttributeUpdater extends AbstractRoadStationAttributeUpdater {

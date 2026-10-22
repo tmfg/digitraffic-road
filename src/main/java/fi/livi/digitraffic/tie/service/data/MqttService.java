@@ -4,7 +4,6 @@ import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
 import fi.livi.digitraffic.tie.model.data.SituationMqttMessage;
-import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;

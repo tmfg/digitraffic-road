@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.service.weathercam;
 
-import java.time.Instant;
-import java.util.Map;
 
 import fi.livi.digitraffic.tie.service.aws.S3Service;
 

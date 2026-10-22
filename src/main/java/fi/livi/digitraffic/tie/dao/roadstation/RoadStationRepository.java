@@ -3,18 +3,15 @@ package fi.livi.digitraffic.tie.dao.roadstation;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.jpa.AvailableHints;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStationType;
 import fi.livi.digitraffic.tie.service.ObjectNotFoundException;
-import jakarta.persistence.QueryHint;
 
 @Repository
 public interface RoadStationRepository extends JpaRepository<RoadStation, Long>{

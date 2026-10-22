@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.model.weathercam;
 
 import static fi.livi.digitraffic.tie.model.roadstation.RoadStationType.CAMERA_STATION;
-import static fi.livi.digitraffic.tie.model.roadstation.RoadStationType.TMS_STATION;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,7 +12,6 @@ import org.hibernate.annotations.FetchMode;
 import fi.livi.digitraffic.tie.helper.ToStringHelper;
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAndModifiedFields;
 import fi.livi.digitraffic.tie.model.roadstation.RoadStation;
-import fi.livi.digitraffic.tie.model.tms.TmsStation;
 import fi.livi.digitraffic.tie.model.weather.WeatherStation;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

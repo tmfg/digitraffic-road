@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.service.trafficmessage;
 
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
-import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.readImsMessageResourceContent;
 
 import java.io.IOException;
 import java.time.Instant;

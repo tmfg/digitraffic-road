@@ -4,7 +4,6 @@ import static fi.livi.digitraffic.tie.model.roadstation.RoadStationType.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Objects;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;

@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.controller.tms;
 
-import static fi.livi.digitraffic.common.util.TimeUtil.getGreatest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,11 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.common.util.StringUtil;
-import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
-import fi.livi.digitraffic.tie.conf.LastModifiedAppenderControllerAdvice;
-import fi.livi.digitraffic.tie.controller.ApiConstants;
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
 import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantValueDtoV1Repository;

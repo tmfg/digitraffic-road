@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.service;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;

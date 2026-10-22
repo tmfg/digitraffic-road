@@ -3,7 +3,6 @@ package fi.livi.digitraffic.tie.service.trafficmessage;
 import java.time.Instant;
 import java.util.Arrays;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

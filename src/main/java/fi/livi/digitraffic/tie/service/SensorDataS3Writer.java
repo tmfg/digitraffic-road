@@ -1,6 +1,5 @@
 package fi.livi.digitraffic.tie.service;
 
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
