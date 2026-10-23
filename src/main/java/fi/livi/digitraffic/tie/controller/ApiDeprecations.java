@@ -20,8 +20,8 @@ public final class ApiDeprecations {
     public static final String API_NOTE_FUTURE = " Will be removed in the future ";
 
     // Weather V1 forecast data: replaced by Weather V2 forecasts. Sunset is a Tuesday (production release day)
-    public static final String SUNSET_2026_11_17 = "2026-11-17";
-    public static final String API_NOTE_2026_11_17 = SUNSET_TEXT + SUNSET_2026_11_17 + ".";
+    public static final String SUNSET_2026_11_03 = "2026-11-03";
+    public static final String API_NOTE_2026_11_03 = SUNSET_TEXT + SUNSET_2026_11_03 + ".";
 
     // Weather V1 stations, sensors, history and forecast metadata: replaced by Weather V2 endpoints.
     // Traffic message V1 endpoints and the DATEX II 2.2.3 endpoints: replaced by Traffic message V2 and DATEX II 3.5 and 3.7 endpoints.
