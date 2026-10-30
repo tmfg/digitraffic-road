@@ -502,74 +502,6 @@ erDiagram
         type text "not null"
     }
 
-    ocpi_cpo {
-        dt_cpo_id text PK "not null"
-        created timestamp_with_time_zone "not null"
-        modified timestamp_with_time_zone "not null"
-        country_code character_varying "null"
-        party_id character_varying "null"
-        dt_cpo_name text "null"
-        token_a text "null"
-        token_b text "null"
-        token_c text "null"
-        versions_endpoint text "null"
-    }
-
-    ocpi_cpo_business_details {
-        dt_cpo_id text PK "not null"
-        dt_cpo_id text FK "not null"
-        created timestamp_with_time_zone "not null"
-        modified timestamp_with_time_zone "not null"
-        logo_height integer "null"
-        logo_width integer "null"
-        logo_category text "null"
-        logo_thumbnail text "null"
-        logo_type text "null"
-        logo_url text "null"
-        name text "null"
-        website text "null"
-    }
-
-    ocpi_cpo_module_endpoint {
-        dt_cpo_id text PK "not null"
-        module text PK "not null"
-        ocpi_version text PK "not null"
-        dt_cpo_id text FK "not null"
-        ocpi_version text FK "not null"
-        endpoint text "not null"
-        created timestamp_with_time_zone "not null"
-        modified timestamp_with_time_zone "not null"
-    }
-
-    ocpi_cpo_version {
-        dt_cpo_id text PK "not null"
-        ocpi_version text PK "not null"
-        dt_cpo_id text FK "not null"
-        ocpi_version text FK "not null"
-        endpoints_endpoint text "not null"
-        created timestamp_with_time_zone "not null"
-        modified timestamp_with_time_zone "not null"
-    }
-
-    ocpi_location {
-        dt_cpo_id text PK "not null"
-        id text PK "not null"
-        dt_cpo_id text FK "not null"
-        ocpi_version text FK "not null"
-        removed boolean "not null"
-        geometry geometry "not null"
-        location_object jsonb "not null"
-        created timestamp_with_time_zone "not null"
-        modified timestamp_with_time_zone "not null"
-        modified_cpo timestamp_with_time_zone "not null"
-    }
-
-    ocpi_version {
-        version text PK "not null"
-        created timestamp_with_time_zone "not null"
-        modified timestamp_with_time_zone "not null"
-    }
-
     open311_service {
         service_code character_varying PK "not null"
         metadata boolean "not null"
@@ -1065,11 +997,6 @@ erDiagram
     maintenance_tracking_observation_data ||--o{ maintenance_tracking_observation_data_tracking : "maintenance_tracking_observation_data_tracking(data_id) -> maintenance_tracking_observation_data(id)"
     maintenance_tracking_task_value ||--o{ maintenance_tracking_domain_task_mapping : "maintenance_tracking_domain_task_mapping(name) -> maintenance_tracking_task_value(name)"
     maintenance_tracking_work_machine ||--o{ maintenance_tracking : "maintenance_tracking(work_machine_id) -> maintenance_tracking_work_machine(id)"
-    ocpi_cpo ||--o{ ocpi_cpo_business_details : "ocpi_cpo_business_details(dt_cpo_id) -> ocpi_cpo(dt_cpo_id)"
-    ocpi_cpo ||--o{ ocpi_cpo_version : "ocpi_cpo_version(dt_cpo_id) -> ocpi_cpo(dt_cpo_id)"
-    ocpi_cpo_version ||--o{ ocpi_cpo_module_endpoint : "ocpi_cpo_module_endpoint(dt_cpo_id, ocpi_version) -> ocpi_cpo_version(dt_cpo_id, ocpi_version)"
-    ocpi_cpo_version ||--o{ ocpi_location : "ocpi_location(dt_cpo_id, ocpi_version) -> ocpi_cpo_version(dt_cpo_id, ocpi_version)"
-    ocpi_version ||--o{ ocpi_cpo_version : "ocpi_cpo_version(ocpi_version) -> ocpi_version(version)"
     qrtz_job_details ||--o{ qrtz_triggers : "qrtz_triggers(job_group, job_name, sched_name) -> qrtz_job_details(job_group, job_name, sched_name)"
     qrtz_triggers ||--o{ qrtz_blob_triggers : "qrtz_blob_triggers(sched_name, trigger_group, trigger_name) -> qrtz_triggers(sched_name, trigger_group, trigger_name)"
     qrtz_triggers ||--o{ qrtz_cron_triggers : "qrtz_cron_triggers(sched_name, trigger_group, trigger_name) -> qrtz_triggers(sched_name, trigger_group, trigger_name)"

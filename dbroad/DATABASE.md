@@ -249,32 +249,6 @@ Mermaid source: [DATABASE.mermaid](./DATABASE.mermaid)
 - `maintenance_tracking_work_machine_pkey`
 - `mtwm_harja_id_urakka_id_ui`
 
-### `ocpi_cpo`
-
-- `ocpi_cpo_pkey`
-
-### `ocpi_cpo_business_details`
-
-- `ocpi_cpo_business_details_pkey`
-
-### `ocpi_cpo_module_endpoint`
-
-- `ocpi_cpo_module_endpoint_pkey`
-
-### `ocpi_cpo_version`
-
-- `ocpi_cpo_version_ocpi_version_fkey_i`
-- `ocpi_cpo_version_pkey`
-
-### `ocpi_location`
-
-- `ocpi_location_cpo_modified_cpo_i`
-- `ocpi_location_pkey`
-
-### `ocpi_version`
-
-- `ocpi_version_pkey`
-
 ### `open311_service`
 
 - `open311_service_pkey`
