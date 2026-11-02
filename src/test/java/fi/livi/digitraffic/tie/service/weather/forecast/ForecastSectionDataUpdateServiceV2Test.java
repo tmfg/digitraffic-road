@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractServiceTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Dao;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Repository;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDtoV2;
 import fi.livi.digitraffic.tie.model.DataType;
@@ -54,6 +55,8 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
     @Autowired
     private ForecastSectionWeatherV2Repository weatherRepository;
     @Autowired
+    private ForecastSectionWeatherV2Dao weatherDao;
+    @Autowired
     private DataStatusService dataStatusService;
     @Autowired
     private ObjectMapper objectMapper;
@@ -66,7 +69,7 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
 
     @BeforeEach
     public void init() {
-        service = new ForecastSectionDataUpdateServiceV2(forecastSectionRepository, weatherRepository, dataStatusService);
+        service = new ForecastSectionDataUpdateServiceV2(forecastSectionRepository, weatherRepository, weatherDao, dataStatusService);
         knownId = createSection(KNOWN, ForecastSectionType.DETAILED);
         simpleId = createSection(OBSOLETE_VERSION, ForecastSectionType.SIMPLE);
         dataStatusService.updateDataUpdated(DataType.FORECAST_SECTION_WEATHER_DATA_V2, Instant.parse("2000-01-01T00:00:00Z"));
@@ -125,6 +128,31 @@ public class ForecastSectionDataUpdateServiceV2Test extends AbstractServiceTest 
         assertEquals(List.of("0h", "2h"), rows.stream().map(ForecastSectionWeatherV2::getForecastName).sorted().toList());
         rows.forEach(w -> assertEquals(0, new BigDecimal("-3.0").compareTo(w.getTemperature())));
         assertEquals(Instant.parse("2026-10-07T12:05:48Z"), dataStatusService.findDataUpdatedTime(DataType.FORECAST_SECTION_WEATHER_DATA_V2));
+    }
+
+    @Test
+    public void rewritesOnlyChangedForecasts() {
+        service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, data("2026-10-07T11:05:48Z", "10.5", List.of("0h", "2h")));
+        // Set an old modified_at to all rows. The trigger that sets it is off for a moment, so the old value stays.
+        // Only rewritten rows get a new modified_at.
+        final Instant oldModifiedAt = Instant.parse("2000-01-01T00:00:00Z");
+        entityManager.createNativeQuery("ALTER TABLE forecast_section_weather_v2 DISABLE TRIGGER forecast_section_weather_v2_modified_at_t").executeUpdate();
+        entityManager.createNativeQuery("UPDATE forecast_section_weather_v2 SET modified_at = :t WHERE forecast_section_id = :id")
+            .setParameter("t", oldModifiedAt).setParameter("id", knownId).executeUpdate();
+        entityManager.createNativeQuery("ALTER TABLE forecast_section_weather_v2 ENABLE TRIGGER forecast_section_weather_v2_modified_at_t").executeUpdate();
+
+        // Same values for "0h", other values for "2h"
+        final String json = """
+            {"dataUpdatedTime":"2026-10-07T12:05:48Z","forecastSections":[{"id":"%s","forecasts":[%s,%s]}]}
+            """.formatted(KNOWN, forecast("0h", "OBSERVATION", "10.50", 1), forecast("2h", "FORECAST", "11.0", 1));
+        service.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, objectMapper.readValue(json, ForecastSectionDataDtoV2.class));
+
+        final List<ForecastSectionWeatherV2> rows = stored();
+        final ForecastSectionWeatherV2 unchanged = rows.stream().filter(w -> w.getForecastName().equals("0h")).findFirst().orElseThrow();
+        final ForecastSectionWeatherV2 changed = rows.stream().filter(w -> w.getForecastName().equals("2h")).findFirst().orElseThrow();
+        assertEquals(oldModifiedAt, unchanged.getModifiedAt());
+        assertTrue(changed.getModifiedAt().isAfter(oldModifiedAt));
+        assertEquals(0, new BigDecimal("11.0").compareTo(changed.getTemperature()));
     }
 
     @Test

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Dao;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Repository;
 import fi.livi.digitraffic.tie.dao.weather.forecast.V2ForecastSectionMetadataDao;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDtoV2;
@@ -42,6 +43,8 @@ public class WeatherControllerV2ForecastTest extends AbstractRestWebTest {
     private ForecastSectionRepository forecastSectionRepository;
     @Autowired
     private ForecastSectionWeatherV2Repository forecastSectionWeatherV2Repository;
+    @Autowired
+    private ForecastSectionWeatherV2Dao forecastSectionWeatherV2Dao;
     @Autowired
     private DataStatusService dataStatusService;
     @Autowired
@@ -72,7 +75,7 @@ public class WeatherControllerV2ForecastTest extends AbstractRestWebTest {
                "windSpeed":null,"windDirection":null,"overallRoadCondition":1,"roadCondition":7,"weatherSymbol":null,"reliability":null}
             ]}]}""".formatted(ID);
         final ForecastSectionDataUpdateServiceV2 dataUpdateService =
-            new ForecastSectionDataUpdateServiceV2(forecastSectionRepository, forecastSectionWeatherV2Repository, dataStatusService);
+            new ForecastSectionDataUpdateServiceV2(forecastSectionRepository, forecastSectionWeatherV2Repository, forecastSectionWeatherV2Dao, dataStatusService);
         dataUpdateService.updateForecastSectionWeatherData(ForecastDataSetV2.DETAILED, objectMapper.readValue(json, ForecastSectionDataDtoV2.class));
 
         final String simpleJson = """

@@ -2,6 +2,7 @@ package fi.livi.digitraffic.tie.model.weather.forecast.v2;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 
 import fi.livi.digitraffic.tie.model.ReadOnlyCreatedAtAndModifiedAtFields;
 import jakarta.persistence.EmbeddedId;
@@ -139,5 +140,30 @@ public class ForecastSectionWeatherV2 extends ReadOnlyCreatedAtAndModifiedAtFiel
 
     public void setWeatherSymbol(final Integer weatherSymbol) {
         this.weatherSymbol = weatherSymbol;
+    }
+
+    /**
+     * Compares the forecast values. The id and the database filled created and modified times are not compared.
+     * Not named equals, because JPA entities should not compare by their values.
+     * @param other the row to compare to, can be null (then false is returned)
+     */
+    public boolean hasSameValues(final ForecastSectionWeatherV2 other) {
+        return other != null
+               && Objects.equals(time, other.time)
+               && type == other.type
+               && daylight == other.daylight
+               && sameDecimalValue(roadTemperature, other.roadTemperature)
+               && sameDecimalValue(temperature, other.temperature)
+               && sameDecimalValue(windSpeed, other.windSpeed)
+               && Objects.equals(windDirection, other.windDirection)
+               && overallRoadCondition == other.overallRoadCondition
+               && roadCondition == other.roadCondition
+               && Objects.equals(weatherSymbol, other.weatherSymbol);
+    }
+
+    // 1.0 and 1.00 are the same value
+    // BigDecimal.equals treats 1.0 and 1.00 as different, compareTo does not
+    private static boolean sameDecimalValue(final BigDecimal a, final BigDecimal b) {
+        return a == null || b == null ? a == b : a.compareTo(b) == 0;
     }
 }

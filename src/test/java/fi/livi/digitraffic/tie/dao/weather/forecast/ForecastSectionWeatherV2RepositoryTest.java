@@ -88,15 +88,12 @@ public class ForecastSectionWeatherV2RepositoryTest extends AbstractServiceTest 
     }
 
     @Test
-    public void findByIdsAndDeleteNotInNames() {
+    public void findByForecastSectionIds() {
         final long sectionId = createForecastSection();
         repository.save(create(sectionId, "0h", ForecastTypeV2.OBSERVATION));
         repository.save(create(sectionId, "2h", ForecastTypeV2.FORECAST));
         repository.saveAndFlush(create(sectionId, "4h", ForecastTypeV2.FORECAST));
 
         assertEquals(3, repository.findByForecastSectionIds(List.of(sectionId)).size());
-        assertEquals(1, repository.deleteByForecastSectionIdAndForecastNameNotIn(sectionId, List.of("0h", "2h")));
-        entityManager.clear();
-        assertEquals(2, repository.findByForecastSectionIds(List.of(sectionId)).size());
     }
 }

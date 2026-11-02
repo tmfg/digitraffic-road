@@ -23,6 +23,7 @@ import fi.livi.digitraffic.tie.dao.roadstation.RoadStationDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueDao;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueHistoryDao;
 import fi.livi.digitraffic.tie.dao.tms.TmsSensorConstantDao;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Dao;
 import fi.livi.digitraffic.tie.metadata.geojson.converter.CoordinateConverter;
 import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.FlywayService;
@@ -89,7 +90,7 @@ import fi.livi.digitraffic.tie.service.weathercam.CameraPresetService;
 
          // Daos
          TmsSensorConstantDao.class, SensorValueDao.class, RoadStationDao.class, SensorValueHistoryDao.class,
-         LockingDao.class,
+         LockingDao.class, ForecastSectionWeatherV2Dao.class,
 
          // Test services etc.
          TrafficMessageTestHelper.class, MaintenanceTrackingServiceTestHelperV1.class, TmsTestHelper.class

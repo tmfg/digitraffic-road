@@ -5,7 +5,6 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -27,10 +26,6 @@ public interface ForecastSectionWeatherV2Repository extends JpaRepository<Foreca
             WHERE fs.type = :sectionType""",
            nativeQuery = true)
     List<ForecastSectionWeatherV2> findBySectionType(final String sectionType);
-
-    @Modifying
-    @Query("DELETE FROM ForecastSectionWeatherV2 w WHERE w.id.forecastSectionId = :forecastSectionId AND w.id.forecastName NOT IN (:forecastNames)")
-    int deleteByForecastSectionIdAndForecastNameNotIn(final long forecastSectionId, final List<String> forecastNames);
 
     /** Forecasts of non-obsolete forecast sections of the given type (ForecastSectionType name) */
     @Query(value = """

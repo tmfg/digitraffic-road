@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.livi.digitraffic.common.annotation.PerformanceMonitor;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionRepository;
+import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Dao;
 import fi.livi.digitraffic.tie.dao.weather.forecast.ForecastSectionWeatherV2Repository;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionDataDtoV2;
 import fi.livi.digitraffic.tie.dto.weather.forecast.client.ForecastSectionForecastDtoV2;
@@ -25,8 +28,8 @@ import fi.livi.digitraffic.tie.model.weather.forecast.v2.ForecastSectionWeatherV
 import fi.livi.digitraffic.tie.service.DataStatusService;
 
 /**
- * Writes forecast data of a data set to the database. Forecast sections (metadata) are not touched,
- * only the weather of already known sections of the data set's type (detailed or simple) is stored.
+ * Saves the forecasts of a data set. Forecast sections (road section information) are not changed,
+ * only the weather of already known sections of the data set's type (detailed or simple) is saved.
  */
 @ConditionalOnNotWebApplication
 @Service
@@ -37,20 +40,26 @@ public class ForecastSectionDataUpdateServiceV2 {
 
     private final ForecastSectionRepository forecastSectionRepository;
     private final ForecastSectionWeatherV2Repository forecastSectionWeatherV2Repository;
+    private final ForecastSectionWeatherV2Dao forecastSectionWeatherV2Dao;
     private final DataStatusService dataStatusService;
 
     public ForecastSectionDataUpdateServiceV2(final ForecastSectionRepository forecastSectionRepository,
                                               final ForecastSectionWeatherV2Repository forecastSectionWeatherV2Repository,
+                                              final ForecastSectionWeatherV2Dao forecastSectionWeatherV2Dao,
                                               final DataStatusService dataStatusService) {
         this.forecastSectionRepository = forecastSectionRepository;
         this.forecastSectionWeatherV2Repository = forecastSectionWeatherV2Repository;
+        this.forecastSectionWeatherV2Dao = forecastSectionWeatherV2Dao;
         this.dataStatusService = dataStatusService;
     }
 
     /**
+     * Only new and changed forecasts are saved. Unchanged rows are left alone, so their modified_at tells when the values
+     * last changed. The update time shown to clients is dataUpdatedTime, which is saved every time new data is handled.
+     *
      * @return true if data was stored, false if it was skipped
      */
-    @PerformanceMonitor(maxWarnExcecutionTime = 20000, maxErrorExcecutionTime = 60000)
+    @PerformanceMonitor(maxWarnExcecutionTime = 20000)
     @Transactional
     public boolean updateForecastSectionWeatherData(final ForecastDataSetV2 dataSet, final ForecastSectionDataDtoV2 data) {
         if (data.dataUpdatedTime == null) {
@@ -64,13 +73,19 @@ public class ForecastSectionDataUpdateServiceV2 {
             return false;
         }
 
+        final StopWatch timeFetch = StopWatch.createStarted();
         final Map<String, Long> sectionIdsByNaturalId = forecastSectionRepository
             .findDistinctByTypeIsAndObsoleteDateIsNullOrderByNaturalIdAsc(dataSet.sectionType).stream()
             .collect(Collectors.toMap(ForecastSection::getNaturalId, ForecastSection::getId));
 
-        final Map<ForecastSectionWeatherV2PK, ForecastSectionWeatherV2> existing = new HashMap<>();
-        forecastSectionWeatherV2Repository.findBySectionType(dataSet.sectionType.name()).forEach(w -> existing.put(w.getId(), w));
+        // Existing rows as: section id -> forecast name -> row, so each section can find its own rows directly
+        final Map<Long, Map<String, ForecastSectionWeatherV2>> existingBySectionIdAndForecastName =
+            forecastSectionWeatherV2Repository.findBySectionType(dataSet.sectionType.name()).stream()
+                .collect(Collectors.groupingBy(ForecastSectionWeatherV2::getForecastSectionId,
+                                               Collectors.toMap(ForecastSectionWeatherV2::getForecastName, Function.identity())));
 
+        timeFetch.stop();
+        final StopWatch timeLoop = StopWatch.createStarted();
         final List<ForecastSectionWeatherV2> toSave = new ArrayList<>();
         final List<ForecastSectionWeatherV2> toDelete = new ArrayList<>();
         final Stats stats = new Stats();
@@ -102,25 +117,35 @@ public class ForecastSectionDataUpdateServiceV2 {
                 }
                 validByName.put(forecast.forecastName, forecast);
             }
-            validByName.forEach((name, forecast) -> {
-                final ForecastSectionWeatherV2PK pk = new ForecastSectionWeatherV2PK(sectionId, name);
-                final ForecastSectionWeatherV2 entity = existing.getOrDefault(pk, new ForecastSectionWeatherV2(pk));
-                update(entity, forecast);
-                toSave.add(entity);
-            });
-            existing.values().stream()
-                .filter(w -> w.getForecastSectionId() == sectionId && !validByName.containsKey(w.getForecastName()))
-                .forEach(toDelete::add);
+            final Map<String, ForecastSectionWeatherV2> sectionRowsByForecastName = existingBySectionIdAndForecastName.getOrDefault(sectionId, Map.of());
+            final List<ForecastSectionWeatherV2> received = validByName.entrySet().stream()
+                .map(e -> toEntity(sectionId, e.getKey(), e.getValue()))
+                .toList();
+            // Rows of this section that are new or have different values
+            final List<ForecastSectionWeatherV2> changedInSection = received.stream()
+                .filter(r -> !r.hasSameValues(sectionRowsByForecastName.get(r.getForecastName())))
+                .toList();
+            toSave.addAll(changedInSection);
+            stats.unchanged += received.size() - changedInSection.size();
+            // Rows of this section that are no longer in the received data
+            final List<ForecastSectionWeatherV2> removedInSection = sectionRowsByForecastName.entrySet().stream()
+                .filter(e -> !validByName.containsKey(e.getKey()))
+                .map(Map.Entry::getValue)
+                .toList();
+            toDelete.addAll(removedInSection);
             stats.sections++;
         }
 
-        forecastSectionWeatherV2Repository.deleteAll(toDelete);
-        forecastSectionWeatherV2Repository.saveAll(toSave);
-        forecastSectionWeatherV2Repository.flush();
+        timeLoop.stop();
+        final StopWatch timeSave = StopWatch.createStarted();
+        forecastSectionWeatherV2Dao.deleteAndUpsert(toDelete, toSave);
         dataStatusService.updateDataUpdated(dataSet.dataUpdatedType, data.dataUpdatedTime);
+        timeSave.stop();
 
         log.info("method=updateForecastSectionWeatherData dataSet={} dataUpdatedTime={} sections={} forecastsStored={} forecastsDeleted={} " +
-                 "sectionsInDatabase={}", dataSet, data.dataUpdatedTime, stats.sections, toSave.size(), toDelete.size(), sectionIdsByNaturalId.size());
+                 "forecastsUnchanged={} sectionsInDatabase={} fetchMs={} loopMs={} saveMs={}", dataSet, data.dataUpdatedTime, stats.sections, toSave.size(),
+                 toDelete.size(), stats.unchanged, sectionIdsByNaturalId.size(), timeFetch.getDuration().toMillis(), timeLoop.getDuration().toMillis(),
+                 timeSave.getDuration().toMillis());
         if (stats.unknownSections > 0) {
             log.error("method=updateForecastSectionWeatherData dataSet={} Ignored unknown forecast sections count={} firstId={}",
                      dataSet, stats.unknownSections, stats.firstUnknownSection);
@@ -148,7 +173,8 @@ public class ForecastSectionDataUpdateServiceV2 {
         return f.forecastName != null && f.forecastName.length() <= MAX_FORECAST_NAME_LENGTH && f.time != null && f.type != null && f.daylight != null;
     }
 
-    private static void update(final ForecastSectionWeatherV2 entity, final ForecastSectionForecastDtoV2 f) {
+    private static ForecastSectionWeatherV2 toEntity(final long sectionId, final String forecastName, final ForecastSectionForecastDtoV2 f) {
+        final ForecastSectionWeatherV2 entity = new ForecastSectionWeatherV2(new ForecastSectionWeatherV2PK(sectionId, forecastName));
         entity.setTime(f.time);
         entity.setType(f.type);
         entity.setDaylight(f.daylight);
@@ -159,10 +185,12 @@ public class ForecastSectionDataUpdateServiceV2 {
         entity.setOverallRoadCondition(f.overallRoadCondition);
         entity.setRoadCondition(f.roadCondition);
         entity.setWeatherSymbol(f.weatherSymbol);
+        return entity;
     }
 
     private static class Stats {
         int sections;
+        int unchanged;
         int unknownSections;
         int invalidForecasts;
         int reliabilityValues;
