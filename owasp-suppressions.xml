@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
     <!--
         Temporary suppressions, check and update these periodically
@@ -17,9 +19,12 @@
         <cpe>cpe:/a:apache:httpcomponents_core</cpe>
     </suppress>
 
-    <suppress until="2026-11-01">
-        <notes><![CDATA[file name: swagger-ui-5.32.2.jar: swagger-ui-bundle.js]]></notes>
+    <suppress until="2027-02-01">
+        <notes><![CDATA[swagger-ui-5.32.2.jar: DOMPurify. Not exploitable here: swagger-ui does not use
+        IN_PLACE mode or setConfig, and only shows our own API spec. Remove when springdoc
+        brings swagger-ui >= 5.34.1.]]></notes>
         <packageUrl regex="true">^pkg:javascript/DOMPurify@.*$</packageUrl>
+        <cve>CVE-2026-116803</cve>
         <cve>CVE-2026-65898</cve>
     </suppress>
 
