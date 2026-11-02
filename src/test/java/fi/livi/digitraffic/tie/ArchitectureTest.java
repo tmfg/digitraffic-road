@@ -3,6 +3,7 @@ package fi.livi.digitraffic.tie;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,7 +115,7 @@ public class ArchitectureTest extends AbstractTest {
         for (final Path root : SOURCE_ROOTS) {
             try (final Stream<Path> paths = Files.walk(root)) {
                 for (final Path file : paths.filter(p -> p.toString().endsWith(".java")).sorted().toList()) {
-                    violations.addAll(findUnusedImports(file));
+                    violations.addAll(findUnusedImports(root, file));
                 }
             }
         }
@@ -123,11 +124,16 @@ public class ArchitectureTest extends AbstractTest {
                         violations.size(), String.join(System.lineSeparator(), violations)));
     }
 
-    private static List<String> findUnusedImports(final Path file) throws IOException {
-        return findUnusedImports(file.toString(), Files.readString(file));
+    private static List<String> findUnusedImports(final Path root, final Path file) throws IOException {
+        final String className = root.relativize(file).toString().replaceAll("\\.java$", "").replace(File.separatorChar, '.');
+        return findUnusedImports(className, Files.readString(file));
     }
 
-    static List<String> findUnusedImports(final String fileName, final String source) {
+    /**
+     * Reports unused imports as stack trace lines, so that IntelliJ shows them as links to the file and line.
+     * @param className fully qualified name of the class in the source
+     */
+    static List<String> findUnusedImports(final String className, final String source) {
         final String[] lines = codeAndJavadocOf(source).split("\n", -1);
 
         final List<String> importedNames = new ArrayList<>();
@@ -155,7 +161,8 @@ public class ArchitectureTest extends AbstractTest {
             final String imported = importedNames.get(i);
             final String simpleName = imported.substring(imported.lastIndexOf('.') + 1);
             if (!Pattern.compile("\\b" + Pattern.quote(simpleName) + "\\b").matcher(searchable).find()) {
-                unused.add(String.format("%s:%d: %s", fileName, importLineNumbers.get(i), imported));
+                unused.add(String.format("\tat %s.import(%s.java:%d) %s", className,
+                        className.substring(className.lastIndexOf('.') + 1), importLineNumbers.get(i), imported));
             }
         }
         return unused;
@@ -260,7 +267,7 @@ public class ArchitectureTest extends AbstractTest {
                     private Set<String> values;
                 }
                 """;
-        assertEquals(List.of("Example.java:3: java.util.List"), findUnusedImports("Example.java", source));
+        assertEquals(List.of("\tat fi.livi.digitraffic.tie.Example.import(Example.java:3) java.util.List"), findUnusedImports("fi.livi.digitraffic.tie.Example", source));
     }
 
     @Test
@@ -276,7 +283,7 @@ public class ArchitectureTest extends AbstractTest {
                 public class Example {
                 }
                 """;
-        assertEquals(List.of(), findUnusedImports("Example.java", source));
+        assertEquals(List.of(), findUnusedImports("fi.livi.digitraffic.tie.Example", source));
     }
 
     @Test
@@ -290,7 +297,7 @@ public class ArchitectureTest extends AbstractTest {
                     private final String name = "List";
                 }
                 """;
-        assertEquals(List.of("Example.java:3: java.util.List"), findUnusedImports("Example.java", source));
+        assertEquals(List.of("\tat fi.livi.digitraffic.tie.Example.import(Example.java:3) java.util.List"), findUnusedImports("fi.livi.digitraffic.tie.Example", source));
     }
 
     @Test
@@ -307,7 +314,7 @@ public class ArchitectureTest extends AbstractTest {
                     private Set<String> values;
                 }
                 """;
-        assertEquals(List.of(), findUnusedImports("Example.java", source));
+        assertEquals(List.of(), findUnusedImports("fi.livi.digitraffic.tie.Example", source));
     }
 
     @Test
@@ -324,7 +331,7 @@ public class ArchitectureTest extends AbstractTest {
                     private Set<String> values;
                 }
                 """;
-        assertEquals(List.of(), findUnusedImports("Example.java", source));
+        assertEquals(List.of(), findUnusedImports("fi.livi.digitraffic.tie.Example", source));
     }
 
     @Test
@@ -341,6 +348,6 @@ public class ArchitectureTest extends AbstractTest {
                     private Set<String> values;
                 }
                 """;
-        assertEquals(List.of(), findUnusedImports("Example.java", source));
+        assertEquals(List.of(), findUnusedImports("fi.livi.digitraffic.tie.Example", source));
     }
 }
