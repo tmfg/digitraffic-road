@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.1.2</version>
         <relativePath/>
     </parent>
 
@@ -27,17 +27,15 @@
         <com.google.protobuf.version>4.36.2</com.google.protobuf.version>
         <org.apache.cxf.version>4.2.4</org.apache.cxf.version>
         <org.glassfish.metro.ws.version>4.0.3</org.glassfish.metro.ws.version>
-        <spring-cloud-config.version>5.0.5</spring-cloud-config.version>
-        <spring-cloud-commons.version>5.0.3</spring-cloud-commons.version>
-        <!-- TODO: Remove override when Spring Boot includes Tomcat ≥11.0.26 -->
-        <tomcat.version>11.0.26</tomcat.version>
+        <spring-cloud-config.version>5.0.6</spring-cloud-config.version>
+        <spring-cloud-commons.version>5.0.4</spring-cloud-commons.version>
         <!-- TODO: Remove override when Spring Boot includes Artemis ≥2.57.0 -->
         <artemis.version>2.57.0</artemis.version>
         <proj4j.version>1.4.3</proj4j.version>
         <org.jvnet.jaxb.version>4.0.12</org.jvnet.jaxb.version>
         <project.digitraffic-common-java.directory>lib/digitraffic-common-java
         </project.digitraffic-common-java.directory>
-        <aws.sdk.version>2.56.0</aws.sdk.version>
+        <aws.sdk.version>2.57.7</aws.sdk.version>
     </properties>
 
     <profiles>
@@ -123,7 +121,7 @@
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.1</version>
         </dependency>
 
         <dependency>
@@ -299,7 +297,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.0.3</version>
+            <version>3.2.0</version>
             <exclusions>
                 <!-- This has older with CVE-2025-48924 than explicitly included version below-->
                 <exclusion>
@@ -348,7 +346,6 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>7.3.13.Final</version>
         </dependency>
 
         <!-- json column type -->
@@ -493,14 +490,14 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>1.4.2</version>
+            <version>1.5.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.1</version>
             <scope>test</scope>
         </dependency>
 
