@@ -1,7 +1,6 @@
 package fi.livi.digitraffic.tie.controller.trafficmessage;
 
 import static fi.livi.digitraffic.tie.dto.trafficmessage.v1.SituationType.TRAFFIC_ANNOUNCEMENT;
-import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static fi.livi.digitraffic.tie.model.DataType.TRAFFIC_MESSAGES_REGION_GEOMETRY_DATA;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsJsonVersion;
 import static fi.livi.digitraffic.tie.service.TrafficMessageTestHelper.ImsXmlVersion;
@@ -20,11 +19,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.time.LocalTime;
@@ -45,12 +39,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.oxm.XmlMappingException;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.xml.transform.StringSource;
 
 import tools.jackson.core.JacksonException;
@@ -264,73 +254,66 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
 
     @Test
     public void locationsApi() throws Exception {
-        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.features[0].type", is("Feature")))
-                .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].id", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.subtypeCode", isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.firstName", isA(String.class)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        executeGet(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectBody()
+                .jsonPath("$").value(notNullValue())
+                .jsonPath("$.type").value(is("FeatureCollection"))
+                .jsonPath("$.features[0].type").value(is("Feature"))
+                .jsonPath("$.features[0].id").value(isA(Integer.class))
+                .jsonPath("$.features[0].id").value(isA(Integer.class))
+                .jsonPath("$.features[0].properties.subtypeCode").value(isA(String.class))
+                .jsonPath("$.features[0].properties.firstName").value(isA(String.class))
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ)
         ;
     }
 
     @Test
     public void locationsUpdatesOnlyApi() throws Exception {
-        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS)
-                        .param("lastUpdated", "true"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.features", org.hamcrest.Matchers.hasSize(0)))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        executeGet(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + "?lastUpdated=true")
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectBody()
+                .jsonPath("$").value(notNullValue())
+                .jsonPath("$.type").value(is("FeatureCollection"))
+                .jsonPath("$.features").value(org.hamcrest.Matchers.hasSize(0))
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ)
         ;
     }
 
     @Test
     public void locationsVersionsApi() throws Exception {
-        mockMvc.perform(
-                        get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.VERSIONS))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        executeGet(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.VERSIONS)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectBody()
+                .jsonPath("$").value(notNullValue())
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ)
         ;
     }
 
     @Test
     public void locationsTypesApi() throws Exception {
-        mockMvc.perform(
-                        get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.TYPES))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
+        executeGet(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_LOCATIONS + TrafficMessageControllerV1.TYPES)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectBody()
+                .jsonPath("$").value(notNullValue())
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ)
         ;
     }
 
     @Test
     public void nullsFilteredFromQueryParameterList() throws Exception {
-        mockMvc.perform(get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES)
-                        .param("situationType",
-                                "TRAFFIC_ANNOUNCEMENT")
-                        .param("situationType", "")
-                        .param("situationType", "ROAD_WORK"))
-                .andExpect(status().isOk())
+        executeGet(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES
+                        + "?situationType=TRAFFIC_ANNOUNCEMENT&situationType=&situationType=ROAD_WORK")
+                .expectStatus().isOk()
         ;
 
-        mockMvc.perform(
-                        get(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES + TrafficMessageControllerV1.DATEX2
-                        )
-                                .param("situationType",
-                                        "TRAFFIC_ANNOUNCEMENT")
-                                .param("situationType", "")
-                                .param("situationType", "ROAD_WORK"))
-                .andExpect(status().isOk())
+        executeGet(TrafficMessageControllerV1.API_TRAFFIC_MESSAGE_V1_MESSAGES + TrafficMessageControllerV1.DATEX2
+                        + "?situationType=TRAFFIC_ANNOUNCEMENT&situationType=&situationType=ROAD_WORK")
+                .expectStatus().isOk()
         ;
     }
 
@@ -464,20 +447,13 @@ public class TrafficMessageControllerV1Test extends AbstractRestWebTestWithRegio
     }
 
     private String getResponse(final String url, final Instant lastUpdated) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-
-        if (url.contains("datex2")) {
-            get.contentType(MediaType.APPLICATION_XML);
-        } else {
-            get.contentType(MediaType.APPLICATION_JSON);
-        }
-        final ResultActions result = mockMvc.perform(get);
+        final var result = url.contains("datex2") ? executeGetXml(url) : executeGet(url);
         if (lastUpdated != null) {
-            result.andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                    .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                            lastUpdated.toEpochMilli()));
+            result.expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                    .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
+                            lastUpdated.toEpochMilli());
         }
-        return result.andReturn().getResponse().getContentAsString();
+        return result.expectBody(String.class).returnResult().getResponseBody();
     }
 
     private void assertTraficAnouncmentTypeUpperCase(final String json, final SituationType situationType) {

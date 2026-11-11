@@ -28,6 +28,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.xml.JacksonXmlHttpMessageConverter;
+import tools.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.dataformat.xml.XmlWriteFeature;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
@@ -87,8 +90,10 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
 
     @Override
     public void configureMessageConverters(final HttpMessageConverters.ServerBuilder builder) {
+        builder.withXmlConverter(new JacksonXmlHttpMessageConverter(
+                XmlMapper.builder().enable(XmlWriteFeature.WRITE_XML_DECLARATION).build()));
         // Register JAXB XML converters as custom converters.
-        // Custom converters are considered before default ones (e.g. MappingJackson2XmlHttpMessageConverter).
+        // Custom converters are considered before default ones (e.g. JacksonXmlHttpMessageConverter).
         builder.addCustomConverter(xmlHttpMessageConverterForD2LogicalModel223());
         builder.addCustomConverter(xmlHttpMessageConverterForMeasurementSiteTablePublication35());
         builder.addCustomConverter(xmlHttpMessageConverterForMeasurementSiteTablePublication37());
@@ -96,24 +101,6 @@ public class RoadWebApplicationConfiguration implements WebMvcConfigurer {
         builder.addCustomConverter(xmlHttpMessageConverterForMeasuredDataPublication37());
         builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication35());
         builder.addCustomConverter(xmlHttpMessageConverterForSituationPublication37());
-    }
-
-    /**
-     * extendMessageConverters is deprecated in Spring 7.0 in favour of configureMessageConverters(ServerBuilder),
-     * but MockMvc (webAppContextSetup) still goes through the Spring MVC converter list directly and does not
-     * pick up converters registered only via the ServerBuilder path. Until that gap is closed we must also
-     * prepend the JAXB converters here so that tests see the correct serialisation.
-     */
-    @SuppressWarnings("removal")
-    @Override
-    public void extendMessageConverters(final List<HttpMessageConverter<?>> converters) {
-        converters.addFirst(xmlHttpMessageConverterForSituationPublication37());
-        converters.addFirst(xmlHttpMessageConverterForSituationPublication35());
-        converters.addFirst(xmlHttpMessageConverterForMeasurementSiteTablePublication37());
-        converters.addFirst(xmlHttpMessageConverterForMeasurementSiteTablePublication35());
-        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication37());
-        converters.addFirst(xmlHttpMessageConverterForMeasuredDataPublication35());
-        converters.addFirst(xmlHttpMessageConverterForD2LogicalModel223());
     }
 
     private HttpMessageConverter<Object> xmlHttpMessageConverterForD2LogicalModel223() {

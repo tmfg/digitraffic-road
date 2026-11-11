@@ -4,9 +4,6 @@ import static fi.livi.digitraffic.common.util.TimeUtil.nowWithoutMillis;
 import static fi.livi.digitraffic.common.util.TimeUtil.nowWithoutNanos;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -21,10 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -58,13 +52,13 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
     @Test()
     public void getWeathercamPresetsHistoryByIdNotFoundPreset() throws Exception {
         getCameraHistoryJson("C0000000")
-            .andExpect(status().isNotFound());
+            .expectStatus().isNotFound();
     }
 
     @Test()
     public void getWeathercamPresetsHistoryByIdNotFoundWeathercam() throws Exception {
         getCameraHistoryJson("C00000")
-            .andExpect(status().isNotFound());
+            .expectStatus().isNotFound();
     }
 
     @Test
@@ -74,7 +68,7 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
         insertHistoryTestData(preset.getPresetId(), nowWithoutNanos().minus(25, HOURS));
 
         getCameraHistoryJson(preset.getCameraId())
-            .andExpect(status().isNotFound());
+            .expectStatus().isNotFound();
 
     }
 
@@ -84,11 +78,11 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
 
         insertHistoryTestData(preset.getPresetId(), nowWithoutNanos().minus(23, HOURS));
 
-        getCameraHistoryJson(preset.getCameraId())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.presets", Matchers.hasSize(1)))
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+        logInfoResponse(getCameraHistoryJson(preset.getCameraId())
+            .expectStatus().isOk()
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()))
+            .jsonPath("$.presets").value(Matchers.hasSize(1));
     }
 
 
@@ -106,26 +100,25 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
         // This history is for same camera but another preset
         final String versionId_1_0 = insertHistoryTestData(preset_1.getPresetId(), now);
 
-        getCameraHistoryJson(preset_0.getCameraId())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("id", is(preset_0.getCameraId())))
-            .andExpect(jsonPath("presets[0].id", is(preset_0.getPresetId())))
-            .andExpect(jsonPath("presets[0].history", Matchers.hasSize(2)))
-            .andExpect(jsonPath("presets[0].history[0].imageUrl", matchUrl(preset_0.getPresetId(), versionId_0_0)))
-            .andExpect(jsonPath("presets[0].history[0].lastModified", is(now.minus(1, HOURS).toString())))
-            .andExpect(jsonPath("presets[0].history[0].sizeBytes", is(IMAGE_SIZE)))
-            .andExpect(jsonPath("presets[0].history[1].imageUrl", matchUrl(preset_0.getPresetId(), versionId_0_1)))
-            .andExpect(jsonPath("presets[0].history[1].lastModified", is(now.toString())))
-            .andExpect(jsonPath("presets[0].history[1].sizeBytes", is(IMAGE_SIZE)))
+        logInfoResponse(getCameraHistoryJson(preset_0.getCameraId())
+            .expectStatus().isOk()
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()))
+            .jsonPath("id").value(is(preset_0.getCameraId()))
+            .jsonPath("presets[0].id").value(is(preset_0.getPresetId()))
+            .jsonPath("presets[0].history").value(Matchers.hasSize(2))
+            .jsonPath("presets[0].history[0].imageUrl").value(matchUrl(preset_0.getPresetId(), versionId_0_0))
+            .jsonPath("presets[0].history[0].lastModified").value(is(now.minus(1, HOURS).toString()))
+            .jsonPath("presets[0].history[0].sizeBytes").value(is(IMAGE_SIZE))
+            .jsonPath("presets[0].history[1].imageUrl").value(matchUrl(preset_0.getPresetId(), versionId_0_1))
+            .jsonPath("presets[0].history[1].lastModified").value(is(now.toString()))
+            .jsonPath("presets[0].history[1].sizeBytes").value(is(IMAGE_SIZE))
             // 2nd preset has only one history item
-            .andExpect(jsonPath("presets[1].id", is(preset_1.getPresetId())))
-            .andExpect(jsonPath("presets[1].history", Matchers.hasSize(1)))
-            .andExpect(jsonPath("presets[1].history[0].imageUrl", matchUrl(preset_1.getPresetId(), versionId_1_0)))
-            .andExpect(jsonPath("presets[1].history[0].lastModified", is(now.toString())))
-            .andExpect(jsonPath("presets[1].history[0].sizeBytes", is(IMAGE_SIZE)))
-
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .jsonPath("presets[1].id").value(is(preset_1.getPresetId()))
+            .jsonPath("presets[1].history").value(Matchers.hasSize(1))
+            .jsonPath("presets[1].history[0].imageUrl").value(matchUrl(preset_1.getPresetId(), versionId_1_0))
+            .jsonPath("presets[1].history[0].lastModified").value(is(now.toString()))
+            .jsonPath("presets[1].history[0].sizeBytes").value(is(IMAGE_SIZE));
     }
 
     @Test
@@ -141,34 +134,28 @@ public class WeathercamControllerV1HistoryTest extends AbstractRestWebTest {
         // This history is for same camera but another preset and should not exist in the result
         insertHistoryTestData(preset_1.getPresetId(), now);
 
-        getCameraHistoryJson(preset_0.getPresetId())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("id", is(preset_0.getCameraId())))
-            .andExpect(jsonPath("presets", Matchers.hasSize(1)))
-            .andExpect(jsonPath("presets[0].id", is(preset_0.getPresetId())))
-            .andExpect(jsonPath("presets[0].history", Matchers.hasSize(2)))
-            .andExpect(jsonPath("presets[0].history[0].imageUrl", matchUrl(preset_0.getPresetId(), versionId_0_0)))
-            .andExpect(jsonPath("presets[0].history[0].lastModified", is(now.minus(1, HOURS).toString())))
-            .andExpect(jsonPath("presets[0].history[0].sizeBytes", is(IMAGE_SIZE)))
-            .andExpect(jsonPath("presets[0].history[1].imageUrl", matchUrl(preset_0.getPresetId(), versionId_0_1)))
-            .andExpect(jsonPath("presets[0].history[1].lastModified", is(now.toString())))
-            .andExpect(jsonPath("presets[0].history[1].sizeBytes", is(IMAGE_SIZE)))
-
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+        logInfoResponse(getCameraHistoryJson(preset_0.getPresetId())
+            .expectStatus().isOk()
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()))
+            .jsonPath("id").value(is(preset_0.getCameraId()))
+            .jsonPath("presets").value(Matchers.hasSize(1))
+            .jsonPath("presets[0].id").value(is(preset_0.getPresetId()))
+            .jsonPath("presets[0].history").value(Matchers.hasSize(2))
+            .jsonPath("presets[0].history[0].imageUrl").value(matchUrl(preset_0.getPresetId(), versionId_0_0))
+            .jsonPath("presets[0].history[0].lastModified").value(is(now.minus(1, HOURS).toString()))
+            .jsonPath("presets[0].history[0].sizeBytes").value(is(IMAGE_SIZE))
+            .jsonPath("presets[0].history[1].imageUrl").value(matchUrl(preset_0.getPresetId(), versionId_0_1))
+            .jsonPath("presets[0].history[1].lastModified").value(is(now.toString()))
+            .jsonPath("presets[0].history[1].sizeBytes").value(is(IMAGE_SIZE));
     }
 
     private String getCameraIdFromPresetId(final String presetId) {
         return presetId.substring(0, 6);
     }
 
-    private ResultActions getCameraHistoryJson(final String presetOrCameraId) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + presetOrCameraId + WeathercamControllerV1.HISTORY);
-
-        get.contentType(MediaType.APPLICATION_JSON);
-        final ResultActions result = mockMvc.perform(get);
-        log.info("JSON:\n{}", result.andReturn().getResponse().getContentAsString());
-        return result;
+    private WebTestClient.ResponseSpec getCameraHistoryJson(final String presetOrCameraId) throws Exception {
+        return executeGet(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + presetOrCameraId + WeathercamControllerV1.HISTORY);
     }
 
     /** @return versionId */

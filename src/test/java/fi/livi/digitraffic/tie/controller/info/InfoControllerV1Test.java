@@ -1,7 +1,5 @@
 package fi.livi.digitraffic.tie.controller.info;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +10,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
@@ -44,21 +42,19 @@ public class InfoControllerV1Test extends AbstractRestWebTest {
         final DataSourceInfoDtoV1 stateInfo = dataStatusService.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING);
         final DataSourceInfoDtoV1 municipalityInfo = dataStatusService.getDataSourceInfo(DataSource.MAINTENANCE_TRACKING_MUNICIPALITY);
 
-        final ResultActions response =
-            logDebugResponse(
-                executeGet(InfoControllerV1.API_INFO_V1 + InfoControllerV1.UPDATE_TIMES));
-        expectOk(response)
-            .andExpect(jsonPath("updateTimes[*].api").exists())
-            .andExpect(jsonPath("updateTimes[*].subtype").exists())
-            .andExpect(jsonPath("updateTimes[*].dataUpdatedTime").exists())
-            .andExpect(jsonPath("updateTimes[*].dataCheckedTime").exists())
-            .andExpect(jsonPath("updateTimes[*].dataUpdateInterval").exists())
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype=='state-roads')].dataUpdateInterval").value(stateInfo.getUpdateInterval()))
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype=='state-roads')].recommendedFetchInterval").value(stateInfo.getRecommendedFetchInterval()))
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval", Matchers.hasItem(municipalityInfo.getUpdateInterval())))
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].recommendedFetchInterval", Matchers.hasItem(municipalityInfo.getRecommendedFetchInterval())))
-            .andExpect(jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval", Matchers.not(Matchers.hasItem(stateInfo.getUpdateInterval()))))
-            ;
+        final WebTestClient.ResponseSpec response =
+            executeGet(InfoControllerV1.API_INFO_V1 + InfoControllerV1.UPDATE_TIMES);
+        logDebugResponse(expectOk(response))
+            .jsonPath("updateTimes[*].api").exists()
+            .jsonPath("updateTimes[*].subtype").exists()
+            .jsonPath("updateTimes[*].dataUpdatedTime").exists()
+            .jsonPath("updateTimes[*].dataCheckedTime").exists()
+            .jsonPath("updateTimes[*].dataUpdateInterval").exists()
+            .jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype=='state-roads')].dataUpdateInterval").isEqualTo(stateInfo.getUpdateInterval())
+            .jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype=='state-roads')].recommendedFetchInterval").isEqualTo(stateInfo.getRecommendedFetchInterval())
+            .jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval").value(Matchers.hasItem(municipalityInfo.getUpdateInterval()))
+            .jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].recommendedFetchInterval").value(Matchers.hasItem(municipalityInfo.getRecommendedFetchInterval()))
+            .jsonPath("$.updateTimes[?(@.api=='/api/maintenance/v1/tracking/routes' && @.subtype!='state-roads')].dataUpdateInterval").value(Matchers.not(Matchers.hasItem(stateInfo.getUpdateInterval())));
     }
 
     /**
@@ -68,7 +64,8 @@ public class InfoControllerV1Test extends AbstractRestWebTest {
     @Test
     public void updateTimesContainsAllApisWithoutRequiredParameters() throws Exception {
         final String json = executeGet(InfoControllerV1.API_INFO_V1 + InfoControllerV1.UPDATE_TIMES)
-            .andReturn().getResponse().getContentAsString();
+            .expectStatus().isOk()
+            .expectBody(String.class).returnResult().getResponseBody();
         final Map<String, String> skipped = new TreeMap<>();
         final Set<String> checked = new TreeSet<>();
         final Set<String> missing = new TreeSet<>();

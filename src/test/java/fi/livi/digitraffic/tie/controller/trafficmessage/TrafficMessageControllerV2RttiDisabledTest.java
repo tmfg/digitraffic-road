@@ -8,9 +8,7 @@ import static fi.livi.digitraffic.tie.controller.trafficmessage.TrafficMessageCo
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.ResponseAsserter;
 import fi.livi.digitraffic.XmlAsserter;
@@ -35,11 +33,7 @@ public class TrafficMessageControllerV2RttiDisabledTest extends AbstractRestWebT
     public void trafficData35_rttiDisabled_returnsEmptyPublication() throws Exception {
         insertTrafficData();
 
-        final var response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .get(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5)
-                        .contentType(MediaType.APPLICATION_XML))
-                .andReturn().getResponse();
+        final var response = toMockResponse(executeGetXml(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + DATEX2_3_5));
 
         XmlAsserter.ok(response).expectContent(xmlNode -> {
             Assertions.assertEquals("sit:SituationPublication", xmlNode.get("type").asString());
@@ -52,10 +46,7 @@ public class TrafficMessageControllerV2RttiDisabledTest extends AbstractRestWebT
     @Test
     public void trafficData_rttiDisabled_lastModifiedIsNotSet() throws Exception {
         for (final String format : new String[] { DATEX2_3_5, DATEX2_3_7 }) {
-            final var response = mockMvc
-                    .perform(MockMvcRequestBuilders.get(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + format)
-                            .contentType(MediaType.APPLICATION_XML))
-                    .andReturn().getResponse();
+            final var response = toMockResponse(executeGetXml(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + format));
             Assertions.assertNull(response.getHeader("Last-Modified"), format);
         }
     }
@@ -68,11 +59,7 @@ public class TrafficMessageControllerV2RttiDisabledTest extends AbstractRestWebT
     public void trafficDataById35_rttiDisabled_returns404() throws Exception {
         insertTrafficData();
 
-        final var response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .get(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/id1" + DATEX2_3_5)
-                        .contentType(MediaType.APPLICATION_XML))
-                .andReturn().getResponse();
+        final var response = toMockResponse(executeGetXml(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/id1" + DATEX2_3_5));
 
         ResponseAsserter.notFound(response).run();
     }
@@ -84,11 +71,7 @@ public class TrafficMessageControllerV2RttiDisabledTest extends AbstractRestWebT
     public void trafficDataHistory35_rttiDisabled_returns404() throws Exception {
         insertTrafficData();
 
-        final var response = mockMvc
-                .perform(MockMvcRequestBuilders
-                        .get(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5)
-                        .contentType(MediaType.APPLICATION_XML))
-                .andReturn().getResponse();
+        final var response = toMockResponse(executeGetXml(API_TRAFFIC_MESSAGE_V2 + TRAFFIC_DATA + "/id1" + HISTORY + DATEX2_3_5));
 
         ResponseAsserter.notFound(response).run();
     }

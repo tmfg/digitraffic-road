@@ -2,7 +2,6 @@ package fi.livi.digitraffic.tie.controller.weathercam;
 
 import static fi.livi.digitraffic.common.util.TimeUtil.roundInstantSeconds;
 import static fi.livi.digitraffic.tie.TestUtils.generateDummyPreset;
-import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasLength;
 import static org.hamcrest.Matchers.hasSize;
@@ -10,11 +9,6 @@ import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.startsWith;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.time.temporal.ChronoField;
@@ -96,37 +90,38 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
     @Test
     public void weathercamStationsRestApi() throws Exception {
 
-        mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.dataUpdatedTime", is(stationModified.toString())))
+        executeGet(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
+                        stationModified.toEpochMilli())
+                .expectBody()
+                .jsonPath("$.type").value(is("FeatureCollection"))
+                .jsonPath("$.dataUpdatedTime").value(is(stationModified.toString()))
 
-                .andExpect(jsonPath("$.features[0].type", is("Feature")))
-                .andExpect(jsonPath("$.features[0].id", isA(String.class)))
-                .andExpect(jsonPath("$.features[0].id", isA(String.class)))
-                .andExpect(jsonPath("$.features[0].id", hasLength(6)))
-                .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                .andExpect(jsonPath("$.features[0].geometry.coordinates", hasSize(3)))
-                .andExpect(jsonPath("$.features[0].properties.id", isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.id", startsWith("C")))
-                .andExpect(jsonPath("$.features[0].properties.id", hasLength(6)))
-                .andExpect(jsonPath("$.features[0].properties.name", isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus", is(in(new String[] { "GATHERING", "REMOVED_TEMPORARILY" }))))
-                .andExpect(jsonPath("$.features[0].properties.state", is(RoadStationState.OK.name())))
-                .andExpect(jsonPath("$.features[0].properties.dataUpdatedTime", is(stationModified.toString())))
-                .andExpect(jsonPath("$.features[0].properties.presets", hasSize(2)))
+                .jsonPath("$.features[0].type").value(is("Feature"))
+                .jsonPath("$.features[0].id").value(isA(String.class))
+                .jsonPath("$.features[0].id").value(isA(String.class))
+                .jsonPath("$.features[0].id").value(hasLength(6))
+                .jsonPath("$.features[0].geometry.type").value(is("Point"))
+                .jsonPath("$.features[0].geometry.coordinates").value(hasSize(3))
+                .jsonPath("$.features[0].properties.id").value(isA(String.class))
+                .jsonPath("$.features[0].properties.id").value(startsWith("C"))
+                .jsonPath("$.features[0].properties.id").value(hasLength(6))
+                .jsonPath("$.features[0].properties.name").value(isA(String.class))
+                .jsonPath("$.features[0].properties.collectionStatus").value(is(in(new String[] { "GATHERING", "REMOVED_TEMPORARILY" })))
+                .jsonPath("$.features[0].properties.state").value(is(RoadStationState.OK.name()))
+                .jsonPath("$.features[0].properties.dataUpdatedTime").value(is(stationModified.toString()))
+                .jsonPath("$.features[0].properties.presets").value(hasSize(2))
 
-                .andExpect(jsonPath("$.features[0].properties.presets[0].id", is(preset1.getPresetId())))
-                .andExpect(jsonPath("$.features[0].properties.presets[0].inCollection", is(preset1.isInCollection())))
+                .jsonPath("$.features[0].properties.presets[0].id").value(is(preset1.getPresetId()))
+                .jsonPath("$.features[0].properties.presets[0].inCollection").value(is(preset1.isInCollection()))
 
-                .andExpect(jsonPath("$.features[0].properties.presets[1].id", is(preset2.getPresetId())))
-                .andExpect(jsonPath("$.features[0].properties.presets[1].inCollection", is(preset2.isInCollection())))
+                .jsonPath("$.features[0].properties.presets[1].id").value(is(preset2.getPresetId()))
+                .jsonPath("$.features[0].properties.presets[1].inCollection").value(is(preset2.isInCollection()))
 
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                        stationModified.toEpochMilli()));
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
 
     }
 
@@ -135,121 +130,123 @@ public class WeathercamControllerV1Test extends AbstractRestWebTest {
         final String cameraId = preset1.getCameraId();
         final RoadStation cameraStation = preset1.getRoadStation();
 
-        mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + cameraId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$.type", is("Feature")))
-                .andExpect(jsonPath("$.id", is(cameraId)))
-                .andExpect(jsonPath("$.geometry.type", is("Point")))
-                .andExpect(jsonPath("$.geometry.coordinates", hasSize(3)))
-                .andExpect(jsonPath("$.properties.id", is(cameraId)))
-                .andExpect(jsonPath("$.properties.name", is(cameraStation.getName())))
-                .andExpect(jsonPath("$.properties.nearestWeatherStationId").hasJsonPath())
+        executeGet(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + cameraId)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
+                        stationModified.toEpochMilli())
+                .expectBody()
+                .jsonPath("$.type").value(is("Feature"))
+                .jsonPath("$.id").value(is(cameraId))
+                .jsonPath("$.geometry.type").value(is("Point"))
+                .jsonPath("$.geometry.coordinates").value(hasSize(3))
+                .jsonPath("$.properties.id").value(is(cameraId))
+                .jsonPath("$.properties.name").value(is(cameraStation.getName()))
+                .jsonPath("$.properties.nearestWeatherStationId").hasJsonPath()
 
-                .andExpect(jsonPath("$.properties.collectionStatus", is(cameraStation.getCollectionStatus().name())))
-                .andExpect(jsonPath("$.properties.state", is(RoadStationState.OK.name())))
-                .andExpect(jsonPath("$.properties.dataUpdatedTime", is(stationModified.toString())))
-                .andExpect(jsonPath("$.properties.collectionInterval", isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.names", aMapWithSize(3)))
-                .andExpect(jsonPath("$.properties.roadAddress").exists())
-                .andExpect(jsonPath("$.properties.roadAddress.roadNumber",
-                        is(cameraStation.getRoadAddress().getRoadNumber())))
-                .andExpect(jsonPath("$.properties.roadAddress.roadSection",
-                        is(cameraStation.getRoadAddress().getRoadSection())))
-                .andExpect(jsonPath("$.properties.roadAddress.distanceFromRoadSectionStart",
-                        is(cameraStation.getRoadAddress().getDistanceFromRoadSectionStart())))
-                .andExpect(jsonPath("$.properties.roadAddress.carriageway",
+                .jsonPath("$.properties.collectionStatus").value(is(cameraStation.getCollectionStatus().name()))
+                .jsonPath("$.properties.state").value(is(RoadStationState.OK.name()))
+                .jsonPath("$.properties.dataUpdatedTime").value(is(stationModified.toString()))
+                .jsonPath("$.properties.collectionInterval").value(isA(Integer.class))
+                .jsonPath("$.properties.names").value(aMapWithSize(3))
+                .jsonPath("$.properties.roadAddress").exists()
+                .jsonPath("$.properties.roadAddress.roadNumber").value(
+                        is(cameraStation.getRoadAddress().getRoadNumber()))
+                .jsonPath("$.properties.roadAddress.roadSection").value(
+                        is(cameraStation.getRoadAddress().getRoadSection()))
+                .jsonPath("$.properties.roadAddress.distanceFromRoadSectionStart").value(
+                        is(cameraStation.getRoadAddress().getDistanceFromRoadSectionStart()))
+                .jsonPath("$.properties.roadAddress.carriageway").value(
                         is(StationRoadAddressV1.RoadAddressCarriageway.getByCode(
-                                cameraStation.getRoadAddress().getCarriagewayCode()).name())))
-                .andExpect(
-                        jsonPath("$.properties.roadAddress.side", is(cameraStation.getRoadAddress().getSide().name())))
-                .andExpect(jsonPath("$.properties.roadAddress.contractArea",
-                        is(cameraStation.getRoadAddress().getContractArea())))
-                .andExpect(jsonPath("$.properties.roadAddress.contractAreaCode",
-                        is(cameraStation.getRoadAddress().getContractAreaCode())))
-                .andExpect(jsonPath("$.properties.liviId", is(cameraStation.getLiviId())))
-                .andExpect(jsonPath("$.properties.country", is(cameraStation.getCountry())))
-                .andExpect(jsonPath("$.properties.startTime",
-                        is(roundInstantSeconds(cameraStation.getStartDate()).toString())))
-                .andExpect(jsonPath("$.properties.repairMaintenanceTime",
-                        is(roundInstantSeconds(cameraStation.getRepairMaintenanceDate()).toString())))
-                .andExpect(jsonPath("$.properties.annualMaintenanceTime",
-                        is(roundInstantSeconds(cameraStation.getAnnualMaintenanceDate()).toString())))
-                .andExpect(jsonPath("$.properties.purpose", is(cameraStation.getPurpose())))
-                .andExpect(jsonPath("$.properties.municipality", is(cameraStation.getMunicipality())))
-                .andExpect(jsonPath("$.properties.municipalityCode",
-                        is(Integer.parseInt(cameraStation.getMunicipalityCode()))))
-                .andExpect(jsonPath("$.properties.province", is(cameraStation.getProvince())))
-                .andExpect(jsonPath("$.properties.provinceCode", is(Integer.parseInt(cameraStation.getProvinceCode()))))
-                .andExpect(jsonPath("$.properties.presets", hasSize(2)))
+                                cameraStation.getRoadAddress().getCarriagewayCode()).name()))
+                .jsonPath("$.properties.roadAddress.side").value(is(cameraStation.getRoadAddress().getSide().name()))
+                .jsonPath("$.properties.roadAddress.contractArea").value(
+                        is(cameraStation.getRoadAddress().getContractArea()))
+                .jsonPath("$.properties.roadAddress.contractAreaCode").value(
+                        is(cameraStation.getRoadAddress().getContractAreaCode()))
+                .jsonPath("$.properties.liviId").value(is(cameraStation.getLiviId()))
+                .jsonPath("$.properties.country").value(is(cameraStation.getCountry()))
+                .jsonPath("$.properties.startTime").value(
+                        is(roundInstantSeconds(cameraStation.getStartDate()).toString()))
+                .jsonPath("$.properties.repairMaintenanceTime").value(
+                        is(roundInstantSeconds(cameraStation.getRepairMaintenanceDate()).toString()))
+                .jsonPath("$.properties.annualMaintenanceTime").value(
+                        is(roundInstantSeconds(cameraStation.getAnnualMaintenanceDate()).toString()))
+                .jsonPath("$.properties.purpose").value(is(cameraStation.getPurpose()))
+                .jsonPath("$.properties.municipality").value(is(cameraStation.getMunicipality()))
+                .jsonPath("$.properties.municipalityCode").value(
+                        is(Integer.parseInt(cameraStation.getMunicipalityCode())))
+                .jsonPath("$.properties.province").value(is(cameraStation.getProvince()))
+                .jsonPath("$.properties.provinceCode").value(is(Integer.parseInt(cameraStation.getProvinceCode())))
+                .jsonPath("$.properties.presets").value(hasSize(2))
 
-                .andExpect(jsonPath("$.properties.presets[0].id", is(preset1.getPresetId())))
-                .andExpect(jsonPath("$.properties.presets[0].presentationName", is(preset1.getPresetName1())))
-                .andExpect(jsonPath("$.properties.presets[0].inCollection", is(preset1.isInCollection())))
-                .andExpect(jsonPath("$.properties.presets[0].resolution", is(preset1.getResolution())))
-                .andExpect(jsonPath("$.properties.presets[0].directionCode", is(preset1.getDirection())))
-                .andExpect(jsonPath("$.properties.presets[0].direction",
-                        is(WeathercamPresetDirectionV1.INCREASING_DIRECTION.name())))
-                .andExpect(jsonPath("$.properties.presets[0].imageUrl", isA(String.class)))
+                .jsonPath("$.properties.presets[0].id").value(is(preset1.getPresetId()))
+                .jsonPath("$.properties.presets[0].presentationName").value(is(preset1.getPresetName1()))
+                .jsonPath("$.properties.presets[0].inCollection").value(is(preset1.isInCollection()))
+                .jsonPath("$.properties.presets[0].resolution").value(is(preset1.getResolution()))
+                .jsonPath("$.properties.presets[0].directionCode").value(is(preset1.getDirection()))
+                .jsonPath("$.properties.presets[0].direction").value(
+                        is(WeathercamPresetDirectionV1.INCREASING_DIRECTION.name()))
+                .jsonPath("$.properties.presets[0].imageUrl").value(isA(String.class))
 
-                .andExpect(jsonPath("$.properties.presets[1].id", is(preset2.getPresetId())))
-                .andExpect(jsonPath("$.properties.presets[1].presentationName", is(preset2.getPresetName1())))
-                .andExpect(jsonPath("$.properties.presets[1].inCollection", is(preset2.isInCollection())))
-                .andExpect(jsonPath("$.properties.presets[1].resolution", is(preset2.getResolution())))
-                .andExpect(jsonPath("$.properties.presets[1].directionCode", is(preset2.getDirection())))
-                .andExpect(jsonPath("$.properties.presets[1].direction",
-                        is(WeathercamPresetDirectionV1.SPECIAL_DIRECTION.name())))
-                .andExpect(jsonPath("$.properties.presets[1].imageUrl", isA(String.class)))
+                .jsonPath("$.properties.presets[1].id").value(is(preset2.getPresetId()))
+                .jsonPath("$.properties.presets[1].presentationName").value(is(preset2.getPresetName1()))
+                .jsonPath("$.properties.presets[1].inCollection").value(is(preset2.isInCollection()))
+                .jsonPath("$.properties.presets[1].resolution").value(is(preset2.getResolution()))
+                .jsonPath("$.properties.presets[1].directionCode").value(is(preset2.getDirection()))
+                .jsonPath("$.properties.presets[1].direction").value(
+                        is(WeathercamPresetDirectionV1.SPECIAL_DIRECTION.name()))
+                .jsonPath("$.properties.presets[1].imageUrl").value(isA(String.class))
 
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                        stationModified.toEpochMilli()));
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
     public void testCameraDataRestApi() throws Exception {
 
-        mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + WeathercamControllerV1.DATA))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.dataUpdatedTime", Matchers.equalTo(imageUpdateTime1.toString())))
-                .andExpect(jsonPath("$.stations", hasSize(1)))
-                .andExpect(jsonPath("$.stations[0].id", is(preset1.getCameraId())))
+        executeGet(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + WeathercamControllerV1.DATA)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DtMediaType.APPLICATION_JSON_VALUE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
+                        imageUpdateTime1.toEpochMilli())
+                .expectBody()
+                .jsonPath("$.dataUpdatedTime").value(Matchers.equalTo(imageUpdateTime1.toString()))
+                .jsonPath("$.stations").value(hasSize(1))
+                .jsonPath("$.stations[0].id").value(is(preset1.getCameraId()))
 
-                .andExpect(jsonPath("$.stations[0].presets", hasSize(2)))
-                .andExpect(jsonPath("$.stations[0].presets[0].id", is(preset1.getPresetId())))
-                .andExpect(jsonPath("$.stations[0].presets[0].measuredTime", is(imageUpdateTime1.toString())))
+                .jsonPath("$.stations[0].presets").value(hasSize(2))
+                .jsonPath("$.stations[0].presets[0].id").value(is(preset1.getPresetId()))
+                .jsonPath("$.stations[0].presets[0].measuredTime").value(is(imageUpdateTime1.toString()))
 
-                .andExpect(jsonPath("$.stations[0].presets[1].id", is(preset2.getPresetId())))
-                .andExpect(jsonPath("$.stations[0].presets[1].measuredTime", is(imageUpdateTime2.toString())))
+                .jsonPath("$.stations[0].presets[1].id").value(is(preset2.getPresetId()))
+                .jsonPath("$.stations[0].presets[1].measuredTime").value(is(imageUpdateTime2.toString()))
 
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                        imageUpdateTime1.toEpochMilli()));
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
     public void testCameraDataRestApiById() throws Exception {
 
-        mockMvc.perform(get(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + preset1.getCameraId() +
-                        WeathercamControllerV1.DATA))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DtMediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.id", is(preset1.getCameraId())))
+        executeGet(WeathercamControllerV1.API_WEATHERCAM_V1_STATIONS + "/" + preset1.getCameraId() +
+                        WeathercamControllerV1.DATA)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DtMediaType.APPLICATION_JSON_VALUE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
+                        imageUpdateTimeDb1.toEpochMilli())
+                .expectBody()
+                .jsonPath("$.id").value(is(preset1.getCameraId()))
 
-                .andExpect(jsonPath("$.presets", hasSize(2)))
-                .andExpect(jsonPath("$.presets[0].id", is(preset1.getPresetId())))
-                .andExpect(jsonPath("$.presets[0].measuredTime", is(imageUpdateTime1.toString())))
+                .jsonPath("$.presets").value(hasSize(2))
+                .jsonPath("$.presets[0].id").value(is(preset1.getPresetId()))
+                .jsonPath("$.presets[0].measuredTime").value(is(imageUpdateTime1.toString()))
 
-                .andExpect(jsonPath("$.presets[1].id", is(preset2.getPresetId())))
-                .andExpect(jsonPath("$.presets[1].measuredTime", is(imageUpdateTime2.toString())))
+                .jsonPath("$.presets[1].id").value(is(preset2.getPresetId()))
+                .jsonPath("$.presets[1].measuredTime").value(is(imageUpdateTime2.toString()))
 
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                        imageUpdateTimeDb1.toEpochMilli()));
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
  }
