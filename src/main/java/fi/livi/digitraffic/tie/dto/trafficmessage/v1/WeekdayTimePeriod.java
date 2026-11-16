@@ -28,11 +28,11 @@ public class WeekdayTimePeriod extends JsonAdditionalProperties {
     @NotNull
     public WeekdayTimePeriod.Weekday weekday;
 
-    @Schema(description = "Start time of the time period in ISO 8601 local time in Europe/Helsinki", type = "java.lang.String", example = "09:30:00", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Start time of the time period in ISO 8601 local time in Europe/Helsinki", implementation = String.class, example = "09:30:00", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public LocalTime startTime;
 
-    @Schema(description = "End time of the time period in ISO 8601 local time in Europe/Helsinki", type = "java.lang.String", example = "15:30:00", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "End time of the time period in ISO 8601 local time in Europe/Helsinki", implementation = String.class, example = "15:30:00", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
     public LocalTime endTime;
 
