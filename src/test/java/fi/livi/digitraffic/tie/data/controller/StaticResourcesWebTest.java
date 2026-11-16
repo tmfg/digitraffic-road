@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.test.web.servlet.MvcResult;
 
 import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -39,8 +38,8 @@ public class StaticResourcesWebTest extends AbstractRestWebTest {
                      originalFirstLocationLocation.substring(0, expectedOriginalLocationValue.length()));
 
         // Get resource from server
-        final MvcResult result = expectOk(executeGet("/schemas/datex2/tms/3_5/xml/DATEXII_3_RoadTrafficData.xsd")).andReturn();
-        final String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        final String content = expectOk(executeGet("/schemas/datex2/tms/3_5/xml/DATEXII_3_RoadTrafficData.xsd"))
+                .expectBody(String.class).returnResult().getResponseBody();
 
         final String actualLocation = StringUtils.substringAfter(content, "schemaLocation=\"");
         assertFalse(dtDomainUrl.isBlank());

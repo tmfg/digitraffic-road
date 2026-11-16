@@ -7,8 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -22,7 +20,7 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -46,8 +44,8 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
         when(exceptionHandlerLogger.isInfoEnabled()).thenReturn(true);
     }
 
-    private ResultActions performQuery() throws Exception {
-        return mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/1" + TmsControllerV1.DATA));
+    private WebTestClient.ResponseSpec performQuery() throws Exception {
+        return executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/1" + TmsControllerV1.DATA);
     }
 
     @Test
@@ -56,8 +54,7 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
             .thenReturn(new TmsStationDataDtoV1(1L,1L, Instant.now(), Collections.emptyList()));
 
         performQuery()
-            .andExpect(status().isOk());
-
+            .expectStatus().isOk();
     }
 
     private enum LogMode {
@@ -68,7 +65,7 @@ public class DefaultExceptionHandlerTest extends AbstractRestWebTest {
         when(tmsDataService.findPublishableTmsData(anyLong())).thenThrow(mock(clazz));
 
         performQuery()
-            .andExpect(status().is(statuscode));
+            .expectStatus().isEqualTo(statuscode);
 
         switch (logMode) {
             case ERROR:

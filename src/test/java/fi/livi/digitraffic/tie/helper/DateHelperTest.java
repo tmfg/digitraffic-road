@@ -5,8 +5,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import fi.livi.digitraffic.tie.AbstractTest;
 
@@ -26,8 +24,6 @@ public class DateHelperTest extends AbstractTest {
         Matchers.allOf(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER, NO_ISO_DATE_TIME_WITH_OFFSET_MATCHER);
     public static final Matcher<String> ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER =
         Matchers.allOf(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER, NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER);
-    public static final ResultMatcher ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER =
-        MockMvcResultMatchers.content().string(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_MATCHER);
 
     /**
      * This is test of test. It checks that ISO_DATE_TIME regex patterns works.

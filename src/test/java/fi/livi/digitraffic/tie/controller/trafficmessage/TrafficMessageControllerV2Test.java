@@ -24,21 +24,17 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import fi.livi.digitraffic.JsonAsserter;
 import fi.livi.digitraffic.ResponseAsserter;
 import fi.livi.digitraffic.XmlAsserter;
 import fi.livi.digitraffic.tie.AbstractRestWebTestWithRegionGeometryGitAndDataServiceMock;
 import fi.livi.digitraffic.tie.DataDatex2SituationTestHelper;
+import fi.livi.digitraffic.tie.DataDatex2SituationTestHelper.MessageSpec;
 import fi.livi.digitraffic.tie.dao.data.DataDatex2SituationRepository;
 import fi.livi.digitraffic.tie.external.tloik.ims.jmessage.TrafficAnnouncementProperties.SituationType;
 import fi.livi.digitraffic.tie.external.tloik.ims.v1_2_2.MessageTypeEnum;
-import fi.livi.digitraffic.tie.DataDatex2SituationTestHelper.MessageSpec;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.Datex2Version;
 import fi.livi.digitraffic.tie.model.trafficmessage.datex2.SimppeliVersion;
 import fi.livi.digitraffic.tie.service.data.DatexIIService;
@@ -250,16 +246,10 @@ public class TrafficMessageControllerV2Test extends AbstractRestWebTestWithRegio
             """;
 
     private MockHttpServletResponse getResponse(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-
         if (url.contains("datex2")) {
-            get.contentType(MediaType.APPLICATION_XML);
-        } else {
-            get.contentType(MediaType.APPLICATION_JSON);
+            return toMockResponse(executeGetXml(url));
         }
-        final ResultActions result = mockMvc.perform(get);
-
-        return result.andReturn().getResponse();
+        return toMockResponse(executeGet(url));
     }
 
     private void insertTrafficData() {

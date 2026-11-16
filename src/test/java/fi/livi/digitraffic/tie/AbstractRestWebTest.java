@@ -5,26 +5,24 @@ import static fi.livi.digitraffic.tie.helper.DateHelperTest.NO_ISO_DATE_TIME_WIT
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.context.WebApplicationContext;
 
 import fi.livi.digitraffic.tie.controller.DtMediaType;
 
+@SpringBootTest(classes = RoadApplication.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@AutoConfigureWebTestClient
 public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractRestWebTest.class);
@@ -34,59 +32,84 @@ public abstract class AbstractRestWebTest extends AbstractSpringJUnitTest {
     @Autowired
     protected WebApplicationContext wac;
 
-    protected MockMvc mockMvc;
-
-
-    @BeforeEach
-    public void metadataTestBaseBefore() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-    }
+    @Autowired
+    protected WebTestClient webTestClient;
 
     protected void assertTimesFormatMatchesIsoDateTimeWithZ(final String content) {
         assertTrue(NO_ISO_DATE_TIME_WITH_OFFSET_CONTAINS_MATCHER.matches(content));
         assertTrue(ISO_DATE_TIME_WITH_Z_OFFSET_CONTAINS_MATCHER.matches(content));
     }
 
-    protected ResultActions executeGet(final String url) throws Exception {
-        final MockHttpServletRequestBuilder get =
-                MockMvcRequestBuilders.get(url).characterEncoding(StandardCharsets.UTF_8);
-        get.contentType(MediaType.APPLICATION_JSON);
-        return mockMvc.perform(get);
+    protected void assertBodyTimesFormatMatchesIsoDateTimeWithZ(final EntityExchangeResult<byte[]> result) {
+        assertTimesFormatMatchesIsoDateTimeWithZ(new String(result.getResponseBody(), StandardCharsets.UTF_8));
     }
 
-    protected ResultActions expectOk(final ResultActions rs) throws Exception {
-        return rs.andExpect(status().isOk());
+    protected WebTestClient.ResponseSpec executeGet(final String url) throws Exception {
+        return executeGet(url, MediaType.APPLICATION_JSON);
     }
 
-    protected ResultActions expectOkFeatureCollectionWithSize(final ResultActions rs, final int featuresSize)
-            throws Exception {
-        return rs.andExpect(status().isOk())
-                .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-                .andExpect(jsonPath("features", hasSize(featuresSize)));
+    protected WebTestClient.ResponseSpec executeGetXml(final String url) throws Exception {
+        return executeGet(url, MediaType.APPLICATION_XML);
     }
 
-    protected ResultActions expectOkFeature(final ResultActions rs) throws Exception {
-        return rs.andExpect(status().isOk())
-                .andExpect(jsonPath("type", equalTo("Feature")));
+    private WebTestClient.ResponseSpec executeGet(final String url, final MediaType mediaType) throws Exception {
+        return webTestClient
+                .get()
+                .uri(url)
+                .accept(mediaType)
+                .header("Content-Type", mediaType.toString())
+                .header("Accept-Charset", StandardCharsets.UTF_8.name())
+                .exchange();
     }
 
-    protected ResultActions logInfoResponse(final ResultActions result) throws UnsupportedEncodingException {
-        return logResponse(result, false);
-    }
-
-    protected ResultActions logDebugResponse(final ResultActions result) throws UnsupportedEncodingException {
-        return logResponse(result, true);
-    }
-
-    private ResultActions logResponse(final ResultActions result, final boolean debug)
-            throws UnsupportedEncodingException {
-        final String responseStr = result.andReturn().getResponse().getContentAsString();
-        if (debug) {
-            log.debug("\n" + responseStr);
-        } else {
-            log.info("\n" + responseStr);
+    /** Reads the whole response to a MockHttpServletResponse for the response asserters. */
+    protected MockHttpServletResponse toMockResponse(final WebTestClient.ResponseSpec rs) throws Exception {
+        final EntityExchangeResult<byte[]> result = rs.expectBody().returnResult();
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+        response.setStatus(result.getStatus().value());
+        result.getResponseHeaders().forEach((name, values) -> values.forEach(value -> response.addHeader(name, value)));
+        if (result.getResponseBody() != null) {
+            response.getOutputStream().write(result.getResponseBody());
         }
-        return result;
+        return response;
+    }
+
+    protected WebTestClient.ResponseSpec expectOk(final WebTestClient.ResponseSpec rs) {
+        return rs.expectStatus().isOk();
+    }
+
+    protected WebTestClient.BodyContentSpec expectOkFeatureCollectionWithSize(final WebTestClient.ResponseSpec rs, final int featuresSize) {
+        return rs.expectStatus().isOk()
+                .expectBody()
+                .jsonPath("type").value(equalTo("FeatureCollection"))
+                .jsonPath("features").value(hasSize(featuresSize));
+    }
+
+    protected WebTestClient.BodyContentSpec expectOkFeature(final WebTestClient.ResponseSpec rs) {
+        return rs.expectStatus().isOk()
+                .expectBody()
+                .jsonPath("type").value(equalTo("Feature"));
+    }
+
+    /** Logs the response body and returns the body spec for further assertions. Do status and header checks before calling. */
+    protected WebTestClient.BodyContentSpec logInfoResponse(final WebTestClient.ResponseSpec rs) {
+        return logResponse(rs, false);
+    }
+
+    /** Logs the response body and returns the body spec for further assertions. Do status and header checks before calling. */
+    protected WebTestClient.BodyContentSpec logDebugResponse(final WebTestClient.ResponseSpec rs) {
+        return logResponse(rs, true);
+    }
+
+    private WebTestClient.BodyContentSpec logResponse(final WebTestClient.ResponseSpec rs, final boolean debug) {
+        return rs.expectBody().consumeWith(result -> {
+            final String responseStr = new String(result.getResponseBody() != null ? result.getResponseBody() : new byte[0], StandardCharsets.UTF_8);
+            if (debug) {
+                log.debug("\n" + responseStr);
+            } else {
+                log.info("\n" + responseStr);
+            }
+        });
     }
 
 }

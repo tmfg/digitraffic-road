@@ -6,10 +6,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,49 +23,39 @@ public class SwaggerUiWebTest extends AbstractRestWebTest {
 
     @Test
     public void testSwaggerHome() throws Exception {
-        this.mockMvc.perform(get("/swagger-ui/index.html")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("<title>Swagger UI</title>")));
+        executeGet("/swagger-ui/index.html").expectStatus().isOk()
+                .expectBody(String.class).value(containsString("<title>Swagger UI</title>"));
     }
 
     @Test
     public void testSwaggerRestRoadApi() throws Exception {
-        mockMvc.perform(get("/v3/api-docs/road-api"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(restContentType))
-            .andExpect(jsonPath("$.openapi", is("3.0.1")))
-            .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-            .andExpect(jsonPath("$.paths." + TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS, anything()));
+        executeGet("/v3/api-docs/road-api")
+            .expectStatus().isOk()
+            .expectHeader().contentType(restContentType)
+            .expectBody()
+            .jsonPath("$.openapi").value(is("3.0.1"))
+            .jsonPath("$.info.version").value(is(versionService.getAppFullVersion()))
+            .jsonPath("$.paths." + TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS).value(anything());
     }
 
     @Test
     public void testTrafficMessagesV2EnumsInOpenApi() throws Exception {
-        mockMvc.perform(get("/v3/api-docs/road-api"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(restContentType))
+        executeGet("/v3/api-docs/road-api")
+            .expectStatus().isOk()
+            .expectHeader().contentType(restContentType)
+            .expectBody()
             // Top-level enums - V2 lowercase
-            .andExpect(jsonPath("$.components.schemas.SituationTypeV2.enum", hasItems("traffic announcement", "exempted transport", "weight restriction", "road work")))
-            .andExpect(jsonPath("$.components.schemas.SituationTypeV2.enum", not(hasItem("TRAFFIC_ANNOUNCEMENT"))))
-            .andExpect(jsonPath("$.components.schemas.AreaTypeV2.enum", hasItems("municipality", "province", "country")))
+            .jsonPath("$.components.schemas.SituationTypeV2.enum").value(hasItems("traffic announcement", "exempted transport", "weight restriction", "road work"))
+            .jsonPath("$.components.schemas.SituationTypeV2.enum").value(not(hasItem("TRAFFIC_ANNOUNCEMENT")))
+            .jsonPath("$.components.schemas.AreaTypeV2.enum").value(hasItems("municipality", "province", "country"))
             // Inline enums in V2 properties
-            .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementPropertiesV2.properties.trafficAnnouncementType.enum", hasItems("general", "preliminary accident report", "accident report")))
-            .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementV2.properties.language.enum", hasItem("fi")))
-            .andExpect(jsonPath("$.components.schemas.TrafficAnnouncementV2.properties.earlyClosing.enum", hasItems("closed", "canceled")))
-            .andExpect(jsonPath("$.components.schemas.RoadAddressLocationV2.properties.direction.enum", hasItems("unknown", "pos", "neg", "both")))
-            .andExpect(jsonPath("$.components.schemas.RoadWorkPhaseV2.properties.severity.enum", hasItems("low", "high", "highest")))
-            .andExpect(jsonPath("$.components.schemas.RestrictionV2.properties.type.enum", hasItem("speed limit")))
-            .andExpect(jsonPath("$.components.schemas.WeekdayV2.enum", hasItems("Monday", "Tuesday", "Wednesday")))
-            .andExpect(jsonPath("$.components.schemas.WorkTypeV2.properties.type.enum", hasItems("bridge", "road construction", "resurfacing")));
+            .jsonPath("$.components.schemas.TrafficAnnouncementPropertiesV2.properties.trafficAnnouncementType.enum").value(hasItems("general", "preliminary accident report", "accident report"))
+            .jsonPath("$.components.schemas.TrafficAnnouncementV2.properties.language.enum").value(hasItem("fi"))
+            .jsonPath("$.components.schemas.TrafficAnnouncementV2.properties.earlyClosing.enum").value(hasItems("closed", "canceled"))
+            .jsonPath("$.components.schemas.RoadAddressLocationV2.properties.direction.enum").value(hasItems("unknown", "pos", "neg", "both"))
+            .jsonPath("$.components.schemas.RoadWorkPhaseV2.properties.severity.enum").value(hasItems("low", "high", "highest"))
+            .jsonPath("$.components.schemas.RestrictionV2.properties.type.enum").value(hasItem("speed limit"))
+            .jsonPath("$.components.schemas.WeekdayV2.enum").value(hasItems("Monday", "Tuesday", "Wednesday"))
+            .jsonPath("$.components.schemas.WorkTypeV2.properties.type.enum").value(hasItems("bridge", "road construction", "resurfacing"));
     }
-
-    /*
-    @Test
-    public void testSwaggerRestRoadApiBeta() throws Exception {
-        mockMvc.perform(get("/v3/api-docs/road-api-beta"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(restContentType))
-            .andExpect(jsonPath("$.openapi", is("3.0.1")))
-            .andExpect(jsonPath("$.info.version", is(versionService.getAppFullVersion())))
-            .andExpect(content().string(not(containsString( "/api/"))));
-            //.andExpect(content().string(containsString(TmsControllerV1.API_TMS_BETA + "/")));
-    }*/
 }

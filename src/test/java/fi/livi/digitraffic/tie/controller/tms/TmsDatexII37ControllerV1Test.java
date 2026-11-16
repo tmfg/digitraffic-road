@@ -3,8 +3,6 @@ package fi.livi.digitraffic.tie.controller.tms;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -17,10 +15,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.xml.transform.StringSource;
 
 import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
+import fi.livi.digitraffic.tie.RoadApplication;
 import fi.livi.digitraffic.tie.TestUtils;
 import fi.livi.digitraffic.tie.converter.tms.datex2.TmsDatex2Common;
 import fi.livi.digitraffic.tie.dao.roadstation.SensorValueRepository;
@@ -45,8 +49,16 @@ import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Test for {@link TmsDatexII37ControllerV1}
+ *
+ * Runs against the real server with committed data, because the Datex II JAXB converters
+ * registered via {@code configureMessageConverters(ServerBuilder)} are not used in the mock environment.
  */
+@SpringBootTest(classes = RoadApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class TmsDatexII37ControllerV1Test extends AbstractRestWebTest {
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @Autowired
     private TmsSensorConstantValueDtoV1Repository tmsSensorConstantValueDtoV1Repository;
@@ -64,36 +76,41 @@ public class TmsDatexII37ControllerV1Test extends AbstractRestWebTest {
 
     @BeforeEach
     public void initData() {
-        final TmsStation tms = TestUtils.generateDummyTmsStation();
-        tmsStationRepository.save(tms);
+        inTransaction(() -> {
+            final TmsStation tms = TestUtils.generateDummyTmsStation();
+            tmsStationRepository.save(tms);
 
-        final List<RoadStationSensor> publishable =
-                roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
+            final List<RoadStationSensor> publishable =
+                    roadStationSensorService.findAllPublishableRoadStationSensors(RoadStationType.TMS_STATION);
 
-        final RoadStationSensor sensor1 = publishable.stream()
-                .filter(s -> s.getNameFi().equals("KESKINOPEUS_60MIN_KIINTEA_SUUNTA1")).findFirst().orElseThrow();
+            final RoadStationSensor sensor1 = publishable.stream()
+                    .filter(s -> s.getNameFi().equals("KESKINOPEUS_60MIN_KIINTEA_SUUNTA1")).findFirst().orElseThrow();
 
-        final RoadStationSensor sensor2 = publishable.stream()
-                .filter(s -> s.getNameFi().equals("OHITUKSET_60MIN_KIINTEA_SUUNTA1")).findFirst().orElseThrow();
+            final RoadStationSensor sensor2 = publishable.stream()
+                    .filter(s -> s.getNameFi().equals("OHITUKSET_60MIN_KIINTEA_SUUNTA1")).findFirst().orElseThrow();
 
-        roadStationSensorService.updateSensorsOfRoadStation(tms.getRoadStationId(),
-                RoadStationType.TMS_STATION,
-                publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
+            roadStationSensorService.updateSensorsOfRoadStation(tms.getRoadStationId(),
+                    RoadStationType.TMS_STATION,
+                    publishable.stream().map(RoadStationSensor::getLotjuId).collect(Collectors.toList()));
 
-        final Instant measured = Instant.now().minus(2, ChronoUnit.MINUTES);
-        sensorValueRepository.save(new SensorValue(tms.getRoadStation(), sensor1, 10.0, measured, null));
-        sensorValueRepository.save(new SensorValue(tms.getRoadStation(), sensor2, 10.0, measured.minus(1,
-                ChronoUnit.MINUTES), null));
+            final Instant measured = Instant.now().minus(2, ChronoUnit.MINUTES);
+            sensorValueRepository.save(new SensorValue(tms.getRoadStation(), sensor1, 10.0, measured, null));
+            sensorValueRepository.save(new SensorValue(tms.getRoadStation(), sensor2, 10.0, measured.minus(1,
+                    ChronoUnit.MINUTES), null));
 
-        // Reload entities/statuses from DB so timestamps used by controller and test are aligned.
-        TestUtils.entityManagerFlushAndClear(entityManager);
+            TestUtils.entityManagerFlushAndClear(entityManager);
 
-        this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
+            this.tmsStation = entityManager.find(TmsStation.class, tms.getId());
+        });
     }
 
     @AfterEach
     public void cleanDb() {
-        TestUtils.truncateTmsData(entityManager);
+        inTransaction(() -> TestUtils.truncateTmsData(entityManager));
+    }
+
+    private void inTransaction(final Runnable runnable) {
+        new TransactionTemplate(transactionManager).executeWithoutResult(status -> runnable.run());
     }
 
     @Test
@@ -101,9 +118,9 @@ public class TmsDatexII37ControllerV1Test extends AbstractRestWebTest {
         insertSensorConstant();
 
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATEX2_3_7))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATEX2_3_7)
+                        .expectStatus().isOk()
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
 
@@ -131,9 +148,9 @@ public class TmsDatexII37ControllerV1Test extends AbstractRestWebTest {
         insertSensorConstant();
 
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2_3_7))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2_3_7)
+                        .expectStatus().isOk()
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
 
@@ -153,9 +170,9 @@ public class TmsDatexII37ControllerV1Test extends AbstractRestWebTest {
     @Test
     public void tmsDataDatexII37XmlRestApi() throws Exception {
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA + TmsControllerV1.DATEX2_3_7))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA + TmsControllerV1.DATEX2_3_7)
+                        .expectStatus().isOk()
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
         assertNotNull(publication);
@@ -165,9 +182,9 @@ public class TmsDatexII37ControllerV1Test extends AbstractRestWebTest {
     @Test
     public void tmsDataByIdDatexII37XmlRestApi() throws Exception {
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATA + TmsControllerV1.DATEX2_3_7))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATA + TmsControllerV1.DATEX2_3_7)
+                        .expectStatus().isOk()
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
         assertNotNull(publication);
@@ -175,19 +192,21 @@ public class TmsDatexII37ControllerV1Test extends AbstractRestWebTest {
     }
 
     private void insertSensorConstant() {
-        final TmsSensorConstant tsc = new TmsSensorConstant();
-        tsc.setLotjuId(1L);
-        tsc.setName("Tien_suunta");
-        tsc.setRoadStation(tmsStation.getRoadStation());
+        inTransaction(() -> {
+            final TmsSensorConstant tsc = new TmsSensorConstant();
+            tsc.setLotjuId(1L);
+            tsc.setName("Tien_suunta");
+            tsc.setRoadStation(tmsStation.getRoadStation());
 
-        final TmsSensorConstantValue cv = new TmsSensorConstantValue();
-        cv.setLotjuId(1L);
-        cv.setSensorConstant(tsc);
-        cv.setValue(42);
-        cv.setValidFrom(101);
-        cv.setValidTo(1231);
+            final TmsSensorConstantValue cv = new TmsSensorConstantValue();
+            cv.setLotjuId(1L);
+            cv.setSensorConstant(tsc);
+            cv.setValue(42);
+            cv.setValidFrom(101);
+            cv.setValidTo(1231);
 
-        tmsSensorConstantValueDtoV1Repository.save(cv);
+            tmsSensorConstantValueDtoV1Repository.save(cv);
+        });
     }
 
     private void checkXmlXsiType(final String xmlResponse, final Class<?> xsiType) {

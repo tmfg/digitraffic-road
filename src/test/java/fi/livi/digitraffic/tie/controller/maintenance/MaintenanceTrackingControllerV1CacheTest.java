@@ -9,6 +9,7 @@ import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTracking
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -25,11 +26,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import tools.jackson.core.JacksonException;
 
@@ -98,7 +96,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
         String prevResult = null;
 
         for (final List<Double> areaCoordinates : API_AREA_PARAMETERS) {
-            final String result =
+            final String result = new String(
                 expectOkFeatureCollectionWithSize(
                         getTrackingsJson(
                                 API_DOMAIN_PARAMETERS.get(index),
@@ -109,7 +107,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
                                 areaCoordinates.get(3)  // yMax
                         ),
                         1
-                ).andReturn().getResponse().getContentAsString();
+                ).returnResult().getResponseBody(), StandardCharsets.UTF_8);
             if (prevResult != null) {
                 Assertions.assertEquals(prevResult, result);
             }
@@ -144,7 +142,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
         String prevResult = null;
 
         for (final List<Double> areaCoordinates : API_AREA_PARAMETERS) {
-            final String result =
+            final String result = new String(
                     expectOkFeatureCollectionWithSize(
                         getLatestTrackingsJson(
                                 API_DOMAIN_PARAMETERS.get(index),
@@ -155,7 +153,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
                                 areaCoordinates.get(3)  // yMax
                         ),
                         1
-                ).andReturn().getResponse().getContentAsString();
+                ).returnResult().getResponseBody(), StandardCharsets.UTF_8);
             if (prevResult != null) {
                 Assertions.assertEquals(prevResult, result);
             }
@@ -184,7 +182,7 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
         );
     }
 
-    private ResultActions getTrackingsJson(final List<String> domains, final List<MaintenanceTrackingTask> tasks,
+    private WebTestClient.ResponseSpec getTrackingsJson(final List<String> domains, final List<MaintenanceTrackingTask> tasks,
                                            final double xMin, final double xMax, final double yMin, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String domainParams = domains.stream().map(t -> "&domain=" + t).collect(Collectors.joining());
@@ -192,12 +190,10 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
                 String.format(Locale.US, "?endFrom=%s&endBefore=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s%s",
                         MaintenanceTrackingControllerV1CacheTest.START_CACHED, MaintenanceTrackingControllerV1CacheTest.END_CACHED, xMin, yMin, xMax, yMax, tasksParams, domainParams);
         log.info("Get URL: {}", url);
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
-        return mockMvc.perform(get);
+        return executeGet(url);
     }
 
-    private ResultActions getLatestTrackingsJson(final List<String> domains, final List<MaintenanceTrackingTask> tasks,
+    private WebTestClient.ResponseSpec getLatestTrackingsJson(final List<String> domains, final List<MaintenanceTrackingTask> tasks,
                                                  final double xMin, final double xMax, final double yMin, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String domainParams = domains.stream().map(t -> "&domain=" + t).collect(Collectors.joining());
@@ -205,8 +201,6 @@ public class MaintenanceTrackingControllerV1CacheTest extends AbstractRestWebTes
                 String.format(Locale.US, "?endFrom=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s%s",
                         MaintenanceTrackingControllerV1CacheTest.START_CACHED.toString(), xMin, yMin, xMax, yMax, tasksParams, domainParams);
         log.info("Get URL: {}", url);
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
-        return mockMvc.perform(get);
+        return executeGet(url);
     }
 }

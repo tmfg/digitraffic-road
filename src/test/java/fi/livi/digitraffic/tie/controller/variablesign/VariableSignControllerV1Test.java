@@ -5,8 +5,6 @@ import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_CODE_DES
 import static fi.livi.digitraffic.tie.controller.ApiConstants.API_SIGNS_HISTORY;
 import static fi.livi.digitraffic.tie.service.variablesign.v1.TestDataFilteringService.testDevices;
 import static fi.livi.digitraffic.tie.service.variablesign.v1.TestDataFilteringService.testTimes;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -16,16 +14,14 @@ import java.time.format.DateTimeFormatter;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.controller.ApiConstants;
 
 public class VariableSignControllerV1Test extends AbstractRestWebTest {
-    private ResultActions getJson(final String url) throws Exception {
-        final ResultActions response = executeGet(ApiConstants.API_VS_V1 + url);
-        logDebugResponse(response);
-        return response;
+    private WebTestClient.BodyContentSpec getJson(final String url) throws Exception {
+        return logDebugResponse(executeGet(ApiConstants.API_VS_V1 + url).expectStatus().isOk());
     }
 
     private final static Instant NOW_DATETIME = Instant.now();
@@ -76,9 +72,8 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     @Test
     public void noData() throws Exception {
         getJson(API_SIGNS)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", Matchers.empty()));
+            .jsonPath("type").value(Matchers.equalTo("FeatureCollection"))
+            .jsonPath("features").value(Matchers.empty());
     }
 
     @Test
@@ -86,11 +81,10 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         insertTestData();
 
         getJson(API_SIGNS)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", Matchers.equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", Matchers.hasSize(1)))
-            .andExpect(jsonPath("features[0].properties.id", Matchers.equalTo("ID1")))
-            .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("80")));
+            .jsonPath("type").value(Matchers.equalTo("FeatureCollection"))
+            .jsonPath("features").value(Matchers.hasSize(1))
+            .jsonPath("features[0].properties.id").value(Matchers.equalTo("ID1"))
+            .jsonPath("features[0].properties.displayValue").value(Matchers.equalTo("80"));
     }
 
     @Test
@@ -99,8 +93,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         entityManager.createNativeQuery("update device set deleted_date = now() where id = 'ID1'").executeUpdate();
 
         getJson(API_SIGNS)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("features", Matchers.hasSize(1)));
+            .jsonPath("features").value(Matchers.hasSize(1));
     }
 
     @Test
@@ -110,8 +103,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
             "update device_data set effect_date = now() - interval '61 days' where device_id = 'ID1'").executeUpdate();
 
         getJson(API_SIGNS)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("features", Matchers.empty()));
+            .jsonPath("features").value(Matchers.empty());
     }
 
     @Test
@@ -125,15 +117,14 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
             .executeUpdate();
 
         getJson(API_SIGNS)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("features", Matchers.hasSize(1)))
-            .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("120")));
+            .jsonPath("features").value(Matchers.hasSize(1))
+            .jsonPath("features[0].properties.displayValue").value(Matchers.equalTo("120"));
     }
 
     @Test
     public void notExists() throws Exception {
-        getJson(API_SIGNS + "/unknown")
-            .andExpect(status().isNotFound());
+        executeGet(ApiConstants.API_VS_V1 + API_SIGNS + "/unknown")
+            .expectStatus().isNotFound();
     }
 
     @Test
@@ -141,26 +132,25 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         insertTestData();
 
         getJson(API_SIGNS + "/ID1")
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("features", Matchers.hasSize(1)))
-            .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("80")));
+            .jsonPath("features").value(Matchers.hasSize(1))
+            .jsonPath("features[0].properties.displayValue").value(Matchers.equalTo("80"));
     }
 
-    private ResultActions testFiltering(final int offset) throws Exception {
+    private WebTestClient.BodyContentSpec testFiltering(final int offset) throws Exception {
         final Instant time = testTimes.iterator().next().getStart().plus(offset, java.time.temporal.ChronoUnit.MINUTES);
         insertTestDataForTestData(time);
 
         return getJson(API_SIGNS + "?deviceId=" + FILTERING_ID);
     }
 
-    private ResultActions testHistoryFiltering(final int offset) throws Exception {
+    private WebTestClient.BodyContentSpec testHistoryFiltering(final int offset) throws Exception {
         final Instant time = testTimes.iterator().next().getStart().plus(offset, java.time.temporal.ChronoUnit.MINUTES);
         insertTestDataForTestData(time);
 
         return getJson(API_SIGNS_HISTORY + "?deviceId=" + FILTERING_ID);
     }
 
-    private ResultActions testRecentHistory() throws Exception {
+    private WebTestClient.BodyContentSpec testRecentHistory() throws Exception {
         final Instant time = Instant.now().minus(Duration.ofHours(1));
         insertTestDataForTestData(time);
 
@@ -170,52 +160,45 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
     @Test
     public void filteringWorksAtStart() throws Exception {
         testFiltering(0)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("features", Matchers.hasSize(0)));
+            .jsonPath("features").value(Matchers.hasSize(0));
     }
 
     @Test
     public void filteringWorksInMiddle() throws Exception {
         testFiltering(120)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("features", Matchers.hasSize(0)));
+            .jsonPath("features").value(Matchers.hasSize(0));
     }
 
     @Test
     public void noFiltering() throws Exception {
         testFiltering(-1)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("features", Matchers.hasSize(1)))
-            .andExpect(jsonPath("features[0].properties.displayValue", Matchers.equalTo("80")));
+            .jsonPath("features").value(Matchers.hasSize(1))
+            .jsonPath("features[0].properties.displayValue").value(Matchers.equalTo("80"));
     }
 
     @Test
     public void historyFilteringWorksAtStart() throws Exception {
         testHistoryFiltering(0)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.hasSize(0)));
+            .jsonPath("$").value(Matchers.hasSize(0));
     }
 
     @Test
     public void historyFilteringWorksAtMiddle() throws Exception {
         testHistoryFiltering(120)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.hasSize(0)));
+            .jsonPath("$").value(Matchers.hasSize(0));
     }
 
 
     @Test
     public void historyNoFiltering() throws Exception {
         testRecentHistory()
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.hasSize(1)));
+            .jsonPath("$").value(Matchers.hasSize(1));
     }
 
     @Test
     public void historyNotExists() throws Exception {
         getJson(API_SIGNS_HISTORY + "?deviceId=unknown")
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.empty()));
+            .jsonPath("$").value(Matchers.empty());
     }
 
     @Test
@@ -223,8 +206,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         insertTestData();
 
         getJson(API_SIGNS_HISTORY + "?deviceId=ID1")
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.hasSize(1)));
+            .jsonPath("$").value(Matchers.hasSize(1));
     }
 
     @Test
@@ -232,8 +214,7 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         insertTestData();
 
         getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + NOW_DATE.plusDays(1).format(DateTimeFormatter.ISO_DATE))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.empty()));
+            .jsonPath("$").value(Matchers.empty());
     }
 
     @Test
@@ -241,18 +222,15 @@ public class VariableSignControllerV1Test extends AbstractRestWebTest {
         insertTestData();
 
         getJson(API_SIGNS_HISTORY + "?deviceId=ID1&effectiveDate=" + NOW_DATE.format(DateTimeFormatter.ISO_DATE))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", Matchers.hasSize(1)));
+            .jsonPath("$").value(Matchers.hasSize(1));
     }
 
 
     @Test
     public void codeDescriptionsV3() throws Exception {
         getJson(API_SIGNS_CODE_DESCRIPTIONS)
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("signTypes", Matchers.hasSize(12)))
-            .andExpect(jsonPath("signTypes[0].description", Matchers.notNullValue()))
-            .andExpect(jsonPath("signTypes[0].descriptionEn", Matchers.notNullValue()))
-        ;
+            .jsonPath("signTypes").value(Matchers.hasSize(12))
+            .jsonPath("signTypes[0].description").value(Matchers.notNullValue())
+            .jsonPath("signTypes[0].descriptionEn").value(Matchers.notNullValue());
     }
 }

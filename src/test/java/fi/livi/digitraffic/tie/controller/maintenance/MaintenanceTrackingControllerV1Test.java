@@ -15,9 +15,7 @@ import static fi.livi.digitraffic.tie.service.maintenance.v1.MaintenanceTracking
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -34,11 +32,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import tools.jackson.core.JacksonException;
 
@@ -73,51 +69,40 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
     @Autowired
     private MaintenanceTrackingRepository maintenanceTrackingRepository;
 
-    private ResultActions getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
+    private void assertLastModifiedIsTransactionTime(final EntityExchangeResult<byte[]> result) {
+        assertEquals(getTransactionTimestampRoundedToSeconds().toEpochMilli(),
+            result.getResponseHeaders().getFirstDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER));
+    }
+
+    private WebTestClient.ResponseSpec getTrackingsJson(final Instant from, final Instant to, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String url = MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES +
             String.format(Locale.US, "?endFrom=%s&endBefore=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s", from, to, xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
-        final ResultActions result = mockMvc.perform(get);
-        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
-        return result;
+        return executeGet(url);
     }
 
-    private ResultActions getTrackingsJsonWithCreatedTime(final Instant createdAfter, final Instant createdBefore, final Set<MaintenanceTrackingTask> tasks) throws Exception {
+    private WebTestClient.ResponseSpec getTrackingsJsonWithCreatedTime(final Instant createdAfter, final Instant createdBefore, final Set<MaintenanceTrackingTask> tasks) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String url = MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES +
             String.format(Locale.US, "?createdAfter=%s&createdBefore=%s%s", createdAfter, createdBefore, tasksParams);
         log.info("Get URL: {}", url);
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
-        final ResultActions result = mockMvc.perform(get);
-        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
-        return result;
+        return executeGet(url);
     }
 
-    private ResultActions getLatestTrackingsJson(final Instant from, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
+    private WebTestClient.ResponseSpec getLatestTrackingsJson(final Instant from, final Set<MaintenanceTrackingTask> tasks, final double xMin, final double yMin, final double xMax, final double yMax) throws Exception {
         final String tasksParams = tasks.stream().map(t -> "&taskId=" + t.toString()).collect(Collectors.joining());
         final String url = MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES_LATEST +
             String.format(Locale.US, "?endFrom=%s&xMin=%f&yMin=%f&xMax=%f&yMax=%f%s",
                 from.toString(), xMin, yMin, xMax, yMax, tasksParams);
         log.info("Get URL: {}", url);
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
-        final ResultActions result = mockMvc.perform(get);
-        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
-        return result;
+        return executeGet(url);
     }
 
-    private ResultActions getTrackingsJsonWithId(final long id) throws Exception {
+    private WebTestClient.ResponseSpec getTrackingsJsonWithId(final long id) throws Exception {
         final String url = MaintenanceTrackingControllerV1.API_MAINTENANCE_V1_TRACKING_ROUTES + "/" + id;
         log.info("Get URL: {}", url);
-        final MockHttpServletRequestBuilder get = MockMvcRequestBuilders.get(url);
-        get.contentType(MediaType.APPLICATION_JSON);
-        final ResultActions result = mockMvc.perform(get);
-        log.debug("Response:\n{}", result.andReturn().getResponse().getContentAsString());
-        return result;
+        return executeGet(url);
     }
 
     @BeforeEach
@@ -142,18 +127,16 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             getTrackingsJson(start, start.plusSeconds(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()),
             machineCount)
-            .andExpect(jsonPath("features[*].properties.workMachineId").doesNotExist())
-            .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SOURCE))))
-            .andExpect(jsonPath("features[*].properties.domain", hasItems(equalTo(DOMAIN))))
-            .andExpect(jsonPath("features[*].properties.startTime").exists())
-            .andExpect(jsonPath("features[*].properties.startTime", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
-            .andExpect(jsonPath("features[*].properties.endTime").exists())
-            .andExpect(jsonPath("features[*].properties.endTime", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
-            .andExpect(jsonPath("features[*].properties.created").exists())
-            .andExpect(jsonPath("features[*].properties.created", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .jsonPath("features[*].properties.workMachineId").doesNotExist()
+            .jsonPath("features[*].properties.source").value(hasItems(equalTo(SOURCE)))
+            .jsonPath("features[*].properties.domain").value(hasItems(equalTo(DOMAIN)))
+            .jsonPath("features[*].properties.startTime").exists()
+            .jsonPath("features[*].properties.startTime").value(hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER))
+            .jsonPath("features[*].properties.endTime").exists()
+            .jsonPath("features[*].properties.endTime").value(hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER))
+            .jsonPath("features[*].properties.created").exists()
+            .jsonPath("features[*].properties.created").value(hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER))
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
     }
 
     @Test
@@ -178,27 +161,21 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             getTrackingsJson(
                 start, start.plus(9, ChronoUnit.MINUTES).plusSeconds(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), firstHalfMachines.size() * 10)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
         // Second tracking, 10/machine
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
                 start.plus(10, ChronoUnit.MINUTES), start.plus(10+9, ChronoUnit.MINUTES).plusSeconds(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), secondHalfMachines.size() * 10)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
         // Both
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
                 start, start.plus(10+9, ChronoUnit.MINUTES).plusSeconds(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount * 10)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
     }
 
     @Test
@@ -218,18 +195,14 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             getTrackingsJson(
                 start, start, new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 0)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
         // Exlusive end parameter same as trackings end time + 1ms -> returning all
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
                 start, start.plusSeconds(1), new HashSet<>(),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
     }
 
     @Test
@@ -253,22 +226,16 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         // Exlusive created parameters same as tracking created time -> not returning anything
         expectOkFeatureCollectionWithSize(
             getTrackingsJsonWithCreatedTime(created, created, new HashSet<>()), 0)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
         // Exlusive created parameter one same as tracking created time -> not returning anything
         expectOkFeatureCollectionWithSize(
             getTrackingsJsonWithCreatedTime(created.minusSeconds(1), created, new HashSet<>()), 0)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
         expectOkFeatureCollectionWithSize(
             getTrackingsJsonWithCreatedTime(created, created.plusSeconds(1), new HashSet<>()), 0)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
         // Exlusive created parameter one same as tracking created time -> returning all
         expectOkFeatureCollectionWithSize(
@@ -301,18 +268,14 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
             getTrackingsJson(
                 start, start.plusSeconds(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavatSchema.values()[0].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 1)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
         // Search with second task should return trackings for machine 1. and 2.
         expectOkFeatureCollectionWithSize(
             getTrackingsJson(
                 start, start.plusSeconds(1), getTaskSetWithTasks(getTaskByharjaEnumName(SuoritettavatTehtavatSchema.values()[1].name())),
                 RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), 2)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
     }
 
     private static MaintenanceTrackingTask getTaskByharjaEnumName(final String harjaTaskEnumName) {
@@ -346,45 +309,32 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         log.info("Machine count {}", machineCount);
 
         // When getting latest trackings we should get only latest trackings per machine -> result of machineCount
-        final ResultActions latestResult =
+        final WebTestClient.BodyContentSpec latestResult =
             expectOkFeatureCollectionWithSize(
                 getLatestTrackingsJson(start, new HashSet<>(),
                     RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight()), machineCount)
-                .andExpect(jsonPath("features[*].properties.source", hasItems(equalTo(SOURCE))))
-                .andExpect(jsonPath("features[*].properties.domain", hasItems(equalTo(DOMAIN))))
-                .andExpect(jsonPath("features[*].properties.time").exists())
-                .andExpect(jsonPath("features[*].properties.time", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
-                .andExpect(jsonPath("features[*].properties.created").exists())
-                .andExpect(jsonPath("features[*].properties.created", hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER)))
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                    getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+                .jsonPath("features[*].properties.source").value(hasItems(equalTo(SOURCE)))
+                .jsonPath("features[*].properties.domain").value(hasItems(equalTo(DOMAIN)))
+                .jsonPath("features[*].properties.time").exists()
+                .jsonPath("features[*].properties.time").value(hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER))
+                .jsonPath("features[*].properties.created").exists()
+                .jsonPath("features[*].properties.created").value(hasItems(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_MATCHER))
+                .consumeWith(this::assertLastModifiedIsTransactionTime);
 
-        IntStream.range(0, machineCount).forEach(i -> {
-            try {
-                latestResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("Point")));
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        IntStream.range(0, machineCount).forEach(i ->
+            latestResult.jsonPath("features[" + i + "].geometry.type").value(equalTo("Point")));
         // When getting all trackings we should all 5 trackings per machine -> result of machineCount*5
-        final ResultActions trackingResult = getTrackingsJson(
+        final WebTestClient.BodyContentSpec trackingResult = getTrackingsJson(
             start, start.plus(4 * 10 + 9, ChronoUnit.MINUTES), new HashSet<>(),
             RANGE_X.getLeft(), RANGE_Y.getLeft(), RANGE_X.getRight(), RANGE_Y.getRight())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("type", equalTo("FeatureCollection")))
-            .andExpect(jsonPath("features", hasSize(machineCount * 5)))
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
-                getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("type").value(equalTo("FeatureCollection"))
+            .jsonPath("features").value(hasSize(machineCount * 5))
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
 
-        IntStream.range(0, machineCount * 5).forEach(i -> {
-            try {
-                trackingResult.andExpect(jsonPath("features[" + i + "].geometry.type", equalTo("LineString")));
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        IntStream.range(0, machineCount * 5).forEach(i ->
+            trackingResult.jsonPath("features[" + i + "].geometry.type").value(equalTo("LineString")));
     }
 
     @Test
@@ -473,16 +423,15 @@ public class MaintenanceTrackingControllerV1Test extends AbstractRestWebTest {
         final long id = ((long) entityManager.createNativeQuery("select id from maintenance_tracking limit 1").getSingleResult());
         // First tracking
         expectOkFeature(getTrackingsJsonWithId(id))
-            .andExpect(jsonPath("properties.workMachineId").doesNotExist())
-            .andExpect(jsonPath("properties.source", equalTo(SOURCE)))
-            .andExpect(jsonPath("properties.domain", equalTo(DOMAIN)))
-            .andExpect(jsonPath("properties.startTime").exists())
-            .andExpect(jsonPath("properties.startTime", ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER))
-            .andExpect(jsonPath("properties.endTime").exists())
-            .andExpect(jsonPath("properties.endTime", ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER))
-            .andExpect(jsonPath("properties.created").exists())
-            .andExpect(jsonPath("properties.created", ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER))
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, getTransactionTimestampRoundedToSeconds().toEpochMilli()));
+            .jsonPath("properties.workMachineId").doesNotExist()
+            .jsonPath("properties.source").value(equalTo(SOURCE))
+            .jsonPath("properties.domain").value(equalTo(DOMAIN))
+            .jsonPath("properties.startTime").exists()
+            .jsonPath("properties.startTime").value(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER)
+            .jsonPath("properties.endTime").exists()
+            .jsonPath("properties.endTime").value(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER)
+            .jsonPath("properties.created").exists()
+            .jsonPath("properties.created").value(ISO_DATE_TIME_WITH_Z_OFFSET_MATCHER)
+            .consumeWith(this::assertLastModifiedIsTransactionTime);
     }
 }

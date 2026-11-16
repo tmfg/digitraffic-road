@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MvcResult;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 import java.io.IOException;
@@ -36,8 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
     private static final Logger log = LoggerFactory.getLogger(WeathercamPermissionControllerV1Test.class);
@@ -183,10 +180,7 @@ public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
                 WeathercamPermissionControllerV1.WEATHERCAM_PATH + "/" + imageName + "?versionId=" + versionId);
         log.info("Request uri: {}", uri);
 
-        final MvcResult mvcResult = mockMvc.perform(get(uri))
-                .andReturn();
-        return mockMvc.perform(asyncDispatch(mvcResult))
-                .andReturn().getResponse();
+        return toMockResponse(executeGet(uri.toString()));
     }
 
     private MockHttpServletResponse requestThumbnail(final String imageName) throws Exception {
@@ -194,10 +188,7 @@ public class WeathercamPermissionControllerV1Test extends AbstractRestWebTest {
                 WeathercamPermissionControllerV1.WEATHERCAM_PATH + "/" + imageName + "?thumbnail=true");
         log.info("Request uri: {}", uri);
 
-        final MvcResult mvcResult = mockMvc.perform(get(uri))
-                .andReturn();
-        return mockMvc.perform(asyncDispatch(mvcResult))
-                .andReturn().getResponse();
+        return toMockResponse(executeGet(uri.toString()));
     }
 
     private static String getPresetId(final String imageName) {

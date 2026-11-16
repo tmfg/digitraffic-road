@@ -1,13 +1,8 @@
 package fi.livi.digitraffic.tie.controller.weather;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 
@@ -95,130 +90,142 @@ public class WeatherControllerV2ForecastTest extends AbstractRestWebTest {
 
     @Test
     public void forecastsOfAllSections() throws Exception {
-        logDebugResponse(mockMvc.perform(get(PATH + WeatherControllerV2.FORECASTS)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$.dataUpdatedTime", is("2026-10-07T11:05:48Z")))
-            .andExpect(jsonPath("$.forecastSections", hasSize(1)))
-            .andExpect(jsonPath("$.forecastSections[0].id", is(ID)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts", hasSize(2)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].forecastName", is("0h")))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].type", is("OBSERVATION")))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].time", is("2026-10-07T12:00:00Z")))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].daylight", is(true)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].roadTemperature", is(5.5)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].windDirection", is(90)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].overallRoadCondition", is("POOR_CONDITION")))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].roadCondition", is("NOT_KNOWN")))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].weatherSymbol", is(109)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].reliability").doesNotExist())
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[1].roadCondition", is("ICE")))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[1].roadTemperature").doesNotExist())
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[1].weatherSymbol").doesNotExist());
+        logDebugResponse(executeGet(PATH + WeatherControllerV2.FORECASTS)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DT_JSON_CONTENT_TYPE))
+            .jsonPath("$.dataUpdatedTime").value(is("2026-10-07T11:05:48Z"))
+            .jsonPath("$.forecastSections").value(hasSize(1))
+            .jsonPath("$.forecastSections[0].id").value(is(ID))
+            .jsonPath("$.forecastSections[0].forecasts").value(hasSize(2))
+            .jsonPath("$.forecastSections[0].forecasts[0].forecastName").value(is("0h"))
+            .jsonPath("$.forecastSections[0].forecasts[0].type").value(is("OBSERVATION"))
+            .jsonPath("$.forecastSections[0].forecasts[0].time").value(is("2026-10-07T12:00:00Z"))
+            .jsonPath("$.forecastSections[0].forecasts[0].daylight").value(is(true))
+            .jsonPath("$.forecastSections[0].forecasts[0].roadTemperature").value(is(5.5))
+            .jsonPath("$.forecastSections[0].forecasts[0].windDirection").value(is(90))
+            .jsonPath("$.forecastSections[0].forecasts[0].overallRoadCondition").value(is("POOR_CONDITION"))
+            .jsonPath("$.forecastSections[0].forecasts[0].roadCondition").value(is("NOT_KNOWN"))
+            .jsonPath("$.forecastSections[0].forecasts[0].weatherSymbol").value(is(109))
+            .jsonPath("$.forecastSections[0].forecasts[0].reliability").doesNotExist()
+            .jsonPath("$.forecastSections[0].forecasts[1].roadCondition").value(is("ICE"))
+            .jsonPath("$.forecastSections[0].forecasts[1].roadTemperature").doesNotExist()
+            .jsonPath("$.forecastSections[0].forecasts[1].weatherSymbol").doesNotExist();
     }
 
     @Test
     public void forecastsLastUpdated() throws Exception {
-        mockMvc.perform(get(PATH + WeatherControllerV2.FORECASTS + "?lastUpdated=true"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.dataUpdatedTime", is("2026-10-07T11:05:48Z")))
-            .andExpect(jsonPath("$.forecastSections", nullValue()));
+        executeGet(PATH + WeatherControllerV2.FORECASTS + "?lastUpdated=true")
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.dataUpdatedTime").value(is("2026-10-07T11:05:48Z"))
+            .jsonPath("$.forecastSections").doesNotExist();
     }
 
     @Test
     public void forecastsByRoadNumber() throws Exception {
-        mockMvc.perform(get(PATH + WeatherControllerV2.FORECASTS + "?roadNumber=4"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.forecastSections", hasSize(1)));
-        mockMvc.perform(get(PATH + WeatherControllerV2.FORECASTS + "?roadNumber=1"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.forecastSections", hasSize(0)));
+        executeGet(PATH + WeatherControllerV2.FORECASTS + "?roadNumber=4")
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.forecastSections").value(hasSize(1));
+        executeGet(PATH + WeatherControllerV2.FORECASTS + "?roadNumber=1")
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.forecastSections").value(hasSize(0));
     }
 
     @Test
     public void forecastsById() throws Exception {
-        mockMvc.perform(get(PATH + "/" + ID + WeatherControllerV2.FORECASTS))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(ID)))
-            .andExpect(jsonPath("$.forecasts", hasSize(2)));
+        executeGet(PATH + "/" + ID + WeatherControllerV2.FORECASTS)
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.id").value(is(ID))
+            .jsonPath("$.forecasts").value(hasSize(2));
     }
 
     @Test
     public void forecastsByUnknownIdIsNotFound() throws Exception {
-        mockMvc.perform(get(PATH + "/UNKNOWN" + WeatherControllerV2.FORECASTS)).andExpect(status().isNotFound());
+        executeGet(PATH + "/UNKNOWN" + WeatherControllerV2.FORECASTS).expectStatus().isNotFound();
     }
 
     @Test
     public void forecastSectionsMetadata() throws Exception {
-        mockMvc.perform(get(PATH))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.type", is("FeatureCollection")))
-            .andExpect(jsonPath("$.features", hasSize(greaterThan(0))))
-            .andExpect(jsonPath("$.features[?(@.id == '" + ID + "')]", hasSize(1)));
-        mockMvc.perform(get(PATH + "?lastUpdated=true"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.features", hasSize(0)));
+        executeGet(PATH)
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.type").value(is("FeatureCollection"))
+            .jsonPath("$.features").value(hasSize(greaterThan(0)))
+            .jsonPath("$.features[?(@.id == '" + ID + "')]").value(hasSize(1));
+        executeGet(PATH + "?lastUpdated=true")
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.features").value(hasSize(0));
     }
 
     @Test
     public void forecastSectionMetadataById() throws Exception {
-        mockMvc.perform(get(PATH + "/" + ID))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.type", is("Feature")))
-            .andExpect(jsonPath("$.id", is(ID)));
-        mockMvc.perform(get(PATH + "/UNKNOWN")).andExpect(status().isNotFound());
+        executeGet(PATH + "/" + ID)
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.type").value(is("Feature"))
+            .jsonPath("$.id").value(is(ID));
+        executeGet(PATH + "/UNKNOWN").expectStatus().isNotFound();
     }
 
     @Test
     public void simpleForecastsOfAllSections() throws Exception {
-        logDebugResponse(mockMvc.perform(get(SIMPLE_PATH + WeatherControllerV2.FORECASTS)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$.dataUpdatedTime", is("2026-10-07T11:00:00Z")))
-            .andExpect(jsonPath("$.forecastSections", hasSize(1)))
-            .andExpect(jsonPath("$.forecastSections[0].id", is(SIMPLE_ID)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts", hasSize(1)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].roadTemperature", is(1.5)))
-            .andExpect(jsonPath("$.forecastSections[0].forecasts[0].overallRoadCondition", is("EXTREMELY_POOR_CONDITION")));
-        mockMvc.perform(get(SIMPLE_PATH + WeatherControllerV2.FORECASTS + "?lastUpdated=true"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.dataUpdatedTime", is("2026-10-07T11:00:00Z")))
-            .andExpect(jsonPath("$.forecastSections", nullValue()));
-        mockMvc.perform(get(SIMPLE_PATH + WeatherControllerV2.FORECASTS + "?roadNumber=4"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.forecastSections", hasSize(0)));
+        logDebugResponse(executeGet(SIMPLE_PATH + WeatherControllerV2.FORECASTS)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DT_JSON_CONTENT_TYPE))
+            .jsonPath("$.dataUpdatedTime").value(is("2026-10-07T11:00:00Z"))
+            .jsonPath("$.forecastSections").value(hasSize(1))
+            .jsonPath("$.forecastSections[0].id").value(is(SIMPLE_ID))
+            .jsonPath("$.forecastSections[0].forecasts").value(hasSize(1))
+            .jsonPath("$.forecastSections[0].forecasts[0].roadTemperature").value(is(1.5))
+            .jsonPath("$.forecastSections[0].forecasts[0].overallRoadCondition").value(is("EXTREMELY_POOR_CONDITION"));
+        executeGet(SIMPLE_PATH + WeatherControllerV2.FORECASTS + "?lastUpdated=true")
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.dataUpdatedTime").value(is("2026-10-07T11:00:00Z"))
+            .jsonPath("$.forecastSections").doesNotExist();
+        executeGet(SIMPLE_PATH + WeatherControllerV2.FORECASTS + "?roadNumber=4")
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.forecastSections").value(hasSize(0));
     }
 
     @Test
     public void simpleForecastsById() throws Exception {
-        mockMvc.perform(get(SIMPLE_PATH + "/" + SIMPLE_ID + WeatherControllerV2.FORECASTS))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(SIMPLE_ID)))
-            .andExpect(jsonPath("$.forecasts", hasSize(1)));
-        mockMvc.perform(get(SIMPLE_PATH + "/" + ID + WeatherControllerV2.FORECASTS)).andExpect(status().isNotFound());
-        mockMvc.perform(get(PATH + "/" + SIMPLE_ID + WeatherControllerV2.FORECASTS)).andExpect(status().isNotFound());
+        executeGet(SIMPLE_PATH + "/" + SIMPLE_ID + WeatherControllerV2.FORECASTS)
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.id").value(is(SIMPLE_ID))
+            .jsonPath("$.forecasts").value(hasSize(1));
+        executeGet(SIMPLE_PATH + "/" + ID + WeatherControllerV2.FORECASTS).expectStatus().isNotFound();
+        executeGet(PATH + "/" + SIMPLE_ID + WeatherControllerV2.FORECASTS).expectStatus().isNotFound();
     }
 
     @Test
     public void simpleForecastSectionsMetadata() throws Exception {
-        logDebugResponse(mockMvc.perform(get(SIMPLE_PATH)))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$.type", is("FeatureCollection")))
-            .andExpect(jsonPath("$.features", hasSize(10)))
-            .andExpect(jsonPath("$.features[0].geometry.type", is("LineString")))
-            .andExpect(jsonPath("$.features[?(@.id == '" + SIMPLE_ID + "')]", hasSize(1)))
-            .andExpect(jsonPath("$.features[?(@.id == '" + ID + "')]", hasSize(0)));
-        mockMvc.perform(get(SIMPLE_PATH + "?roadNumber=1"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.features", hasSize(7)));
-        mockMvc.perform(get(SIMPLE_PATH + "?lastUpdated=true"))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.features", hasSize(0)));
+        logDebugResponse(executeGet(SIMPLE_PATH)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DT_JSON_CONTENT_TYPE))
+            .jsonPath("$.type").value(is("FeatureCollection"))
+            .jsonPath("$.features").value(hasSize(10))
+            .jsonPath("$.features[0].geometry.type").value(is("LineString"))
+            .jsonPath("$.features[?(@.id == '" + SIMPLE_ID + "')]").value(hasSize(1))
+            .jsonPath("$.features[?(@.id == '" + ID + "')]").value(hasSize(0));
+        executeGet(SIMPLE_PATH + "?roadNumber=1")
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.features").value(hasSize(7));
+        executeGet(SIMPLE_PATH + "?lastUpdated=true")
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.features").value(hasSize(0));
     }
 
     @Test
     public void simpleForecastSectionMetadataById() throws Exception {
-        mockMvc.perform(get(SIMPLE_PATH + "/" + SIMPLE_ID))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.type", is("Feature")))
-            .andExpect(jsonPath("$.id", is(SIMPLE_ID)))
-            .andExpect(jsonPath("$.geometry.type", is("LineString")));
-        mockMvc.perform(get(SIMPLE_PATH + "/" + ID)).andExpect(status().isNotFound());
+        executeGet(SIMPLE_PATH + "/" + SIMPLE_ID)
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.type").value(is("Feature"))
+            .jsonPath("$.id").value(is(SIMPLE_ID))
+            .jsonPath("$.geometry.type").value(is("LineString"));
+        executeGet(SIMPLE_PATH + "/" + ID).expectStatus().isNotFound();
     }
 }

@@ -1,15 +1,9 @@
 package fi.livi.digitraffic.tie.controller.weather;
 
-import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.equalToObject;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
@@ -107,86 +101,82 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
     @Test
     public void weatherStationsRestApi() throws Exception {
         performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS)
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.features[0].id", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.features[0].type", is("Feature")))
-                .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$.features[0].properties", Matchers.anything()))
-                .andExpect(jsonPath("$.features[0].properties.id", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.features[0].properties.name", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.features[0].properties.name", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus",
-                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
-                .andExpect(jsonPath("$.features[0].properties.state", Matchers.anything()))
-                .andExpect(jsonPath("$.features[0].properties.dataUpdatedTime", is(weatherStation.getRoadStation().getModified().toString())))
-
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationsMetaDataModifiedMillis));
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationsMetaDataModifiedMillis)
+                .expectBody()
+                .jsonPath("$.type").value(is("FeatureCollection"))
+                .jsonPath("$.features[0].id").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.features[0].type").value(is("Feature"))
+                .jsonPath("$.features[0].geometry.type").value(is("Point"))
+                .jsonPath("$.features[0].geometry.coordinates").value(Matchers.hasSize(3))
+                .jsonPath("$.features[0].properties").value(Matchers.anything())
+                .jsonPath("$.features[0].properties.id").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.features[0].properties.name").value(Matchers.notNullValue())
+                .jsonPath("$.features[0].properties.name").value(Matchers.isA(String.class))
+                .jsonPath("$.features[0].properties.collectionStatus").value(
+                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name()))
+                .jsonPath("$.features[0].properties.state").value(Matchers.anything())
+                .jsonPath("$.features[0].properties.dataUpdatedTime").value(is(weatherStation.getRoadStation().getModified().toString()))
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
 
     @Test
     public void weatherStationRestApi() throws Exception {
         performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + "/" + weatherStation.getRoadStationNaturalId())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$.type", is("Feature")))
-                .andExpect(jsonPath("$.id", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.type", is("Feature")))
-                .andExpect(jsonPath("$.geometry.type", is("Point")))
-                .andExpect(jsonPath("$.geometry.coordinates", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$.properties", Matchers.anything()))
-                .andExpect(jsonPath("$.properties.id", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.properties.name", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.properties.name", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.collectionStatus",
-                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
-                .andExpect(jsonPath("$.properties.state", Matchers.anything()))
-                .andExpect(jsonPath("$.properties.dataUpdatedTime", is(weatherStation.getRoadStation().getModified().toString())))
-                .andExpect(jsonPath("$.properties.municipality", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.stationType", Matchers.is(WeatherStationType.E_18.name())))
-                .andExpect(jsonPath("$.properties.master", Matchers.is(true)))
-                .andExpect(jsonPath("$.properties.roadAddress.roadSection", isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.roadAddress.roadNumber", isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.names.fi", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.names.sv", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.names.en", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.municipality", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
-
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationMetaDataModifiedMillis));
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, stationMetaDataModifiedMillis)
+                .expectBody()
+                .jsonPath("$.type").value(is("Feature"))
+                .jsonPath("$.id").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.geometry.type").value(is("Point"))
+                .jsonPath("$.geometry.coordinates").value(Matchers.hasSize(3))
+                .jsonPath("$.properties").value(Matchers.anything())
+                .jsonPath("$.properties.id").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.properties.name").value(Matchers.notNullValue())
+                .jsonPath("$.properties.name").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.collectionStatus").value(
+                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name()))
+                .jsonPath("$.properties.state").value(Matchers.anything())
+                .jsonPath("$.properties.dataUpdatedTime").value(is(weatherStation.getRoadStation().getModified().toString()))
+                .jsonPath("$.properties.municipality").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.municipalityCode").value(Matchers.isA(Integer.class))
+                .jsonPath("$.properties.province").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.provinceCode").value(Matchers.isA(Integer.class))
+                .jsonPath("$.properties.stationType").value(Matchers.is(WeatherStationType.E_18.name()))
+                .jsonPath("$.properties.master").value(Matchers.is(true))
+                .jsonPath("$.properties.roadAddress.roadSection").value(isA(Integer.class))
+                .jsonPath("$.properties.roadAddress.roadNumber").value(isA(Integer.class))
+                .jsonPath("$.properties.names.fi").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.names.sv").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.names.en").value(Matchers.isA(String.class))
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
     public void weatherSensorsRestApi() throws Exception {
         performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.SENSORS)
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$.sensors[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.sensors[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].shortName", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].unit", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].description", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].descriptions.fi", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].direction", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].accuracy").hasJsonPath())
-            .andExpect(jsonPath("$.sensors[0].sensorValueDescriptions").hasJsonPath())
-            .andExpect(jsonPath("$.sensors[0].presentationNames").hasJsonPath())
-            .andExpect(jsonPath("$.sensors[0].presentationNames.fi").hasJsonPath())
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, sensorsMetadataModifiedMillis));
+            .expectStatus().isOk()
+            .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, sensorsMetadataModifiedMillis)
+            .expectBody()
+            .jsonPath("$.sensors[0].id").value(isA(Integer.class))
+            .jsonPath("$.sensors[0].name").value(isA(String.class))
+            .jsonPath("$.sensors[0].shortName").value(isA(String.class))
+            .jsonPath("$.sensors[0].unit").value(isA(String.class))
+            .jsonPath("$.sensors[0].description").value(isA(String.class))
+            .jsonPath("$.sensors[0].descriptions.fi").value(isA(String.class))
+            .jsonPath("$.sensors[0].direction").value(isA(String.class))
+            .jsonPath("$.sensors[0].accuracy").hasJsonPath()
+            .jsonPath("$.sensors[0].sensorValueDescriptions").hasJsonPath()
+            .jsonPath("$.sensors[0].presentationNames").hasJsonPath()
+            .jsonPath("$.sensors[0].presentationNames.fi").hasJsonPath()
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     /* DATA */
@@ -194,60 +184,63 @@ public class WeatherControllerV1Test extends AbstractRestWebTest {
     @Test
     public void weatherDataRestApi() throws Exception {
         performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA)
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].id", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.stations[0].dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].sensorValues", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].stationId", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].shortName", isA(String.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].value", isA(Number.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].unit", isA(String.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].measuredTime", isA(String.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].reliability", equalToObject("OK")))
+            .expectStatus().isOk()
+            .expectHeader().contentType(DtMediaType.APPLICATION_JSON)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis)
+            .expectBody()
+            .jsonPath("$.dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.stations").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].id").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.stations[0].dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].sensorValues").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].sensorValues[0].id").value(isA(Integer.class))
+            .jsonPath("$.stations[0].sensorValues[0].stationId").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.stations[0].sensorValues[0].name").value(isA(String.class))
+            .jsonPath("$.stations[0].sensorValues[0].shortName").value(isA(String.class))
+            .jsonPath("$.stations[0].sensorValues[0].value").value(isA(Number.class))
+            .jsonPath("$.stations[0].sensorValues[0].unit").value(isA(String.class))
+            .jsonPath("$.stations[0].sensorValues[0].measuredTime").value(isA(String.class))
+            .jsonPath("$.stations[0].sensorValues[0].reliability").value(equalToObject("OK"))
             // TODO test measured time
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
     public void weatherDataByIdRestApi() throws Exception {
         performAndLogLastModifiedHeader(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + "/" + weatherStation.getRoadStationNaturalId() + "/" + WeatherControllerV1.DATA)
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.sensorValues", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.sensorValues[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.sensorValues[0].stationId", Matchers.is(weatherStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.sensorValues[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.sensorValues[0].shortName", isA(String.class)))
-            .andExpect(jsonPath("$.sensorValues[0].value", isA(Number.class)))
-            .andExpect(jsonPath("$.sensorValues[0].unit", isA(String.class)))
-            .andExpect(jsonPath("$.sensorValues[0].measuredTime", isA(String.class)))
+            .expectStatus().isOk()
+            .expectHeader().contentType(DtMediaType.APPLICATION_JSON)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis)
+            .expectBody()
+            .jsonPath("$.id").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.sensorValues").value(Matchers.notNullValue())
+            .jsonPath("$.sensorValues[0].id").value(isA(Integer.class))
+            .jsonPath("$.sensorValues[0].stationId").value(Matchers.is(weatherStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.sensorValues[0].name").value(isA(String.class))
+            .jsonPath("$.sensorValues[0].shortName").value(isA(String.class))
+            .jsonPath("$.sensorValues[0].value").value(isA(Number.class))
+            .jsonPath("$.sensorValues[0].unit").value(isA(String.class))
+            .jsonPath("$.sensorValues[0].measuredTime").value(isA(String.class))
             // TODO test measured time
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
     public void weatherDataLastUpdatedContainsEmptyStations() throws Exception {
-        mockMvc.perform(get(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA + "?lastUpdated=true"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations", Matchers.hasSize(0)));
+        executeGet(WeatherControllerV1.API_WEATHER_V1 + WeatherControllerV1.STATIONS + WeatherControllerV1.DATA + "?lastUpdated=true")
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.stations").value(Matchers.hasSize(0));
     }
 
-    private ResultActions performAndLogLastModifiedHeader(final String url) throws Exception {
-        final ResultActions result = mockMvc.perform(get(url));
-        log.info("LAST-MODIFIED: {},  id: {}", result.andReturn().getResponse().getHeader(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER), weatherStation.getRoadStationNaturalId());
-        return result;
+    private WebTestClient.ResponseSpec performAndLogLastModifiedHeader(final String url) throws Exception {
+        return executeGet(url)
+            .expectHeader().value(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER,
+                (final String lastModified) -> log.info("LAST-MODIFIED: {},  id: {}", lastModified, weatherStation.getRoadStationNaturalId()));
     }
 
 }

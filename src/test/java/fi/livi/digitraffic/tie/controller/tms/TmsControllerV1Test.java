@@ -4,22 +4,18 @@ package fi.livi.digitraffic.tie.controller.tms;
 
 import static fi.livi.digitraffic.common.util.TimeUtil.getGreatest;
 import static fi.livi.digitraffic.tie.TestUtils.getRandomId;
-import static fi.livi.digitraffic.tie.helper.DateHelperTest.ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import fi.livi.digitraffic.common.util.StringUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -28,10 +24,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.xml.transform.StringSource;
 
-import fi.livi.digitraffic.common.util.StringUtil;
 import fi.livi.digitraffic.common.util.TimeUtil;
 import fi.livi.digitraffic.tie.AbstractRestWebTest;
 import fi.livi.digitraffic.tie.TestUtils;
@@ -57,9 +51,11 @@ import fi.livi.digitraffic.tie.service.DataStatusService;
 import fi.livi.digitraffic.tie.service.RoadStationSensorService;
 import fi.livi.digitraffic.tie.service.TmsTestHelper;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.ConfidentialityValueEnum;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.HeaderInformation;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.InformationStatusEnum;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasuredDataPublication;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.MeasurementSiteTablePublication;
+import fi.livi.digitraffic.tie.tms.datex2.v3_5.PayloadPublication;
 import fi.livi.digitraffic.tie.tms.datex2.v3_5.PointLocation;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -171,27 +167,27 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
 
     @Test
     public void tmsStationsRestApi() throws Exception {
-        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$.type", is("FeatureCollection")))
-                .andExpect(jsonPath("$.features[0].id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.features[0].type", is("Feature")))
-                .andExpect(jsonPath("$.features[0].geometry.type", is("Point")))
-                .andExpect(jsonPath("$.features[0].geometry.coordinates", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$.features[0].properties", Matchers.anything()))
-                .andExpect(jsonPath("$.features[0].properties.id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.features[0].properties.tmsNumber", isA(Integer.class)))
-                .andExpect(jsonPath("$.features[0].properties.name", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.features[0].properties.name", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.features[0].properties.collectionStatus",
-                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
-                .andExpect(jsonPath("$.features[0].properties.state", Matchers.anything()))
-                .andExpect(jsonPath("$.features[0].properties.dataUpdatedTime", is(tmsStation.getRoadStation().getModified().toString())))
-
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis));
+        executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS)
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis)
+                .expectBody()
+                .jsonPath("$.type").value(is("FeatureCollection"))
+                .jsonPath("$.features[0].id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.features[0].type").value(is("Feature"))
+                .jsonPath("$.features[0].geometry.type").value(is("Point"))
+                .jsonPath("$.features[0].geometry.coordinates").value(Matchers.hasSize(3))
+                .jsonPath("$.features[0].properties").value(Matchers.anything())
+                .jsonPath("$.features[0].properties.id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.features[0].properties.tmsNumber").value(isA(Integer.class))
+                .jsonPath("$.features[0].properties.name").value(Matchers.notNullValue())
+                .jsonPath("$.features[0].properties.name").value(Matchers.isA(String.class))
+                .jsonPath("$.features[0].properties.collectionStatus").value(
+                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name()))
+                .jsonPath("$.features[0].properties.state").value(Matchers.anything())
+                .jsonPath("$.features[0].properties.dataUpdatedTime").value(is(tmsStation.getRoadStation().getModified().toString()))
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
@@ -205,123 +201,116 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         tmsTestHelper.createAndSaveLamAnturiVakioArvo(vakio2, vvapaas2Arvo);
 
 
-        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-                .andExpect(jsonPath("$.type", is("Feature")))
-                .andExpect(jsonPath("$.id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.type", is("Feature")))
-                .andExpect(jsonPath("$.geometry.type", is("Point")))
-                .andExpect(jsonPath("$.geometry.coordinates", Matchers.hasSize(3)))
-                .andExpect(jsonPath("$.properties", Matchers.anything()))
-                .andExpect(jsonPath("$.properties.id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-                .andExpect(jsonPath("$.properties.tmsNumber", isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.name", Matchers.notNullValue()))
-                .andExpect(jsonPath("$.properties.name", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.collectionStatus",
-                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name())))
-                .andExpect(jsonPath("$.properties.state", Matchers.anything()))
-                .andExpect(jsonPath("$.properties.dataUpdatedTime", is(tmsStation.getRoadStation().getModified().toString())))
-                .andExpect(jsonPath("$.properties.municipality", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.stationType", Matchers.is(TmsStationType.DSL_6.name())))
-                .andExpect(jsonPath("$.properties.roadAddress.roadSection", isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.roadAddress.roadNumber", isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.names.fi", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.names.sv", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.names.en", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.purpose", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.municipality", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.municipalityCode", Matchers.isA(Integer.class)))
-                .andExpect(jsonPath("$.properties.province", Matchers.isA(String.class)))
-                .andExpect(jsonPath("$.properties.provinceCode", Matchers.isA(Integer.class)))
-
-                .andExpect(jsonPath("$.properties.direction1Municipality", is("Vihti")))
-                .andExpect(jsonPath("$.properties.direction1MunicipalityCode", is(927)))
-                .andExpect(jsonPath("$.properties.direction2Municipality", is("Helsinki")))
-                .andExpect(jsonPath("$.properties.direction2MunicipalityCode", is(91)))
-                .andExpect(jsonPath("$.properties.calculatorDeviceType", Matchers.is(CalculatorDeviceType.DSL_5.name())))
-                .andExpect(jsonPath("$.properties.freeFlowSpeed1", is(vvapaas1Arvo.doubleValue())))
-                .andExpect(jsonPath("$.properties.freeFlowSpeed2", is(vvapaas2Arvo.doubleValue())))
-
-                .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-                .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-                .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis));
+        executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId())
+                .expectStatus().isOk()
+                .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+                .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+                .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis)
+                .expectBody()
+                .jsonPath("$.type").value(is("Feature"))
+                .jsonPath("$.id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.geometry.type").value(is("Point"))
+                .jsonPath("$.geometry.coordinates").value(Matchers.hasSize(3))
+                .jsonPath("$.properties").value(Matchers.anything())
+                .jsonPath("$.properties.id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+                .jsonPath("$.properties.tmsNumber").value(isA(Integer.class))
+                .jsonPath("$.properties.name").value(Matchers.notNullValue())
+                .jsonPath("$.properties.name").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.collectionStatus").value(
+                    Matchers.oneOf(CollectionStatus.GATHERING.name(), CollectionStatus.REMOVED_PERMANENTLY.name(), CollectionStatus.REMOVED_TEMPORARILY.name()))
+                .jsonPath("$.properties.state").value(Matchers.anything())
+                .jsonPath("$.properties.dataUpdatedTime").value(is(tmsStation.getRoadStation().getModified().toString()))
+                .jsonPath("$.properties.municipality").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.municipalityCode").value(Matchers.isA(Integer.class))
+                .jsonPath("$.properties.province").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.provinceCode").value(Matchers.isA(Integer.class))
+                .jsonPath("$.properties.stationType").value(Matchers.is(TmsStationType.DSL_6.name()))
+                .jsonPath("$.properties.roadAddress.roadSection").value(isA(Integer.class))
+                .jsonPath("$.properties.roadAddress.roadNumber").value(isA(Integer.class))
+                .jsonPath("$.properties.names.fi").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.names.sv").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.names.en").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.purpose").value(Matchers.isA(String.class))
+                .jsonPath("$.properties.direction1Municipality").value(is("Vihti"))
+                .jsonPath("$.properties.direction1MunicipalityCode").value(is(927))
+                .jsonPath("$.properties.direction2Municipality").value(is("Helsinki"))
+                .jsonPath("$.properties.direction2MunicipalityCode").value(is(91))
+                .jsonPath("$.properties.calculatorDeviceType").value(Matchers.is(CalculatorDeviceType.DSL_5.name()))
+                .jsonPath("$.properties.freeFlowSpeed1").value(is(vvapaas1Arvo.doubleValue()))
+                .jsonPath("$.properties.freeFlowSpeed2").value(is(vvapaas2Arvo.doubleValue()))
+                .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
     public void tmsSensorsRestApi() throws Exception {
-        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.SENSORS))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DT_JSON_CONTENT_TYPE))
-            .andExpect(jsonPath("$.sensors[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.sensors[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].shortName", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].unit", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].description", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].descriptions.fi", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].direction", isA(String.class)))
-            .andExpect(jsonPath("$.sensors[0].accuracy").hasJsonPath())
-            .andExpect(jsonPath("$.sensors[0].sensorValueDescriptions").hasJsonPath())
-            .andExpect(jsonPath("$.sensors[0].presentationNames").hasJsonPath())
-            .andExpect(jsonPath("$.sensors[0].presentationNames.fi").hasJsonPath())
-
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis));
+        executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.SENSORS)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DT_JSON_CONTENT_TYPE)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, metadataLastModifiedMillis)
+            .expectBody()
+            .jsonPath("$.sensors[0].id").value(isA(Integer.class))
+            .jsonPath("$.sensors[0].name").value(isA(String.class))
+            .jsonPath("$.sensors[0].shortName").value(isA(String.class))
+            .jsonPath("$.sensors[0].unit").value(isA(String.class))
+            .jsonPath("$.sensors[0].description").value(isA(String.class))
+            .jsonPath("$.sensors[0].descriptions.fi").value(isA(String.class))
+            .jsonPath("$.sensors[0].direction").value(isA(String.class))
+            .jsonPath("$.sensors[0].accuracy").hasJsonPath()
+            .jsonPath("$.sensors[0].sensorValueDescriptions").hasJsonPath()
+            .jsonPath("$.sensors[0].presentationNames").hasJsonPath()
+            .jsonPath("$.sensors[0].presentationNames.fi").hasJsonPath()
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     /* DATA */
 
     @Test
     public void tmsDataRestApi() throws Exception {
-        final ResultActions tmp =
-            mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA));
-        // log.info(tmp.andReturn().getResponse().getContentAsString());
-        tmp
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.stations[0].tmsNumber", isA(Integer.class)))
-            .andExpect(jsonPath("$.stations[0].dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].sensorValues", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].stationId", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].shortName", isA(String.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].value", isA(Number.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].unit", isA(String.class)))
-            .andExpect(jsonPath("$.stations[0].sensorValues[0].measuredTime", isA(String.class)))
+        executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DtMediaType.APPLICATION_JSON)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis)
+            .expectBody()
+            .jsonPath("$.dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.stations").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.stations[0].tmsNumber").value(isA(Integer.class))
+            .jsonPath("$.stations[0].dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].sensorValues").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].sensorValues[0].id").value(isA(Integer.class))
+            .jsonPath("$.stations[0].sensorValues[0].stationId").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.stations[0].sensorValues[0].name").value(isA(String.class))
+            .jsonPath("$.stations[0].sensorValues[0].shortName").value(isA(String.class))
+            .jsonPath("$.stations[0].sensorValues[0].value").value(isA(Number.class))
+            .jsonPath("$.stations[0].sensorValues[0].unit").value(isA(String.class))
+            .jsonPath("$.stations[0].sensorValues[0].measuredTime").value(isA(String.class))
             // todo test measured
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
     public void tmsDataByIdRestApi() throws Exception {
-        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + "/" + TmsControllerV1.DATA))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.tmsNumber", isA(Integer.class)))
-            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.sensorValues", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.sensorValues[0].id", isA(Integer.class)))
-            .andExpect(jsonPath("$.sensorValues[0].stationId", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.sensorValues[0].name", isA(String.class)))
-            .andExpect(jsonPath("$.sensorValues[0].shortName", isA(String.class)))
-            .andExpect(jsonPath("$.sensorValues[0].value", isA(Number.class)))
-            .andExpect(jsonPath("$.sensorValues[0].unit", isA(String.class)))
-            .andExpect(jsonPath("$.sensorValues[0].measuredTime", isA(String.class)))
+        executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + "/" + TmsControllerV1.DATA)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DtMediaType.APPLICATION_JSON)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis)
+            .expectBody()
+            .jsonPath("$.id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.tmsNumber").value(isA(Integer.class))
+            .jsonPath("$.dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.sensorValues").value(Matchers.notNullValue())
+            .jsonPath("$.sensorValues[0].id").value(isA(Integer.class))
+            .jsonPath("$.sensorValues[0].stationId").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.sensorValues[0].name").value(isA(String.class))
+            .jsonPath("$.sensorValues[0].shortName").value(isA(String.class))
+            .jsonPath("$.sensorValues[0].value").value(isA(Number.class))
+            .jsonPath("$.sensorValues[0].unit").value(isA(String.class))
+            .jsonPath("$.sensorValues[0].measuredTime").value(isA(String.class))
             // todo test measured
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, dataLastUpdatedMillis));
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
@@ -334,21 +323,21 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         dataStatusService.updateDataUpdated(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA);
         final long constantsUpdated = TimeUtil.roundInstantSeconds(
             dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA)).toEpochMilli();
-        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.stations[0].id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].sensorConstantValues", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.stations[0].sensorConstantValues[0].name", is(vakioNimi)))
-            .andExpect(jsonPath("$.stations[0].sensorConstantValues[0].value", is(vakioArvo)))
-            .andExpect(jsonPath("$.stations[0].sensorConstantValues[0].validFrom", is("01-01")))
-            .andExpect(jsonPath("$.stations[0].sensorConstantValues[0].validTo", is("12-31")))
-            .andExpect(jsonPath("$.stations[0].sensorConstantValues[0]..dataUpdatedTime", Matchers.notNullValue()))
-
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, constantsUpdated));
+        executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.SENSOR_CONSTANTS)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DtMediaType.APPLICATION_JSON)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, constantsUpdated)
+            .expectBody()
+            .jsonPath("$.stations[0].id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].sensorConstantValues").value(Matchers.notNullValue())
+            .jsonPath("$.stations[0].sensorConstantValues[0].name").value(is(vakioNimi))
+            .jsonPath("$.stations[0].sensorConstantValues[0].value").value(is(vakioArvo))
+            .jsonPath("$.stations[0].sensorConstantValues[0].validFrom").value(is("01-01"))
+            .jsonPath("$.stations[0].sensorConstantValues[0].validTo").value(is("12-31"))
+            .jsonPath("$.stations[0].sensorConstantValues[0]..dataUpdatedTime").value(Matchers.notNullValue())
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
@@ -362,22 +351,20 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         final long constantsUpdated = TimeUtil.roundInstantSeconds(
             dataStatusService.findDataUpdatedInstant(DataType.TMS_SENSOR_CONSTANT_VALUE_DATA)).toEpochMilli();
 
-        // log.info(mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS))
-        // .andReturn().getResponse().getContentAsString());
-        mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(DtMediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", Matchers.is(tmsStation.getRoadStationNaturalId().intValue())))
-            .andExpect(jsonPath("$.dataUpdatedTime", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.sensorConstantValues", Matchers.notNullValue()))
-            .andExpect(jsonPath("$.sensorConstantValues[0].name", is(vakioNimi)))
-            .andExpect(jsonPath("$.sensorConstantValues[0].value", is(vakioArvo)))
-            .andExpect(jsonPath("$.sensorConstantValues[0].validFrom", is("01-01")))
-            .andExpect(jsonPath("$.sensorConstantValues[0].validTo", is("12-31")))
-
-            .andExpect(ISO_DATE_TIME_WITH_Z_AND_NO_OFFSET_CONTAINS_RESULT_MATCHER)
-            .andExpect(header().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER))
-            .andExpect(header().dateValue(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, constantsUpdated));
+        executeGet(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() +  "/" + TmsControllerV1.SENSOR_CONSTANTS)
+            .expectStatus().isOk()
+            .expectHeader().contentType(DtMediaType.APPLICATION_JSON)
+            .expectHeader().exists(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER)
+            .expectHeader().valueEqualsDate(LastModifiedAppenderControllerAdvice.LAST_MODIFIED_HEADER, constantsUpdated)
+            .expectBody()
+            .jsonPath("$.id").value(Matchers.is(tmsStation.getRoadStationNaturalId().intValue()))
+            .jsonPath("$.dataUpdatedTime").value(Matchers.notNullValue())
+            .jsonPath("$.sensorConstantValues").value(Matchers.notNullValue())
+            .jsonPath("$.sensorConstantValues[0].name").value(is(vakioNimi))
+            .jsonPath("$.sensorConstantValues[0].value").value(is(vakioArvo))
+            .jsonPath("$.sensorConstantValues[0].validFrom").value(is("01-01"))
+            .jsonPath("$.sensorConstantValues[0].validTo").value(is("12-31"))
+            .consumeWith(this::assertBodyTimesFormatMatchesIsoDateTimeWithZ);
     }
 
     @Test
@@ -385,22 +372,11 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         insertSensorConstant();
 
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATEX2 + ApiConstants.XML))
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATEX2 + ApiConstants.XML)
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
-
-        final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
-
-        final PointLocation location = (PointLocation) publication.getMeasurementSiteTables().getFirst().getMeasurementSites().getFirst().getMeasurementSiteLocation();
-        assertEquals(42, location.getPointByCoordinates().getBearing());
-
-        assertEquals(metadataLastModified, publication.getPublicationTime());
-        assertEquals("FI", publication.getPublicationCreator().getCountry());
-        assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
-        assertEquals("fi", publication.getLang());
-        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
-        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+        assertMeasurementSiteTable(unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class));
     }
 
     @Test
@@ -408,66 +384,58 @@ public class TmsControllerV1Test extends AbstractRestWebTest {
         insertSensorConstant();
 
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2 + ApiConstants.XML))
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATEX2 + ApiConstants.XML)
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         checkXmlXsiType(xmlResponse, MeasurementSiteTablePublication.class);
-
-        final MeasurementSiteTablePublication publication = unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class);
-
-        final PointLocation location = (PointLocation) publication.getMeasurementSiteTables().getFirst().getMeasurementSites().getFirst().getMeasurementSiteLocation();
-        assertEquals(42, location.getPointByCoordinates().getBearing());
-
-        assertEquals(metadataLastModified, publication.getPublicationTime());
-        assertEquals("FI", publication.getPublicationCreator().getCountry());
-        assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
-        assertEquals("fi", publication.getLang());
-        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
-        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+        assertMeasurementSiteTable(unmarshalXml(xmlResponse, MeasurementSiteTablePublication.class));
     }
 
     @Test
     public void tmsDataDatex2RestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML)
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         checkXmlXsiType(xmlResponse, MeasuredDataPublication.class);
-
-        final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
-
-        assertEquals(metadataLastModified, publication.getPublicationTime());
-        assertEquals("FI", publication.getPublicationCreator().getCountry());
-        assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
-        assertEquals("fi", publication.getLang());
-        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
-        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+        assertMeasuredData(unmarshalXml(xmlResponse, MeasuredDataPublication.class));
     }
 
     @Test
     public void tmsDataByIdDatex2RestApi() throws Exception {
 
         final String xmlResponse =
-                mockMvc.perform(get(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML))
-                        .andReturn().getResponse().getContentAsString();
+                executeGetXml(TmsControllerV1.API_TMS_V1 + TmsControllerV1.STATIONS + "/" + tmsStation.getRoadStationNaturalId() + TmsControllerV1.DATA + TmsControllerV1.DATEX2 + ApiConstants.XML)
+                        .expectBody(String.class).returnResult().getResponseBody();
 
         checkXmlXsiType(xmlResponse, MeasuredDataPublication.class);
+        assertMeasuredData(unmarshalXml(xmlResponse, MeasuredDataPublication.class));
+    }
 
-        final MeasuredDataPublication publication = unmarshalXml(xmlResponse, MeasuredDataPublication.class);
+    private void assertMeasurementSiteTable(final MeasurementSiteTablePublication publication) {
+        final PointLocation location = (PointLocation) publication.getMeasurementSiteTables().getFirst().getMeasurementSites().getFirst().getMeasurementSiteLocation();
+        assertEquals(42, location.getPointByCoordinates().getBearing());
+        assertPublicationHeader(publication, publication.getHeaderInformation());
+    }
 
+    private void assertMeasuredData(final MeasuredDataPublication publication) {
+        assertPublicationHeader(publication, publication.getHeaderInformation());
+    }
+
+    private void assertPublicationHeader(final PayloadPublication publication, final HeaderInformation headerInformation) {
         assertEquals(metadataLastModified, publication.getPublicationTime());
         assertEquals("FI", publication.getPublicationCreator().getCountry());
         assertEquals(TmsDatex2Common.MEASUREMENT_SITE_NATIONAL_IDENTIFIER, publication.getPublicationCreator().getNationalIdentifier());
         assertEquals("fi", publication.getLang());
-        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, publication.getHeaderInformation().getConfidentiality().getValue());
-        assertEquals(InformationStatusEnum.REAL, publication.getHeaderInformation().getInformationStatus().getValue());
+        assertEquals(ConfidentialityValueEnum.NO_RESTRICTION, headerInformation.getConfidentiality().getValue());
+        assertEquals(InformationStatusEnum.REAL, headerInformation.getInformationStatus().getValue());
     }
 
     private void checkXmlXsiType(final String xmlResponse, final Class<?> xsiType) {
         assertTrue(Strings.CS.contains(xmlResponse, "<d2:payload"));
         final String typeString = StringUtil.format("xsi:type=\"roa:{}\"", xsiType.getSimpleName());
-        assertTrue(Strings.CS.contains(xmlResponse, typeString), StringUtil.format("Xml message didn't contain: {}"));
+        assertTrue(Strings.CS.contains(xmlResponse, typeString), StringUtil.format("Xml message didn't contain: {}", typeString));
     }
 
     private <T> T unmarshalXml(final String xml, final Class<T> clazz) {
