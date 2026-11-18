@@ -3,8 +3,11 @@ package fi.livi.digitraffic.tie.service.weather.forecast;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,7 @@ public class ForecastSectionDataUpdateServiceV2 {
     private static final Logger log = LoggerFactory.getLogger(ForecastSectionDataUpdateServiceV2.class);
     // Matches forecast_section_weather_v2.forecast_name column length
     private static final int MAX_FORECAST_NAME_LENGTH = 50;
+    private static final int MAX_INVALID_EXAMPLES = 3;
 
     private final ForecastSectionRepository forecastSectionRepository;
     private final ForecastSectionWeatherV2Repository forecastSectionWeatherV2Repository;
@@ -103,10 +107,7 @@ public class ForecastSectionDataUpdateServiceV2 {
             for (final ForecastSectionForecastDtoV2 forecast : section.forecasts) {
                 stats.checkUnknownValues(section.naturalId, forecast);
                 if (!isValid(forecast)) {
-                    stats.invalidForecasts++;
-                    if (stats.firstInvalid == null) {
-                        stats.firstInvalid = section.naturalId + "/" + forecast.forecastName;
-                    }
+                    stats.addInvalid(section.naturalId, forecast, invalidFields(forecast));
                     continue;
                 }
                 if (forecast.reliability != null) {
@@ -151,8 +152,8 @@ public class ForecastSectionDataUpdateServiceV2 {
                      dataSet, stats.unknownSections, stats.firstUnknownSection);
         }
         if (stats.invalidForecasts > 0) {
-            log.error("method=updateForecastSectionWeatherData dataSet={} Ignored forecasts with missing or unknown required values (time, forecastName up to 50 chars, type, daylight) count={} first={}",
-                      dataSet, stats.invalidForecasts, stats.firstInvalid);
+            log.error("method=updateForecastSectionWeatherData dataSet={} Ignored forecasts with missing or unknown required values (time, forecastName up to 50 chars, type, daylight) count={} sections={} invalidFields={} examples={}",
+                      dataSet, stats.invalidForecasts, stats.invalidSections.size(), stats.invalidFieldCounts, stats.invalidExamples);
         }
         if (stats.unknownTypes > 0) {
             log.error("method=updateForecastSectionWeatherData dataSet={} Unknown forecast type in source data, forecasts skipped count={} first={}",
@@ -171,6 +172,25 @@ public class ForecastSectionDataUpdateServiceV2 {
 
     private static boolean isValid(final ForecastSectionForecastDtoV2 f) {
         return f.forecastName != null && f.forecastName.length() <= MAX_FORECAST_NAME_LENGTH && f.time != null && f.type != null && f.daylight != null;
+    }
+
+    private static List<String> invalidFields(final ForecastSectionForecastDtoV2 f) {
+        final List<String> invalid = new ArrayList<>();
+        if (f.forecastName == null) {
+            invalid.add("forecastName");
+        } else if (f.forecastName.length() > MAX_FORECAST_NAME_LENGTH) {
+            invalid.add("forecastNameTooLong");
+        }
+        if (f.time == null) {
+            invalid.add("time");
+        }
+        if (f.type == null) {
+            invalid.add(f.rawType == null ? "type" : "typeUnknown");
+        }
+        if (f.daylight == null) {
+            invalid.add("daylight");
+        }
+        return invalid;
     }
 
     private static ForecastSectionWeatherV2 toEntity(final long sectionId, final String forecastName, final ForecastSectionForecastDtoV2 f) {
@@ -198,9 +218,20 @@ public class ForecastSectionDataUpdateServiceV2 {
         int unknownConditions;
         String firstReliability;
         String firstUnknownSection;
-        String firstInvalid;
+        final Map<String, Integer> invalidFieldCounts = new TreeMap<>();
+        final Set<String> invalidSections = new HashSet<>();
+        final List<String> invalidExamples = new ArrayList<>();
         String firstUnknownType;
         String firstUnknownCondition;
+
+        void addInvalid(final String sectionId, final ForecastSectionForecastDtoV2 f, final List<String> invalidFieldNames) {
+            invalidForecasts++;
+            invalidSections.add(sectionId);
+            invalidFieldNames.forEach(field -> invalidFieldCounts.merge(field, 1, Integer::sum));
+            if (invalidExamples.size() < MAX_INVALID_EXAMPLES) {
+                invalidExamples.add(describe(sectionId, f, "time=" + f.time + " type=" + f.rawType + " daylight=" + f.daylight));
+            }
+        }
 
         void checkUnknownValues(final String sectionId, final ForecastSectionForecastDtoV2 f) {
             if (f.rawType != null && f.type == null) {
